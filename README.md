@@ -1,4 +1,4 @@
-# libSigNetSim
+# libSigNetSim [![Build Status](https://travis-ci.org/vincent-noel/libSigNetSim.svg?branch=master)](https://travis-ci.org/vincent-noel/libSigNetSim)
 Python library designed for building, adjusting and analyzing quantitative biological models.
 
 
