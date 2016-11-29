@@ -40,7 +40,7 @@ lsa.mpi: $(OBJ) $(POBJ)
 
 # Generated
 model.o: $(GDIR)/model.c $(GDIR)/model.h
-	gcc $(FLAGS) -c $(GDIR)/model.c
+	gcc -pedantic -std=gnu99 -c $(GDIR)/model.c
 
 data.o: $(GDIR)/data.c $(GDIR)/data.h
 	gcc $(FLAGS) -c $(GDIR)/data.c
