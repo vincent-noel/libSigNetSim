@@ -1,0 +1,1 @@
+recursive-include libsignetsim *.c *.h *.so Makefile

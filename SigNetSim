@@ -1,0 +1,15 @@
+OF=`pwd`
+DIR=`dirname $0`
+VENV=$1
+
+if [[ -n "$VENV" ]]; then
+    source $VENV/bin/activate
+    cd $DIR
+    python -m libsignetsim "${@:2}"
+    cd $OF
+    deactivate
+else
+    cd $DIR
+    python -m libsignetsim $@
+    cd $OF
+fi
