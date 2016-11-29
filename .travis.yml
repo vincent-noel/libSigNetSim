@@ -10,4 +10,4 @@ install:
 
 
 script:
-  - echo "INSTALLATION DONE"
+  - echo "import libsignetsim" | python
