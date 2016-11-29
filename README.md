@@ -27,9 +27,24 @@ You will need Git to download the non-linear optimization library, and Pip to do
 
 
 ##Installation
-Still working on it. For now it should work just with
+For now it should work just with
 
+	pip install .
+or
 	python setup.py install
+
+
+
+##Jupyter notebook with libSigNetSim
+You can run a Jupyter notebook, in a virtual environment, using
+
+	scripts/run_notebook.sh
+
+You can also run a notebook in a docker, using
+
+	scripts/run_docker_notebook.sh
+
+Both will start you the notebook on localhost:8888
 
 
 
