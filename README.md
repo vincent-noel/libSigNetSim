@@ -3,7 +3,7 @@ Python library designed for building, adjusting and analyzing quantitative biolo
 
 
 
-##Dependencies
+##Non-Python Dependencies
 You will need MPI libraries to execute C code in parallel
 
 	libopenmpi-dev openmpi-bin
@@ -17,6 +17,19 @@ You will need Sundials library to perform numerical integration
 You will need Git to download the non-linear optimization library, and Pip to download python dependencies
 
 	git python-pip
+
+
+
+##Python dependencies
+
+	pip install -r requirements.txt
+
+
+
+##Installation
+Still working on it. For now it should work just with
+
+	python setup.py install
 
 
 
