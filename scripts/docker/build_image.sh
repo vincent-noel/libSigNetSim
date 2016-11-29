@@ -5,6 +5,7 @@ if [[ -n "$SRCDIR" ]]; then
 
 	mkdir libSigNetSim
 	cp ../$SRCDIR/requirements.txt libSigNetSim/
+	cp ../$SRCDIR/MANIFEST.in libSigNetSim/
 	cp ../$SRCDIR/setup.py libSigNetSim/
 	cp -r ../$SRCDIR/libsignetsim libSigNetSim/
 

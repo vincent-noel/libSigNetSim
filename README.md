@@ -30,7 +30,9 @@ You will need Git to download the non-linear optimization library, and Pip to do
 For now it should work just with
 
 	pip install .
+
 or
+
 	python setup.py install
 
 
