@@ -21,6 +21,7 @@ LIBDIR = lib
 IDIR = $(SRCDIR)/integrate
 GDIR = $(SRCDIR)
 
+FLAGS = -Wall -Werror -pedantic -std=gnu99
 LIBS = -lsundials_cvode -lsundials_nvecserial -lsundials_ida -lm
 OBJ = main.o scoreFunctions.o model.o data.o optim.o $(IOBJ)
 SOBJ = $(LIBDIR)/libplsa-serial.so
@@ -39,21 +40,21 @@ lsa.mpi: $(OBJ) $(POBJ)
 
 # Generated
 model.o: $(GDIR)/model.c $(GDIR)/model.h
-	gcc -c $(GDIR)/model.c
+	gcc $(FLAGS) -c $(GDIR)/model.c
 
 data.o: $(GDIR)/data.c $(GDIR)/data.h
-	gcc -Wall -c $(GDIR)/data.c
+	gcc $(FLAGS) -c $(GDIR)/data.c
 
 optim.o: $(GDIR)/optim.c $(GDIR)/optim.h
-	gcc -Wall -c $(GDIR)/optim.c
+	gcc $(FLAGS) -c $(GDIR)/optim.c
 
 
 #Other ones
 main.o:	$(SRCDIR)/main.c
-	gcc -Wall -c $(SRCDIR)/main.c
+	gcc $(FLAGS) -c $(SRCDIR)/main.c
 
 scoreFunctions.o: $(SRCDIR)/scoreFunctions.c $(SRCDIR)/scoreFunctions.h
-	gcc -Wall -c $(SRCDIR)/scoreFunctions.c
+	gcc $(FLAGS) -c $(SRCDIR)/scoreFunctions.c
 
 
 # clean

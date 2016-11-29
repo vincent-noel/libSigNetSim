@@ -16,7 +16,7 @@
 SRCDIR = src
 LIBDIR = lib
 
-FLAGS = -Wall -Werror -fPIC -pedantic
+FLAGS = -Wall -Werror -fPIC -pedantic -std=gnu99
 LIBS = -lsundials_cvode -lsundials_nvecserial -lsundials_ida -lm
 
 IOBJ = shared.o events.o ode.o dae.o integrate.o realtype_math.o

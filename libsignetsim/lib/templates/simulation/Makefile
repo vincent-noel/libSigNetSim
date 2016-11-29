@@ -19,7 +19,7 @@ SRCDIR = src
 LIBDIR = lib
 
 IDIR = $(SRCDIR)/integrate
-
+FLAGS = $(FLAGS) -Werror -pedantic -std=gnu99
 LIBS = -lsundials_cvode -lsundials_nvecserial -lsundials_ida -lm
 IOBJ = $(LIBDIR)/integrate.so
 OBJ = model.o data.o $(IOBJ)
@@ -38,18 +38,18 @@ sim-parallel: $(OBJ) $(POBJ)
 
 # Generated
 model.o: $(SRCDIR)/model.c $(SRCDIR)/model.h
-	gcc -c $(SRCDIR)/model.c
+	gcc $(FLAGS) -c $(SRCDIR)/model.c
 
 data.o: $(SRCDIR)/data.c $(SRCDIR)/data.h
-	gcc -Wall -c $(SRCDIR)/data.c
+	gcc $(FLAGS) -c $(SRCDIR)/data.c
 
 
 #Main
 main-serial.o:	$(SRCDIR)/main.c
-	gcc -Wall -c $(SRCDIR)/main.c -o main-serial.o
+	gcc $(FLAGS) -c $(SRCDIR)/main.c -o main-serial.o
 
 main-parallel.o:	$(SRCDIR)/main.c
-	mpicc -Wall -DMPI -c $(SRCDIR)/main.c -o main-parallel.o
+	mpicc $(FLAGS) -DMPI -c $(SRCDIR)/main.c -o main-parallel.o
 
 # clean
 clean:
