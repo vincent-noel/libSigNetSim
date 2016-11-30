@@ -27,30 +27,30 @@ from libsbml import formulaToString
 from libsignetsim.settings.Settings import Settings
 
 class Constraint(object):
-    """ Constraint definition """
+	""" Constraint definition """
 
-    def __init__ (self, model, obj_id):
+	def __init__ (self, model, obj_id):
 
-        self.model = model
-        self.objId = obj_id
-        self.sbmlId = None
+		self.model = model
+		self.objId = obj_id
+		self.sbmlId = None
 
-        self.math = None
-        self.message = None
-
-
-    def readSbml(self, constraint, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-        """ Reads constraint from a sbml file """
-
-        self.sbmlId = constraint.getId()
-        self.math = formulaToString(constraint.getMath())
-        self.message = constraint.getMessage()
+		self.math = None
+		self.message = None
 
 
-    def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-        """ Writes constraint to a sbml file """
+	def readSbml(self, constraint, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+		""" Reads constraint from a sbml file """
 
-        sbml_constraint = sbml_model.createConstraint()
-        sbml_constraint.setId(self.sbmlId)
-        sbml_constraint.setMath(self.math)
-        sbml_constraint.setMessage(self.message)
+		self.sbmlId = constraint.getId()
+		self.math = formulaToString(constraint.getMath())
+		self.message = constraint.getMessage()
+
+
+	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+		""" Writes constraint to a sbml file """
+
+		sbml_constraint = sbml_model.createConstraint()
+		sbml_constraint.setId(self.sbmlId)
+		sbml_constraint.setMath(self.math)
+		sbml_constraint.setMessage(self.message)

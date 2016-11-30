@@ -29,72 +29,72 @@ from libsignetsim.settings.Settings import Settings
 
 class SbmlExternalModelDefinition(HasId, SbmlObject):
 
-    def __init__(self, model, obj_id):
+	def __init__(self, model, obj_id):
 
-        self.__model = model
+		self.__model = model
 
-        self.objId = obj_id
+		self.objId = obj_id
 
-        HasId.__init__(self, model)
-        SbmlObject.__init__(self, model)
-        self.__modelRef = None
+		HasId.__init__(self, model)
+		SbmlObject.__init__(self, model)
+		self.__modelRef = None
 
-        self.__source = None
-        self.modelDefinition = None #Model(obj_id=self.objId, parent_doc=self.__model.parentDoc)
-
-
-
-    def readSbml(self, sbml_model_definition,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-
-        HasId.readSbml(self, sbml_model_definition, sbml_level, sbml_version)
-        SbmlObject.readSbml(self, sbml_model_definition, sbml_level, sbml_version)
-
-        if sbml_model_definition.isSetModelRef():
-            self.__modelRef = sbml_model_definition.getModelRef()
-
-        if sbml_model_definition.isSetSource():
-            self.__source = sbml_model_definition.getSource()
-
-
-        from libsignetsim.model.SbmlExternalDocument import SbmlExternalDocument
-        t_document = SbmlExternalDocument(path=self.__model.parentDoc.documentPath)
-        t_document.readSbml(self.__source)
-
-        if self.__modelRef is not None:
-            self.modelDefinition = t_document.getSubmodel(self.__modelRef).modelDefinition
-        else:
-            self.modelDefinition = t_document.model
+		self.__source = None
+		self.modelDefinition = None #Model(obj_id=self.objId, parent_doc=self.__model.parentDoc)
 
 
 
-    def writeSbml(self, sbml_model_definition,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
+	def readSbml(self, sbml_model_definition,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
 
-        HasId.writeSbml(self, sbml_model_definition, sbml_level, sbml_version)
+		HasId.readSbml(self, sbml_model_definition, sbml_level, sbml_version)
+		SbmlObject.readSbml(self, sbml_model_definition, sbml_level, sbml_version)
 
-        if self.__modelRef is not None:
-            sbml_model_definition.setModelRef(self.__modelRef)
+		if sbml_model_definition.isSetModelRef():
+			self.__modelRef = sbml_model_definition.getModelRef()
 
-        if self.__source is not None:
-            sbml_model_definition.setSource(self.__source)
-
-        SbmlObject.writeSbml(self, sbml_model_definition, sbml_level, sbml_version)
-
-    def getSource(self):
-        return self.__source
-
-    def setSource(self, source):
-        self.__source = source
+		if sbml_model_definition.isSetSource():
+			self.__source = sbml_model_definition.getSource()
 
 
-    def hasModelRef(self):
-        return self.__modelRef is not None
+		from libsignetsim.model.SbmlExternalDocument import SbmlExternalDocument
+		t_document = SbmlExternalDocument(path=self.__model.parentDoc.documentPath)
+		t_document.readSbml(self.__source)
 
-    def getModelRef(self):
-        return self.__modelRef
+		if self.__modelRef is not None:
+			self.modelDefinition = t_document.getSubmodel(self.__modelRef).modelDefinition
+		else:
+			self.modelDefinition = t_document.model
 
-    def setModelRef(self, model_ref):
-        self.__modelRef = model_ref
+
+
+	def writeSbml(self, sbml_model_definition,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+
+		HasId.writeSbml(self, sbml_model_definition, sbml_level, sbml_version)
+
+		if self.__modelRef is not None:
+			sbml_model_definition.setModelRef(self.__modelRef)
+
+		if self.__source is not None:
+			sbml_model_definition.setSource(self.__source)
+
+		SbmlObject.writeSbml(self, sbml_model_definition, sbml_level, sbml_version)
+
+	def getSource(self):
+		return self.__source
+
+	def setSource(self, source):
+		self.__source = source
+
+
+	def hasModelRef(self):
+		return self.__modelRef is not None
+
+	def getModelRef(self):
+		return self.__modelRef
+
+	def setModelRef(self, model_ref):
+		self.__modelRef = model_ref

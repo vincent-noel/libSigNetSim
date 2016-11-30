@@ -25,31 +25,31 @@
 
 class ModelException(Exception):
 
-    FILE_ERROR  =   0
-    SBML_ERROR  =   1
-    MATH_ERROR  =   2
+	FILE_ERROR  =   0
+	SBML_ERROR  =   1
+	MATH_ERROR  =   2
 
-    def __init__(self, value, message):
+	def __init__(self, value, message):
 
-        self.value = value
-        self.message = message
+		self.value = value
+		self.message = message
 
-        def __str__(self):
-            return "%d : %s" % (self.value, self.message)
+		def __str__(self):
+			return "%d : %s" % (self.value, self.message)
 
 class MissingModelException(Exception):
 
-    def __init__(self, filename):
-        self.filename = filename
+	def __init__(self, filename):
+		self.filename = filename
 
-    def __str__(self):
-        return self.filename
+	def __str__(self):
+		return self.filename
 
 
 class MissingSubmodelException(Exception):
 
-    def __init__(self, filename):
-        self.filename = filename
+	def __init__(self, filename):
+		self.filename = filename
 
-    def __str__(self):
-        return self.filename
+	def __str__(self):
+		return self.filename

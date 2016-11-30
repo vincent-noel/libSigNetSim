@@ -30,112 +30,112 @@ from libsignetsim.model.sbmlobject.SbmlReplacedBy import SbmlReplacedBy
 
 class HasReplacedElements(object):
 
-    def __init__ (self, model):
+	def __init__ (self, model):
 
 
-        self.__model = model
+		self.__model = model
 
-        self.__hasReplacedElements = False
-        self.__hasReplacedBy = False
-        self.__listOfReplacedElements = None
-        self.__replacedBy = None
-
-
-    def readSbml(self, sbml_object,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-
-        """ Reads a parameter from a sbml file """
-
-        if self.__model.parentDoc.useCompPackage:
+		self.__hasReplacedElements = False
+		self.__hasReplacedBy = False
+		self.__listOfReplacedElements = None
+		self.__replacedBy = None
 
 
-            t_object = sbml_object.getPlugin("comp")
+	def readSbml(self, sbml_object,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
 
-            if t_object.getNumReplacedElements() > 0:
-                self.__hasReplacedElements = True
-                self.__listOfReplacedElements = ListOfReplacedElements(self.__model, self)
-                self.__listOfReplacedElements.readSbml(
-                        t_object.getListOfReplacedElements(),
-                        sbml_level, sbml_version)
+		""" Reads a parameter from a sbml file """
 
-
-            if t_object.isSetReplacedBy():
-                self.__hasReplacedBy = True
-                self.__replacedBy = SbmlReplacedBy(self.__model, self)
-                self.__replacedBy.readSbml(
-                        t_object.getReplacedBy(),
-                        sbml_level, sbml_version)
+		if self.__model.parentDoc.useCompPackage:
 
 
-    def writeSbml(self, sbml_object,
-                        sbml_level=Settings.defaultSbmlLevel,
-                        sbml_version=Settings.defaultSbmlVersion):
+			t_object = sbml_object.getPlugin("comp")
 
-        """ Writes a parameter to  a sbml file """
-
-        if self.__hasReplacedElements:
-            self.__listOfReplacedElements.writeSbml(sbml_object.getPlugin("comp"), sbml_level, sbml_version)
-
-        if self.__hasReplacedBy:
-            self.__replacedBy.writeSbml(sbml_object.getPlugin("comp"), sbml_level, sbml_version)
-
-    def isModified(self):
-        return False
+			if t_object.getNumReplacedElements() > 0:
+				self.__hasReplacedElements = True
+				self.__listOfReplacedElements = ListOfReplacedElements(self.__model, self)
+				self.__listOfReplacedElements.readSbml(
+						t_object.getListOfReplacedElements(),
+						sbml_level, sbml_version)
 
 
-    def hasReplacedElements(self):
-        return self.__hasReplacedElements
-
-    def getReplacedElements(self):
-        if self.hasReplacedElements():
-            return self.__listOfReplacedElements.values()
-
-    def getListOfReplacedElements(self):
-        if self.hasReplacedElements():
-            return self.__listOfReplacedElements
-
-    def addReplacedElement(self):
-        if not self.hasReplacedElements():
-            self.__hasReplacedElements = True
-            self.__listOfReplacedElements = ListOfReplacedElements(self.__model, self)
-        return self.__listOfReplacedElements.new()
-
-    def removeReplacedElement(self, re_object):
-
-        t_replaced_element = self.__listOfReplacedElements.getByReplacedElementObject(re_object)
-        if t_replaced_element is not None:
-            self.__listOfReplacedElements.remove(t_replaced_element)
-            if len(self.__listOfReplacedElements) == 0:
-                self.__hasReplacedElements = False
-                self.__listOfReplacedElements = None
+			if t_object.isSetReplacedBy():
+				self.__hasReplacedBy = True
+				self.__replacedBy = SbmlReplacedBy(self.__model, self)
+				self.__replacedBy.readSbml(
+						t_object.getReplacedBy(),
+						sbml_level, sbml_version)
 
 
-    def isReplaced(self):
-        return self.__hasReplacedBy
+	def writeSbml(self, sbml_object,
+						sbml_level=Settings.defaultSbmlLevel,
+						sbml_version=Settings.defaultSbmlVersion):
 
-    def isReplacedBy(self):
-        if self.isReplaced():
-            return self.__replacedBy
+		""" Writes a parameter to  a sbml file """
 
-    def getReplacedBy(self):
-        if not self.isReplaced():
-            self.__hasReplacedBy = True
-            self.__replacedBy = SbmlReplacedBy(self.__model, self)
+		if self.__hasReplacedElements:
+			self.__listOfReplacedElements.writeSbml(sbml_object.getPlugin("comp"), sbml_level, sbml_version)
 
-        return self.__replacedBy
+		if self.__hasReplacedBy:
+			self.__replacedBy.writeSbml(sbml_object.getPlugin("comp"), sbml_level, sbml_version)
 
-    def unsetReplacedBy(self):
-        self.__hasReplacedBy = False
-        self.__replacedBy = None
+	def isModified(self):
+		return False
 
 
-    def copy(self, obj, prefix="", shift=0):
+	def hasReplacedElements(self):
+		return self.__hasReplacedElements
 
-        if obj.hasReplacedElements():
-            self.__listOfReplacedElements = ListOfReplacedElements(self.__model, self)
-            self.__listOfReplacedElements.copy(obj.getListOfReplacedElements(), prefix, shift)
+	def getReplacedElements(self):
+		if self.hasReplacedElements():
+			return self.__listOfReplacedElements.values()
 
-        if obj.isReplaced():
-            self.__replacedBy = SbmlReplacedBy(self.__model, self)
-            self.__replacedBy.copy(obj.isReplacedBy(), prefix, shift)
+	def getListOfReplacedElements(self):
+		if self.hasReplacedElements():
+			return self.__listOfReplacedElements
+
+	def addReplacedElement(self):
+		if not self.hasReplacedElements():
+			self.__hasReplacedElements = True
+			self.__listOfReplacedElements = ListOfReplacedElements(self.__model, self)
+		return self.__listOfReplacedElements.new()
+
+	def removeReplacedElement(self, re_object):
+
+		t_replaced_element = self.__listOfReplacedElements.getByReplacedElementObject(re_object)
+		if t_replaced_element is not None:
+			self.__listOfReplacedElements.remove(t_replaced_element)
+			if len(self.__listOfReplacedElements) == 0:
+				self.__hasReplacedElements = False
+				self.__listOfReplacedElements = None
+
+
+	def isReplaced(self):
+		return self.__hasReplacedBy
+
+	def isReplacedBy(self):
+		if self.isReplaced():
+			return self.__replacedBy
+
+	def getReplacedBy(self):
+		if not self.isReplaced():
+			self.__hasReplacedBy = True
+			self.__replacedBy = SbmlReplacedBy(self.__model, self)
+
+		return self.__replacedBy
+
+	def unsetReplacedBy(self):
+		self.__hasReplacedBy = False
+		self.__replacedBy = None
+
+
+	def copy(self, obj, prefix="", shift=0):
+
+		if obj.hasReplacedElements():
+			self.__listOfReplacedElements = ListOfReplacedElements(self.__model, self)
+			self.__listOfReplacedElements.copy(obj.getListOfReplacedElements(), prefix, shift)
+
+		if obj.isReplaced():
+			self.__replacedBy = SbmlReplacedBy(self.__model, self)
+			self.__replacedBy.copy(obj.isReplacedBy(), prefix, shift)

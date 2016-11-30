@@ -29,159 +29,159 @@ from libsignetsim.settings.Settings import Settings
 
 class OptimizationParameters(object):
 
-    def __init__ (self, workingModel=None, parameters_to_fit=None):
+	def __init__ (self, workingModel=None, parameters_to_fit=None):
 
-        self.workingModel = workingModel
+		self.workingModel = workingModel
 
-        self.constantsToFit = []
-        self.constantsLowerBound = []
-        self.constantsUpperBound = []
+		self.constantsToFit = []
+		self.constantsLowerBound = []
+		self.constantsUpperBound = []
 
-        self.initialValuesToFit_v2 = []
-        self.initialValues_v2LowerBound = []
-        self.initialValues_v2UpperBound = []
+		self.initialValuesToFit_v2 = []
+		self.initialValues_v2LowerBound = []
+		self.initialValues_v2UpperBound = []
 
-        if parameters_to_fit is not None:
-            self.readParametersToFit(parameters_to_fit)
+		if parameters_to_fit is not None:
+			self.readParametersToFit(parameters_to_fit)
 
-        else:
-            self.defaultParametersToFit()
-
-
-    def defaultParametersToFit(self):
-
-        for parameter in self.workingModel.listOfParameters.values():
-            # if parameter.isConstant():
-            self.constantsToFit.append((2, parameter.objId))
-
-        for reaction in self.workingModel.listOfReactions.values():
-            for local_parameter in reaction.listOfLocalParameters.values():
-                self.constantsToFit.append((3, (reaction.objId, local_parameter.objId)))
+		else:
+			self.defaultParametersToFit()
 
 
-        self.constantsLowerBound = [Settings.optimizationDefaultConstantLowerBound for _ in range(0, len(self.constantsToFit))]
-        self.constantsUpperBound = [Settings.optimizationDefaultConstantUpperBound for _ in range(0, len(self.constantsToFit))]
-        self.initialValues_v2LowerBound = [Settings.optimizationDefaultInitialValueLowerBound for _ in range(0, len(self.initialValuesToFit_v2))]
-        self.initialValues_v2UpperBound = [Settings.optimizationDefaultInitialValueUpperBound for _ in range(0, len(self.initialValuesToFit_v2))]
+	def defaultParametersToFit(self):
+
+		for parameter in self.workingModel.listOfParameters.values():
+			# if parameter.isConstant():
+			self.constantsToFit.append((2, parameter.objId))
+
+		for reaction in self.workingModel.listOfReactions.values():
+			for local_parameter in reaction.listOfLocalParameters.values():
+				self.constantsToFit.append((3, (reaction.objId, local_parameter.objId)))
 
 
-    def readParametersToFit(self, parameters_to_fit):
-
-        for parameter in parameters_to_fit:
-
-            (parameter_reaction,
-                parameter_objid,
-                parameter_active,
-                parameter_name,
-                parameter_value,
-                parameter_min,
-                parameter_max) = parameter
-
-            if parameter_active:
-                if parameter_reaction == None :
-                    self.constantsToFit.append((2, parameter_objid))
-                else:
-                    self.constantsToFit.append((3, (parameter_reaction, parameter_objid)))
-
-                self.constantsLowerBound.append(parameter_min)
-                self.constantsUpperBound.append(parameter_max)
+		self.constantsLowerBound = [Settings.optimizationDefaultConstantLowerBound for _ in range(0, len(self.constantsToFit))]
+		self.constantsUpperBound = [Settings.optimizationDefaultConstantUpperBound for _ in range(0, len(self.constantsToFit))]
+		self.initialValues_v2LowerBound = [Settings.optimizationDefaultInitialValueLowerBound for _ in range(0, len(self.initialValuesToFit_v2))]
+		self.initialValues_v2UpperBound = [Settings.optimizationDefaultInitialValueUpperBound for _ in range(0, len(self.initialValuesToFit_v2))]
 
 
-    def writeOptimizationInput(self):
+	def readParametersToFit(self, parameters_to_fit):
 
-        f_input = open(join(self.getTempDirectory(), "fit_input"), 'w')
+		for parameter in parameters_to_fit:
 
-        if len(self.constantsToFit) > 0:
-            f_input.write("[constants]\n")
-            for (i_constant, (type_constant, constant)) in enumerate(self.constantsToFit):
-                if type_constant == 0:
-                    t_compartment = self.workingModel.listOfCompartments[constant]
-                    f_input.write(str(t_compartment.ind)
-                                  + "\t" + str(t_compartment.getValue())
-                                  + "\t" + str(self.constantsLowerBound[i_constant])
-                                  + "\t" + str(self.constantsUpperBound[i_constant])
-                                  + "\n")
-                if type_constant == 1:
-                    t_species = self.workingModel.listOfSpecies[constant]
-                    f_input.write(str(t_species.ind)
-                                  + "\t" + str(t_species.getValue())
-                                  + "\t" + str(self.constantsLowerBound[i_constant])
-                                  + "\t" + str(self.constantsUpperBound[i_constant])
-                                  + "\n")
-                if type_constant == 2:
-                    t_parameter = self.workingModel.listOfParameters[constant]
-                    f_input.write(str(t_parameter.ind)
-                                  + "\t" + str(t_parameter.getValue())
-                                  + "\t" + str(self.constantsLowerBound[i_constant])
-                                  + "\t" + str(self.constantsUpperBound[i_constant])
-                                  + "\n")
-                if type_constant == 3:
-                    (r_obj_id, lp_obj_id) = constant
-                    t_local_parameter = self.workingModel.listOfReactions[r_obj_id].listOfLocalParameters[lp_obj_id]
-                    f_input.write(str(t_local_parameter.ind)
-                                  + "\t" + str(t_local_parameter.getValue())
-                                  + "\t" + str(self.constantsLowerBound[i_constant])
-                                  + "\t" + str(self.constantsUpperBound[i_constant])
-                                  + "\n")
+			(parameter_reaction,
+				parameter_objid,
+				parameter_active,
+				parameter_name,
+				parameter_value,
+				parameter_min,
+				parameter_max) = parameter
 
-        if len(self.initialValuesToFit_v2) > 0:
-            f_input.write("[initial_values]\n")
-            for i_initial_value, (type_initial_value, initial_value) in enumerate(self.initialValuesToFit_v2):
-                if type_initial_value == 0:
-                    t_compartment = self.workingModel.listOfCompartments[initial_value]
-                    f_input.write(str(t_compartment.ind)
-                                  + "\t" + str(t_compartment.getValue())
-                                  + "\t" + str(self.initialValues_v2LowerBound[i_constant])
-                                  + "\t" + str(self.initialValues_v2UpperBound[i_constant])
-                                  + "\n")
-                if type_initial_value == 1:
-                    t_species = self.workingModel.listOfSpecies[initial_value]
-                    f_input.write(str(t_species.ind)
-                                  + "\t" + str(t_species.getValue())
-                                  + "\t" + str(self.initialValues_v2LowerBound[i_constant])
-                                  + "\t" + str(self.initialValues_v2UpperBound[i_constant])
-                                  + "\n")
-                if type_initial_value == 2:
-                    t_parameter = self.workingModel.listOfParameters[initial_value]
-                    f_input.write(str(t_parameter.ind)
-                                  + "\t" + str(t_parameter.getValue())
-                                  + "\t" + str(self.initialValues_v2LowerBound[i_constant])
-                                  + "\t" + str(self.initialValues_v2UpperBound[i_constant])
-                                  + "\n")
+			if parameter_active:
+				if parameter_reaction == None :
+					self.constantsToFit.append((2, parameter_objid))
+				else:
+					self.constantsToFit.append((3, (parameter_reaction, parameter_objid)))
 
-        f_input.close()
+				self.constantsLowerBound.append(parameter_min)
+				self.constantsUpperBound.append(parameter_max)
 
-    def readOptimizationOutput(self):
 
-        f_optimized_parameters = open(join(self.getTempDirectory(), "fit_output"), 'r')
-        now_reading = 0
-        for line in f_optimized_parameters:
-            # Comments
-            if line.startswith("#"):
-                pass
+	def writeOptimizationInput(self):
 
-            # Empty line
-            elif not line.strip():
-                pass
+		f_input = open(join(self.getTempDirectory(), "fit_input"), 'w')
 
-            # Parameter_label
-            elif line.strip() == "[constants]":
-                now_reading = 1
-            elif line.strip() == "[initial_values]":
-                now_reading = 2
-            else:
+		if len(self.constantsToFit) > 0:
+			f_input.write("[constants]\n")
+			for (i_constant, (type_constant, constant)) in enumerate(self.constantsToFit):
+				if type_constant == 0:
+					t_compartment = self.workingModel.listOfCompartments[constant]
+					f_input.write(str(t_compartment.ind)
+								  + "\t" + str(t_compartment.getValue())
+								  + "\t" + str(self.constantsLowerBound[i_constant])
+								  + "\t" + str(self.constantsUpperBound[i_constant])
+								  + "\n")
+				if type_constant == 1:
+					t_species = self.workingModel.listOfSpecies[constant]
+					f_input.write(str(t_species.ind)
+								  + "\t" + str(t_species.getValue())
+								  + "\t" + str(self.constantsLowerBound[i_constant])
+								  + "\t" + str(self.constantsUpperBound[i_constant])
+								  + "\n")
+				if type_constant == 2:
+					t_parameter = self.workingModel.listOfParameters[constant]
+					f_input.write(str(t_parameter.ind)
+								  + "\t" + str(t_parameter.getValue())
+								  + "\t" + str(self.constantsLowerBound[i_constant])
+								  + "\t" + str(self.constantsUpperBound[i_constant])
+								  + "\n")
+				if type_constant == 3:
+					(r_obj_id, lp_obj_id) = constant
+					t_local_parameter = self.workingModel.listOfReactions[r_obj_id].listOfLocalParameters[lp_obj_id]
+					f_input.write(str(t_local_parameter.ind)
+								  + "\t" + str(t_local_parameter.getValue())
+								  + "\t" + str(self.constantsLowerBound[i_constant])
+								  + "\t" + str(self.constantsUpperBound[i_constant])
+								  + "\n")
 
-                data = line.strip().split()
-                if now_reading == 1:
-                    t_ind = int(data[0])
-                    t_value = float(data[1])
+		if len(self.initialValuesToFit_v2) > 0:
+			f_input.write("[initial_values]\n")
+			for i_initial_value, (type_initial_value, initial_value) in enumerate(self.initialValuesToFit_v2):
+				if type_initial_value == 0:
+					t_compartment = self.workingModel.listOfCompartments[initial_value]
+					f_input.write(str(t_compartment.ind)
+								  + "\t" + str(t_compartment.getValue())
+								  + "\t" + str(self.initialValues_v2LowerBound[i_constant])
+								  + "\t" + str(self.initialValues_v2UpperBound[i_constant])
+								  + "\n")
+				if type_initial_value == 1:
+					t_species = self.workingModel.listOfSpecies[initial_value]
+					f_input.write(str(t_species.ind)
+								  + "\t" + str(t_species.getValue())
+								  + "\t" + str(self.initialValues_v2LowerBound[i_constant])
+								  + "\t" + str(self.initialValues_v2UpperBound[i_constant])
+								  + "\n")
+				if type_initial_value == 2:
+					t_parameter = self.workingModel.listOfParameters[initial_value]
+					f_input.write(str(t_parameter.ind)
+								  + "\t" + str(t_parameter.getValue())
+								  + "\t" + str(self.initialValues_v2LowerBound[i_constant])
+								  + "\t" + str(self.initialValues_v2UpperBound[i_constant])
+								  + "\n")
 
-                    self.workingModel.variablesConstant[t_ind].setValue(t_value)
+		f_input.close()
 
-                elif now_reading == 2:
-                    t_ind = int(data[0])
-                    t_value = float(data[1])
+	def readOptimizationOutput(self):
 
-                    self.initialValuesToFit_v2[t_ind].setValue(t_value)
+		f_optimized_parameters = open(join(self.getTempDirectory(), "fit_output"), 'r')
+		now_reading = 0
+		for line in f_optimized_parameters:
+			# Comments
+			if line.startswith("#"):
+				pass
 
-        f_optimized_parameters.close()
+			# Empty line
+			elif not line.strip():
+				pass
+
+			# Parameter_label
+			elif line.strip() == "[constants]":
+				now_reading = 1
+			elif line.strip() == "[initial_values]":
+				now_reading = 2
+			else:
+
+				data = line.strip().split()
+				if now_reading == 1:
+					t_ind = int(data[0])
+					t_value = float(data[1])
+
+					self.workingModel.variablesConstant[t_ind].setValue(t_value)
+
+				elif now_reading == 2:
+					t_ind = int(data[0])
+					t_value = float(data[1])
+
+					self.initialValuesToFit_v2[t_ind].setValue(t_value)
+
+		f_optimized_parameters.close()

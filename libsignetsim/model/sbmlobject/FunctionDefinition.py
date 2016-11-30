@@ -29,37 +29,37 @@ from libsignetsim.model.sbmlobject.SbmlObject import SbmlObject
 from libsignetsim.settings.Settings import Settings
 
 class FunctionDefinition(HasId, SbmlObject, MathFunctionDefinition):
-    """ Function definition definition """
+	""" Function definition definition """
 
-    def __init__ (self, model, obj_id):
+	def __init__ (self, model, obj_id):
 
-        self.__model = model
-        self.objId = obj_id
+		self.__model = model
+		self.objId = obj_id
 
-        HasId.__init__(self, model)
-        SbmlObject.__init__(self, model)
-        MathFunctionDefinition.__init__(self, model)
-
-
-    def readSbml(self, sbml_function_definition, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-        """ Reads a function definition from a sbml file """
-
-        HasId.readSbml(self, sbml_function_definition, sbml_level, sbml_version)
-        SbmlObject.readSbml(self, sbml_function_definition, sbml_level, sbml_version)
-        MathFunctionDefinition.readSbml(self, sbml_function_definition, sbml_level, sbml_version)
+		HasId.__init__(self, model)
+		SbmlObject.__init__(self, model)
+		MathFunctionDefinition.__init__(self, model)
 
 
-    def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-        """ Writes a function definition to a sbml file """
+	def readSbml(self, sbml_function_definition, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+		""" Reads a function definition from a sbml file """
 
-        t_function_definition = sbml_model.createFunctionDefinition()
-
-        HasId.writeSbml(self, t_function_definition, sbml_level, sbml_version)
-        SbmlObject.writeSbml(self, t_function_definition, sbml_level, sbml_version)
-        MathFunctionDefinition.writeSbml(self, t_function_definition, sbml_level, sbml_version)
+		HasId.readSbml(self, sbml_function_definition, sbml_level, sbml_version)
+		SbmlObject.readSbml(self, sbml_function_definition, sbml_level, sbml_version)
+		MathFunctionDefinition.readSbml(self, sbml_function_definition, sbml_level, sbml_version)
 
 
-    def copy(self, obj, prefix="", shift=0):
-        HasId.copy(self, obj, prefix, shift)
-        SbmlObject.copy(self, obj, prefix, shift)
-        MathFunctionDefinition.copy(self, obj, prefix, shift)
+	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+		""" Writes a function definition to a sbml file """
+
+		t_function_definition = sbml_model.createFunctionDefinition()
+
+		HasId.writeSbml(self, t_function_definition, sbml_level, sbml_version)
+		SbmlObject.writeSbml(self, t_function_definition, sbml_level, sbml_version)
+		MathFunctionDefinition.writeSbml(self, t_function_definition, sbml_level, sbml_version)
+
+
+	def copy(self, obj, prefix="", shift=0):
+		HasId.copy(self, obj, prefix, shift)
+		SbmlObject.copy(self, obj, prefix, shift)
+		MathFunctionDefinition.copy(self, obj, prefix, shift)

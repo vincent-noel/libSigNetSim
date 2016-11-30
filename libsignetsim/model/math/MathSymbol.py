@@ -26,71 +26,71 @@
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.sympy_shortcuts import  (
-    SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
-    SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
-    SympyInf, SympyNan, SympyAdd, SympyMul, SympyPow,
-    SympyFunction, SympyUndefinedFunction, SympyLambda, SympyDerivative,
-    SympyCeiling, SympyFloor, SympyAbs, SympyLog, SympyExp, SympyPiecewise,
-    SympyFactorial, SympyRoot, SympyAcos, SympyAsin, SympyAtan, SympyAcosh,
-    SympyAsinh, SympyAtanh, SympyCos, SympySin, SympyTan, SympyAcot,
-    SympyAcoth, SympyCosh, SympySinh, SympyTanh, SympySec, SympyCsc,
-    SympyCot, SympyCoth, SympyAcsc, SympyAsec,
-    SympyEqual, SympyUnequal, SympyGreaterThan, SympyLessThan,
-    SympyStrictGreaterThan, SympyStrictLessThan,
-    SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
-    SympyMax, SympyMin)
+	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
+	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
+	SympyInf, SympyNan, SympyAdd, SympyMul, SympyPow,
+	SympyFunction, SympyUndefinedFunction, SympyLambda, SympyDerivative,
+	SympyCeiling, SympyFloor, SympyAbs, SympyLog, SympyExp, SympyPiecewise,
+	SympyFactorial, SympyRoot, SympyAcos, SympyAsin, SympyAtan, SympyAcosh,
+	SympyAsinh, SympyAtanh, SympyCos, SympySin, SympyTan, SympyAcot,
+	SympyAcoth, SympyCosh, SympySinh, SympyTanh, SympySec, SympyCsc,
+	SympyCot, SympyCoth, SympyAcsc, SympyAsec,
+	SympyEqual, SympyUnequal, SympyGreaterThan, SympyLessThan,
+	SympyStrictGreaterThan, SympyStrictLessThan,
+	SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
+	SympyMax, SympyMin)
 
 
 
 
 class MathSymbol(MathFormula):
 
-    def __init__(self, model, is_from_reaction=None):
+	def __init__(self, model, is_from_reaction=None):
 
-        self.__model = model
-        MathFormula.__init__(self, model, MathFormula.MATH_VARIABLE, isFromReaction=is_from_reaction)
-
-
-    def getInternalMathFormula(self, forcedConcentration=False, developped=True):
-
-        t_formula = MathFormula.getInternalMathFormula(self)
-
-        if t_formula is not None and forcedConcentration:
-            t_formula = SympySymbol("_speciesForcedConcentration_%s_" % str(t_formula))
-
-        if t_formula is not None and developped:
-            t_formula = self.translateForDeveloppedInternal(t_formula)
-
-        return t_formula
+		self.__model = model
+		MathFormula.__init__(self, model, MathFormula.MATH_VARIABLE, isFromReaction=is_from_reaction)
 
 
-    def setInternalVariable(self, internal_variable):
-        MathFormula.setInternalMathFormula(self, internal_variable)
+	def getInternalMathFormula(self, forcedConcentration=False, developped=True):
 
-    def getMathFormulaDerivative(self, math_type):
+		t_formula = MathFormula.getInternalMathFormula(self)
 
-        if math_type in [MathFormula.MATH_INTERNAL, MathFormula.MATH_DEVINTERNAL, MathFormula.MATH_FINALINTERNAL]:
-            f = MathFormula.getMathFormula(self, math_type)
-            return SympyDerivative(f, MathFormula.t)
+		if t_formula is not None and forcedConcentration:
+			t_formula = SympySymbol("_speciesForcedConcentration_%s_" % str(t_formula))
 
+		if t_formula is not None and developped:
+			t_formula = self.translateForDeveloppedInternal(t_formula)
 
-    def getInternalMathFormulaDerivative(self):
-        return self.getMathFormulaDerivative(MathFormula.MATH_INTERNAL)
-
-    def getSbmlMathFormula(self, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-        return MathFormula.getMathFormula(self, self.MATH_SBML)
-
-    def getFinalMathFormula(self, forcedConcentration=False):
-        if self.isFromReaction is not None:
-            t_formula = MathFormula.getInternalMathFormula(self)
-            t_math = MathFormula(self.__model)
-            t_symbol = MathFormula.getInternalMathFormula(self)
-            t_new_symbol = SympySymbol(MathFormula.getSbmlMathFormula(self).getName())
-            t_math.setInternalMathFormula(t_formula.subs({t_symbol: t_new_symbol}))
-            return t_math.getFinalMathFormula(forcedConcentration=True)
-        else:
-            return MathFormula.getFinalMathFormula(self,forcedConcentration=True)
+		return t_formula
 
 
-    def readUI(self, sbml_id):
-        MathFormula.setValueMathFormula(self, sbml_id)
+	def setInternalVariable(self, internal_variable):
+		MathFormula.setInternalMathFormula(self, internal_variable)
+
+	def getMathFormulaDerivative(self, math_type):
+
+		if math_type in [MathFormula.MATH_INTERNAL, MathFormula.MATH_DEVINTERNAL, MathFormula.MATH_FINALINTERNAL]:
+			f = MathFormula.getMathFormula(self, math_type)
+			return SympyDerivative(f, MathFormula.t)
+
+
+	def getInternalMathFormulaDerivative(self):
+		return self.getMathFormulaDerivative(MathFormula.MATH_INTERNAL)
+
+	def getSbmlMathFormula(self, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+		return MathFormula.getMathFormula(self, self.MATH_SBML)
+
+	def getFinalMathFormula(self, forcedConcentration=False):
+		if self.isFromReaction is not None:
+			t_formula = MathFormula.getInternalMathFormula(self)
+			t_math = MathFormula(self.__model)
+			t_symbol = MathFormula.getInternalMathFormula(self)
+			t_new_symbol = SympySymbol(MathFormula.getSbmlMathFormula(self).getName())
+			t_math.setInternalMathFormula(t_formula.subs({t_symbol: t_new_symbol}))
+			return t_math.getFinalMathFormula(forcedConcentration=True)
+		else:
+			return MathFormula.getFinalMathFormula(self,forcedConcentration=True)
+
+
+	def readUI(self, sbml_id):
+		MathFormula.setValueMathFormula(self, sbml_id)

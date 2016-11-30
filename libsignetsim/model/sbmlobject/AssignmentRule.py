@@ -30,89 +30,89 @@ from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
 
 from libsbml import SBML_SPECIES_CONCENTRATION_RULE, \
-                    SBML_PARAMETER_RULE, \
-                    SBML_COMPARTMENT_VOLUME_RULE
+					SBML_PARAMETER_RULE, \
+					SBML_COMPARTMENT_VOLUME_RULE
 from sympy import Symbol
 
 class AssignmentRule(Rule, MathAssignmentRule):
 
 
-    def __init__ (self, model, objId):
+	def __init__ (self, model, objId):
 
-        self.__model = model
-        Rule.__init__(self, model, objId, Rule.RULE_ASSIGNMENT)
-        MathAssignmentRule.__init__(self, model)
+		self.__model = model
+		Rule.__init__(self, model, objId, Rule.RULE_ASSIGNMENT)
+		MathAssignmentRule.__init__(self, model)
 
-        self.__var = None
-
-
-    def readSbml(self, sbml_rule, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-
-        Rule.readSbml(self, sbml_rule, sbml_level, sbml_version)
-
-        if self.__model.listOfVariables.containsSbmlId(sbml_rule.getVariable()):
-            self.__var = self.__model.listOfVariables[sbml_rule.getVariable()]
-            self.__var.setRuledBy(self)
-
-        MathAssignmentRule.readSbml(self, sbml_rule, sbml_level, sbml_version)
+		self.__var = None
 
 
-    def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+	def readSbml(self, sbml_rule, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
-        sbml_rule = sbml_model.createAssignmentRule()
+		Rule.readSbml(self, sbml_rule, sbml_level, sbml_version)
 
-        if sbml_level < 2:
-            if self.__var.isSpecies():
-                sbml_rule.setL1TypeCode(SBML_SPECIES_CONCENTRATION_RULE)
-            elif self.__var.isParameter():
-                sbml_rule.setL1TypeCode(SBML_PARAMETER_RULE)
-            elif self.__var.isCompartment():
-                sbml_rule.setL1TypeCode(SBML_COMPARTMENT_VOLUME_RULE)
+		if self.__model.listOfVariables.containsSbmlId(sbml_rule.getVariable()):
+			self.__var = self.__model.listOfVariables[sbml_rule.getVariable()]
+			self.__var.setRuledBy(self)
 
-        Rule.writeSbml(self, sbml_rule, sbml_level, sbml_version)
-        MathAssignmentRule.writeSbml(self, sbml_rule, sbml_level, sbml_version)
+		MathAssignmentRule.readSbml(self, sbml_rule, sbml_level, sbml_version)
 
 
-    def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):
+	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
-        Rule.copy(self, obj, prefix, shift)
+		sbml_rule = sbml_model.createAssignmentRule()
 
-        t_symbol = Symbol(obj.getVariable().getSbmlId())
-        if t_symbol in subs.keys():
-            t_sbml_id = str(subs[t_symbol])
-            tt_symbol = Symbol(t_sbml_id)
-            if tt_symbol in replacements.keys():
-                t_sbml_id = str(replacements[tt_symbol])
-        else:
-            t_sbml_id = prefix+obj.getVariable().getSbmlId()
+		if sbml_level < 2:
+			if self.__var.isSpecies():
+				sbml_rule.setL1TypeCode(SBML_SPECIES_CONCENTRATION_RULE)
+			elif self.__var.isParameter():
+				sbml_rule.setL1TypeCode(SBML_PARAMETER_RULE)
+			elif self.__var.isCompartment():
+				sbml_rule.setL1TypeCode(SBML_COMPARTMENT_VOLUME_RULE)
 
-        self.__var = self.__model.listOfVariables[t_sbml_id]
-        self.__var.setRuledBy(self)
-
-        MathAssignmentRule.copy(self, obj, prefix, shift, subs, deletions, replacements, conversions, time_conversion)
+		Rule.writeSbml(self, sbml_rule, sbml_level, sbml_version)
+		MathAssignmentRule.writeSbml(self, sbml_rule, sbml_level, sbml_version)
 
 
-    def getVariable(self):
-        return self.__var
+	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):
 
-    def getVariableMath(self):
-        return self.variable
+		Rule.copy(self, obj, prefix, shift)
 
-    def setVariable(self, variable):
+		t_symbol = Symbol(obj.getVariable().getSbmlId())
+		if t_symbol in subs.keys():
+			t_sbml_id = str(subs[t_symbol])
+			tt_symbol = Symbol(t_sbml_id)
+			if tt_symbol in replacements.keys():
+				t_sbml_id = str(replacements[tt_symbol])
+		else:
+			t_sbml_id = prefix+obj.getVariable().getSbmlId()
 
-        if self.__var is not None:
-            self.__var.unsetRuledBy()
+		self.__var = self.__model.listOfVariables[t_sbml_id]
+		self.__var.setRuledBy(self)
 
-        self.__var = variable
-        self.__var.setRuledBy(self)
-        self.variable.setInternalVariable(variable.symbol.getInternalMathFormula())
+		MathAssignmentRule.copy(self, obj, prefix, shift, subs, deletions, replacements, conversions, time_conversion)
 
 
-    def getExpression(self):
-        return self.getPrettyPrintDefinition()
+	def getVariable(self):
+		return self.__var
 
-    def getExpressionMath(self):
-        return self.definition
+	def getVariableMath(self):
+		return self.variable
 
-    def setExpression(self, string):
-        self.setPrettyPrintDefinition(string)
+	def setVariable(self, variable):
+
+		if self.__var is not None:
+			self.__var.unsetRuledBy()
+
+		self.__var = variable
+		self.__var.setRuledBy(self)
+		self.variable.setInternalVariable(variable.symbol.getInternalMathFormula())
+
+
+	def getExpression(self):
+		return self.getPrettyPrintDefinition()
+
+	def getExpressionMath(self):
+		return self.definition
+
+	def setExpression(self, string):
+		self.setPrettyPrintDefinition(string)

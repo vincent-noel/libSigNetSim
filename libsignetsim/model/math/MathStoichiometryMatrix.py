@@ -27,47 +27,47 @@ from sympy import simplify, diff, solve, zeros
 
 
 class MathStoichiometryMatrix(object):
-    """ Sbml model class """
+	""" Sbml model class """
 
-    def __init__ (self):
-        """ Constructor of model class """
+	def __init__ (self):
+		""" Constructor of model class """
 
-        self.stoichiometryMatrix = None
-
-
-    def buildStoichiometryMatrix(self, including_fast_reactions=True):
-
-        matrix = None
-        for i, reaction in enumerate(self.listOfReactions.values()):
-            if (not reaction.fast) or including_fast_reactions:
-
-                if matrix is None:
-                    matrix = reaction.getStoichiometryMatrix_v2()
-                else:
-                    matrix  += reaction.getStoichiometryMatrix_v2()
-
-        self.stoichiometryMatrix = matrix
+		self.stoichiometryMatrix = None
 
 
-    def getSimpleStoichiometryMatrix(self):
+	def buildStoichiometryMatrix(self, including_fast_reactions=True):
 
-        if self.stoichiometryMatrix is None:
-            self.buildStoichiometryMatrix()
+		matrix = None
+		for i, reaction in enumerate(self.listOfReactions.values()):
+			if (not reaction.fast) or including_fast_reactions:
 
-        matrix = None
-        if self.stoichiometryMatrix != None:
-            for i, reaction in enumerate(self.stoichiometryMatrix):
+				if matrix is None:
+					matrix = reaction.getStoichiometryMatrix_v2()
+				else:
+					matrix  += reaction.getStoichiometryMatrix_v2()
 
-                t_reaction = zeros(1,len(self.listOfSpecies))
-
-
-                for j, t_formula in enumerate(reaction):
-                    t_reaction[j] = t_formula.getDeveloppedInternalMathFormula()
+		self.stoichiometryMatrix = matrix
 
 
-                if matrix is None:
-                    matrix = t_reaction
-                else:
-                    matrix = matrix.col_join(t_reaction)
+	def getSimpleStoichiometryMatrix(self):
 
-            return matrix
+		if self.stoichiometryMatrix is None:
+			self.buildStoichiometryMatrix()
+
+		matrix = None
+		if self.stoichiometryMatrix != None:
+			for i, reaction in enumerate(self.stoichiometryMatrix):
+
+				t_reaction = zeros(1,len(self.listOfSpecies))
+
+
+				for j, t_formula in enumerate(reaction):
+					t_reaction[j] = t_formula.getDeveloppedInternalMathFormula()
+
+
+				if matrix is None:
+					matrix = t_reaction
+				else:
+					matrix = matrix.col_join(t_reaction)
+
+			return matrix

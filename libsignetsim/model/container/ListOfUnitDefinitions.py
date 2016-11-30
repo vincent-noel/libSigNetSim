@@ -33,123 +33,123 @@ from copy import deepcopy
 
 class ListOfUnitDefinitions(ListOf, HasIds, SbmlObject):
 
-    def __init__ (self, model=None):
+	def __init__ (self, model=None):
 
-        self.__model = model
-        ListOf.__init__(self, model)
-        HasIds.__init__(self, model)
-        SbmlObject.__init__(self, model)
-
-
-    def readSbml(self, sbml_unitDefinitions,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-
-        for unitDefinition in sbml_unitDefinitions:
-            t_unitDefinition = UnitDefinition(self.__model, self.nextId())
-            t_unitDefinition.readSbml(unitDefinition, sbml_level, sbml_version)
-            ListOf.add(self, t_unitDefinition)
-
-        SbmlObject.readSbml(self, sbml_unitDefinitions, sbml_level, sbml_version)
+		self.__model = model
+		ListOf.__init__(self, model)
+		HasIds.__init__(self, model)
+		SbmlObject.__init__(self, model)
 
 
-    def writeSbml(self, sbml_model,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
+	def readSbml(self, sbml_unitDefinitions,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
 
-        for unitDefinition in ListOf.values(self):
-            unitDefinition.writeSbml(sbml_model, sbml_level, sbml_version)
+		for unitDefinition in sbml_unitDefinitions:
+			t_unitDefinition = UnitDefinition(self.__model, self.nextId())
+			t_unitDefinition.readSbml(unitDefinition, sbml_level, sbml_version)
+			ListOf.add(self, t_unitDefinition)
 
-        SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
-
-
-    def new(self):
-
-        t_unitDefinition = UnitDefinition(self.__model, self.nextId())
-        ListOf.add(self, t_unitDefinition)
-        return t_unitDefinition
+		SbmlObject.readSbml(self, sbml_unitDefinitions, sbml_level, sbml_version)
 
 
-    def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
+	def writeSbml(self, sbml_model,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+
+		for unitDefinition in ListOf.values(self):
+			unitDefinition.writeSbml(sbml_model, sbml_level, sbml_version)
+
+		SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
 
 
-        if len(self.keys()) > 0:
-            t_shift = max(self.keys())+1
-        else:
-            t_shift = 0
+	def new(self):
+
+		t_unitDefinition = UnitDefinition(self.__model, self.nextId())
+		ListOf.add(self, t_unitDefinition)
+		return t_unitDefinition
 
 
-        if obj not in deletions:
-
-            SbmlObject.copy(self, obj, prefix, t_shift)
-
-            for unit_definition in obj.values():
-                if unit_definition not in deletions:
-
-                    obj_id = unit_definition.objId + t_shift
-                    t_definition = UnitDefinition(self.__model, obj_id)
-
-                    # if not unit_definition.isMarkedToBeReplaced:
-                    t_definition.copy(unit_definition, prefix, t_shift)
-                    # else:
-                    #     t_definition.copy(unit_definition.isMarkedToBeReplacedBy, prefix, t_shift)
-                    #
-                    # if unit_definition.isMarkedToBeRenamed:
-                    #     t_definition.setSbmlId(unit_definition.getSbmlId(), model_wide=False)
-
-                    ListOf.add(self, t_definition)
+	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
 
 
-    def getAmountUnit(self, unit, compartment_unit):
-
-        new_unit = deepcopy(unit)
-        new_comp_unit = deepcopy(compartment_unit)
-        new_comp_unit.listOfUnits[0].exponent *= -1
-
-        new_unit_list = []
-        for t_units in new_unit.listOfUnits:
-            if not t_units.isEqual(new_comp_unit.listOfUnits[0]):
-                new_unit_list.append(t_units)
-
-        new_unit.listOfUnits = new_unit_list
+		if len(self.keys()) > 0:
+			t_shift = max(self.keys())+1
+		else:
+			t_shift = 0
 
 
-        if not self.containsUnits(new_unit):
-            return ListOf.add(self, new_unit)
-        else:
+		if obj not in deletions:
 
-            return self.getExistingUnits(new_unit)
-        # return new_unit
+			SbmlObject.copy(self, obj, prefix, t_shift)
 
+			for unit_definition in obj.values():
+				if unit_definition not in deletions:
 
-    def getConcentrationUnit(self, unit, compartment_unit):
+					obj_id = unit_definition.objId + t_shift
+					t_definition = UnitDefinition(self.__model, obj_id)
 
-        print "> Computing concetration units..."
-        new_unit = deepcopy(unit)
-        new_comp_unit = deepcopy(compartment_unit)
-        new_comp_unit.listOfUnits[0].exponent = new_comp_unit.listOfUnits[0].exponent * -1
-        new_unit.listOfUnits = new_unit.listOfUnits + new_comp_unit.listOfUnits
+					# if not unit_definition.isMarkedToBeReplaced:
+					t_definition.copy(unit_definition, prefix, t_shift)
+					# else:
+					#     t_definition.copy(unit_definition.isMarkedToBeReplacedBy, prefix, t_shift)
+					#
+					# if unit_definition.isMarkedToBeRenamed:
+					#     t_definition.setSbmlId(unit_definition.getSbmlId(), model_wide=False)
 
-        if not self.containsUnits(new_unit):
-            return self.addSbmlObject(new_unit)
-        else:
-            return self.getExistingUnits(new_unit)
-
-
-    def getExistingUnits(self, units):
-
-        for t_unit in ListOf.values(self):
-            if units.isEqual(t_unit):
-                return t_unit
+					ListOf.add(self, t_definition)
 
 
-    def containsUnits(self, units):
+	def getAmountUnit(self, unit, compartment_unit):
 
-        for t_unit in ListOf.values(self):
-            if units.isEqual(t_unit):
-                return True
+		new_unit = deepcopy(unit)
+		new_comp_unit = deepcopy(compartment_unit)
+		new_comp_unit.listOfUnits[0].exponent *= -1
 
-        return False
+		new_unit_list = []
+		for t_units in new_unit.listOfUnits:
+			if not t_units.isEqual(new_comp_unit.listOfUnits[0]):
+				new_unit_list.append(t_units)
 
-    def isUnitIdAvailable(self, unit_id):
-        return unit_id not in ListOf.keys(self)
+		new_unit.listOfUnits = new_unit_list
+
+
+		if not self.containsUnits(new_unit):
+			return ListOf.add(self, new_unit)
+		else:
+
+			return self.getExistingUnits(new_unit)
+		# return new_unit
+
+
+	def getConcentrationUnit(self, unit, compartment_unit):
+
+		print "> Computing concetration units..."
+		new_unit = deepcopy(unit)
+		new_comp_unit = deepcopy(compartment_unit)
+		new_comp_unit.listOfUnits[0].exponent = new_comp_unit.listOfUnits[0].exponent * -1
+		new_unit.listOfUnits = new_unit.listOfUnits + new_comp_unit.listOfUnits
+
+		if not self.containsUnits(new_unit):
+			return self.addSbmlObject(new_unit)
+		else:
+			return self.getExistingUnits(new_unit)
+
+
+	def getExistingUnits(self, units):
+
+		for t_unit in ListOf.values(self):
+			if units.isEqual(t_unit):
+				return t_unit
+
+
+	def containsUnits(self, units):
+
+		for t_unit in ListOf.values(self):
+			if units.isEqual(t_unit):
+				return True
+
+		return False
+
+	def isUnitIdAvailable(self, unit_id):
+		return unit_id not in ListOf.keys(self)

@@ -34,166 +34,166 @@ from math import log10
 
 class OptimizationExecution(object):
 
-    OPTIM_FAILURE       =   -1
-    OPTIM_SUCCESS       =   0
+	OPTIM_FAILURE       =   -1
+	OPTIM_SUCCESS       =   0
 
-    def __init__ (self):
+	def __init__ (self):
 
-        self.startTime = None
-        self.stopTime = None
-        self.elapsedTime = None
-        self.monitor = False
-        self.optimizationId = int(time()*1000)
-        self.directory = None
-        # mkdir(self.getTempDirectory())
-
-
-    def getTempDirectory(self):
-
-        if self.directory is None:
-            return join(Settings.tempDirectory,
-                                "optimization_%s/" % str(self.optimizationId))
-
-        else:
-            return join(self.directory,
-                                "optimization_%s/" % str(self.optimizationId))
-
-    def setTempDirectory(self, directory):
-
-        self.directory = directory
+		self.startTime = None
+		self.stopTime = None
+		self.elapsedTime = None
+		self.monitor = False
+		self.optimizationId = int(time()*1000)
+		self.directory = None
+		# mkdir(self.getTempDirectory())
 
 
+	def getTempDirectory(self):
 
-    def compile(self, nb_procs):
+		if self.directory is None:
+			return join(Settings.tempDirectory,
+								"optimization_%s/" % str(self.optimizationId))
 
-        if nb_procs > 1:
-            target = "lsa.mpi"
+		else:
+			return join(self.directory,
+								"optimization_%s/" % str(self.optimizationId))
 
-        else:
-            target = "lsa"
+	def setTempDirectory(self, directory):
 
-        cmd_comp = "make -f %sMakefile -C %s %s 1>/dev/null" % (
-                                self.getTempDirectory(),
-                                self.getTempDirectory(),
-                                target)
-
-        res_comp = call(cmd_comp,
-                                stdout=open("%sout_optim_comp" % self.getTempDirectory(),"w"),
-                                stderr=open("%serr_optim_comp" % self.getTempDirectory(),"w"),
-                                shell=True,preexec_fn=setpgrp,close_fds=True)
-
-        if res_comp != 0 or getsize(self.getTempDirectory() + "err_optim_comp") > 0:
-            return self.OPTIM_FAILURE
-        else:
-            return self.OPTIM_SUCCESS
-
-
-    def run(self, nb_procs, timeout, maxiter):
-
-        t_timeout = ""
-        if timeout is not None and timeout > 0:
-            t_timeout = "-d %d " % timeout
-
-        s_maxiter = ""
-        if maxiter is not None and maxiter > 0:
-            s_maxiter = "-m %d " % maxiter
-
-        mkdir(self.getTempDirectory() + "logs")
-        # mkdir(self.getTempDirectory() + "logs/err")
-        # mkdir(self.getTempDirectory() + "logs/clocksim")
-        mkdir(self.getTempDirectory() + "logs/score")
-        mkdir(self.getTempDirectory() + "logs/res")
-        # mkdir(self.getTempDirectory() + "logs/trace")
-        # mkdir(self.getTempDirectory() + "logs/clock")
+		self.directory = directory
 
 
 
-        present_dir = getcwd()
+	def compile(self, nb_procs):
 
-        if nb_procs > 1:
-            target = "cd %s; mpirun -np %d ./lsa.mpi; cd %s" % (self.getTempDirectory(), nb_procs, present_dir)
+		if nb_procs > 1:
+			target = "lsa.mpi"
 
-        else:
-            target = "cd %s; ./lsa; cd %s" % (self.getTempDirectory(), present_dir)
+		else:
+			target = "lsa"
 
-        # t_command_line = "cd %s; %s %s %s hybrid; cd %s" % (
-        #         self.getTempDirectory() + Settings.C_optimizationDirectory,
-        #         target, s_maxiter, t_timeout, getcwd())
+		cmd_comp = "make -f %sMakefile -C %s %s 1>/dev/null" % (
+								self.getTempDirectory(),
+								self.getTempDirectory(),
+								target)
 
-        t_command_line = "%s" % target
+		res_comp = call(cmd_comp,
+								stdout=open("%sout_optim_comp" % self.getTempDirectory(),"w"),
+								stderr=open("%serr_optim_comp" % self.getTempDirectory(),"w"),
+								shell=True,preexec_fn=setpgrp,close_fds=True)
 
-        res_optim = call(t_command_line,
-                stdout=open("%sout_optim" % self.getTempDirectory(),"w"),
-                stderr=open("%serr_optim" % self.getTempDirectory(),"w"),
-                shell=True, preexec_fn=setpgrp, close_fds=True)
-
-
-
-        if res_optim != 0 and res_optim != 124:
-            self.stopTime = int(time())
-            self.elapsedTime = self.stopTime - self.startTime
-            return self.OPTIM_FAILURE
+		if res_comp != 0 or getsize(self.getTempDirectory() + "err_optim_comp") > 0:
+			return self.OPTIM_FAILURE
+		else:
+			return self.OPTIM_SUCCESS
 
 
-        if (getsize(self.getTempDirectory() + "err_optim") > 0 or
-            not isfile(self.getTempDirectory() + "final_score")):
+	def run(self, nb_procs, timeout, maxiter):
+
+		t_timeout = ""
+		if timeout is not None and timeout > 0:
+			t_timeout = "-d %d " % timeout
+
+		s_maxiter = ""
+		if maxiter is not None and maxiter > 0:
+			s_maxiter = "-m %d " % maxiter
+
+		mkdir(self.getTempDirectory() + "logs")
+		# mkdir(self.getTempDirectory() + "logs/err")
+		# mkdir(self.getTempDirectory() + "logs/clocksim")
+		mkdir(self.getTempDirectory() + "logs/score")
+		mkdir(self.getTempDirectory() + "logs/res")
+		# mkdir(self.getTempDirectory() + "logs/trace")
+		# mkdir(self.getTempDirectory() + "logs/clock")
 
 
-            err = open(self.getTempDirectory() + "err_optim")
 
-            if err.readline() != "mpirun: killing job...\n":
-                err.close()
-                self.stopTime = int(time())
-                self.elapsedTime = self.stopTime - self.startTime
-                return self.OPTIM_FAILURE
+		present_dir = getcwd()
 
-            err.close()
+		if nb_procs > 1:
+			target = "cd %s; mpirun -np %d ./lsa.mpi; cd %s" % (self.getTempDirectory(), nb_procs, present_dir)
 
-        return self.OPTIM_SUCCESS
+		else:
+			target = "cd %s; ./lsa; cd %s" % (self.getTempDirectory(), present_dir)
 
+		# t_command_line = "cd %s; %s %s %s hybrid; cd %s" % (
+		#         self.getTempDirectory() + Settings.C_optimizationDirectory,
+		#         target, s_maxiter, t_timeout, getcwd())
 
-    def readFinalScore(self):
+		t_command_line = "%s" % target
 
-        file_final_score = open(self.getTempDirectory() + "final_score")
-        final_score = float(file_final_score.readline())
-
-        final_score = max(round(final_score, int(-log10(Settings.defaultPlsaCriterion))),
-                            Settings.defaultPlsaCriterion)
-
-        file_final_score.close()
+		res_optim = call(t_command_line,
+				stdout=open("%sout_optim" % self.getTempDirectory(),"w"),
+				stderr=open("%serr_optim" % self.getTempDirectory(),"w"),
+				shell=True, preexec_fn=setpgrp, close_fds=True)
 
 
-        if Settings.verbose == 1:
-            print "> Optimization executed. Final score : %.5g" % final_score
-        return final_score
+
+		if res_optim != 0 and res_optim != 124:
+			self.stopTime = int(time())
+			self.elapsedTime = self.stopTime - self.startTime
+			return self.OPTIM_FAILURE
 
 
-    def runOptimization(self, nb_procs, timeout, maxiter):
+		if (getsize(self.getTempDirectory() + "err_optim") > 0 or
+			not isfile(self.getTempDirectory() + "final_score")):
 
-        # if self.monitor:
-        #     t = OptimizationMonitor(self)  #threading.Thread(target=self.monitorOptimization)
-        #     t.start()
 
-        self.startTime = int(time())
+			err = open(self.getTempDirectory() + "err_optim")
 
-        res = self.compile(nb_procs)
+			if err.readline() != "mpirun: killing job...\n":
+				err.close()
+				self.stopTime = int(time())
+				self.elapsedTime = self.stopTime - self.startTime
+				return self.OPTIM_FAILURE
 
-        if res == self.OPTIM_SUCCESS:
+			err.close()
 
-            res_2 = self.run(nb_procs, timeout, maxiter)
+		return self.OPTIM_SUCCESS
 
-            if res_2 == self.OPTIM_SUCCESS:
 
-                self.stopTime = int(time())
-                self.elapsedTime = self.stopTime - self.startTime
+	def readFinalScore(self):
 
-                return self.readFinalScore()
-            elif Settings.verbose:
-                print "> Execution failed !"
-        elif Settings.verbose:
-            print "> Compilation failed !"
+		file_final_score = open(self.getTempDirectory() + "final_score")
+		final_score = float(file_final_score.readline())
 
-        self.stopTime = int(time())
-        self.elapsedTime = self.stopTime - self.startTime
+		final_score = max(round(final_score, int(-log10(Settings.defaultPlsaCriterion))),
+							Settings.defaultPlsaCriterion)
 
-        return self.OPTIM_FAILURE
+		file_final_score.close()
+
+
+		if Settings.verbose == 1:
+			print "> Optimization executed. Final score : %.5g" % final_score
+		return final_score
+
+
+	def runOptimization(self, nb_procs, timeout, maxiter):
+
+		# if self.monitor:
+		#     t = OptimizationMonitor(self)  #threading.Thread(target=self.monitorOptimization)
+		#     t.start()
+
+		self.startTime = int(time())
+
+		res = self.compile(nb_procs)
+
+		if res == self.OPTIM_SUCCESS:
+
+			res_2 = self.run(nb_procs, timeout, maxiter)
+
+			if res_2 == self.OPTIM_SUCCESS:
+
+				self.stopTime = int(time())
+				self.elapsedTime = self.stopTime - self.startTime
+
+				return self.readFinalScore()
+			elif Settings.verbose:
+				print "> Execution failed !"
+		elif Settings.verbose:
+			print "> Compilation failed !"
+
+		self.stopTime = int(time())
+		self.elapsedTime = self.stopTime - self.startTime
+
+		return self.OPTIM_FAILURE

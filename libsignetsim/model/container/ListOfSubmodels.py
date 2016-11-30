@@ -31,71 +31,71 @@ from libsignetsim.model.sbmlobject.SbmlSubModel import SbmlSubModel
 from libsignetsim.settings.Settings import Settings
 
 class ListOfSubmodels(ListOf, HasIds):#, SbmlObject):
-    """ Class for the listOfModelDefinition in a sbml model """
+	""" Class for the listOfModelDefinition in a sbml model """
 
-    def __init__ (self, model):
+	def __init__ (self, model):
 
-        self.__model = model
-        ListOf.__init__(self, model)
-        HasIds.__init__(self, model)
-        # SbmlObject.__init__(self, model)
-
-
-    def readSbml(self, sbml_list_submodels,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-        """ Reads compartments' list from a sbml file """
-
-        for i, submodel in enumerate(sbml_list_submodels):
-            t_submodel = SbmlSubModel(self.__model, self.nextId())
-            t_submodel.readSbml(submodel, sbml_level, sbml_version)
-            ListOf.add(self, t_submodel)
-
-        # SbmlObject.readSbml(self, sbml_list_submodels, sbml_level, sbml_version)
+		self.__model = model
+		ListOf.__init__(self, model)
+		HasIds.__init__(self, model)
+		# SbmlObject.__init__(self, model)
 
 
-    def writeSbml(self, sbml_model,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-        """ Writes compartments' list to a sbml file """
+	def readSbml(self, sbml_list_submodels,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+		""" Reads compartments' list from a sbml file """
 
-        for t_submodel in ListOf.values(self):
-            t_submodel.writeSbml(sbml_model, sbml_level, sbml_version)
+		for i, submodel in enumerate(sbml_list_submodels):
+			t_submodel = SbmlSubModel(self.__model, self.nextId())
+			t_submodel.readSbml(submodel, sbml_level, sbml_version)
+			ListOf.add(self, t_submodel)
 
-        # SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
-
-
-    def new(self):
-        """ Creates a new compartment """
-
-        t_submodel = SbmlSubModel(self.__model, self.nextId())
-        ListOf.add(self, t_submodel)
-        return t_submodel
+		# SbmlObject.readSbml(self, sbml_list_submodels, sbml_level, sbml_version)
 
 
-    def remove(self, sbml_obj):
-        """ Remove an object from the list """
+	def writeSbml(self, sbml_model,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+		""" Writes compartments' list to a sbml file """
 
-        # ListOf.remove(self, comp)
-        dict.__delitem__(self, sbml_obj.objId)
+		for t_submodel in ListOf.values(self):
+			t_submodel.writeSbml(sbml_model, sbml_level, sbml_version)
+
+		# SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
 
 
-    def removeById(self, obj_id):
-        """ Remove an object from the list """
-        dict.__delitem__(self, obj_id)
+	def new(self):
+		""" Creates a new compartment """
 
-    def getSubmodels(self):
+		t_submodel = SbmlSubModel(self.__model, self.nextId())
+		ListOf.add(self, t_submodel)
+		return t_submodel
 
-        res = []
-        for submodel in ListOf.values(self):
-            res.append(submodel.getModelObject())
 
-        return res
+	def remove(self, sbml_obj):
+		""" Remove an object from the list """
 
-    def getBySbmlIdRef(self, sbml_id_ref):
-        return HasIds.getBySbmlId(self, sbml_id_ref)
+		# ListOf.remove(self, comp)
+		dict.__delitem__(self, sbml_obj.objId)
 
-    def getBySbmlId(self, sbml_id):
-        for submodel in ListOf.values(self):
-            if submodel.getModelObject().getSbmlId() == sbml_id:
-                return submodel
+
+	def removeById(self, obj_id):
+		""" Remove an object from the list """
+		dict.__delitem__(self, obj_id)
+
+	def getSubmodels(self):
+
+		res = []
+		for submodel in ListOf.values(self):
+			res.append(submodel.getModelObject())
+
+		return res
+
+	def getBySbmlIdRef(self, sbml_id_ref):
+		return HasIds.getBySbmlId(self, sbml_id_ref)
+
+	def getBySbmlId(self, sbml_id):
+		for submodel in ListOf.values(self):
+			if submodel.getModelObject().getSbmlId() == sbml_id:
+				return submodel

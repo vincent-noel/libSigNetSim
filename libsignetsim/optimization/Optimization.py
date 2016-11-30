@@ -40,14 +40,14 @@ class Optimization(OptimizationExecution, OptimizationParameters):
 
 	def __init__ (self, SigNetSim=None, workingModel=None, parameters_to_fit=None, optimization_type=MODEL_VS_DATA):
 
-	    # self.SigNetSim = SigNetSim
-	    # if self.SigNetSim is not None:
+		# self.SigNetSim = SigNetSim
+		# if self.SigNetSim is not None:
 
-	    self.workingModel = workingModel
-	    self.optimizationType = optimization_type
+		self.workingModel = workingModel
+		self.optimizationType = optimization_type
 
-	    OptimizationExecution.__init__(self)
-	    OptimizationParameters.__init__(self, workingModel, parameters_to_fit)
+		OptimizationExecution.__init__(self)
+		OptimizationParameters.__init__(self, workingModel, parameters_to_fit)
 
 
 	def writeOptimizationFilesMain(self, nb_procs=1):
@@ -63,45 +63,45 @@ class Optimization(OptimizationExecution, OptimizationParameters):
 
 	def initializeOptimizationParameters(self):
 
-	    for constant_type, constant in self.constantsToFit:
-	        if constant_type == 1:
-	            self.workingModel.listOfSpecies[constant].init_value = 1e-8
-	        elif constant_type == 2:
-	            self.workingModel.listOfParameters[constant].value = 1e-8
-	        elif constant_type == 3:
-	            (r_id, lp_id) = constant
-	            self.workingModel.listOfReactions[r_id].listOfLocalParameters[lp_id].value = 1e-8
+		for constant_type, constant in self.constantsToFit:
+			if constant_type == 1:
+				self.workingModel.listOfSpecies[constant].init_value = 1e-8
+			elif constant_type == 2:
+				self.workingModel.listOfParameters[constant].value = 1e-8
+			elif constant_type == 3:
+				(r_id, lp_id) = constant
+				self.workingModel.listOfReactions[r_id].listOfLocalParameters[lp_id].value = 1e-8
 
 
 	def getBestResult(self, nb_procs):
 
-	    if isfile(join(self.getTempDirectory(), "optimization_files/score/score_0")):
-	        if nb_procs > 1:
+		if isfile(join(self.getTempDirectory(), "optimization_files/score/score_0")):
+			if nb_procs > 1:
 
-	            best_scores = []
+				best_scores = []
 
-	            for i in range(0,nb_procs):
+				for i in range(0,nb_procs):
 
-	                f_best_score = open(join(self.getTempDirectory(), "optimization_files/score/score_%s" % str(i)), 'r')
-	                t_score = f_best_score.readline().strip()
-	                if t_score is not None and t_score != "":
-	                    best_scores.append(float(t_score))
-	                else:
-	                    return (-1, 1e+100)
-	                f_best_score.close()
+					f_best_score = open(join(self.getTempDirectory(), "optimization_files/score/score_%s" % str(i)), 'r')
+					t_score = f_best_score.readline().strip()
+					if t_score is not None and t_score != "":
+						best_scores.append(float(t_score))
+					else:
+						return (-1, 1e+100)
+					f_best_score.close()
 
-	            return [(i,b) for i,b in enumerate(best_scores) if b == min(best_scores)][0]
+				return [(i,b) for i,b in enumerate(best_scores) if b == min(best_scores)][0]
 
-	        elif nb_procs >= 0:
+			elif nb_procs >= 0:
 
-	            f_best_score = open(join(self.getTempDirectory(), "optimization_files/score/score_0"), 'r')
-	            t_score = f_best_score.readline()
-	            if t_score is not None and t_score != "":
-	                res = float(t_score)
-	            else:
-	                return (-1, 1e+100)
-	            f_best_score.close()
+				f_best_score = open(join(self.getTempDirectory(), "optimization_files/score/score_0"), 'r')
+				t_score = f_best_score.readline()
+				if t_score is not None and t_score != "":
+					res = float(t_score)
+				else:
+					return (-1, 1e+100)
+				f_best_score.close()
 
-	            return (0, res)
+				return (0, res)
 
-	    return (-1,1e+100)
+		return (-1,1e+100)

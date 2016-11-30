@@ -24,69 +24,69 @@
 
 
 class HasIds(object):
-    """ Parent class for all the ListOf_ containers in a sbml model """
+	""" Parent class for all the ListOf_ containers in a sbml model """
 
-    def __init__ (self, model=None):
+	def __init__ (self, model=None):
 
-        self.__model = model
-
-
-
-
-    def sbmlIds(self):
-        """ Return a set of import ids of the sbml objects """
-        return [obj.getSbmlId() for obj in self.values()]
-
-    def getBySbmlId(self, sbml_id, pos=0):
-        """ Find sbml objects by their import Id """
-
-        res = []
-        for obj in self.values():
-            if obj.getSbmlId() == sbml_id:
-                res.append(obj)
-
-        if len(res) > 0:
-            return res[pos]
-        else:
-            return None
-
-
-    def containsSbmlId(self, sbml_id):
-        """ Test if an sbml id is in the list """
-
-        res = False
-        for obj in self.values():
-            if sbml_id == obj.getSbmlId():
-                res = True
-
-        return res
+		self.__model = model
 
 
 
-    def names(self):
-        """ Return set of names of the sbml objects """
-        return [obj.getName() for obj in self.values()]
 
-    def getByName(self, name, pos=0):
-        """ Find sbml objects by their name """
+	def sbmlIds(self):
+		""" Return a set of import ids of the sbml objects """
+		return [obj.getSbmlId() for obj in self.values()]
 
-        res = []
-        for obj in self.values():
-            if obj.getName() == name:
-                res.append(obj)
+	def getBySbmlId(self, sbml_id, pos=0):
+		""" Find sbml objects by their import Id """
 
-        if len(res) > 0:
-            return res[pos]
-        else:
-            return non
+		res = []
+		for obj in self.values():
+			if obj.getSbmlId() == sbml_id:
+				res.append(obj)
+
+		if len(res) > 0:
+			return res[pos]
+		else:
+			return None
 
 
-    def containsName(self, name):
-        """ Test if a name is in the list """
+	def containsSbmlId(self, sbml_id):
+		""" Test if an sbml id is in the list """
 
-        res = False
-        for obj in self.values():
-            if name == obj.getName():
-                res = True
+		res = False
+		for obj in self.values():
+			if sbml_id == obj.getSbmlId():
+				res = True
 
-        return res
+		return res
+
+
+
+	def names(self):
+		""" Return set of names of the sbml objects """
+		return [obj.getName() for obj in self.values()]
+
+	def getByName(self, name, pos=0):
+		""" Find sbml objects by their name """
+
+		res = []
+		for obj in self.values():
+			if obj.getName() == name:
+				res.append(obj)
+
+		if len(res) > 0:
+			return res[pos]
+		else:
+			return non
+
+
+	def containsName(self, name):
+		""" Test if a name is in the list """
+
+		res = False
+		for obj in self.values():
+			if name == obj.getName():
+				res = True
+
+		return res

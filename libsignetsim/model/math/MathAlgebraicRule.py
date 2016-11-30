@@ -26,79 +26,79 @@
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.sympy_shortcuts import  (
-    SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
-    SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
-    SympyInf, SympyNan, SympyAdd, SympyMul, SympyPow,
-    SympyFunction, SympyUndefinedFunction, SympyLambda, SympyDerivative,
-    SympyCeiling, SympyFloor, SympyAbs, SympyLog, SympyExp, SympyPiecewise,
-    SympyFactorial, SympyRoot, SympyAcos, SympyAsin, SympyAtan, SympyAcosh,
-    SympyAsinh, SympyAtanh, SympyCos, SympySin, SympyTan, SympyAcot,
-    SympyAcoth, SympyCosh, SympySinh, SympyTanh, SympySec, SympyCsc,
-    SympyCot, SympyCoth, SympyAcsc, SympyAsec,
-    SympyEqual, SympyUnequal, SympyGreaterThan, SympyLessThan,
-    SympyStrictGreaterThan, SympyStrictLessThan,
-    SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
-    SympyMax, SympyMin)
+	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
+	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
+	SympyInf, SympyNan, SympyAdd, SympyMul, SympyPow,
+	SympyFunction, SympyUndefinedFunction, SympyLambda, SympyDerivative,
+	SympyCeiling, SympyFloor, SympyAbs, SympyLog, SympyExp, SympyPiecewise,
+	SympyFactorial, SympyRoot, SympyAcos, SympyAsin, SympyAtan, SympyAcosh,
+	SympyAsinh, SympyAtanh, SympyCos, SympySin, SympyTan, SympyAcot,
+	SympyAcoth, SympyCosh, SympySinh, SympyTanh, SympySec, SympyCsc,
+	SympyCot, SympyCoth, SympyAcsc, SympyAsec,
+	SympyEqual, SympyUnequal, SympyGreaterThan, SympyLessThan,
+	SympyStrictGreaterThan, SympyStrictLessThan,
+	SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
+	SympyMax, SympyMin)
 
 
 class MathAlgebraicRule(object):
 
-    def __init__(self, model):
+	def __init__(self, model):
 
-        self.__model = model
-        self.definition = MathFormula(model, MathFormula.MATH_ALGEBRAICRULE)
-
-
-    def readSbml(self, sbml_rule, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-
-        self.definition.readSbml(sbml_rule.getMath(), sbml_level, sbml_version)
+		self.__model = model
+		self.definition = MathFormula(model, MathFormula.MATH_ALGEBRAICRULE)
 
 
-    def writeSbml(self, sbml_rule, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+	def readSbml(self, sbml_rule, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
-        sbml_rule.setMath(self.definition.getSbmlMathFormula(sbml_level, sbml_version))
-
-
-
-    def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):
-        self.definition.setInternalMathFormula(obj.definition.getInternalMathFormula().subs(subs).subs(replacements))
+		self.definition.readSbml(sbml_rule.getMath(), sbml_level, sbml_version)
 
 
-    def setPrettyPrintDefinition(self, definition):
+	def writeSbml(self, sbml_rule, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
-        self.definition.setPrettyPrintMathFormula(definition)
-        self.definition.setInternalMathFormula(SympyEqual(self.definition.getInternalMathFormula(), MathFormula.ZERO))
-
-    def getPrettyPrintDefinition(self):
-
-        return self.definition.getPrettyPrintMathFormula()
+		sbml_rule.setMath(self.definition.getSbmlMathFormula(sbml_level, sbml_version))
 
 
-    def getExpressionMath(self, forcedConcentration=False):
 
-        if forcedConcentration:
-            t_formula = MathFormula(self.__model)
-            t_formula.setInternalMathFormula(self.definition.getInternalMathFormula())
+	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):
+		self.definition.setInternalMathFormula(obj.definition.getInternalMathFormula().subs(subs).subs(replacements))
 
-            for species in self.__model.listOfSpecies.values():
-                if species.isConcentration():
-                    t_internal = MathFormula.getInternalMathFormula(t_formula)
-                    t_fc = SympySymbol("_speciesForcedConcentration_%s_" % str(species.symbol.getInternalMathFormula()))
-                    t_species = SympySymbol(species.getSbmlId())
-                    t_internal = t_internal.subs({ t_fc : t_species })
-                    t_formula.setInternalMathFormula(t_internal)
 
-            return t_formula
-        else:
-            return self.definition
+	def setPrettyPrintDefinition(self, definition):
 
-    def renameSbmlId(self, old_sbml_id, new_sbml_id):
-        old_symbol = SympySymbol(old_sbml_id)
+		self.definition.setPrettyPrintMathFormula(definition)
+		self.definition.setInternalMathFormula(SympyEqual(self.definition.getInternalMathFormula(), MathFormula.ZERO))
 
-        if old_symbol in self.definition.getInternalMathFormula().atoms():
-            t_definition = MathFormula(self.__model, MathFormula.MATH_ALGEBRAICRULE)
-            t_definition.setInternalMathFormula(self.definition.getInternalMathFormula.subs(old_symbol, SympySymbol(new_sbml_id)))
+	def getPrettyPrintDefinition(self):
 
-    def containsVariable(self, variable):
-        return (variable.symbol.getInternalMathFormula() in self.definition.getInternalMathFormula().atoms()
-                or (variable.isSpecies() and SympySymbol("_speciesForcedConcentration_%s_" % str(variable.symbol.getInternalMathFormula())) in self.definition.getInternalMathFormula().atoms()))
+		return self.definition.getPrettyPrintMathFormula()
+
+
+	def getExpressionMath(self, forcedConcentration=False):
+
+		if forcedConcentration:
+			t_formula = MathFormula(self.__model)
+			t_formula.setInternalMathFormula(self.definition.getInternalMathFormula())
+
+			for species in self.__model.listOfSpecies.values():
+				if species.isConcentration():
+					t_internal = MathFormula.getInternalMathFormula(t_formula)
+					t_fc = SympySymbol("_speciesForcedConcentration_%s_" % str(species.symbol.getInternalMathFormula()))
+					t_species = SympySymbol(species.getSbmlId())
+					t_internal = t_internal.subs({ t_fc : t_species })
+					t_formula.setInternalMathFormula(t_internal)
+
+			return t_formula
+		else:
+			return self.definition
+
+	def renameSbmlId(self, old_sbml_id, new_sbml_id):
+		old_symbol = SympySymbol(old_sbml_id)
+
+		if old_symbol in self.definition.getInternalMathFormula().atoms():
+			t_definition = MathFormula(self.__model, MathFormula.MATH_ALGEBRAICRULE)
+			t_definition.setInternalMathFormula(self.definition.getInternalMathFormula.subs(old_symbol, SympySymbol(new_sbml_id)))
+
+	def containsVariable(self, variable):
+		return (variable.symbol.getInternalMathFormula() in self.definition.getInternalMathFormula().atoms()
+				or (variable.isSpecies() and SympySymbol("_speciesForcedConcentration_%s_" % str(variable.symbol.getInternalMathFormula())) in self.definition.getInternalMathFormula().atoms()))

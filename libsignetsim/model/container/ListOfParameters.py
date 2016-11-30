@@ -32,97 +32,97 @@ from libsignetsim.settings.Settings import Settings
 
 
 class ListOfParameters(ListOf, HasIds, SbmlObject):
-    """ Class for the ListOfParameters in a sbml model """
+	""" Class for the ListOfParameters in a sbml model """
 
-    def __init__ (self, model, are_local_parameters=False, reaction=None):
+	def __init__ (self, model, are_local_parameters=False, reaction=None):
 
-        self.__model = model
+		self.__model = model
 
-        ListOf.__init__(self, model)
-        HasIds.__init__(self, model)
-        SbmlObject.__init__(self, model)
+		ListOf.__init__(self, model)
+		HasIds.__init__(self, model)
+		SbmlObject.__init__(self, model)
 
-        self.are_local_parameters = are_local_parameters
-        self.reaction = reaction
-
-
-    def readSbml(self, sbml_list_of_parameters, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion, reaction=None):
-        """ Reads parameters' list from a sbml file """
-
-        for sbml_parameter in sbml_list_of_parameters:
-            t_parameter = Parameter(self.__model, self.nextId(),
-                                    local_parameter=self.are_local_parameters,
-                                    reaction=self.reaction)
-            t_parameter.readSbml(sbml_parameter, sbml_level, sbml_version)
-            ListOf.add(self, t_parameter)
-
-        SbmlObject.readSbml(self, sbml_list_of_parameters, sbml_level, sbml_version)
+		self.are_local_parameters = are_local_parameters
+		self.reaction = reaction
 
 
-    def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-        """ Writes parameters' list to a sbml file """
+	def readSbml(self, sbml_list_of_parameters, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion, reaction=None):
+		""" Reads parameters' list from a sbml file """
 
-        for parameter in ListOf.values(self):
-            parameter.writeSbml(sbml_model, sbml_level, sbml_version)
+		for sbml_parameter in sbml_list_of_parameters:
+			t_parameter = Parameter(self.__model, self.nextId(),
+									local_parameter=self.are_local_parameters,
+									reaction=self.reaction)
+			t_parameter.readSbml(sbml_parameter, sbml_level, sbml_version)
+			ListOf.add(self, t_parameter)
 
-        SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
-
-
-    def new(self, parameter=None):
-        """ Creates new parameter """
-
-        t_parameter = Parameter(self.__model, self.nextId(),
-                                local_parameter=self.are_local_parameters,
-                                reaction=self.reaction)
-        t_parameter.new(parameter)
-        ListOf.add(self, t_parameter)
-        return t_parameter
+		SbmlObject.readSbml(self, sbml_list_of_parameters, sbml_level, sbml_version)
 
 
-    def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
+	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+		""" Writes parameters' list to a sbml file """
 
-        if len(self.keys()) > 0:
-            t_shift = max(self.keys())+1
-        else:
-            t_shift = 0
+		for parameter in ListOf.values(self):
+			parameter.writeSbml(sbml_model, sbml_level, sbml_version)
 
-
-        if obj not in deletions:
-
-            SbmlObject.copy(self, obj, prefix, t_shift)
-
-            for parameter in obj.values():
-
-                if parameter not in deletions:
-                    obj_id = parameter.objId + t_shift
-                    t_parameter = Parameter(self.__model, obj_id,
-                                    local_parameter=parameter.localParameter,
-                                    reaction=parameter.reaction)
-
-                    if not parameter.isMarkedToBeReplaced:
-                        t_parameter.copy(parameter, prefix, t_shift, subs, deletions, replacements)
-                    else:
-                        t_parameter.copy(parameter.isMarkedToBeReplacedBy, prefix, t_shift, subs, deletions, replacements)
+		SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
 
 
-                    if parameter.isMarkedToBeRenamed:
-                        t_parameter.setSbmlId(parameter.getSbmlId(), model_wide=False)
+	def new(self, parameter=None):
+		""" Creates new parameter """
 
-                    ListOf.add(self, t_parameter)
-
-
-    def remove(self, parameter):
-        """ Remove an object from the list """
-
-        if parameter.isInRules():
-            raise ModelException(ModelException.SBML_ERROR, "Parameter in used in rules")
-
-        self.__model.listOfVariables.removeVariable(parameter)
-        # self.model.listOfSbmlIds.removeSbmlId(parameter)
-        ListOf.remove(self, parameter)
+		t_parameter = Parameter(self.__model, self.nextId(),
+								local_parameter=self.are_local_parameters,
+								reaction=self.reaction)
+		t_parameter.new(parameter)
+		ListOf.add(self, t_parameter)
+		return t_parameter
 
 
-    def removeById(self, parameter_obj_id):
-        """ Remove an object from the list """
+	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
 
-        self.remove(self.getById(parameter_obj_id))
+		if len(self.keys()) > 0:
+			t_shift = max(self.keys())+1
+		else:
+			t_shift = 0
+
+
+		if obj not in deletions:
+
+			SbmlObject.copy(self, obj, prefix, t_shift)
+
+			for parameter in obj.values():
+
+				if parameter not in deletions:
+					obj_id = parameter.objId + t_shift
+					t_parameter = Parameter(self.__model, obj_id,
+									local_parameter=parameter.localParameter,
+									reaction=parameter.reaction)
+
+					if not parameter.isMarkedToBeReplaced:
+						t_parameter.copy(parameter, prefix, t_shift, subs, deletions, replacements)
+					else:
+						t_parameter.copy(parameter.isMarkedToBeReplacedBy, prefix, t_shift, subs, deletions, replacements)
+
+
+					if parameter.isMarkedToBeRenamed:
+						t_parameter.setSbmlId(parameter.getSbmlId(), model_wide=False)
+
+					ListOf.add(self, t_parameter)
+
+
+	def remove(self, parameter):
+		""" Remove an object from the list """
+
+		if parameter.isInRules():
+			raise ModelException(ModelException.SBML_ERROR, "Parameter in used in rules")
+
+		self.__model.listOfVariables.removeVariable(parameter)
+		# self.model.listOfSbmlIds.removeSbmlId(parameter)
+		ListOf.remove(self, parameter)
+
+
+	def removeById(self, parameter_obj_id):
+		""" Remove an object from the list """
+
+		self.remove(self.getById(parameter_obj_id))

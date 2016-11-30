@@ -32,12 +32,12 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 
 	def __init__ (self, workingModel, listOfExperiments=None, mapping=None, parameters_to_fit=None):
 
-	    self.listOfExperiments = listOfExperiments
-	    (time_max, time_ech) = self.findSimulationSettings()
+		self.listOfExperiments = listOfExperiments
+		(time_max, time_ech) = self.findSimulationSettings()
 
-	    CWriterModels.__init__(self, [workingModel], 0, time_max, time_ech, subdir="src")
-	    CWriterData.__init__(self, listOfExperiments, mapping, workingModel=workingModel, subdir="src")
-	    CWriterOptimization.__init__(self, workingModel, parameters_to_fit)
+		CWriterModels.__init__(self, [workingModel], 0, time_max, time_ech, subdir="src")
+		CWriterData.__init__(self, listOfExperiments, mapping, workingModel=workingModel, subdir="src")
+		CWriterOptimization.__init__(self, workingModel, parameters_to_fit)
 
 
 
@@ -46,8 +46,8 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 		#Find out max time
 		time_max = 0
 		for experiment in self.listOfExperiments.values():
-		    if time_max < experiment.getMaxTime():
-		        time_max = experiment.getMaxTime()
+			if time_max < experiment.getMaxTime():
+				time_max = experiment.getMaxTime()
 
 		#Find out necessary sampling
 		time_ech = 10000.0
@@ -81,22 +81,22 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 
 	def writeOptimFiles(self, nb_procs):
 
-	    c_filename = self.getTempDirectory() + Settings.C_generatedDirectory_v2 + "optim.c"
-	    h_filename = self.getTempDirectory() + Settings.C_generatedDirectory_v2 + "optim.h"
+		c_filename = self.getTempDirectory() + Settings.C_generatedDirectory_v2 + "optim.c"
+		h_filename = self.getTempDirectory() + Settings.C_generatedDirectory_v2 + "optim.h"
 
-	    f_c = open(c_filename, 'w')
-	    f_h = open(h_filename, 'w')
+		f_c = open(c_filename, 'w')
+		f_h = open(h_filename, 'w')
 
-	    self.writeOptimizationFilesHeaders(f_c, f_h)
+		self.writeOptimizationFilesHeaders(f_c, f_h)
 
-	    self.writeOptimizationGlobals(f_c, f_h)
-	    self.writeOptimizationGlobalMethods(f_c, f_h)
+		self.writeOptimizationGlobals(f_c, f_h)
+		self.writeOptimizationGlobalMethods(f_c, f_h)
 
-	    self.writeOptimizationSettings(f_c, f_h, nb_procs)
-	    self.writeOptimizationParameters(f_c, f_h)
+		self.writeOptimizationSettings(f_c, f_h, nb_procs)
+		self.writeOptimizationParameters(f_c, f_h)
 
-	    # self.writeOptimizationFinalizeSettings(f_c, f_h)
-	    # self.writeOptimizationFinalizeSettings(f_c, f_h)
+		# self.writeOptimizationFinalizeSettings(f_c, f_h)
+		# self.writeOptimizationFinalizeSettings(f_c, f_h)
 
-	    f_c.close()
-	    f_h.close()
+		f_c.close()
+		f_h.close()

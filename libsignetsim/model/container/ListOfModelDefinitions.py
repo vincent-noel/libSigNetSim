@@ -31,64 +31,64 @@ from libsignetsim.model.sbmlobject.SbmlModelDefinition import SbmlModelDefinitio
 from libsignetsim.settings.Settings import Settings
 
 class ListOfModelDefinitions(ListOf, HasIds):#, SbmlObject):
-    """ Class for the listOfModelDefinition in a sbml model """
+	""" Class for the listOfModelDefinition in a sbml model """
 
-    def __init__ (self, model):
+	def __init__ (self, model):
 
-        self.__model = model
-        ListOf.__init__(self, model)
-        HasIds.__init__(self, model)
-        # SbmlObject.__init__(self, model)
+		self.__model = model
+		ListOf.__init__(self, model)
+		HasIds.__init__(self, model)
+		# SbmlObject.__init__(self, model)
 
-    def readSbml(self, sbml_external_models,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-        """ Reads compartments' list from a sbml file """
+	def readSbml(self, sbml_external_models,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+		""" Reads compartments' list from a sbml file """
 
-        for model in sbml_external_models:
-            t_model = SbmlModelDefinition(self.__model, self.nextId())
-            t_model.readSbml(model, sbml_level, sbml_version)
-            ListOf.add(self, t_model)
+		for model in sbml_external_models:
+			t_model = SbmlModelDefinition(self.__model, self.nextId())
+			t_model.readSbml(model, sbml_level, sbml_version)
+			ListOf.add(self, t_model)
 
-        # SbmlObject.readSbml(self, sbml_external_models, sbml_level, sbml_version)
-
-
-    def writeSbml(self, sbml_model,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-        """ Writes compartments' list to a sbml file """
-
-        for model in ListOf.values(self):
-            sbml_md = sbml_model.createModelDefinition()
-            model.writeSbml(sbml_md, sbml_level, sbml_version)
-
-        # SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
+		# SbmlObject.readSbml(self, sbml_external_models, sbml_level, sbml_version)
 
 
-    def new(self, name=None, sbml_id=None):
-        """ Creates a new compartment """
+	def writeSbml(self, sbml_model,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+		""" Writes compartments' list to a sbml file """
 
-        t_model = SbmlModelDefinition(self.__model, self.nextId())
-        # t_model.new(name, sbml_id)
-        ListOf.add(self, t_model)
-        return t_model
+		for model in ListOf.values(self):
+			sbml_md = sbml_model.createModelDefinition()
+			model.writeSbml(sbml_md, sbml_level, sbml_version)
 
-    def remove(self, comp):
-        """ Remove an object from the list """
-
-        dict.__delitem__(self, comp.objId)
-        # ListOf.remove(self, comp)
+		# SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
 
 
-    def removeById(self, obj_id):
-        """ Remove an object from the list """
-        dict.__delitem__(self, obj_id)
-        # self.remove(self.getById(obj_id))
+	def new(self, name=None, sbml_id=None):
+		""" Creates a new compartment """
+
+		t_model = SbmlModelDefinition(self.__model, self.nextId())
+		# t_model.new(name, sbml_id)
+		ListOf.add(self, t_model)
+		return t_model
+
+	def remove(self, comp):
+		""" Remove an object from the list """
+
+		dict.__delitem__(self, comp.objId)
+		# ListOf.remove(self, comp)
+
+
+	def removeById(self, obj_id):
+		""" Remove an object from the list """
+		dict.__delitem__(self, obj_id)
+		# self.remove(self.getById(obj_id))
 
 
 
-    def getListOfModelDefinitions(self):
-        res = []
-        for internal_model in ListOf.values(self):
-            res.append(internal_model)
-        return res
+	def getListOfModelDefinitions(self):
+		res = []
+		for internal_model in ListOf.values(self):
+			res.append(internal_model)
+		return res

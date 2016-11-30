@@ -29,67 +29,67 @@ from libsignetsim.settings.Settings import Settings
 class HasUnits(object):
 
 
-    def __init__ (self, model):
+	def __init__ (self, model):
 
-        self.__model = model
-        self.__unit = None
-        self.__builtinUnit = False
-
-
-    def readSbml(self, sbml_object, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-        """ Reads a parameter from a sbml file """
-        if sbml_object.isSetUnits():
-            if self.__model.listOfUnitDefinitions.containsSbmlId(sbml_object.getUnits()):
-                self.__unit = sbml_object.getUnits()
-            elif sbml_level < 3:
-                self.__builtinUnit = True
-                self.__unit = sbml_object.getUnits()
+		self.__model = model
+		self.__unit = None
+		self.__builtinUnit = False
 
 
-    def writeSbml(self, sbml_object, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-        """ Writes a parameter to  a sbml file """
-
-        if self.__unit is not None:
-            if self.__builtinUnit is False:
-                sbml_object.setUnits(self.__unit)
-            if self.__builtinUnit is True and sbml_level < 3:
-                sbml_object.setUnits(self.__unit)
-
-
-    def new(self, unit=None):
-
-        self.setUnits(unit)
+	def readSbml(self, sbml_object, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+		""" Reads a parameter from a sbml file """
+		if sbml_object.isSetUnits():
+			if self.__model.listOfUnitDefinitions.containsSbmlId(sbml_object.getUnits()):
+				self.__unit = sbml_object.getUnits()
+			elif sbml_level < 3:
+				self.__builtinUnit = True
+				self.__unit = sbml_object.getUnits()
 
 
-    def setUnits(self, unit, prefix=""):
-        if unit is not None:
-            self.__unit = prefix + unit.getSbmlId()
+	def writeSbml(self, sbml_object, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+		""" Writes a parameter to  a sbml file """
+
+		if self.__unit is not None:
+			if self.__builtinUnit is False:
+				sbml_object.setUnits(self.__unit)
+			if self.__builtinUnit is True and sbml_level < 3:
+				sbml_object.setUnits(self.__unit)
 
 
-    def getUnits(self):
-        if self.__unit is not None:
-            if self.__builtinUnit:
-                return self.__unit
-            else:
-                return self.__model.listOfUnitDefinitions.getBySbmlId(self.__unit)
-        else:
-            return None
+	def new(self, unit=None):
+
+		self.setUnits(unit)
 
 
-    def setUnitId(self, unit_id, prefix=""):
-        if unit_id is not None:
-            self.__unit = prefix + unit_id
-
-    def getUnitId(self):
-        return self.__unit
-
-    def hasUnits(self):
-        return self.__unit is not None
+	def setUnits(self, unit, prefix=""):
+		if unit is not None:
+			self.__unit = prefix + unit.getSbmlId()
 
 
-    def setDefaultVolumeUnit(self):
-        self.__unit = "volume"
+	def getUnits(self):
+		if self.__unit is not None:
+			if self.__builtinUnit:
+				return self.__unit
+			else:
+				return self.__model.listOfUnitDefinitions.getBySbmlId(self.__unit)
+		else:
+			return None
 
 
-    def copy(self, obj, prefix="", shift=0):
-        self.setUnitId(obj.getUnitId(), prefix)
+	def setUnitId(self, unit_id, prefix=""):
+		if unit_id is not None:
+			self.__unit = prefix + unit_id
+
+	def getUnitId(self):
+		return self.__unit
+
+	def hasUnits(self):
+		return self.__unit is not None
+
+
+	def setDefaultVolumeUnit(self):
+		self.__unit = "volume"
+
+
+	def copy(self, obj, prefix="", shift=0):
+		self.setUnitId(obj.getUnitId(), prefix)

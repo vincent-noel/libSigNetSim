@@ -25,37 +25,37 @@
 
 class InitiallyAssignedVariable(object):
 
-    def __init__(self, model):
+	def __init__(self, model):
 
-        self.__model = model
+		self.__model = model
 
-        self.__hasInitialAssignment = False
-        self.__hasInitialAssignmentBy = None
-
-
-    # Modifiers
-    def setInitialAssignmentBy(self, initial_assignment, shift=0):
-        self.__hasInitialAssignment = True
-        self.__hasInitialAssignmentBy = initial_assignment.objId + shift
+		self.__hasInitialAssignment = False
+		self.__hasInitialAssignmentBy = None
 
 
-    def unsetInitialAssignmentBy(self):
-        self.__hasInitialAssignment = False
-        self.__hasInitialAssignmentBy = None
+	# Modifiers
+	def setInitialAssignmentBy(self, initial_assignment, shift=0):
+		self.__hasInitialAssignment = True
+		self.__hasInitialAssignmentBy = initial_assignment.objId + shift
 
 
-    # Queries
-    def hasInitialAssignment(self):
-        return self.__hasInitialAssignment
-
-    def hasInitialAssignmentBy(self):
-        if self.hasInitialAssignment():
-            return self.__model.listOfInitialAssignments[self.__hasInitialAssignmentBy]
-        else:
-            return None
+	def unsetInitialAssignmentBy(self):
+		self.__hasInitialAssignment = False
+		self.__hasInitialAssignmentBy = None
 
 
-    # Copy
-    def copy(self, obj, prefix="", shift=0):
-        if obj.hasInitialAssignment():
-            self.setInitialAssignmentBy(obj.hasInitialAssignmentBy(), shift)
+	# Queries
+	def hasInitialAssignment(self):
+		return self.__hasInitialAssignment
+
+	def hasInitialAssignmentBy(self):
+		if self.hasInitialAssignment():
+			return self.__model.listOfInitialAssignments[self.__hasInitialAssignmentBy]
+		else:
+			return None
+
+
+	# Copy
+	def copy(self, obj, prefix="", shift=0):
+		if obj.hasInitialAssignment():
+			self.setInitialAssignmentBy(obj.hasInitialAssignmentBy(), shift)

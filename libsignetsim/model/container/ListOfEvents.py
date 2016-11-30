@@ -31,129 +31,129 @@ from libsignetsim.settings.Settings import Settings
 
 
 class ListOfEvents(ListOf, SbmlObject):
-    """ Class for the listOfEvents in a sbml model """
+	""" Class for the listOfEvents in a sbml model """
 
-    def __init__ (self, model=None):
+	def __init__ (self, model=None):
 
-        self.__model = model
-        ListOf.__init__(self, model)
-        SbmlObject.__init__(self, model)
-
-
-    def readSbml(self, sbml_list_of_events,
-                    sbmlLevel=Settings.defaultSbmlLevel,
-                    sbmlVersion=Settings.defaultSbmlVersion):
-        """ Reads the list of events from a sbml model """
-
-        for sbml_event in sbml_list_of_events:
-            event = Event(self.__model, self.nextId())
-            event.readSbml(sbml_event, sbmlLevel, sbmlVersion)
-            ListOf.add(self, event)
-
-        SbmlObject.readSbml(self, sbml_list_of_events, sbmlLevel, sbmlVersion)
-
-    def writeSbml(self, sbmlModel,
-                    sbmlLevel=Settings.defaultSbmlLevel,
-                    sbmlVersion=Settings.defaultSbmlVersion):
-        """ Writes the list of events to a sbml model """
-
-        for event in ListOf.values(self):
-            event.writeSbml(sbmlModel, sbmlLevel, sbmlVersion)
-
-        SbmlObject.writeSbml(self, sbmlModel, sbmlLevel, sbmlVersion)
+		self.__model = model
+		ListOf.__init__(self, model)
+		SbmlObject.__init__(self, model)
 
 
-    def new(self):
-        event = Event(self.__model, self.nextId())
-        ListOf.add(self, event)
-        return event
+	def readSbml(self, sbml_list_of_events,
+					sbmlLevel=Settings.defaultSbmlLevel,
+					sbmlVersion=Settings.defaultSbmlVersion):
+		""" Reads the list of events from a sbml model """
+
+		for sbml_event in sbml_list_of_events:
+			event = Event(self.__model, self.nextId())
+			event.readSbml(sbml_event, sbmlLevel, sbmlVersion)
+			ListOf.add(self, event)
+
+		SbmlObject.readSbml(self, sbml_list_of_events, sbmlLevel, sbmlVersion)
+
+	def writeSbml(self, sbmlModel,
+					sbmlLevel=Settings.defaultSbmlLevel,
+					sbmlVersion=Settings.defaultSbmlVersion):
+		""" Writes the list of events to a sbml model """
+
+		for event in ListOf.values(self):
+			event.writeSbml(sbmlModel, sbmlLevel, sbmlVersion)
+
+		SbmlObject.writeSbml(self, sbmlModel, sbmlLevel, sbmlVersion)
 
 
-    def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):
-
-        if len(self.keys()) > 0:
-            t_shift = max(self.keys())+1
-        else:
-            t_shift = 0
-
-        if obj not in deletions:
-
-            SbmlObject.copy(self, obj, prefix, t_shift)
-
-            for event in obj.values():
-                if event not in deletions:
-
-                    t_event = Event(self.__model, (event.objId + t_shift))
-
-                    if not event.isMarkedToBeReplaced:
-                        t_event.copy(event, prefix, t_shift, subs, deletions, replacements, conversions, time_conversion)
-
-                    else:
-                        t_event.copy(event.isMarkedToBeReplacedBy, prefix, t_shift, subs, deletions, replacements, conversions, time_conversion)
-
-                    if event.isMarkedToBeRenamed:
-                        t_event.setSbmlId(event.getSbmlId(), model_wide=False)
-
-                    ListOf.add(self, t_event)
+	def new(self):
+		event = Event(self.__model, self.nextId())
+		ListOf.add(self, event)
+		return event
 
 
+	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):
+
+		if len(self.keys()) > 0:
+			t_shift = max(self.keys())+1
+		else:
+			t_shift = 0
+
+		if obj not in deletions:
+
+			SbmlObject.copy(self, obj, prefix, t_shift)
+
+			for event in obj.values():
+				if event not in deletions:
+
+					t_event = Event(self.__model, (event.objId + t_shift))
+
+					if not event.isMarkedToBeReplaced:
+						t_event.copy(event, prefix, t_shift, subs, deletions, replacements, conversions, time_conversion)
+
+					else:
+						t_event.copy(event.isMarkedToBeReplacedBy, prefix, t_shift, subs, deletions, replacements, conversions, time_conversion)
+
+					if event.isMarkedToBeRenamed:
+						t_event.setSbmlId(event.getSbmlId(), model_wide=False)
+
+					ListOf.add(self, t_event)
 
 
 
 
 
-    def withDelay(self):
-
-        return [obj.objId for obj in ListOf.values(self) if obj.delay is not None]
 
 
+	def withDelay(self):
 
-    def nbRoots(self):
-
-        res = 0
-        for event in ListOf.values(self):
-            res += event.trigger.nbRoots()
-        return res
-
-    def getRootsOperators(self):
-        res = []
-        for event in ListOf.values(self):
-            res += event.trigger.getRootsOperator()
-        return res
-
-
-    def renameSbmlId(self, old_sbml_id, new_sbml_id):
-
-        for obj in ListOf.values(self):
-            obj.renameSbmlId(old_sbml_id, new_sbml_id)
+		return [obj.objId for obj in ListOf.values(self) if obj.delay is not None]
 
 
 
-    # Events can have ids, but they are optionals !
-    def sbmlIds(self):
-        """ Return a set of import ids of the sbml objects """
-        return [obj.getSbmlId() for obj in self.values() if obj.getSbmlId() is not None]
+	def nbRoots(self):
 
-    def getBySbmlId(self, sbml_id, pos=0):
-        """ Find sbml objects by their import Id """
+		res = 0
+		for event in ListOf.values(self):
+			res += event.trigger.nbRoots()
+		return res
 
-        res = []
-        for obj in self.values():
-            if obj.getSbmlId() is not None and obj.getSbmlId() == sbml_id:
-                res.append(obj)
-
-        if len(res) > 0:
-            return res[pos]
-        else:
-            return None
+	def getRootsOperators(self):
+		res = []
+		for event in ListOf.values(self):
+			res += event.trigger.getRootsOperator()
+		return res
 
 
-    def containsSbmlId(self, sbml_id):
-        """ Test if an sbml id is in the list """
+	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 
-        res = False
-        for obj in self.values():
-            if obj.getSbmlId() is not None and sbml_id == obj.getSbmlId():
-                res = True
+		for obj in ListOf.values(self):
+			obj.renameSbmlId(old_sbml_id, new_sbml_id)
 
-        return res
+
+
+	# Events can have ids, but they are optionals !
+	def sbmlIds(self):
+		""" Return a set of import ids of the sbml objects """
+		return [obj.getSbmlId() for obj in self.values() if obj.getSbmlId() is not None]
+
+	def getBySbmlId(self, sbml_id, pos=0):
+		""" Find sbml objects by their import Id """
+
+		res = []
+		for obj in self.values():
+			if obj.getSbmlId() is not None and obj.getSbmlId() == sbml_id:
+				res.append(obj)
+
+		if len(res) > 0:
+			return res[pos]
+		else:
+			return None
+
+
+	def containsSbmlId(self, sbml_id):
+		""" Test if an sbml id is in the list """
+
+		res = False
+		for obj in self.values():
+			if obj.getSbmlId() is not None and sbml_id == obj.getSbmlId():
+				res = True
+
+		return res

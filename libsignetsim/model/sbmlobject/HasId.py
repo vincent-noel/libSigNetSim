@@ -29,109 +29,109 @@ from sympy import Symbol
 
 class HasId(object):
 
-    def __init__(self, model):
+	def __init__(self, model):
 
-        self.__model = model
+		self.__model = model
 
-        self.__sbmlId = None
-        self.__name = None
-
-
-    def new(self, name=None, sbml_id=None):
-
-        if name is None:
-            self.newName()
-        else:
-            self.__name = name
-
-        if sbml_id is not None:
-            self.__sbmlId = sbml_id
-
-    def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
-
-        self.__sbmlId = prefix + obj.getSbmlId()
-        self.setName(obj.getName())
+		self.__sbmlId = None
+		self.__name = None
 
 
-    def newName(self):
+	def new(self, name=None, sbml_id=None):
+
+		if name is None:
+			self.newName()
+		else:
+			self.__name = name
+
+		if sbml_id is not None:
+			self.__sbmlId = sbml_id
+
+	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
+
+		self.__sbmlId = prefix + obj.getSbmlId()
+		self.setName(obj.getName())
 
 
-            if self.isSpecies():
-                self.__name = "Species %d" % self.objId
-            elif self.isParameter():
-                self.__name = "Parameter %d" % self.objId
-            elif self.isCompartment():
-                self.__name = "Compartment %d" % self.objId
-            elif self.isReaction():
-                self.__name = "Reaction %d" % self.objId
-
-            else:
-                self.__name = ""
+	def newName(self):
 
 
+			if self.isSpecies():
+				self.__name = "Species %d" % self.objId
+			elif self.isParameter():
+				self.__name = "Parameter %d" % self.objId
+			elif self.isCompartment():
+				self.__name = "Compartment %d" % self.objId
+			elif self.isReaction():
+				self.__name = "Reaction %d" % self.objId
 
-    def readSbml(self, sbml_variable,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-
-        if sbml_level >= 2:
-            self.__sbmlId = sbml_variable.getId()
-        else:
-            self.__sbmlId = sbml_variable.getName()
-
-        if sbml_variable.isSetName():
-            self.__name = sbml_variable.getName()
+			else:
+				self.__name = ""
 
 
 
-    def writeSbml(self, sbml_variable,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
+	def readSbml(self, sbml_variable,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
 
-        if self.__sbmlId is not None:
-            if sbml_level >= 2:
-                sbml_variable.setId(self.__sbmlId)
-            else:
-                sbml_variable.setName(self.__sbmlId)
+		if sbml_level >= 2:
+			self.__sbmlId = sbml_variable.getId()
+		else:
+			self.__sbmlId = sbml_variable.getName()
 
-        if self.__name is not None:
-            sbml_variable.setName(self.__name)
-
-
-    def getNameOrSbmlId(self):
-
-        if self.getName() is None:
-            return self.getSbmlId()
-        else:
-            return self.getName()
+		if sbml_variable.isSetName():
+			self.__name = sbml_variable.getName()
 
 
-    def getSbmlId(self):
-        return self.__sbmlId
 
-    def getName(self):
-        return self.__name
+	def writeSbml(self, sbml_variable,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
 
-    def setSbmlId(self, sbml_id, prefix="", model_wide=True):
+		if self.__sbmlId is not None:
+			if sbml_level >= 2:
+				sbml_variable.setId(self.__sbmlId)
+			else:
+				sbml_variable.setName(self.__sbmlId)
 
-        t_sbml_id = prefix + sbml_id.strip()
-        if self.__sbmlId is not None and self.__sbmlId != t_sbml_id:
-            if model_wide:
-                print "renaming model wide : %s to %s" % (self.__sbmlId, t_sbml_id)
-                self.__model.renameSbmlId(self.__sbmlId, t_sbml_id)
-            else:
-                self.__model.listOfVariables.renameSbmlId(self.__sbmlId, t_sbml_id)
+		if self.__name is not None:
+			sbml_variable.setName(self.__name)
 
-        self.__sbmlId = t_sbml_id
 
-    def setName(self, name):
-        self.__name = name
+	def getNameOrSbmlId(self):
 
-    def getIdFromName(self, name):
+		if self.getName() is None:
+			return self.getSbmlId()
+		else:
+			return self.getName()
 
-        res_sbml_id = name.replace(" ", "_")
-        res_sbml_id = res_sbml_id.replace("-", "_")
-        forbidden_chars = list(set(punctuation) - set('_'))
-        for t_char in forbidden_chars:
-            res_sbml_id = res_sbml_id.replace(t_char,"")
-        return res_sbml_id
+
+	def getSbmlId(self):
+		return self.__sbmlId
+
+	def getName(self):
+		return self.__name
+
+	def setSbmlId(self, sbml_id, prefix="", model_wide=True):
+
+		t_sbml_id = prefix + sbml_id.strip()
+		if self.__sbmlId is not None and self.__sbmlId != t_sbml_id:
+			if model_wide:
+				print "renaming model wide : %s to %s" % (self.__sbmlId, t_sbml_id)
+				self.__model.renameSbmlId(self.__sbmlId, t_sbml_id)
+			else:
+				self.__model.listOfVariables.renameSbmlId(self.__sbmlId, t_sbml_id)
+
+		self.__sbmlId = t_sbml_id
+
+	def setName(self, name):
+		self.__name = name
+
+	def getIdFromName(self, name):
+
+		res_sbml_id = name.replace(" ", "_")
+		res_sbml_id = res_sbml_id.replace("-", "_")
+		forbidden_chars = list(set(punctuation) - set('_'))
+		for t_char in forbidden_chars:
+			res_sbml_id = res_sbml_id.replace(t_char,"")
+		return res_sbml_id

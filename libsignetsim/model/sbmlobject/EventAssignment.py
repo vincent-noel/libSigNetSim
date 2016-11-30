@@ -35,74 +35,74 @@ from sympy import Symbol
 
 
 class EventAssignment(MathEventAssignment, SbmlObject):
-    """ Class definition for event assignments """
+	""" Class definition for event assignments """
 
-    def __init__(self, model, obj_id, event=None):
+	def __init__(self, model, obj_id, event=None):
 
-        self.__model = model
-        self.objId = obj_id
-        SbmlObject.__init__(self, model)
-        MathEventAssignment.__init__(self, model)
-        self.event = event
-        self.__var = None
-
-
-    def readSbml(self, sbml_event_assignment, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-        """ Reads event assignment from a sbml file """
-
-        SbmlObject.readSbml(self, sbml_event_assignment, sbml_level, sbml_version)
-        self.__var = self.__model.listOfVariables[sbml_event_assignment.getVariable()]
-        self.__var.addEventAssignmentBy(self.event)
-        MathEventAssignment.readSbml(self, sbml_event_assignment, sbml_level, sbml_version)
-
-    def writeSbml(self, sbml_event, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-        """ Writes event assignemnt to a sbml file """
-
-        sbml_event_assignment = sbml_event.createEventAssignment()
-        SbmlObject.writeSbml(self, sbml_event_assignment, sbml_level, sbml_version)
-        MathEventAssignment.writeSbml(self, sbml_event_assignment, sbml_level, sbml_version)
+		self.__model = model
+		self.objId = obj_id
+		SbmlObject.__init__(self, model)
+		MathEventAssignment.__init__(self, model)
+		self.event = event
+		self.__var = None
 
 
-    def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):
-        SbmlObject.copy(self, obj, prefix, shift)
+	def readSbml(self, sbml_event_assignment, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+		""" Reads event assignment from a sbml file """
 
-        t_symbol = Symbol(obj.getVariable().getSbmlId())
-        if t_symbol in subs.keys():
-            t_sbml_id = str(subs[t_symbol])
-            tt_symbol = Symbol(t_sbml_id)
-            if tt_symbol in replacements.keys():
-                t_sbml_id = str(replacements[tt_symbol])
-        else:
-            t_sbml_id = prefix+obj.getVariable().getSbmlId()
+		SbmlObject.readSbml(self, sbml_event_assignment, sbml_level, sbml_version)
+		self.__var = self.__model.listOfVariables[sbml_event_assignment.getVariable()]
+		self.__var.addEventAssignmentBy(self.event)
+		MathEventAssignment.readSbml(self, sbml_event_assignment, sbml_level, sbml_version)
 
-        self.__var = self.__model.listOfVariables[t_sbml_id]
-        self.__var.addEventAssignmentBy(self.event)
-        MathEventAssignment.copy(self, obj, prefix, shift, subs, deletions, replacements, conversions, time_conversion)
+	def writeSbml(self, sbml_event, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+		""" Writes event assignemnt to a sbml file """
 
-    def getVariable(self):
-        return self.__var
-
-    def getVariableMath(self):
-        return self.variable
+		sbml_event_assignment = sbml_event.createEventAssignment()
+		SbmlObject.writeSbml(self, sbml_event_assignment, sbml_level, sbml_version)
+		MathEventAssignment.writeSbml(self, sbml_event_assignment, sbml_level, sbml_version)
 
 
-    def setVariable(self, variable):
+	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):
+		SbmlObject.copy(self, obj, prefix, shift)
 
-        if self.__var is not None:
-            self.__var.removeEventAssignmentBy(self.event)
+		t_symbol = Symbol(obj.getVariable().getSbmlId())
+		if t_symbol in subs.keys():
+			t_sbml_id = str(subs[t_symbol])
+			tt_symbol = Symbol(t_sbml_id)
+			if tt_symbol in replacements.keys():
+				t_sbml_id = str(replacements[tt_symbol])
+		else:
+			t_sbml_id = prefix+obj.getVariable().getSbmlId()
 
-        self.__var = variable
-        self.__var.addEventAssignmentBy(self.event)
-        self.variable.setInternalVariable(variable.symbol.getInternalMathFormula())
+		self.__var = self.__model.listOfVariables[t_sbml_id]
+		self.__var.addEventAssignmentBy(self.event)
+		MathEventAssignment.copy(self, obj, prefix, shift, subs, deletions, replacements, conversions, time_conversion)
 
-    def getAssignment(self):
+	def getVariable(self):
+		return self.__var
 
-        return self.definition.getPrettyPrintMathFormula()
+	def getVariableMath(self):
+		return self.variable
 
-    def getAssignmentMath(self):
 
-        return self.definition
+	def setVariable(self, variable):
 
-    def setAssignment(self, value):
+		if self.__var is not None:
+			self.__var.removeEventAssignmentBy(self.event)
 
-        self.definition.setPrettyPrintMathFormula(str(value))
+		self.__var = variable
+		self.__var.addEventAssignmentBy(self.event)
+		self.variable.setInternalVariable(variable.symbol.getInternalMathFormula())
+
+	def getAssignment(self):
+
+		return self.definition.getPrettyPrintMathFormula()
+
+	def getAssignmentMath(self):
+
+		return self.definition
+
+	def setAssignment(self, value):
+
+		self.definition.setPrettyPrintMathFormula(str(value))

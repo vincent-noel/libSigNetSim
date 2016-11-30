@@ -32,45 +32,45 @@ from sympy import simplify, diff, solve
 class MathJacobianMatrix(object):
 
 
-    """ Sbml model class """
+	""" Sbml model class """
 
-    def __init__ (self):
-        """ Constructor of model class """
+	def __init__ (self):
+		""" Constructor of model class """
 
-        self.interactionMatrix = None
-        self.jacobianMatrix = None
+		self.interactionMatrix = None
+		self.jacobianMatrix = None
 
 
-    def buildJacobianMatrix(self, including_fast_reactions=True):
+	def buildJacobianMatrix(self, including_fast_reactions=True):
 
-        self.interactionMatrix = []
-        self.jacobianMatrix = []
+		self.interactionMatrix = []
+		self.jacobianMatrix = []
 
-        for ode in self.ODEs:
+		for ode in self.ODEs:
 
-            partial_ders = []
-            signs = []
+			partial_ders = []
+			signs = []
 
-            for var in self.ODE_vars:
+			for var in self.ODE_vars:
 
-                t_part_der = diff(ode.getDeveloppedInternalMathFormula(), var.getDeveloppedInternalMathFormula())
-                t_part_der_formula = MathFormula(self)
-                t_part_der_formula.setInternalMathFormula(t_part_der)
-                partial_ders.append(t_part_der_formula)
+				t_part_der = diff(ode.getDeveloppedInternalMathFormula(), var.getDeveloppedInternalMathFormula())
+				t_part_der_formula = MathFormula(self)
+				t_part_der_formula.setInternalMathFormula(t_part_der)
+				partial_ders.append(t_part_der_formula)
 
-                if t_part_der == MathFormula.ZERO:
-                    signs.append(0)
+				if t_part_der == MathFormula.ZERO:
+					signs.append(0)
 
-                else:
-                    for atom in t_part_der.atoms(SympySymbol):
-                        t_part_der = t_part_der.subs({atom: SympyInteger(1)})
+				else:
+					for atom in t_part_der.atoms(SympySymbol):
+						t_part_der = t_part_der.subs({atom: SympyInteger(1)})
 
-                    if t_part_der > MathFormula.ZERO:
-                        signs.append(1)
-                    elif t_part_der < MathFormula.ZERO:
-                        signs.append(-1)
-                    else:
-                        signs.append(2)
+					if t_part_der > MathFormula.ZERO:
+						signs.append(1)
+					elif t_part_der < MathFormula.ZERO:
+						signs.append(-1)
+					else:
+						signs.append(2)
 
-            self.jacobianMatrix.append(partial_ders)
-            self.interactionMatrix.append(signs)
+			self.jacobianMatrix.append(partial_ders)
+			self.interactionMatrix.append(signs)

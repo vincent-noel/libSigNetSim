@@ -28,28 +28,28 @@ from libsignetsim.settings.Settings import Settings
 
 class MathFunctionDefinition(object):
 
-    def __init__(self, model):
-        self.definition = MathFormula(model, MathFormula.MATH_FUNCTION)
+	def __init__(self, model):
+		self.definition = MathFormula(model, MathFormula.MATH_FUNCTION)
 
 
-    def readSbml(self, sbml_function_definition, sbml_level, sbml_version):
-        self.definition.readSbml(sbml_function_definition.getMath(), sbml_level, sbml_version)
+	def readSbml(self, sbml_function_definition, sbml_level, sbml_version):
+		self.definition.readSbml(sbml_function_definition.getMath(), sbml_level, sbml_version)
 
 
-    def writeSbml(self, sbml_function_definition, sbml_level, sbml_version):
-        # print "poil"
-        # print  self.definition.writeSbml(sbml_level, sbml_version)
-        sbml_function_definition.setMath(self.definition.writeSbml(sbml_level, sbml_version))
+	def writeSbml(self, sbml_function_definition, sbml_level, sbml_version):
+		# print "poil"
+		# print  self.definition.writeSbml(sbml_level, sbml_version)
+		sbml_function_definition.setMath(self.definition.writeSbml(sbml_level, sbml_version))
 
 
-    def getMathFormulaFunction(self):
-        return self.definition.getMathFormula(MathFormula.MATH_INTERNAL).args[1]
+	def getMathFormulaFunction(self):
+		return self.definition.getMathFormula(MathFormula.MATH_INTERNAL).args[1]
 
 
-    def getMathFormulaFunctionArguments(self):
-        return self.definition.getMathFormula(MathFormula.MATH_INTERNAL).args[0]
+	def getMathFormulaFunctionArguments(self):
+		return self.definition.getMathFormula(MathFormula.MATH_INTERNAL).args[0]
 
-    def copy(self, obj, prefix="", shift=0):
-        self.definition.setInternalMathFormula(obj.definition.getInternalMathFormula())
-        if prefix != "":
-            self.definition.renameSbmlId(obj.getSbmlId(), prefix+obj.getSbmlId())
+	def copy(self, obj, prefix="", shift=0):
+		self.definition.setInternalMathFormula(obj.definition.getInternalMathFormula())
+		if prefix != "":
+			self.definition.renameSbmlId(obj.getSbmlId(), prefix+obj.getSbmlId())

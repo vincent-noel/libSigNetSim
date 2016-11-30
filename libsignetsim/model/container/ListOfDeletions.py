@@ -31,62 +31,62 @@ from libsignetsim.model.sbmlobject.SbmlDeletion import SbmlDeletion
 from libsignetsim.settings.Settings import Settings
 
 class ListOfDeletions(ListOf, HasIds):#, SbmlObject):
-    """ Class for the listOfModelDefinition in a sbml model """
+	""" Class for the listOfModelDefinition in a sbml model """
 
-    def __init__ (self, model, parent_submodel):
+	def __init__ (self, model, parent_submodel):
 
-        self.__model = model
-        self.__parentSubmodel = parent_submodel
-        ListOf.__init__(self, model)
-        HasIds.__init__(self, model)
-        # SbmlObject.__init__(self, model)
+		self.__model = model
+		self.__parentSubmodel = parent_submodel
+		ListOf.__init__(self, model)
+		HasIds.__init__(self, model)
+		# SbmlObject.__init__(self, model)
 
-    def readSbml(self, sbml_list_deletions,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-        """ Reads compartments' list from a sbml file """
+	def readSbml(self, sbml_list_deletions,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+		""" Reads compartments' list from a sbml file """
 
-        for deletion in sbml_list_deletions:
-            t_deletion = SbmlDeletion(self.__model, self.nextId(), self.__parentSubmodel)
-            t_deletion.readSbml(deletion, sbml_level, sbml_version)
-            ListOf.add(self, t_deletion)
+		for deletion in sbml_list_deletions:
+			t_deletion = SbmlDeletion(self.__model, self.nextId(), self.__parentSubmodel)
+			t_deletion.readSbml(deletion, sbml_level, sbml_version)
+			ListOf.add(self, t_deletion)
 
-        # SbmlObject.readSbml(self, sbml_list_deletions, sbml_level, sbml_version)
-
-
-    def writeSbml(self, sbml_model,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-        """ Writes compartments' list to a sbml file """
-
-        for t_deletion in ListOf.values(self):
-            sbml_deletion = sbml_model.createDeletion()
-            t_deletion.writeSbml(sbml_deletion, sbml_level, sbml_version)
-
-        # SbmlObject.writeSbml(sbml_model)
+		# SbmlObject.readSbml(self, sbml_list_deletions, sbml_level, sbml_version)
 
 
-    def new(self):
-        """ Creates a new compartment """
+	def writeSbml(self, sbml_model,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+		""" Writes compartments' list to a sbml file """
 
-        t_deletion = SbmlDeletion(self.__model, self.nextId(), self.__parentSubmodel)
-        ListOf.add(self, t_deletion)
-        return t_deletion
+		for t_deletion in ListOf.values(self):
+			sbml_deletion = sbml_model.createDeletion()
+			t_deletion.writeSbml(sbml_deletion, sbml_level, sbml_version)
 
-
-    def remove(self, deletion):
-        """ Remove an object from the list """
-        ListOf.remove(self, deletion)
-
-    def removeById(self, obj_id):
-        """ Remove an object from the list """
-        self.remove(self.getById(obj_id))
+		# SbmlObject.writeSbml(sbml_model)
 
 
-    def getDeletedMetaIds(self):
+	def new(self):
+		""" Creates a new compartment """
 
-        objs = []
-        for deletion in ListOf.values(self):
-            objs.append(deletion.getRefObject().getMetaId())
+		t_deletion = SbmlDeletion(self.__model, self.nextId(), self.__parentSubmodel)
+		ListOf.add(self, t_deletion)
+		return t_deletion
 
-        return objs
+
+	def remove(self, deletion):
+		""" Remove an object from the list """
+		ListOf.remove(self, deletion)
+
+	def removeById(self, obj_id):
+		""" Remove an object from the list """
+		self.remove(self.getById(obj_id))
+
+
+	def getDeletedMetaIds(self):
+
+		objs = []
+		for deletion in ListOf.values(self):
+			objs.append(deletion.getRefObject().getMetaId())
+
+		return objs

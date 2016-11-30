@@ -28,38 +28,38 @@ from libsignetsim.model.math.MathAlgebraicRule import MathAlgebraicRule
 from libsignetsim.settings.Settings import Settings
 
 class AlgebraicRule(Rule, MathAlgebraicRule):
-    """ Class for rate rules """
+	""" Class for rate rules """
 
-    def __init__ (self, model, objId):
+	def __init__ (self, model, objId):
 
-        Rule.__init__(self, model, objId, Rule.RULE_ALGEBRAIC)
-        MathAlgebraicRule.__init__(self, model)
-
-
-    def readSbml(self, sbml_rule,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-
-        Rule.readSbml(self, sbml_rule, sbml_level, sbml_version)
-        MathAlgebraicRule.readSbml(self, sbml_rule, sbml_level, sbml_version)
+		Rule.__init__(self, model, objId, Rule.RULE_ALGEBRAIC)
+		MathAlgebraicRule.__init__(self, model)
 
 
-    def writeSbml(self, sbml_model,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
+	def readSbml(self, sbml_rule,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
 
-        sbml_rule = sbml_model.createAlgebraicRule()
-        Rule.writeSbml(self, sbml_rule, sbml_level, sbml_version)
-        MathAlgebraicRule.writeSbml(self, sbml_rule, sbml_level, sbml_version)
-
-
-    def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):
-        Rule.copy(self, obj, prefix, shift)
-        MathAlgebraicRule.copy(self, obj, prefix, shift, subs, deletions, replacements, conversions)
-
-    def getExpression(self):
-        return self.getPrettyPrintDefinition()
+		Rule.readSbml(self, sbml_rule, sbml_level, sbml_version)
+		MathAlgebraicRule.readSbml(self, sbml_rule, sbml_level, sbml_version)
 
 
-    def setExpression(self, string):
-        self.setPrettyPrintDefinition(string)
+	def writeSbml(self, sbml_model,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+
+		sbml_rule = sbml_model.createAlgebraicRule()
+		Rule.writeSbml(self, sbml_rule, sbml_level, sbml_version)
+		MathAlgebraicRule.writeSbml(self, sbml_rule, sbml_level, sbml_version)
+
+
+	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):
+		Rule.copy(self, obj, prefix, shift)
+		MathAlgebraicRule.copy(self, obj, prefix, shift, subs, deletions, replacements, conversions)
+
+	def getExpression(self):
+		return self.getPrettyPrintDefinition()
+
+
+	def setExpression(self, string):
+		self.setPrettyPrintDefinition(string)

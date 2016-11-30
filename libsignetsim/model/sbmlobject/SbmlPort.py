@@ -28,27 +28,27 @@ from libsignetsim.model.sbmlobject.HasRef import HasRef
 
 class SbmlPort(HasId, HasRef):
 
-    def __init__(self, model, obj_id):
+	def __init__(self, model, obj_id):
 
-        self.__model = model
-        self.objId = obj_id
-        HasId.__init__(self, model)
-        HasRef.__init__(self, model)
-
-
-
-    def readSbml(self, sbml_port,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-
-        HasId.readSbml(self, sbml_port, sbml_level, sbml_version)
-        HasRef.readSbml(self, sbml_port, sbml_level, sbml_version)
+		self.__model = model
+		self.objId = obj_id
+		HasId.__init__(self, model)
+		HasRef.__init__(self, model)
 
 
 
-    def writeSbml(self, sbml_port,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
+	def readSbml(self, sbml_port,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
 
-        HasId.writeSbml(self, sbml_port, sbml_level, sbml_version)
-        HasRef.writeSbml(self, sbml_port, sbml_level, sbml_version)
+		HasId.readSbml(self, sbml_port, sbml_level, sbml_version)
+		HasRef.readSbml(self, sbml_port, sbml_level, sbml_version)
+
+
+
+	def writeSbml(self, sbml_port,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+
+		HasId.writeSbml(self, sbml_port, sbml_level, sbml_version)
+		HasRef.writeSbml(self, sbml_port, sbml_level, sbml_version)

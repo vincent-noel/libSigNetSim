@@ -26,45 +26,45 @@
 class RuledVariable(object):
 
 
-    def __init__(self, model):
+	def __init__(self, model):
 
-        self.__model = model
-        self.__isRuled = False
-        self.__isRuledBy = None
-
-
-    def setRuledBy(self, rule, shift=0):
-
-        self.__isRuled = True
-        self.__isRuledBy = rule.objId + shift
-
-    def unsetRuledBy(self):
-
-        self.__isRuled = False
-        self.__isRuledById = None
+		self.__model = model
+		self.__isRuled = False
+		self.__isRuledBy = None
 
 
-    def isRuled(self):
-        return self.__isRuled
+	def setRuledBy(self, rule, shift=0):
+
+		self.__isRuled = True
+		self.__isRuledBy = rule.objId + shift
+
+	def unsetRuledBy(self):
+
+		self.__isRuled = False
+		self.__isRuledById = None
 
 
-    def isRuledBy(self):
-        if self.isRuled():
-            return self.__model.listOfRules[self.__isRuledBy]
-        else:
-            return None
+	def isRuled(self):
+		return self.__isRuled
 
 
-    def isRateRuled(self):
-        """ Tests is the compartment size is computed with a rate rule """
-        return self.isRuled() and self.__model.listOfRules[self.__isRuledBy].isRate()
+	def isRuledBy(self):
+		if self.isRuled():
+			return self.__model.listOfRules[self.__isRuledBy]
+		else:
+			return None
 
 
-    def isAssignmentRuled(self):
-        """ Tests is the compartment size is computed with a rate rule """
-        return self.isRuled() and self.__model.listOfRules[self.__isRuledBy].isAssignment()
+	def isRateRuled(self):
+		""" Tests is the compartment size is computed with a rate rule """
+		return self.isRuled() and self.__model.listOfRules[self.__isRuledBy].isRate()
 
 
-    def copy(self, obj, prefix="", shift=0):
-        if obj.isRuled():
-            self.setRuledBy(obj.isRuledBy(), shift)
+	def isAssignmentRuled(self):
+		""" Tests is the compartment size is computed with a rate rule """
+		return self.isRuled() and self.__model.listOfRules[self.__isRuledBy].isAssignment()
+
+
+	def copy(self, obj, prefix="", shift=0):
+		if obj.isRuled():
+			self.setRuledBy(obj.isRuledBy(), shift)

@@ -30,89 +30,89 @@ from libsignetsim.model.ModelException import ModelException
 
 class Variable(SbmlVariable, MathVariable):
 
-    def __init__(self, model, sbml_type, is_from_reaction=None):
+	def __init__(self, model, sbml_type, is_from_reaction=None):
 
-        self.__model = model
+		self.__model = model
 
-        SbmlVariable.__init__(self, model, sbml_type, is_from_reaction)
-        MathVariable.__init__(self, model, is_from_reaction)
+		SbmlVariable.__init__(self, model, sbml_type, is_from_reaction)
+		MathVariable.__init__(self, model, is_from_reaction)
 
-    def new(self, string, sbml_type=SbmlVariable.PARAMETER):
-        SbmlVariable.new(self, string, sbml_type)
-        MathVariable.new(self, string)
+	def new(self, string, sbml_type=SbmlVariable.PARAMETER):
+		SbmlVariable.new(self, string, sbml_type)
+		MathVariable.new(self, string)
 
-    def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversion_factor=None):
-        SbmlVariable.copy(self, obj, prefix, shift, subs, deletions, replacements)
-        MathVariable.copy(self, obj, prefix, shift, subs, deletions, replacements, conversion_factor)
+	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversion_factor=None):
+		SbmlVariable.copy(self, obj, prefix, shift, subs, deletions, replacements)
+		MathVariable.copy(self, obj, prefix, shift, subs, deletions, replacements, conversion_factor)
 
-    def readSbml(self, sbml_variable,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
+	def readSbml(self, sbml_variable,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
 
-        SbmlVariable.readSbml(self, sbml_variable, sbml_level, sbml_version)
-        MathVariable.readSbml(self, sbml_variable, sbml_level, sbml_version)
+		SbmlVariable.readSbml(self, sbml_variable, sbml_level, sbml_version)
+		MathVariable.readSbml(self, sbml_variable, sbml_level, sbml_version)
 
-    def writeSbml(self, sbml_variable,
-                        sbml_level=Settings.defaultSbmlLevel,
-                        sbml_version=Settings.defaultSbmlVersion):
+	def writeSbml(self, sbml_variable,
+						sbml_level=Settings.defaultSbmlLevel,
+						sbml_version=Settings.defaultSbmlVersion):
 
-        SbmlVariable.writeSbml(self, sbml_variable, sbml_level, sbml_version)
-        MathVariable.writeSbml(self, sbml_variable, sbml_level, sbml_version)
+		SbmlVariable.writeSbml(self, sbml_variable, sbml_level, sbml_version)
+		MathVariable.writeSbml(self, sbml_variable, sbml_level, sbml_version)
 
-    def setSbmlId(self, sbml_id, prefix="", model_wide=True):
+	def setSbmlId(self, sbml_id, prefix="", model_wide=True):
 
-        if sbml_id is not None:
-            t_sbml_id = prefix + sbml_id
-            if t_sbml_id == self.getSbmlId():
-                pass
+		if sbml_id is not None:
+			t_sbml_id = prefix + sbml_id
+			if t_sbml_id == self.getSbmlId():
+				pass
 
-            elif not t_sbml_id in self.__model.listOfVariables.keys():
-                old_sbml_id = self.getSbmlId()
-                SbmlVariable.setSbmlId(self, t_sbml_id, prefix, model_wide)
-                MathVariable.setSbmlId(self, t_sbml_id, prefix)
-            else:
-                raise ModelException(
-                        ModelException.SBML_ERROR,
-                        "Identifier %s already exist" % sbml_id)
+			elif not t_sbml_id in self.__model.listOfVariables.keys():
+				old_sbml_id = self.getSbmlId()
+				SbmlVariable.setSbmlId(self, t_sbml_id, prefix, model_wide)
+				MathVariable.setSbmlId(self, t_sbml_id, prefix)
+			else:
+				raise ModelException(
+						ModelException.SBML_ERROR,
+						"Identifier %s already exist" % sbml_id)
 
-    def renameSbmlId(self, old_sbml_id, new_sbml_id):
-        """ Function to rename a sbml id which could be countained
-            in the variable, aka in the value
-        """
-        MathVariable.renameSbmlId(self, old_sbml_id, new_sbml_id)
+	def renameSbmlId(self, old_sbml_id, new_sbml_id):
+		""" Function to rename a sbml id which could be countained
+			in the variable, aka in the value
+		"""
+		MathVariable.renameSbmlId(self, old_sbml_id, new_sbml_id)
 
-    def isInAlgebraicRules(self):
-        return self.__model.listOfRules.algebraicContainsVariable(self)
+	def isInAlgebraicRules(self):
+		return self.__model.listOfRules.algebraicContainsVariable(self)
 
 
-    def getTopLevelSbmlId(self):
-        if self.__model.isMainModel:
-            return self.getSbmlId()
-        else:
-            return self.__model.parentDoc.model.listOfSubmodels.getBySbmlId(self.__model.getSbmlId()).getSbmlId() + "__" + self.getSbmlId()
+	def getTopLevelSbmlId(self):
+		if self.__model.isMainModel:
+			return self.getSbmlId()
+		else:
+			return self.__model.parentDoc.model.listOfSubmodels.getBySbmlId(self.__model.getSbmlId()).getSbmlId() + "__" + self.getSbmlId()
 
-    def getPrefix(self):
-        if self.__model.isMainModel:
-            return ""
-        else:
-            # print self.__model.getSbmlId()
-            # print [sm.getSbmlId() for sm in self.__model.parentDoc.model.listOfSubmodels.values()]
-            # print self.__model.parentDoc.model.listOfSubmodels.getBySbmlId(self.__model.getSbmlId()).getSbmlId()
-            return self.__model.parentDoc.model.listOfSubmodels.getBySbmlId(self.__model.getSbmlId()).getSbmlId()
+	def getPrefix(self):
+		if self.__model.isMainModel:
+			return ""
+		else:
+			# print self.__model.getSbmlId()
+			# print [sm.getSbmlId() for sm in self.__model.parentDoc.model.listOfSubmodels.values()]
+			# print self.__model.parentDoc.model.listOfSubmodels.getBySbmlId(self.__model.getSbmlId()).getSbmlId()
+			return self.__model.parentDoc.model.listOfSubmodels.getBySbmlId(self.__model.getSbmlId()).getSbmlId()
 
-    def getFlattenSbmlId(self):
+	def getFlattenSbmlId(self):
 
-        # if self.__model.isMainModel:
-        #     prefix = ""
-        # else:
-        #     prefix = self.__model.parentDoc.model.listOfSubmodels.getBySbmlId(self.__model.getSbmlId()).getSbmlId()
+		# if self.__model.isMainModel:
+		#     prefix = ""
+		# else:
+		#     prefix = self.__model.parentDoc.model.listOfSubmodels.getBySbmlId(self.__model.getSbmlId()).getSbmlId()
 
-        if self.isMarkedToBeReplaced:
-            sbml_id = self.isMarkedToBeReplacedBy.getTopLevelSbmlId()
-        else:
-            sbml_id = self.getTopLevelSbmlId()
-        #
-        # if prefix == "":
-        return sbml_id
-        # else:
-        #     return "%s__%s" % (prefix, sbml_id)
+		if self.isMarkedToBeReplaced:
+			sbml_id = self.isMarkedToBeReplacedBy.getTopLevelSbmlId()
+		else:
+			sbml_id = self.getTopLevelSbmlId()
+		#
+		# if prefix == "":
+		return sbml_id
+		# else:
+		#     return "%s__%s" % (prefix, sbml_id)

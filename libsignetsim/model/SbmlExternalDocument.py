@@ -35,22 +35,22 @@ from libsignetsim.model.SbmlDocument import SbmlDocument
 
 
 class SbmlExternalDocument(SbmlDocument):
-    """ Sbml model class """
+	""" Sbml model class """
 
 
-    def __init__ (self, path):
-        """ Constructor of model class """
+	def __init__ (self, path):
+		""" Constructor of model class """
 
-        SbmlDocument.__init__(self, path=path)
+		SbmlDocument.__init__(self, path=path)
 
-    def readSbml(self, sbmlFilename):
+	def readSbml(self, sbmlFilename):
 
-        SbmlDocument.readSbml(self, sbmlFilename)
+		SbmlDocument.readSbml(self, sbmlFilename)
 
-    def writeSbml(self, sbml_filename):
+	def writeSbml(self, sbml_filename):
 
-        SbmlDocument.writeSbml(self, sbmlFilename)
+		SbmlDocument.writeSbml(self, sbmlFilename)
 
-    def getModelInstance(self):
+	def getModelInstance(self):
 
-        return SbmlDocument.getModelInstance(self)
+		return SbmlDocument.getModelInstance(self)

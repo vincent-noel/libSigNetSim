@@ -33,133 +33,133 @@ from libsignetsim.settings.Settings import Settings
 from copy import copy
 
 class Parameter(Variable, SbmlObject, InitiallyAssignedVariable,
-                        RuledVariable, EventAssignedVariable,
-                        HasUnits):
-    #
-    # BACKWARD = 0
-    # FORWARD = 1
-    # CATALYSIS = 2
-    # MICHAELIS = 3
-    #
+						RuledVariable, EventAssignedVariable,
+						HasUnits):
+	#
+	# BACKWARD = 0
+	# FORWARD = 1
+	# CATALYSIS = 2
+	# MICHAELIS = 3
+	#
 
-    def __init__ (self, model, obj_id, name=None,
-                    local_parameter=False, reaction=None):
+	def __init__ (self, model, obj_id, name=None,
+					local_parameter=False, reaction=None):
 
-        SbmlObject.__init__(self, model)
-        InitiallyAssignedVariable.__init__(self, model)
-        RuledVariable.__init__(self, model)
-        EventAssignedVariable.__init__(self, model)
-        HasUnits.__init__(self, model)
+		SbmlObject.__init__(self, model)
+		InitiallyAssignedVariable.__init__(self, model)
+		RuledVariable.__init__(self, model)
+		EventAssignedVariable.__init__(self, model)
+		HasUnits.__init__(self, model)
 
-        self.model = model
-        self.objId = obj_id
+		self.model = model
+		self.objId = obj_id
 
-        self.localParameter = local_parameter
-        self.reaction = reaction
+		self.localParameter = local_parameter
+		self.reaction = reaction
 
-        if self.localParameter:
-            Variable.__init__(self, model, Variable.PARAMETER, self.reaction)
-        else:
-            Variable.__init__(self, model, Variable.PARAMETER)
-
-
-
-    def copy(self, parameter, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversion_factor=None):
-
-        #
-        # self.localParameter = parameter.localParameter
-        # self.reaction = parameter.reaction
+		if self.localParameter:
+			Variable.__init__(self, model, Variable.PARAMETER, self.reaction)
+		else:
+			Variable.__init__(self, model, Variable.PARAMETER)
 
 
-        SbmlObject.copy(self, parameter, prefix, shift)
-        InitiallyAssignedVariable.copy(self, parameter, prefix, shift)
-        EventAssignedVariable.copy(self, parameter, prefix, shift)
-        RuledVariable.copy(self, parameter, prefix, shift)
-        HasUnits.copy(self, parameter, prefix, shift)
-        Variable.copy(self, parameter, prefix, shift, subs, deletions, replacements, conversion_factor)
+
+	def copy(self, parameter, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversion_factor=None):
+
+		#
+		# self.localParameter = parameter.localParameter
+		# self.reaction = parameter.reaction
 
 
-    def new(self, name, value=1, constant=True, unit=None):
-
-        """ Creates new compartment with default options """
-
-        SbmlObject.new(self)
-        Variable.new(self, name, Variable.PARAMETER)
-        HasUnits.new(self, unit)
-
-        self.setValue(value)
-        self.constant = constant
+		SbmlObject.copy(self, parameter, prefix, shift)
+		InitiallyAssignedVariable.copy(self, parameter, prefix, shift)
+		EventAssignedVariable.copy(self, parameter, prefix, shift)
+		RuledVariable.copy(self, parameter, prefix, shift)
+		HasUnits.copy(self, parameter, prefix, shift)
+		Variable.copy(self, parameter, prefix, shift, subs, deletions, replacements, conversion_factor)
 
 
-    def getReactionId(self):
+	def new(self, name, value=1, constant=True, unit=None):
 
-        if self.localParameter:
-            return self.reaction.objId
-        else:
-            return None
+		""" Creates new compartment with default options """
 
-    def readSbml(self, sbml_parameter, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-        """ Reads a parameter from a sbml file """
+		SbmlObject.new(self)
+		Variable.new(self, name, Variable.PARAMETER)
+		HasUnits.new(self, unit)
 
-        Variable.readSbml(self, sbml_parameter, sbml_level, sbml_version)
-        SbmlObject.readSbml(self, sbml_parameter, sbml_level, sbml_version)
-        HasUnits.readSbml(self, sbml_parameter, sbml_level, sbml_version)
+		self.setValue(value)
+		self.constant = constant
 
 
-    def readSbmlVariable(self, sbml_parameter, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+	def getReactionId(self):
 
-        if self.localParameter:
-            self.symbol.readSbml("_local_%d_%s" % (self.reaction.objId, sbml_parameter.getId()), sbml_level, sbml_version)
-        else:
-            self.symbol.readSbml(sbml_parameter.getId(), sbml_level, sbml_version)
+		if self.localParameter:
+			return self.reaction.objId
+		else:
+			return None
 
-        if sbml_parameter.isSetValue():
-            self.isInitialized = True
-            self.value.readSbml(sbml_parameter.getValue(), sbml_level, sbml_version)
+	def readSbml(self, sbml_parameter, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+		""" Reads a parameter from a sbml file """
 
-        if sbml_parameter.isSetConstant():
-            self.constant = sbml_parameter.getConstant()
-        elif sbml_level == 2:
-            self.constant = True
-        elif sbml_level == 1:
-            self.constant = False
-
-        if self.localParameter:
-            self.constant = True
-
-    def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-        """ Writes a parameter to  a sbml file """
-
-        sbml_param = sbml_model.createParameter()
-
-        SbmlObject.writeSbml(self, sbml_param, sbml_level, sbml_version)
-        Variable.writeSbml(self, sbml_param, sbml_level, sbml_version)
-        HasUnits.writeSbml(self, sbml_param, sbml_level, sbml_version)
+		Variable.readSbml(self, sbml_parameter, sbml_level, sbml_version)
+		SbmlObject.readSbml(self, sbml_parameter, sbml_level, sbml_version)
+		HasUnits.readSbml(self, sbml_parameter, sbml_level, sbml_version)
 
 
-    def writeSbmlVariable(self, sbml_param, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+	def readSbmlVariable(self, sbml_parameter, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
-        if self.isInitialized:
-            sbml_param.setValue(self.getValue())
+		if self.localParameter:
+			self.symbol.readSbml("_local_%d_%s" % (self.reaction.objId, sbml_parameter.getId()), sbml_level, sbml_version)
+		else:
+			self.symbol.readSbml(sbml_parameter.getId(), sbml_level, sbml_version)
 
-        if self.constant is not None and (sbml_level == 3 or (sbml_level == 2 and not self.constant)):
-            sbml_param.setConstant(self.constant)
+		if sbml_parameter.isSetValue():
+			self.isInitialized = True
+			self.value.readSbml(sbml_parameter.getValue(), sbml_level, sbml_version)
+
+		if sbml_parameter.isSetConstant():
+			self.constant = sbml_parameter.getConstant()
+		elif sbml_level == 2:
+			self.constant = True
+		elif sbml_level == 1:
+			self.constant = False
+
+		if self.localParameter:
+			self.constant = True
+
+	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+		""" Writes a parameter to  a sbml file """
+
+		sbml_param = sbml_model.createParameter()
+
+		SbmlObject.writeSbml(self, sbml_param, sbml_level, sbml_version)
+		Variable.writeSbml(self, sbml_param, sbml_level, sbml_version)
+		HasUnits.writeSbml(self, sbml_param, sbml_level, sbml_version)
 
 
-    def setLocalParameter(self, choice):
-        """ Switches the local property of the parameter """
-        self.localParameter = choice
+	def writeSbmlVariable(self, sbml_param, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+
+		if self.isInitialized:
+			sbml_param.setValue(self.getValue())
+
+		if self.constant is not None and (sbml_level == 3 or (sbml_level == 2 and not self.constant)):
+			sbml_param.setConstant(self.constant)
 
 
-    def isLocalParameter(self):
-        """ Tests the local property of the parameter """
-        return self.localParameter
+	def setLocalParameter(self, choice):
+		""" Switches the local property of the parameter """
+		self.localParameter = choice
 
-    #
-    # def getNameOrSbmlId(self):
-    #
-    #     # If there is no name, we need to return the sbmlId
-    #     if SbmlObject.getName(self) is None:
-    #         return Variable.getSbmlId(self)
-    #     else:
-    #         return SbmlObject.getName(self)
+
+	def isLocalParameter(self):
+		""" Tests the local property of the parameter """
+		return self.localParameter
+
+	#
+	# def getNameOrSbmlId(self):
+	#
+	#     # If there is no name, we need to return the sbmlId
+	#     if SbmlObject.getName(self) is None:
+	#         return Variable.getSbmlId(self)
+	#     else:
+	#         return SbmlObject.getName(self)

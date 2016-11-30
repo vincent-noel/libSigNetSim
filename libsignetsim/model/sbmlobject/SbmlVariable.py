@@ -29,110 +29,110 @@ from sympy import Symbol
 
 class SbmlVariable(HasId):
 
-    SPECIES             = 0
-    COMPARTMENT         = 1
-    PARAMETER           = 2
-    STOICHIOMERY        = 3
-    REACTION            = 4
+	SPECIES             = 0
+	COMPARTMENT         = 1
+	PARAMETER           = 2
+	STOICHIOMERY        = 3
+	REACTION            = 4
 
-    def __init__(self, model, sbml_type, is_from_reaction=None):
+	def __init__(self, model, sbml_type, is_from_reaction=None):
 
-        self.__model = model
-        HasId.__init__(self, model)
-        self.sbmlType = sbml_type
-        self.reaction = is_from_reaction
-
-
-
-    def new(self, name, sbml_type=PARAMETER):
-        self.sbmlType = sbml_type
-        t_sbmlId = self.__model.listOfVariables.addVariable(self, name)
-        # print "Return from add variable"
-        # print t_sbmlId
-        HasId.new(self, name, t_sbmlId)
-        # print "Name nd sbml id"
-        # print name == None
-        # print self.getName()
-
-        # print self.getSbmlId()
-
-    def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
-
-
-        HasId.copy(self, obj, prefix, shift, subs, deletions, replacements)
-
-        if self.isParameter() and self.localParameter:
-            # print "Adding %s to the list of variables" %  "_local_%d_%s" % (self.reaction.objId, prefix + obj.getSbmlId())
-            self.__model.listOfVariables.addVariable(self, "_local_%d_%s" % (self.reaction.objId, prefix + obj.getSbmlId()))
-        else:
-            # print obj
-            # print obj.isReplaced()
-
-            # t_sbml_id = None
-            # if Symbol(obj.getSbmlId()) in subs.keys():
-            #     t_sbml_id = str(subs[Symbol(obj.getSbmlId())])
-            # else:
-            t_sbml_id = prefix + obj.getSbmlId()
-            #
-            # if obj.isReplaced():
-            #     # print "> Adding..."
-            #     # print obj.getSbmlId()
-            #     self.__model.listOfVariables.addVariable(self, obj.getSbmlId())
-            #
-            # else:
-            # print "Adding %s to the list of variables" %  t_sbml_id
-
-            self.__model.listOfVariables.addVariable(self, t_sbml_id)
-
-        self.sbmlType = obj.sbmlType
+		self.__model = model
+		HasId.__init__(self, model)
+		self.sbmlType = sbml_type
+		self.reaction = is_from_reaction
 
 
 
-    def readSbml(self, sbml_variable,
-                        sbml_level=Settings.defaultSbmlLevel,
-                        sbml_version=Settings.defaultSbmlVersion):
+	def new(self, name, sbml_type=PARAMETER):
+		self.sbmlType = sbml_type
+		t_sbmlId = self.__model.listOfVariables.addVariable(self, name)
+		# print "Return from add variable"
+		# print t_sbmlId
+		HasId.new(self, name, t_sbmlId)
+		# print "Name nd sbml id"
+		# print name == None
+		# print self.getName()
 
-        HasId.readSbml(self, sbml_variable, sbml_level, sbml_version)
+		# print self.getSbmlId()
 
-        if self.isParameter() and self.localParameter:
-            self.__model.listOfVariables.addVariable(self,
-                    "_local_%d_%s" % (self.reaction.objId, self.getSbmlId()))
-        else:
-            self.__model.listOfVariables.addVariable(self, self.getSbmlId())
-
-
-    def writeSbml(self, sbml_variable,
-                        sbml_level=Settings.defaultSbmlLevel,
-                        sbml_version=Settings.defaultSbmlVersion):
-
-        HasId.writeSbml(self, sbml_variable, sbml_level, sbml_version)
+	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
 
 
-    def isSpecies(self):
-        return self.sbmlType == self.SPECIES
+		HasId.copy(self, obj, prefix, shift, subs, deletions, replacements)
 
-    def isParameter(self):
-        return self.sbmlType == self.PARAMETER
+		if self.isParameter() and self.localParameter:
+			# print "Adding %s to the list of variables" %  "_local_%d_%s" % (self.reaction.objId, prefix + obj.getSbmlId())
+			self.__model.listOfVariables.addVariable(self, "_local_%d_%s" % (self.reaction.objId, prefix + obj.getSbmlId()))
+		else:
+			# print obj
+			# print obj.isReplaced()
 
-    def isCompartment(self):
-        return self.sbmlType == self.COMPARTMENT
+			# t_sbml_id = None
+			# if Symbol(obj.getSbmlId()) in subs.keys():
+			#     t_sbml_id = str(subs[Symbol(obj.getSbmlId())])
+			# else:
+			t_sbml_id = prefix + obj.getSbmlId()
+			#
+			# if obj.isReplaced():
+			#     # print "> Adding..."
+			#     # print obj.getSbmlId()
+			#     self.__model.listOfVariables.addVariable(self, obj.getSbmlId())
+			#
+			# else:
+			# print "Adding %s to the list of variables" %  t_sbml_id
 
-    def isStoichiometry(self):
-        from libsignetsim.model.sbmlobject.SpeciesReference import SpeciesReference
+			self.__model.listOfVariables.addVariable(self, t_sbml_id)
 
-        return isinstance(self, SpeciesReference)
-
-    def isReaction(self):
-        return self.sbmlType == self.REACTION
-
-    def isGlobal(self):
-        return self.reaction is None
+		self.sbmlType = obj.sbmlType
 
 
-    def setSbmlId(self, sbml_id, prefix="", model_wide=True):
 
-        if self.isParameter() and self.isLocalParameter():
-            self.reaction.renameSbmlId(self.getSbmlId(), prefix+sbml_id)
-            self.sbmlId = prefix+sbml_id
-        else:
-            HasId.setSbmlId(self, sbml_id, prefix, model_wide)
+	def readSbml(self, sbml_variable,
+						sbml_level=Settings.defaultSbmlLevel,
+						sbml_version=Settings.defaultSbmlVersion):
+
+		HasId.readSbml(self, sbml_variable, sbml_level, sbml_version)
+
+		if self.isParameter() and self.localParameter:
+			self.__model.listOfVariables.addVariable(self,
+					"_local_%d_%s" % (self.reaction.objId, self.getSbmlId()))
+		else:
+			self.__model.listOfVariables.addVariable(self, self.getSbmlId())
+
+
+	def writeSbml(self, sbml_variable,
+						sbml_level=Settings.defaultSbmlLevel,
+						sbml_version=Settings.defaultSbmlVersion):
+
+		HasId.writeSbml(self, sbml_variable, sbml_level, sbml_version)
+
+
+	def isSpecies(self):
+		return self.sbmlType == self.SPECIES
+
+	def isParameter(self):
+		return self.sbmlType == self.PARAMETER
+
+	def isCompartment(self):
+		return self.sbmlType == self.COMPARTMENT
+
+	def isStoichiometry(self):
+		from libsignetsim.model.sbmlobject.SpeciesReference import SpeciesReference
+
+		return isinstance(self, SpeciesReference)
+
+	def isReaction(self):
+		return self.sbmlType == self.REACTION
+
+	def isGlobal(self):
+		return self.reaction is None
+
+
+	def setSbmlId(self, sbml_id, prefix="", model_wide=True):
+
+		if self.isParameter() and self.isLocalParameter():
+			self.reaction.renameSbmlId(self.getSbmlId(), prefix+sbml_id)
+			self.sbmlId = prefix+sbml_id
+		else:
+			HasId.setSbmlId(self, sbml_id, prefix, model_wide)

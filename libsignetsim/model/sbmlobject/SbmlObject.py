@@ -32,57 +32,57 @@ from libsbml import XMLNode
 
 class SbmlObject(SimpleSbmlObject, HasReplacedElements):
 
-    def __init__(self, model):
+	def __init__(self, model):
 
-        self.__model = model
-        SimpleSbmlObject.__init__(self, model)
-        HasReplacedElements.__init__(self, model)
-        self.isMarkedToBeReplaced = False
-        self.isMarkedToBeReplacedBy = None
-        self.isMarkedToBeDeleted = False
-        self.isMarkedToBeRenamed = False
-        self.hasConversionFactor = None
-
-
-    def readSbml(self, sbml_object,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-
-        HasReplacedElements.readSbml(self, sbml_object, sbml_level, sbml_version)
-        SimpleSbmlObject.readSbml(self, sbml_object, sbml_level, sbml_version)
+		self.__model = model
+		SimpleSbmlObject.__init__(self, model)
+		HasReplacedElements.__init__(self, model)
+		self.isMarkedToBeReplaced = False
+		self.isMarkedToBeReplacedBy = None
+		self.isMarkedToBeDeleted = False
+		self.isMarkedToBeRenamed = False
+		self.hasConversionFactor = None
 
 
-    def writeSbml(self, sbml_object,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
+	def readSbml(self, sbml_object,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
 
-        HasReplacedElements.writeSbml(self, sbml_object, sbml_level, sbml_version)
-        SimpleSbmlObject.writeSbml(self, sbml_object, sbml_level, sbml_version)
-
-
-    def instance(self):
-
-        if self.__model.isMainModel:
-            t_model = self.__model
-        else:
-            t_model = self.__model.parentDoc.model
-
-        if t_model.listOfSbmlObjects.hasToBeReplaced(self):
-            return t_model.listOfSbmlObjects.getReplacedBy(self)
-        else:
-            return self
+		HasReplacedElements.readSbml(self, sbml_object, sbml_level, sbml_version)
+		SimpleSbmlObject.readSbml(self, sbml_object, sbml_level, sbml_version)
 
 
-    def needReplacement(self):
-        return self.__model.listOfSbmlObjects.hasToBeReplaced(self)
+	def writeSbml(self, sbml_object,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+
+		HasReplacedElements.writeSbml(self, sbml_object, sbml_level, sbml_version)
+		SimpleSbmlObject.writeSbml(self, sbml_object, sbml_level, sbml_version)
 
 
-    def copy(self, obj, prefix="", shift=0):
-        SimpleSbmlObject.copy(self, obj, prefix, shift)
-        HasReplacedElements.copy(self, obj, prefix, shift)
+	def instance(self):
 
-    def isInMainModel(self):
-        return self.__model.isMainModel
+		if self.__model.isMainModel:
+			t_model = self.__model
+		else:
+			t_model = self.__model.parentDoc.model
 
-    def getModel(self):
-        return self.__model
+		if t_model.listOfSbmlObjects.hasToBeReplaced(self):
+			return t_model.listOfSbmlObjects.getReplacedBy(self)
+		else:
+			return self
+
+
+	def needReplacement(self):
+		return self.__model.listOfSbmlObjects.hasToBeReplaced(self)
+
+
+	def copy(self, obj, prefix="", shift=0):
+		SimpleSbmlObject.copy(self, obj, prefix, shift)
+		HasReplacedElements.copy(self, obj, prefix, shift)
+
+	def isInMainModel(self):
+		return self.__model.isMainModel
+
+	def getModel(self):
+		return self.__model

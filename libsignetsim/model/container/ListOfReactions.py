@@ -32,129 +32,129 @@ from libsignetsim.model.sbmlobject.Reaction import Reaction
 from libsignetsim.settings.Settings import Settings
 
 class ListOfReactions(ListOf, HasIds, SbmlObject):
-    """ Class for the list of reactions in a sbml model """
+	""" Class for the list of reactions in a sbml model """
 
-    def __init__ (self, model=None):
+	def __init__ (self, model=None):
 
-        self.__model = model
-        ListOf.__init__(self, model)
-        HasIds.__init__(self, model)
-        SbmlObject.__init__(self, model)
-
-
-    def readSbml(self, sbml_listOfReactions,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-        """ Reads a list of reactions from a sbml file """
-
-        for sbml_reaction in sbml_listOfReactions:
-            t_reaction = Reaction(self.__model, self.nextId())
-            ListOf.add(self, t_reaction)
-            t_reaction.readSbml(sbml_reaction, sbml_level, sbml_version)
-
-        SbmlObject.readSbml(self, sbml_listOfReactions, sbml_level, sbml_version)
+		self.__model = model
+		ListOf.__init__(self, model)
+		HasIds.__init__(self, model)
+		SbmlObject.__init__(self, model)
 
 
-    def writeSbml(self, sbml_model,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-        """ Writes a list of reactions from a sbml file """
+	def readSbml(self, sbml_listOfReactions,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+		""" Reads a list of reactions from a sbml file """
 
-        for reaction in ListOf.values(self):
-            reaction.writeSbml(sbml_model, sbml_level, sbml_version)
+		for sbml_reaction in sbml_listOfReactions:
+			t_reaction = Reaction(self.__model, self.nextId())
+			ListOf.add(self, t_reaction)
+			t_reaction.readSbml(sbml_reaction, sbml_level, sbml_version)
 
-        SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
-
-
-    def new(self, name=None):
-
-        t_reaction = Reaction(self.__model, self.nextId())
-        t_reaction.new(name)
-        ListOf.add(self, t_reaction)
-        return t_reaction
+		SbmlObject.readSbml(self, sbml_listOfReactions, sbml_level, sbml_version)
 
 
-    def copy(self, obj, prefix="", shift=0, subs={}, deletions=[],
-                replacements={}, conversions={},
-                extent_conversion=None, time_conversion=None):
+	def writeSbml(self, sbml_model,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+		""" Writes a list of reactions from a sbml file """
 
-        if len(self.keys()) > 0:
-            t_shift = max(self.keys())+1
-        else:
-            t_shift = 0
+		for reaction in ListOf.values(self):
+			reaction.writeSbml(sbml_model, sbml_level, sbml_version)
 
-
-        if obj not in deletions:
-            SbmlObject.copy(self, obj, prefix, t_shift)
-            for reaction in obj.values():
-                if reaction not in deletions:
-                    t_obj_id = reaction.objId + t_shift
-                    t_reaction = Reaction(self.__model, t_obj_id)
-
-                    if not reaction.isMarkedToBeReplaced:
-                        t_reaction.copy(reaction, prefix, t_shift, subs,
-                                            deletions, replacements,
-                                            conversions, extent_conversion,
-                                            time_conversion)
-                    else:
-                        t_reaction.copy(reaction.isMarkedToBeReplacedBy,
-                                            prefix, t_shift, subs, deletions,
-                                            replacements, conversions,
-                                            extent_conversion,
-                                            time_conversion)
-
-                    if reaction.isMarkedToBeRenamed:
-                        t_reaction.setSbmlId(reaction.getSbmlId(),
-                                            model_wide=False)
-
-                    ListOf.add(self, t_reaction)
+		SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
 
 
-    def remove(self, reaction):
+	def new(self, name=None):
 
-        self.__model.listOfVariables.removeVariable(reaction)
-        ListOf.remove(self, reaction)
-
-
-    def containsLocalParameterSbmlId(self, sbml_id):
-
-        for reaction in ListOf.values(self):
-            if reaction.listOfLocalParameters.containsSbmlId(sbml_id):
-                return True
-        return False
+		t_reaction = Reaction(self.__model, self.nextId())
+		t_reaction.new(name)
+		ListOf.add(self, t_reaction)
+		return t_reaction
 
 
-    def getLocalParameterReactionIdBySbmlId(self, sbml_id):
+	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[],
+				replacements={}, conversions={},
+				extent_conversion=None, time_conversion=None):
 
-        for reaction in ListOf.values(self):
-            if reaction.listOfLocalParameters.containsSbmlId(sbml_id):
-                return reaction.objId
-        return -1
+		if len(self.keys()) > 0:
+			t_shift = max(self.keys())+1
+		else:
+			t_shift = 0
 
 
-    def getLocalParameterIdBySbmlId(self, sbml_id):
+		if obj not in deletions:
+			SbmlObject.copy(self, obj, prefix, t_shift)
+			for reaction in obj.values():
+				if reaction not in deletions:
+					t_obj_id = reaction.objId + t_shift
+					t_reaction = Reaction(self.__model, t_obj_id)
 
-        for reaction in ListOf.values(self):
-            if reaction.listOfLocalParameters.containsSbmlId(sbml_id):
-                return reaction.listOfLocalParameters.getBySbmlId(sbml_id).objId
-        return -1
+					if not reaction.isMarkedToBeReplaced:
+						t_reaction.copy(reaction, prefix, t_shift, subs,
+											deletions, replacements,
+											conversions, extent_conversion,
+											time_conversion)
+					else:
+						t_reaction.copy(reaction.isMarkedToBeReplacedBy,
+											prefix, t_shift, subs, deletions,
+											replacements, conversions,
+											extent_conversion,
+											time_conversion)
 
-    def countLocalParameters(self):
+					if reaction.isMarkedToBeRenamed:
+						t_reaction.setSbmlId(reaction.getSbmlId(),
+											model_wide=False)
 
-        nb_local_parameters = 0
-        for reaction in ListOf.values(self):
-            nb_local_parameters += len(reaction.listOfLocalParameters)
+					ListOf.add(self, t_reaction)
 
-        return nb_local_parameters
 
-    def hasFastReaction(self):
+	def remove(self, reaction):
 
-        for reaction in ListOf.values(self):
-            if reaction.fast:
-                return True
-        return False
+		self.__model.listOfVariables.removeVariable(reaction)
+		ListOf.remove(self, reaction)
 
-    def renameSbmlId(self, old_sbml_id, new_sbml_id):
 
-        for obj in ListOf.values(self):
-            obj.renameSbmlId(old_sbml_id, new_sbml_id)
+	def containsLocalParameterSbmlId(self, sbml_id):
+
+		for reaction in ListOf.values(self):
+			if reaction.listOfLocalParameters.containsSbmlId(sbml_id):
+				return True
+		return False
+
+
+	def getLocalParameterReactionIdBySbmlId(self, sbml_id):
+
+		for reaction in ListOf.values(self):
+			if reaction.listOfLocalParameters.containsSbmlId(sbml_id):
+				return reaction.objId
+		return -1
+
+
+	def getLocalParameterIdBySbmlId(self, sbml_id):
+
+		for reaction in ListOf.values(self):
+			if reaction.listOfLocalParameters.containsSbmlId(sbml_id):
+				return reaction.listOfLocalParameters.getBySbmlId(sbml_id).objId
+		return -1
+
+	def countLocalParameters(self):
+
+		nb_local_parameters = 0
+		for reaction in ListOf.values(self):
+			nb_local_parameters += len(reaction.listOfLocalParameters)
+
+		return nb_local_parameters
+
+	def hasFastReaction(self):
+
+		for reaction in ListOf.values(self):
+			if reaction.fast:
+				return True
+		return False
+
+	def renameSbmlId(self, old_sbml_id, new_sbml_id):
+
+		for obj in ListOf.values(self):
+			obj.renameSbmlId(old_sbml_id, new_sbml_id)

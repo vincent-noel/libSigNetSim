@@ -31,64 +31,64 @@ from libsignetsim.model.sbmlobject.SbmlExternalModelDefinition import SbmlExtern
 from libsignetsim.settings.Settings import Settings
 
 class ListOfExternalModelDefinitions(ListOf, HasIds):#, SbmlObject):
-    """ Class for the listOfExternalModelDefinition in a sbml model """
+	""" Class for the listOfExternalModelDefinition in a sbml model """
 
-    def __init__ (self, model=None):
+	def __init__ (self, model=None):
 
-        self.__model = model
-        ListOf.__init__(self, model)
-        HasIds.__init__(self, model)
-        # SbmlObject.__init__(self, model)
-
-
-    def readSbml(self, sbml_external_models,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-        """ Reads external model definitions' list from a sbml file """
-
-        for model in sbml_external_models:
-            t_model = SbmlExternalModelDefinition(self.__model, self.nextId())
-            t_model.readSbml(model, sbml_level, sbml_version)
-            ListOf.add(self, t_model)
-
-        # SbmlObject.writeSbml(self, sbml_external_models, sbml_level, sbml_version)
+		self.__model = model
+		ListOf.__init__(self, model)
+		HasIds.__init__(self, model)
+		# SbmlObject.__init__(self, model)
 
 
-    def writeSbml(self, sbml_document,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-        """ Writes external model definitions' list to a sbml file """
+	def readSbml(self, sbml_external_models,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+		""" Reads external model definitions' list from a sbml file """
 
-        for model in ListOf.values(self):
-            sbml_emd = sbml_document.createExternalModelDefinition()
-            model.writeSbml(sbml_emd, sbml_level, sbml_version)
+		for model in sbml_external_models:
+			t_model = SbmlExternalModelDefinition(self.__model, self.nextId())
+			t_model.readSbml(model, sbml_level, sbml_version)
+			ListOf.add(self, t_model)
 
-        # SbmlObject.writeSbml(self, sbml_document, sbml_level, sbml_version)
-
-
-    def new(self):
-        """ Creates a new external model definition """
-
-        t_model = SbmlExternalModelDefinition(self.__model, self.nextId())
-        ListOf.add(self, t_model)
-        return t_model
+		# SbmlObject.writeSbml(self, sbml_external_models, sbml_level, sbml_version)
 
 
-    def remove(self, comp):
-        """ Remove an object from the list """
+	def writeSbml(self, sbml_document,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+		""" Writes external model definitions' list to a sbml file """
 
-        dict.__delitem__(self, comp.objId)
-        # ListOf.remove(self, comp)
+		for model in ListOf.values(self):
+			sbml_emd = sbml_document.createExternalModelDefinition()
+			model.writeSbml(sbml_emd, sbml_level, sbml_version)
+
+		# SbmlObject.writeSbml(self, sbml_document, sbml_level, sbml_version)
 
 
-    def removeById(self, obj_id):
-        """ Remove an object from the list """
-        dict.__delitem__(self, obj_id)
-        # self.remove(self.getById(obj_id))
+	def new(self):
+		""" Creates a new external model definition """
+
+		t_model = SbmlExternalModelDefinition(self.__model, self.nextId())
+		ListOf.add(self, t_model)
+		return t_model
 
 
-    def getListOfModelDefinitions(self):
-        res = []
-        for external_model in ListOf.values(self):
-            res.append(external_model)
-        return res
+	def remove(self, comp):
+		""" Remove an object from the list """
+
+		dict.__delitem__(self, comp.objId)
+		# ListOf.remove(self, comp)
+
+
+	def removeById(self, obj_id):
+		""" Remove an object from the list """
+		dict.__delitem__(self, obj_id)
+		# self.remove(self.getById(obj_id))
+
+
+	def getListOfModelDefinitions(self):
+		res = []
+		for external_model in ListOf.values(self):
+			res.append(external_model)
+		return res

@@ -28,194 +28,194 @@ from libsignetsim.model.sbmlobject.HasSBaseRef import HasSBaseRef
 
 class HasRef(object):
 
-    def __init__(self, model):
+	def __init__(self, model):
 
-        self.__model = model
+		self.__model = model
 
-        self.__portRef = None
-        self.__idRef = None
-        self.__unitRef = None
-        self.__metaIdRef = None
-        self.__SBaseRef = None
-
-
-    def readSbml(self, sbml_object,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-
-        if sbml_object.isSetIdRef():
-            self.__idRef = sbml_object.getIdRef()
-
-        if sbml_object.isSetPortRef():
-            self.__portRef = sbml_object.getPortRef()
-
-        if sbml_object.isSetUnitRef():
-            self.__unitRef = sbml_object.getUnitRef()
-
-        if sbml_object.isSetMetaIdRef():
-            self.__metaIdRef = sbml_object.getMetaIdRef()
-
-        if sbml_object.isSetSBaseRef():
-            self.__SBaseRef = HasSBaseRef(self.__model)
-            self.__SBaseRef.readSbml(sbml_object.getSBaseRef(), sbml_level, sbml_version)
+		self.__portRef = None
+		self.__idRef = None
+		self.__unitRef = None
+		self.__metaIdRef = None
+		self.__SBaseRef = None
 
 
-    def writeSbml(self, sbml_object,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
+	def readSbml(self, sbml_object,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
 
-        if self.__portRef is not None:
-            sbml_object.setPortRef(self.__portRef)
+		if sbml_object.isSetIdRef():
+			self.__idRef = sbml_object.getIdRef()
 
-        if self.__idRef is not None:
-            sbml_object.setIdRef(self.__idRef)
+		if sbml_object.isSetPortRef():
+			self.__portRef = sbml_object.getPortRef()
 
-        if self.__unitRef is not None:
-            sbml_object.setUnitRef(self.__unitRef)
+		if sbml_object.isSetUnitRef():
+			self.__unitRef = sbml_object.getUnitRef()
 
-        if self.__metaIdRef is not None:
-            sbml_object.setMetaIdRef(self.__metaIdRef)
+		if sbml_object.isSetMetaIdRef():
+			self.__metaIdRef = sbml_object.getMetaIdRef()
 
-        if self.__SBaseRef is not None:
-            sbml_sbaseref = sbml_object.createSBaseRef()
-            self.__SBaseRef.writeSbml(sbml_sbaseref, sbml_level, sbml_version)
-
-
-    def copy(self, obj, prefix="", shift=0):
-        self.setPortRef(obj.getPortRef())
-        self.setIdRef(obj.getIdRef(), prefix)
-        self.setUnitRef(obj.getUnitRef(), prefix)
-        self.setMetaIdRef(obj.getMetaIdRef(), prefix)
+		if sbml_object.isSetSBaseRef():
+			self.__SBaseRef = HasSBaseRef(self.__model)
+			self.__SBaseRef.readSbml(sbml_object.getSBaseRef(), sbml_level, sbml_version)
 
 
-    def getRef(self):
-        if self.hasIdRef():
-            return self.getIdRef()
-        elif self.hasPortRef():
-            return self.getPortRef()
-        elif self.hasMetaIdRef():
-            return self.getMetaIdRef()
+	def writeSbml(self, sbml_object,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
 
-    # def getRefMetaId(self):
-    #
+		if self.__portRef is not None:
+			sbml_object.setPortRef(self.__portRef)
+
+		if self.__idRef is not None:
+			sbml_object.setIdRef(self.__idRef)
+
+		if self.__unitRef is not None:
+			sbml_object.setUnitRef(self.__unitRef)
+
+		if self.__metaIdRef is not None:
+			sbml_object.setMetaIdRef(self.__metaIdRef)
+
+		if self.__SBaseRef is not None:
+			sbml_sbaseref = sbml_object.createSBaseRef()
+			self.__SBaseRef.writeSbml(sbml_sbaseref, sbml_level, sbml_version)
 
 
+	def copy(self, obj, prefix="", shift=0):
+		self.setPortRef(obj.getPortRef())
+		self.setIdRef(obj.getIdRef(), prefix)
+		self.setUnitRef(obj.getUnitRef(), prefix)
+		self.setMetaIdRef(obj.getMetaIdRef(), prefix)
 
 
-    def getRefMetaId(self):
+	def getRef(self):
+		if self.hasIdRef():
+			return self.getIdRef()
+		elif self.hasPortRef():
+			return self.getPortRef()
+		elif self.hasMetaIdRef():
+			return self.getMetaIdRef()
 
-        print self.__model.getSbmlId()
-        if self.hasIdRef():
-            # if self.hasSBaseRef():
-            #     ttt_model = self.__model.listOfSubmodels.getBySbmlIdRef(self.getIdRef()).getModelObject()
-            #     refs = self.getSBaseRef().getRef(ttt_model)
-            #
-            #     t_ref = self.getIdRef()
-            #     while len(refs) > 1:
-            #         t_ref = "%s__%s" % (t_ref, refs[0])
-            #         ttt_model = ttt_model.listOfSubmodels.getBySbmlIdRef(refs[0]).getModelObject()
-            #         refs = refs[-1:]
-            #
-            #     t_object = ttt_model.listOfSbmlObjects[refs[0]]
-            #     return "%s__%s" % (t_ref, t_object.getMetaId())
-            #
-            # else:
-            return self.__model.listOfVariables[self.getIdRef()].getMetaId()
-
-        elif self.hasPortRef():
-            return self.__model.listOfPorts.getBySbmlId(self.getPortRef()).getRefObject().getMetaId()
-
-        elif self.hasMetaIdRef():
-            return self.__model.listOfSbmlObjects.getByMetaId(self.getMetaIdRef()).getMetaId()
-        #
-        # elif self.__deletion is not None:
-        #     t_submodel = self.__model.listOfSubmodels.getBySbmlIdRef(self.getSubmodelRef())
-        #
-        #     if self.__deletion in t_submodel.listOfDeletions.sbmlIds():
-        #
-        #         t_deletion = t_submodel.listOfDeletions.getBySbmlId(self.__deletion)
-        #
-        #         if t_deletion.hasIdRef():
-        #             t_object = tt_model.listOfVariables[t_deletion.getIdRef()]
-        #
-        #         elif t_deletion.hasPortRef():
-        #             t_object = tt_model.listOfPorts.getBySbmlId(t_deletion.getPortRef()).getRefObject()
-        #
-        #         elif t_deletion.hasMetaIdRef():
-        #             t_object = tt_model.listOfSbmlObjects.getByMetaId(t_deletion.getMetaIdRef())
+	# def getRefMetaId(self):
+	#
 
 
 
-    def getRefObject(self):
 
-        if self.hasIdRef():
+	def getRefMetaId(self):
 
-            if self.hasSBaseRef():
-                print self.getSBaseRef().getRef()
+		print self.__model.getSbmlId()
+		if self.hasIdRef():
+			# if self.hasSBaseRef():
+			#     ttt_model = self.__model.listOfSubmodels.getBySbmlIdRef(self.getIdRef()).getModelObject()
+			#     refs = self.getSBaseRef().getRef(ttt_model)
+			#
+			#     t_ref = self.getIdRef()
+			#     while len(refs) > 1:
+			#         t_ref = "%s__%s" % (t_ref, refs[0])
+			#         ttt_model = ttt_model.listOfSubmodels.getBySbmlIdRef(refs[0]).getModelObject()
+			#         refs = refs[-1:]
+			#
+			#     t_object = ttt_model.listOfSbmlObjects[refs[0]]
+			#     return "%s__%s" % (t_ref, t_object.getMetaId())
+			#
+			# else:
+			return self.__model.listOfVariables[self.getIdRef()].getMetaId()
 
-            if self.getIdRef() in self.__model.listOfVariables.keys():
-                return self.__model.listOfVariables[self.getIdRef()]
-            elif self.__model.listOfEvents.containsSbmlId(self.getIdRef()):
-                return self.__model.listOfEvents.getBySbmlId(self.getIdRef())
+		elif self.hasPortRef():
+			return self.__model.listOfPorts.getBySbmlId(self.getPortRef()).getRefObject().getMetaId()
 
-        elif self.hasPortRef():
-            return self.__model.listOfPorts.getBySbmlId(self.getPortRef()).getRefObject()
-            # return self.getPortRef()
-
-        elif self.hasMetaIdRef():
-            return self.__model.listOfSbmlObjects.getByMetaId(self.getMetaIdRef())
-
-    def HasRef(self):
-        return self.hasIdRef() or self.hasPortRef() or self.hasMetaIdRef()
-
-    def hasPortRef(self):
-        return self.__portRef is not None
-
-    def getPortRef(self):
-        return self.__portRef
-
-    def setPortRef(self, port_ref):
-        self.__portRef = port_ref
-
-
-    def hasIdRef(self):
-        return self.__idRef is not None
-
-    def getIdRef(self):
-        return self.__idRef
-
-    def setIdRef(self, id_ref, prefix=""):
-        if id_ref is not None:
-            self.__idRef = prefix + id_ref
-
-
-    def hasUnitRef(self):
-        return self.__unitRef is not None
-
-    def getUnitRef(self):
-        return self.__unitRef
-
-    def setUnitRef(self, unit_ref, prefix=""):
-        if unit_ref is not None:
-            self.__unitRef = prefix + unit_ref
+		elif self.hasMetaIdRef():
+			return self.__model.listOfSbmlObjects.getByMetaId(self.getMetaIdRef()).getMetaId()
+		#
+		# elif self.__deletion is not None:
+		#     t_submodel = self.__model.listOfSubmodels.getBySbmlIdRef(self.getSubmodelRef())
+		#
+		#     if self.__deletion in t_submodel.listOfDeletions.sbmlIds():
+		#
+		#         t_deletion = t_submodel.listOfDeletions.getBySbmlId(self.__deletion)
+		#
+		#         if t_deletion.hasIdRef():
+		#             t_object = tt_model.listOfVariables[t_deletion.getIdRef()]
+		#
+		#         elif t_deletion.hasPortRef():
+		#             t_object = tt_model.listOfPorts.getBySbmlId(t_deletion.getPortRef()).getRefObject()
+		#
+		#         elif t_deletion.hasMetaIdRef():
+		#             t_object = tt_model.listOfSbmlObjects.getByMetaId(t_deletion.getMetaIdRef())
 
 
-    def hasMetaIdRef(self):
-        return self.__metaIdRef is not None
 
-    def getMetaIdRef(self):
-        return self.__metaIdRef
+	def getRefObject(self):
 
-    def setMetaIdRef(self, meta_id_ref, prefix=""):
-        if meta_id_ref is not None:
-            self.__metaIdRef = prefix + meta_id_ref
+		if self.hasIdRef():
 
-    def hasSBaseRef(self):
-        return self.__SBaseRef is not None
+			if self.hasSBaseRef():
+				print self.getSBaseRef().getRef()
 
-    def getSBaseRef(self):
-        return self.__SBaseRef
+			if self.getIdRef() in self.__model.listOfVariables.keys():
+				return self.__model.listOfVariables[self.getIdRef()]
+			elif self.__model.listOfEvents.containsSbmlId(self.getIdRef()):
+				return self.__model.listOfEvents.getBySbmlId(self.getIdRef())
 
-    def setSBaseRef(self, sbase_ref, prefix=""):
-        if sbase_ref is not None:
-            self.__SBaseRef = prefix + sbase_ref
+		elif self.hasPortRef():
+			return self.__model.listOfPorts.getBySbmlId(self.getPortRef()).getRefObject()
+			# return self.getPortRef()
+
+		elif self.hasMetaIdRef():
+			return self.__model.listOfSbmlObjects.getByMetaId(self.getMetaIdRef())
+
+	def HasRef(self):
+		return self.hasIdRef() or self.hasPortRef() or self.hasMetaIdRef()
+
+	def hasPortRef(self):
+		return self.__portRef is not None
+
+	def getPortRef(self):
+		return self.__portRef
+
+	def setPortRef(self, port_ref):
+		self.__portRef = port_ref
+
+
+	def hasIdRef(self):
+		return self.__idRef is not None
+
+	def getIdRef(self):
+		return self.__idRef
+
+	def setIdRef(self, id_ref, prefix=""):
+		if id_ref is not None:
+			self.__idRef = prefix + id_ref
+
+
+	def hasUnitRef(self):
+		return self.__unitRef is not None
+
+	def getUnitRef(self):
+		return self.__unitRef
+
+	def setUnitRef(self, unit_ref, prefix=""):
+		if unit_ref is not None:
+			self.__unitRef = prefix + unit_ref
+
+
+	def hasMetaIdRef(self):
+		return self.__metaIdRef is not None
+
+	def getMetaIdRef(self):
+		return self.__metaIdRef
+
+	def setMetaIdRef(self, meta_id_ref, prefix=""):
+		if meta_id_ref is not None:
+			self.__metaIdRef = prefix + meta_id_ref
+
+	def hasSBaseRef(self):
+		return self.__SBaseRef is not None
+
+	def getSBaseRef(self):
+		return self.__SBaseRef
+
+	def setSBaseRef(self, sbase_ref, prefix=""):
+		if sbase_ref is not None:
+			self.__SBaseRef = prefix + sbase_ref

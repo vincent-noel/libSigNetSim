@@ -34,62 +34,62 @@ class CWriterOptimization(object):
 
 	def __init__ (self, workingModel, parameters):
 
-	    self.workingModel = workingModel
-	    self.parameters = parameters
+		self.workingModel = workingModel
+		self.parameters = parameters
 
 
 	def writeOptimizationFiles(self, nb_procs):
 
-	    mkdir(join(self.getTempDirectory(), "src"))
-	    mkdir(join(self.getTempDirectory(), "lib"))
+		mkdir(join(self.getTempDirectory(), "src"))
+		mkdir(join(self.getTempDirectory(), "lib"))
 
 
-	    # First the code
-	    mkdir(join(self.getTempDirectory(), "src/integrate"))
-	    copyfile(join(Settings.basePath, "lib/integrate/src/integrate.h"), join(self.getTempDirectory(), "src/integrate/integrate.h"))
-	    copyfile(join(Settings.basePath, "lib/integrate/src/models.h"), join(self.getTempDirectory(), "src/integrate/models.h"))
-	    copyfile(join(Settings.basePath, "lib/integrate/src/datas.h"), join(self.getTempDirectory(), "src/integrate/datas.h"))
-	    copyfile(join(Settings.basePath, "lib/integrate/src/realtype_math.h"), join(self.getTempDirectory(), "src/integrate/realtype_math.h"))
-	    copyfile(join(Settings.basePath, "lib/integrate/src/types.h"), join(self.getTempDirectory(), "src/integrate/types.h"))
+		# First the code
+		mkdir(join(self.getTempDirectory(), "src/integrate"))
+		copyfile(join(Settings.basePath, "lib/integrate/src/integrate.h"), join(self.getTempDirectory(), "src/integrate/integrate.h"))
+		copyfile(join(Settings.basePath, "lib/integrate/src/models.h"), join(self.getTempDirectory(), "src/integrate/models.h"))
+		copyfile(join(Settings.basePath, "lib/integrate/src/datas.h"), join(self.getTempDirectory(), "src/integrate/datas.h"))
+		copyfile(join(Settings.basePath, "lib/integrate/src/realtype_math.h"), join(self.getTempDirectory(), "src/integrate/realtype_math.h"))
+		copyfile(join(Settings.basePath, "lib/integrate/src/types.h"), join(self.getTempDirectory(), "src/integrate/types.h"))
 
-	    mkdir(join(self.getTempDirectory(), "src/plsa"))
-	    copyfile(join(Settings.basePath, "lib/plsa/src/sa.h"), join(self.getTempDirectory(), "src/plsa/sa.h"))
-	    copyfile(join(Settings.basePath, "lib/plsa/src/config.h"), join(self.getTempDirectory(), "src/plsa/config.h"))
-	    copyfile(join(Settings.basePath, "lib/plsa/src/global.h"), join(self.getTempDirectory(), "src/plsa/global.h"))
+		mkdir(join(self.getTempDirectory(), "src/plsa"))
+		copyfile(join(Settings.basePath, "lib/plsa/src/sa.h"), join(self.getTempDirectory(), "src/plsa/sa.h"))
+		copyfile(join(Settings.basePath, "lib/plsa/src/config.h"), join(self.getTempDirectory(), "src/plsa/config.h"))
+		copyfile(join(Settings.basePath, "lib/plsa/src/global.h"), join(self.getTempDirectory(), "src/plsa/global.h"))
 
-	    copyfile(join(Settings.basePath, "lib/scoreFunctions.h"), join(self.getTempDirectory(), "src/scoreFunctions.h"))
-	    copyfile(join(Settings.basePath, "lib/scoreFunctions.c"), join(self.getTempDirectory(), "src/scoreFunctions.c"))
+		copyfile(join(Settings.basePath, "lib/scoreFunctions.h"), join(self.getTempDirectory(), "src/scoreFunctions.h"))
+		copyfile(join(Settings.basePath, "lib/scoreFunctions.c"), join(self.getTempDirectory(), "src/scoreFunctions.c"))
 
 
-	    # Then the shared libraries
-	    copyfile(join(Settings.basePath, "lib/plsa/libplsa-serial.so"), join(self.getTempDirectory(), "lib/libplsa-serial.so"))
-	    copyfile(join(Settings.basePath, "lib/plsa/libplsa-parallel.so"), join(self.getTempDirectory(), "lib/libplsa-parallel.so"))
-	    copyfile(join(Settings.basePath, "lib/integrate/integrate.so"), join(self.getTempDirectory(), "lib/integrate.so"))
+		# Then the shared libraries
+		copyfile(join(Settings.basePath, "lib/plsa/libplsa-serial.so"), join(self.getTempDirectory(), "lib/libplsa-serial.so"))
+		copyfile(join(Settings.basePath, "lib/plsa/libplsa-parallel.so"), join(self.getTempDirectory(), "lib/libplsa-parallel.so"))
+		copyfile(join(Settings.basePath, "lib/integrate/integrate.so"), join(self.getTempDirectory(), "lib/integrate.so"))
 
-	    copyfile(join(Settings.basePath, "lib/templates/data_optimization/Makefile"), join(self.getTempDirectory(), "Makefile") )
-	    copyfile(join(Settings.basePath, "lib/templates/data_optimization/main.c"), join(self.getTempDirectory(), "src/main.c") )
+		copyfile(join(Settings.basePath, "lib/templates/data_optimization/Makefile"), join(self.getTempDirectory(), "Makefile") )
+		copyfile(join(Settings.basePath, "lib/templates/data_optimization/main.c"), join(self.getTempDirectory(), "src/main.c") )
 
 
 
 
 	def writeOptimizationFilesHeaders(self, f_c, f_h):
 
-	    f_c.write("#include <stdlib.h>\n")
-	    f_c.write("#include \"optim.h\"\n")
+		f_c.write("#include <stdlib.h>\n")
+		f_c.write("#include \"optim.h\"\n")
 
-	    f_h.write("#include \"../src/plsa/sa.h\"\n")
-	    # f_h.write("#include \"../src/plsa/config.h\"\n")
-	    f_h.write("#include \"integrate/models.h\"\n")
+		f_h.write("#include \"../src/plsa/sa.h\"\n")
+		# f_h.write("#include \"../src/plsa/config.h\"\n")
+		f_h.write("#include \"integrate/models.h\"\n")
 
 
 
 	def writeOptimizationGlobals(self, f_c, f_h):
 
-	    # f_h.write("double             best_score;\n\n")
-	    f_c.write("\n")
-	    # f_c.write("optim_parameters optim_params;\n")
-	    f_c.write("PArrPtr * my_plist;\n")
-	    f_c.write("SAType * settings;\n")
+		# f_h.write("double             best_score;\n\n")
+		f_c.write("\n")
+		# f_c.write("optim_parameters optim_params;\n")
+		f_c.write("PArrPtr * my_plist;\n")
+		f_c.write("SAType * settings;\n")
 
 
 	def writeOptimizationGlobalMethods(self, f_c, f_h):
@@ -152,12 +152,12 @@ class CWriterOptimization(object):
 		nb_params = 0
 		for parameter in self.parameters:
 			(parameter_reaction,
-			    parameter_objid,
-			    parameter_active,
-			    parameter_name,
-			    parameter_value,
-			    parameter_min,
-			    parameter_max) = parameter
+				parameter_objid,
+				parameter_active,
+				parameter_name,
+				parameter_value,
+				parameter_min,
+				parameter_max) = parameter
 
 			if parameter_active:
 				t_param = self.workingModel.listOfParameters[parameter_objid]
@@ -174,4 +174,4 @@ class CWriterOptimization(object):
 
 
 	def randomPlsaSeed(self):
-	    return randrange(-2147483647,+2147483647)
+		return randrange(-2147483647,+2147483647)

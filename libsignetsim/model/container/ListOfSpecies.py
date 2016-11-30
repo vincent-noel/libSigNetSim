@@ -34,109 +34,109 @@ from libsignetsim.settings.Settings import Settings
 
 class ListOfSpecies(ListOf, HasIds, SbmlObject):
 
-    def __init__ (self, model=None):
+	def __init__ (self, model=None):
 
-        self.__model = model
-        ListOf.__init__(self, model)
-        HasIds.__init__(self, model)
-        SbmlObject.__init__(self, model)
-
-
-    def readSbml(self, sbml_listOfSpecies,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-
-        for sbml_species in sbml_listOfSpecies:
-            t_species = Species(self.__model, self.nextId())
-            t_species.readSbml(sbml_species, sbml_level, sbml_version)
-            ListOf.add(self, t_species)
-
-        SbmlObject.readSbml(self, sbml_listOfSpecies, sbml_level, sbml_version)
+		self.__model = model
+		ListOf.__init__(self, model)
+		HasIds.__init__(self, model)
+		SbmlObject.__init__(self, model)
 
 
-    def writeSbml(self, sbml_model,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
+	def readSbml(self, sbml_listOfSpecies,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
 
-        for species in ListOf.values(self):
-            species.writeSbml(sbml_model, sbml_level, sbml_version)
+		for sbml_species in sbml_listOfSpecies:
+			t_species = Species(self.__model, self.nextId())
+			t_species.readSbml(sbml_species, sbml_level, sbml_version)
+			ListOf.add(self, t_species)
 
-        SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
-
-
-    def new(self, name=None):
-
-        t_species = Species(self.__model, self.nextId())
-        t_species.new(name)
-        ListOf.add(self, t_species)
-        return t_species
+		SbmlObject.readSbml(self, sbml_listOfSpecies, sbml_level, sbml_version)
 
 
-    def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
+	def writeSbml(self, sbml_model,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
 
-        if len(self.keys()) > 0:
-            t_shift = max(self.keys())+1
-        else:
-            t_shift = 0
+		for species in ListOf.values(self):
+			species.writeSbml(sbml_model, sbml_level, sbml_version)
 
-        if obj not in deletions:
-
-            SbmlObject.copy(self, obj, prefix, t_shift)
-            for species in obj.values():
-
-                if species not in deletions:
-
-                    t_species = Species(self.__model, (t_shift + species.objId))
-
-                    if not species.isMarkedToBeReplaced:
-                        t_species.copy(species, prefix, shift, subs, deletions, replacements)
-                    else:
-                        t_species.copy(species.isMarkedToBeReplacedBy, prefix, t_shift, subs, deletions, replacements)
-
-                    if species.isMarkedToBeRenamed:
-                        t_species.setSbmlId(species.getSbmlId(), model_wide=False)
-
-                    ListOf.add(self, t_species)
+		SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
 
 
+	def new(self, name=None):
 
-    def nbFormulaInitialization(self):
-
-        count = 0
-        for species in ListOf.values(self):
-            if ((species.isConcentration() or species.isDeclaredConcentration)
-                and not self.__model.listOfInitialAssignments.hasInitialAssignment(species)):
-                count += 1
-        return count
-
-    def hasBoundaryConditions(self):
-
-        for species in ListOf.values(self):
-            if species.boundaryCondition:
-                return True
-
-        return False
+		t_species = Species(self.__model, self.nextId())
+		t_species.new(name)
+		ListOf.add(self, t_species)
+		return t_species
 
 
-    def remove(self, species):
-        """ Remove an object from the list """
+	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
 
-        if species.isInReactions():
-            raise ModelException(ModelException.SBML_ERROR, "Species is used in reactions")
-        elif species.isInRules():
-            raise ModelException(ModelException.SBML_ERROR, "Species in used in rules")
+		if len(self.keys()) > 0:
+			t_shift = max(self.keys())+1
+		else:
+			t_shift = 0
 
-        self.__model.listOfVariables.removeVariable(species)
-        # self.__model.listOfSbmlIds.removeSbmlId(species)
-        ListOf.remove(self, species)
+		if obj not in deletions:
+
+			SbmlObject.copy(self, obj, prefix, t_shift)
+			for species in obj.values():
+
+				if species not in deletions:
+
+					t_species = Species(self.__model, (t_shift + species.objId))
+
+					if not species.isMarkedToBeReplaced:
+						t_species.copy(species, prefix, shift, subs, deletions, replacements)
+					else:
+						t_species.copy(species.isMarkedToBeReplacedBy, prefix, t_shift, subs, deletions, replacements)
+
+					if species.isMarkedToBeRenamed:
+						t_species.setSbmlId(species.getSbmlId(), model_wide=False)
+
+					ListOf.add(self, t_species)
 
 
-    def removeById(self, species_obj_id):
-        """ Remove an object from the list """
 
-        self.remove(self.getById(species_obj_id))
+	def nbFormulaInitialization(self):
 
-    def renameSbmlId(self, old_sbml_id, new_sbml_id):
+		count = 0
+		for species in ListOf.values(self):
+			if ((species.isConcentration() or species.isDeclaredConcentration)
+				and not self.__model.listOfInitialAssignments.hasInitialAssignment(species)):
+				count += 1
+		return count
 
-        for obj in ListOf.values(self):
-            obj.renameSbmlId(old_sbml_id, new_sbml_id)
+	def hasBoundaryConditions(self):
+
+		for species in ListOf.values(self):
+			if species.boundaryCondition:
+				return True
+
+		return False
+
+
+	def remove(self, species):
+		""" Remove an object from the list """
+
+		if species.isInReactions():
+			raise ModelException(ModelException.SBML_ERROR, "Species is used in reactions")
+		elif species.isInRules():
+			raise ModelException(ModelException.SBML_ERROR, "Species in used in rules")
+
+		self.__model.listOfVariables.removeVariable(species)
+		# self.__model.listOfSbmlIds.removeSbmlId(species)
+		ListOf.remove(self, species)
+
+
+	def removeById(self, species_obj_id):
+		""" Remove an object from the list """
+
+		self.remove(self.getById(species_obj_id))
+
+	def renameSbmlId(self, old_sbml_id, new_sbml_id):
+
+		for obj in ListOf.values(self):
+			obj.renameSbmlId(old_sbml_id, new_sbml_id)

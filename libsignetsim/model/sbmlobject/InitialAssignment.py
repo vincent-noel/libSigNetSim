@@ -30,93 +30,93 @@ from libsignetsim.settings.Settings import Settings
 from sympy import Symbol
 
 class InitialAssignment(SbmlObject, MathInitialAssignment):
-    """ Initial assignment definition """
+	""" Initial assignment definition """
 
-    def __init__ (self, model, obj_id):
+	def __init__ (self, model, obj_id):
 
-        self.model = model
-        self.objId = obj_id
+		self.model = model
+		self.objId = obj_id
 
-        SbmlObject.__init__(self, model)
-        MathInitialAssignment.__init__(self, model)
+		SbmlObject.__init__(self, model)
+		MathInitialAssignment.__init__(self, model)
 
-        self.__var = None
-
-
-    def readSbml(self, initial_assignment, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-        """ Reads an initial assignment from a sbml file """
-
-        SbmlObject.readSbml(self, initial_assignment, sbml_level, sbml_version)
-
-        if self.model.listOfVariables.containsSbmlId(initial_assignment.getSymbol()):
-            self.__var = self.model.listOfVariables[initial_assignment.getSymbol()]
-            self.__var.setInitialAssignmentBy(self)
-
-        MathInitialAssignment.readSbml(self, initial_assignment, sbml_level, sbml_version)
+		self.__var = None
 
 
-    def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-        """ Writes an initial assignment to a sbml file """
+	def readSbml(self, initial_assignment, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+		""" Reads an initial assignment from a sbml file """
 
-        sbml_initial_assignment = sbml_model.createInitialAssignment()
+		SbmlObject.readSbml(self, initial_assignment, sbml_level, sbml_version)
 
-        SbmlObject.writeSbml(self, sbml_initial_assignment, sbml_level, sbml_version)
-        MathInitialAssignment.writeSbml(self, sbml_initial_assignment, sbml_level, sbml_version)
+		if self.model.listOfVariables.containsSbmlId(initial_assignment.getSymbol()):
+			self.__var = self.model.listOfVariables[initial_assignment.getSymbol()]
+			self.__var.setInitialAssignmentBy(self)
 
-
-    def copy(self, obj, prefix="", shift="", subs={}, deletions=[], replacements={}, conversions=[]):
-        SbmlObject.copy(self, obj, prefix, shift)
-
-        t_symbol = Symbol(obj.getVariable().getSbmlId())
-
-        # print "LIst of variables"
-        # print self.model.listOfVariables.keys()
-        if t_symbol in subs.keys():
-            t_sbml_id = str(subs[t_symbol])
-            tt_symbol = Symbol(t_sbml_id)
-            if tt_symbol in replacements.keys():
-                t_sbml_id = str(replacements[tt_symbol])
-        else:
-            t_sbml_id = prefix+obj.getVariable().getSbmlId()
-
-        self.__var = self.model.listOfVariables[t_sbml_id]
-        self.__var.setInitialAssignmentBy(self)
-        MathInitialAssignment.copy(self, obj, prefix, shift, subs, deletions, replacements, conversions)
+		MathInitialAssignment.readSbml(self, initial_assignment, sbml_level, sbml_version)
 
 
+	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+		""" Writes an initial assignment to a sbml file """
+
+		sbml_initial_assignment = sbml_model.createInitialAssignment()
+
+		SbmlObject.writeSbml(self, sbml_initial_assignment, sbml_level, sbml_version)
+		MathInitialAssignment.writeSbml(self, sbml_initial_assignment, sbml_level, sbml_version)
 
 
-    def getVariable(self):
+	def copy(self, obj, prefix="", shift="", subs={}, deletions=[], replacements={}, conversions=[]):
+		SbmlObject.copy(self, obj, prefix, shift)
 
-        return self.__var
+		t_symbol = Symbol(obj.getVariable().getSbmlId())
 
+		# print "LIst of variables"
+		# print self.model.listOfVariables.keys()
+		if t_symbol in subs.keys():
+			t_sbml_id = str(subs[t_symbol])
+			tt_symbol = Symbol(t_sbml_id)
+			if tt_symbol in replacements.keys():
+				t_sbml_id = str(replacements[tt_symbol])
+		else:
+			t_sbml_id = prefix+obj.getVariable().getSbmlId()
 
-    def getVariableMath(self):
-
-        return self.variable
-
-    def setVariable(self, variable):
-
-        if self.__var is not None:
-            self.var.unsetInitialAssignmentBy()
-
-        self.__var = var
-        self.__var.setInitialAssignmentBy(self)
-        self.variable.setInternalVariable(variable.symbol.getInternalMathFormula())
-
-
-    def getExpression(self):
-
-        return self.definition.getPrettyPrintMathFormula()
-
-    def getExpressionMath(self):
-
-        return self.definition
-
-    def setExpression(self, string):
-
-        self.definition.setPrettyPrintMathFormula(string)
+		self.__var = self.model.listOfVariables[t_sbml_id]
+		self.__var.setInitialAssignmentBy(self)
+		MathInitialAssignment.copy(self, obj, prefix, shift, subs, deletions, replacements, conversions)
 
 
-    def getRuleTypeDescription(self):
-        return "Initial assignment"
+
+
+	def getVariable(self):
+
+		return self.__var
+
+
+	def getVariableMath(self):
+
+		return self.variable
+
+	def setVariable(self, variable):
+
+		if self.__var is not None:
+			self.var.unsetInitialAssignmentBy()
+
+		self.__var = var
+		self.__var.setInitialAssignmentBy(self)
+		self.variable.setInternalVariable(variable.symbol.getInternalMathFormula())
+
+
+	def getExpression(self):
+
+		return self.definition.getPrettyPrintMathFormula()
+
+	def getExpressionMath(self):
+
+		return self.definition
+
+	def setExpression(self, string):
+
+		self.definition.setPrettyPrintMathFormula(string)
+
+
+	def getRuleTypeDescription(self):
+		return "Initial assignment"

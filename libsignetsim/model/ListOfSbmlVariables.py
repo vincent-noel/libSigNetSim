@@ -28,74 +28,74 @@ from re import sub
 from libsignetsim.model.sbmlobject.SbmlVariable import SbmlVariable
 
 class ListOfSbmlVariables(object):
-    """ Parent class for all the ListOf_ containers in a sbml model """
+	""" Parent class for all the ListOf_ containers in a sbml model """
 
-    def __init__ (self, model):
+	def __init__ (self, model):
 
-        self.__model = model
+		self.__model = model
 
-    #
-    # def remove(self, variable):
-    #     del self.listOfVariables[variable.getSbmlId()]
-
-
-    def containsName(self, name):
-        """ Test if a name is in the list """
-
-        res = False
-        for obj in dict.values(self):
-            if name == obj.getName():
-                res = True
-        return res
+	#
+	# def remove(self, variable):
+	#     del self.listOfVariables[variable.getSbmlId()]
 
 
-    def getByName(self, name, pos=0):
-        """ Find sbml objects by their name """
-        return [obj for obj in dict.values(self) if obj.getName() == name][pos]
+	def containsName(self, name):
+		""" Test if a name is in the list """
+
+		res = False
+		for obj in dict.values(self):
+			if name == obj.getName():
+				res = True
+		return res
 
 
-    def containsSbmlId(self, sbml_id):
-        """ Test if a name is in the list """
-        return sbml_id in dict.keys(self)
+	def getByName(self, name, pos=0):
+		""" Find sbml objects by their name """
+		return [obj for obj in dict.values(self) if obj.getName() == name][pos]
 
 
-    def getBySbmlId(self, sbml_id):
-        """ Find sbml objects by their name """
-        return dict.__getitem__(self, sbml_id)
+	def containsSbmlId(self, sbml_id):
+		""" Test if a name is in the list """
+		return sbml_id in dict.keys(self)
+
+
+	def getBySbmlId(self, sbml_id):
+		""" Find sbml objects by their name """
+		return dict.__getitem__(self, sbml_id)
 
 
 
-    def newSbmlId(self, variable, string=None):
+	def newSbmlId(self, variable, string=None):
 
-        # If the string is empty, we choose the type of object as a root
-        t_string = None
-        if string == None:
-            if variable.isSpecies():
-                t_string = "species_%d" % variable.objId
+		# If the string is empty, we choose the type of object as a root
+		t_string = None
+		if string == None:
+			if variable.isSpecies():
+				t_string = "species_%d" % variable.objId
 
-            elif variable.isCompartment():
-                t_string = "compartment_%d" % variable.objId
+			elif variable.isCompartment():
+				t_string = "compartment_%d" % variable.objId
 
-            elif variable.isReaction():
-                t_string = "reaction_%d" % variable.objId
+			elif variable.isReaction():
+				t_string = "reaction_%d" % variable.objId
 
-            elif variable.isParameter():
-                if variable.isLocalParameter():
-                    t_string = "_local_%d_parameter_%d" % (variable.reaction.objId, variable.objId)
-                else:
-                    t_string = "parameter_%d" % variable.objId
+			elif variable.isParameter():
+				if variable.isLocalParameter():
+					t_string = "_local_%d_parameter_%d" % (variable.reaction.objId, variable.objId)
+				else:
+					t_string = "parameter_%d" % variable.objId
 
-        # Otherwise we force the restriction on the string
-        else:
-            t_string = sub('[ ]+','_', string)
-            t_string = sub('[^A-Za-z0-9_]+', '', t_string)
+		# Otherwise we force the restriction on the string
+		else:
+			t_string = sub('[ ]+','_', string)
+			t_string = sub('[^A-Za-z0-9_]+', '', t_string)
 
-        # We check if the sbmlId already exist, and if so we add numbers !
-        # THIS SUCKS
-        if t_string in dict.keys(self):
-            i = 1
-            while ("%s_%d" % (t_string, i)) in dict.keys(self):
-                i += 1
-            t_string = "%s_%d" % (t_string, i)
+		# We check if the sbmlId already exist, and if so we add numbers !
+		# THIS SUCKS
+		if t_string in dict.keys(self):
+			i = 1
+			while ("%s_%d" % (t_string, i)) in dict.keys(self):
+				i += 1
+			t_string = "%s_%d" % (t_string, i)
 
-        return t_string
+		return t_string

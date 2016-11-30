@@ -25,65 +25,65 @@
 
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.sympy_shortcuts import  (
-    SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
-    SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
-    SympyInf, SympyNan, SympyAdd, SympyMul, SympyPow,
-    SympyFunction, SympyUndefinedFunction, SympyLambda, SympyDerivative,
-    SympyCeiling, SympyFloor, SympyAbs, SympyLog, SympyExp, SympyPiecewise,
-    SympyFactorial, SympyRoot, SympyAcos, SympyAsin, SympyAtan, SympyAcosh,
-    SympyAsinh, SympyAtanh, SympyCos, SympySin, SympyTan, SympyAcot,
-    SympyAcoth, SympyCosh, SympySinh, SympyTanh, SympySec, SympyCsc,
-    SympyCot, SympyCoth, SympyAcsc, SympyAsec,
-    SympyEqual, SympyUnequal, SympyGreaterThan, SympyLessThan,
-    SympyStrictGreaterThan, SympyStrictLessThan,
-    SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
-    SympyMax, SympyMin)
+	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
+	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
+	SympyInf, SympyNan, SympyAdd, SympyMul, SympyPow,
+	SympyFunction, SympyUndefinedFunction, SympyLambda, SympyDerivative,
+	SympyCeiling, SympyFloor, SympyAbs, SympyLog, SympyExp, SympyPiecewise,
+	SympyFactorial, SympyRoot, SympyAcos, SympyAsin, SympyAtan, SympyAcosh,
+	SympyAsinh, SympyAtanh, SympyCos, SympySin, SympyTan, SympyAcot,
+	SympyAcoth, SympyCosh, SympySinh, SympyTanh, SympySec, SympyCsc,
+	SympyCot, SympyCoth, SympyAcsc, SympyAsec,
+	SympyEqual, SympyUnequal, SympyGreaterThan, SympyLessThan,
+	SympyStrictGreaterThan, SympyStrictLessThan,
+	SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
+	SympyMax, SympyMin)
 from libsignetsim.model.ModelException import ModelException
 
 class MathEquation(MathFormula):
 
-    MATH_EQ             =  10
-    MATH_NEQ            =  11
-    MATH_LT             =  12
-    MATH_GT             =  13
-    MATH_LEQ            =  14
-    MATH_GEQ            =  15
+	MATH_EQ             =  10
+	MATH_NEQ            =  11
+	MATH_LT             =  12
+	MATH_GT             =  13
+	MATH_LEQ            =  14
+	MATH_GEQ            =  15
 
-    def __init__(self, model):
-        MathFormula.__init__(self, model, MathFormula.MATH_EQUATION)
-
-
-    def getCLHS(self):
-        return self.writeCCode(self.getDeveloppedInternalMathFormula().args[0])
+	def __init__(self, model):
+		MathFormula.__init__(self, model, MathFormula.MATH_EQUATION)
 
 
-    def getCRHS(self):
-        return self.writeCCode(self.getDeveloppedInternalMathFormula().args[1])
+	def getCLHS(self):
+		return self.writeCCode(self.getDeveloppedInternalMathFormula().args[0])
 
 
-    def getOperator(self):
-        return self.getInternalMathFormula().func
+	def getCRHS(self):
+		return self.writeCCode(self.getDeveloppedInternalMathFormula().args[1])
 
 
-    def isOperatorEq(self):
-        return self.getOperator() == SympyEqual
+	def getOperator(self):
+		return self.getInternalMathFormula().func
 
 
-    def isOperatorNeq(self):
-        return self.getOperator() == SympyUnequal
+	def isOperatorEq(self):
+		return self.getOperator() == SympyEqual
 
 
-    def isOperatorGeq(self):
-        return self.getOperator() == SympyGreaterThan
+	def isOperatorNeq(self):
+		return self.getOperator() == SympyUnequal
 
 
-    def isOperatorLeq(self):
-        return self.getOperator() == SympyLessThan
+	def isOperatorGeq(self):
+		return self.getOperator() == SympyGreaterThan
 
 
-    def isOperatorGt(self):
-        return self.getOperator() == SympyStrictGreaterThan
+	def isOperatorLeq(self):
+		return self.getOperator() == SympyLessThan
 
 
-    def isOperatorLt(self):
-        return self.getOperator() == SympyStrictLessThan
+	def isOperatorGt(self):
+		return self.getOperator() == SympyStrictGreaterThan
+
+
+	def isOperatorLt(self):
+		return self.getOperator() == SympyStrictLessThan

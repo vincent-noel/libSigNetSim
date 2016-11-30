@@ -32,51 +32,51 @@ from libsignetsim.settings.Settings import Settings
 
 
 class ListOfFunctionDefinitions(ListOf, HasIds, SbmlObject):
-    """ Class for the listOfFunctionDefinitions in a sbml model """
+	""" Class for the listOfFunctionDefinitions in a sbml model """
 
-    def __init__ (self, model=None):
+	def __init__ (self, model=None):
 
-        self.__model = model
-        ListOf.__init__(self, model)
-        HasIds.__init__(self, model)
-        SbmlObject.__init__(self, model)
-
-
-    def readSbml(self, sbml_functions,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-        """ Reads the list of events from a sbml model """
-
-        for function in sbml_functions:
-            t_function = FunctionDefinition(self.__model, self.nextId())
-            t_function.readSbml(function, sbml_level, sbml_version)
-            ListOf.add(self, t_function)
-
-        SbmlObject.readSbml(self, sbml_functions, sbml_level, sbml_version)
+		self.__model = model
+		ListOf.__init__(self, model)
+		HasIds.__init__(self, model)
+		SbmlObject.__init__(self, model)
 
 
-    def writeSbml(self, sbml_model,
-                        sbml_level=Settings.defaultSbmlLevel,
-                        sbml_version=Settings.defaultSbmlVersion):
-        """ Writes the list of events to a sbml model """
+	def readSbml(self, sbml_functions,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+		""" Reads the list of events from a sbml model """
 
-        for function_definition in ListOf.values(self):
-            function_definition.writeSbml(sbml_model, sbml_level, sbml_version)
+		for function in sbml_functions:
+			t_function = FunctionDefinition(self.__model, self.nextId())
+			t_function.readSbml(function, sbml_level, sbml_version)
+			ListOf.add(self, t_function)
 
-        SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
-
-
-    def copy(self, obj, prefix="", shift=0, subs={}, deletions=[]):
-
-        if obj not in deletions:
-            SbmlObject.copy(self, obj, prefix, shift)
-            for function_definition in obj.values():
-                if function_definition not in deletions:
-                    obj_id = function_definition.objId + shift
-                    t_function = FunctionDefinition(self.__model, obj_id)
-                    t_function.copy(function_definition, prefix, shift)
-                    ListOf.add(self, t_function)
+		SbmlObject.readSbml(self, sbml_functions, sbml_level, sbml_version)
 
 
+	def writeSbml(self, sbml_model,
+						sbml_level=Settings.defaultSbmlLevel,
+						sbml_version=Settings.defaultSbmlVersion):
+		""" Writes the list of events to a sbml model """
 
-    # We should overload remove to check if the functions are not used before deleting them
+		for function_definition in ListOf.values(self):
+			function_definition.writeSbml(sbml_model, sbml_level, sbml_version)
+
+		SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
+
+
+	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[]):
+
+		if obj not in deletions:
+			SbmlObject.copy(self, obj, prefix, shift)
+			for function_definition in obj.values():
+				if function_definition not in deletions:
+					obj_id = function_definition.objId + shift
+					t_function = FunctionDefinition(self.__model, obj_id)
+					t_function.copy(function_definition, prefix, shift)
+					ListOf.add(self, t_function)
+
+
+
+	# We should overload remove to check if the functions are not used before deleting them

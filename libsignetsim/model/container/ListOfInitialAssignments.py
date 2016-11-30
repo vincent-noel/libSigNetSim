@@ -31,102 +31,102 @@ from libsignetsim.settings.Settings import Settings
 
 
 class ListOfInitialAssignments(ListOf, SbmlObject):
-    """ Class for the listOfInitialAssignments in a sbml model """
+	""" Class for the listOfInitialAssignments in a sbml model """
 
-    def __init__ (self, model):
+	def __init__ (self, model):
 
-        self.__model = model
-        ListOf.__init__(self, model)
-        SbmlObject.__init__(self, model)
-
-
-    def readSbml(self, sbml_list_of_ia,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-        """ Reads initial assignments' list from a sbml file """
-
-        for init_ass in sbml_list_of_ia:
-            t_init_ass = InitialAssignment(self.__model, self.nextId())
-            t_init_ass.readSbml(init_ass, sbml_level, sbml_version)
-            ListOf.add(self, t_init_ass)
-
-        SbmlObject.readSbml(self, sbml_list_of_ia, sbml_level, sbml_version)
+		self.__model = model
+		ListOf.__init__(self, model)
+		SbmlObject.__init__(self, model)
 
 
-    def writeSbml(self, sbml_model,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-        """ Writes initial assignments' list to a sbml file """
+	def readSbml(self, sbml_list_of_ia,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+		""" Reads initial assignments' list from a sbml file """
 
-        for initial_assignment in ListOf.values(self):
-            initial_assignment.writeSbml(sbml_model, sbml_level, sbml_version)
+		for init_ass in sbml_list_of_ia:
+			t_init_ass = InitialAssignment(self.__model, self.nextId())
+			t_init_ass.readSbml(init_ass, sbml_level, sbml_version)
+			ListOf.add(self, t_init_ass)
 
-        SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
-
-
-    def new(self, variable=None, expression=None):
-
-        t_initial_assignment = InitialAssignment(self.__model, self.nextId())
-        if (variable is not None and expression is not None):
-            t_initial_assignment.readUI(variable, expression)
-
-        ListOf.add(self, t_initial_assignment)
+		SbmlObject.readSbml(self, sbml_list_of_ia, sbml_level, sbml_version)
 
 
-    def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}):
+	def writeSbml(self, sbml_model,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+		""" Writes initial assignments' list to a sbml file """
 
-        if len(self.keys()) > 0:
-            t_shift = max(self.keys())+1
-        else:
-            t_shift = 0
+		for initial_assignment in ListOf.values(self):
+			initial_assignment.writeSbml(sbml_model, sbml_level, sbml_version)
 
-        if obj not in deletions:
-            SbmlObject.copy(self, obj, prefix, t_shift)
-            for init_ass in obj.values():
-                if init_ass not in deletions:
-
-                    obj_id = init_ass.objId + t_shift
-                    t_init_ass = InitialAssignment(self.__model, obj_id)
-
-                    if not init_ass.isMarkedToBeReplaced:
-                        t_init_ass.copy(init_ass, prefix, t_shift, subs, deletions, replacements, conversions)
-
-                    else:
-                        t_init_ass.copy(init_ass.isMarkedToBeReplacedBy, prefix, t_shift, subs, deletions, replacements, conversions)
+		SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
 
 
-                    ListOf.add(self, t_init_ass)
+	def new(self, variable=None, expression=None):
+
+		t_initial_assignment = InitialAssignment(self.__model, self.nextId())
+		if (variable is not None and expression is not None):
+			t_initial_assignment.readUI(variable, expression)
+
+		ListOf.add(self, t_initial_assignment)
 
 
-    def renameSbmlId(self, old_sbml_id, new_sbml_id):
+	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}):
 
-        for obj in ListOf.values(self):
-            obj.renameSbmlId(old_sbml_id, new_sbml_id)
+		if len(self.keys()) > 0:
+			t_shift = max(self.keys())+1
+		else:
+			t_shift = 0
 
+		if obj not in deletions:
+			SbmlObject.copy(self, obj, prefix, t_shift)
+			for init_ass in obj.values():
+				if init_ass not in deletions:
 
-    def hasInitialAssignment(self, variable):
+					obj_id = init_ass.objId + t_shift
+					t_init_ass = InitialAssignment(self.__model, obj_id)
 
-        for obj in ListOf.values(self):
-            if obj.getVariable().getSbmlId() == variable.getSbmlId():
-                return True
+					if not init_ass.isMarkedToBeReplaced:
+						t_init_ass.copy(init_ass, prefix, t_shift, subs, deletions, replacements, conversions)
 
-
-    def containsVariable(self, variable):
-
-        for init_ass in ListOf.values(self):
-            if init_ass.containsVariable(variable):
-                return True
-        return False
-
-
-    def remove(self, init_assignment):
-        """ Remove an initial assignment from the list """
-
-        init_assignment.variable.unsetRuledBy()
-        ListOf.remove(self, init_assignment)
+					else:
+						t_init_ass.copy(init_ass.isMarkedToBeReplacedBy, prefix, t_shift, subs, deletions, replacements, conversions)
 
 
-    def removeById(self, obj_id):
-        """ Remove an initial assignment from the list """
+					ListOf.add(self, t_init_ass)
 
-        self.remove(self.getById(obj_id))
+
+	def renameSbmlId(self, old_sbml_id, new_sbml_id):
+
+		for obj in ListOf.values(self):
+			obj.renameSbmlId(old_sbml_id, new_sbml_id)
+
+
+	def hasInitialAssignment(self, variable):
+
+		for obj in ListOf.values(self):
+			if obj.getVariable().getSbmlId() == variable.getSbmlId():
+				return True
+
+
+	def containsVariable(self, variable):
+
+		for init_ass in ListOf.values(self):
+			if init_ass.containsVariable(variable):
+				return True
+		return False
+
+
+	def remove(self, init_assignment):
+		""" Remove an initial assignment from the list """
+
+		init_assignment.variable.unsetRuledBy()
+		ListOf.remove(self, init_assignment)
+
+
+	def removeById(self, obj_id):
+		""" Remove an initial assignment from the list """
+
+		self.remove(self.getById(obj_id))

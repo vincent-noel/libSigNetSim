@@ -37,358 +37,358 @@ from libsbml import formulaToL3String
 from sympy import Symbol
 
 class Species(SbmlObject, Variable, InitiallyAssignedVariable,
-                        RuledVariable, EventAssignedVariable, HasUnits):
+						RuledVariable, EventAssignedVariable, HasUnits):
 
-    def __init__ (self, model, objId):
+	def __init__ (self, model, objId):
 
-        self.__model = model
-        self.objId = objId
+		self.__model = model
+		self.objId = objId
 
-        Variable.__init__(self, model, Variable.SPECIES)
-        SbmlObject.__init__(self, model)
-        InitiallyAssignedVariable.__init__(self, model)
-        RuledVariable.__init__(self, model)
-        EventAssignedVariable.__init__(self, model)
-        HasUnits.__init__(self, model)
+		Variable.__init__(self, model, Variable.SPECIES)
+		SbmlObject.__init__(self, model)
+		InitiallyAssignedVariable.__init__(self, model)
+		RuledVariable.__init__(self, model)
+		EventAssignedVariable.__init__(self, model)
+		HasUnits.__init__(self, model)
 
-        self.__compartment = None
-        self.boundaryCondition = False
-        self.hasOnlySubstanceUnits = False
-        self.isDeclaredConcentration = True
-        self.concentrationUnit = None
-        self.conversionFactor = None
+		self.__compartment = None
+		self.boundaryCondition = False
+		self.hasOnlySubstanceUnits = False
+		self.isDeclaredConcentration = True
+		self.concentrationUnit = None
+		self.conversionFactor = None
 
 
 
-    def new(self, name=None, compartment=None, init_value=0, unit=None,
-             constant=False, boundaryCondition=False, hasOnlySubstanceUnits=False):
+	def new(self, name=None, compartment=None, init_value=0, unit=None,
+			 constant=False, boundaryCondition=False, hasOnlySubstanceUnits=False):
 
 
-        if compartment != None:
-            self.__compartment = compartment.objId
+		if compartment != None:
+			self.__compartment = compartment.objId
 
-        else:
-            if len(self.__model.listOfCompartments) == 0:
-                self.__model.listOfCompartments.new("cell")
+		else:
+			if len(self.__model.listOfCompartments) == 0:
+				self.__model.listOfCompartments.new("cell")
 
-            self.__compartment = self.__model.listOfCompartments.values()[0].objId
+			self.__compartment = self.__model.listOfCompartments.values()[0].objId
 
-        SbmlObject.new(self)
-        Variable.new(self, name, Variable.SPECIES)
-        HasUnits.new(self, unit)
+		SbmlObject.new(self)
+		Variable.new(self, name, Variable.SPECIES)
+		HasUnits.new(self, unit)
 
 
-        self.setValue(init_value)
+		self.setValue(init_value)
 
-        self.constant = constant
-        self.boundaryCondition = boundaryCondition
-        self.hasOnlySubstanceUnits = hasOnlySubstanceUnits
-        self.setUnits(self.__model.substanceUnits)
+		self.constant = constant
+		self.boundaryCondition = boundaryCondition
+		self.hasOnlySubstanceUnits = hasOnlySubstanceUnits
+		self.setUnits(self.__model.substanceUnits)
 
 
 
-    def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
+	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
 
-        self.setCompartment(obj.getCompartment(), prefix, shift, subs, deletions, replacements)
+		self.setCompartment(obj.getCompartment(), prefix, shift, subs, deletions, replacements)
 
-        Variable.copy(self, obj, prefix, shift, subs, deletions, replacements)
-        SbmlObject.copy(self, obj, prefix, shift)
-        InitiallyAssignedVariable.copy(self, obj, prefix, shift)
-        RuledVariable.copy(self, obj, prefix, shift)
-        EventAssignedVariable.copy(self, obj, prefix, shift)
-        HasUnits.copy(self, obj, prefix, shift)
+		Variable.copy(self, obj, prefix, shift, subs, deletions, replacements)
+		SbmlObject.copy(self, obj, prefix, shift)
+		InitiallyAssignedVariable.copy(self, obj, prefix, shift)
+		RuledVariable.copy(self, obj, prefix, shift)
+		EventAssignedVariable.copy(self, obj, prefix, shift)
+		HasUnits.copy(self, obj, prefix, shift)
 
-        self.constant = obj.constant
-        self.boundaryCondition = obj.boundaryCondition
-        self.hasOnlySubstanceUnits = obj.hasOnlySubstanceUnits
-        self.isDeclaredConcentration = obj.isDeclaredConcentration
-        if obj.conversionFactor is not None:
-            self.conversionFactor = MathFormula(self.__model)
-            self.conversionFactor.setInternalMathFormula(obj.conversionFactor.getInternalMathFormula())
+		self.constant = obj.constant
+		self.boundaryCondition = obj.boundaryCondition
+		self.hasOnlySubstanceUnits = obj.hasOnlySubstanceUnits
+		self.isDeclaredConcentration = obj.isDeclaredConcentration
+		if obj.conversionFactor is not None:
+			self.conversionFactor = MathFormula(self.__model)
+			self.conversionFactor.setInternalMathFormula(obj.conversionFactor.getInternalMathFormula())
 
 
 
 
-    def readSbml(self, sbml_species, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+	def readSbml(self, sbml_species, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
-        if sbml_level >= 2:
-            self.__compartment = self.__model.listOfCompartments.getBySbmlId(sbml_species.getCompartment()).objId
-        else:
-            self.__compartment = self.__model.listOfCompartments.getByName(sbml_species.getCompartment()).objId
+		if sbml_level >= 2:
+			self.__compartment = self.__model.listOfCompartments.getBySbmlId(sbml_species.getCompartment()).objId
+		else:
+			self.__compartment = self.__model.listOfCompartments.getByName(sbml_species.getCompartment()).objId
 
-        Variable.readSbml(self, sbml_species, sbml_level, sbml_version)
-        SbmlObject.readSbml(self, sbml_species, sbml_level, sbml_version)
-        HasUnits.readSbml(self, sbml_species, sbml_level, sbml_version)
+		Variable.readSbml(self, sbml_species, sbml_level, sbml_version)
+		SbmlObject.readSbml(self, sbml_species, sbml_level, sbml_version)
+		HasUnits.readSbml(self, sbml_species, sbml_level, sbml_version)
 
-        if HasUnits.getUnits(self) is None and self.__model.substanceUnits is not None:
-            HasUnits.setUnits(self, self.__model.substanceUnits)
+		if HasUnits.getUnits(self) is None and self.__model.substanceUnits is not None:
+			HasUnits.setUnits(self, self.__model.substanceUnits)
 
 
-    def readSbmlVariable(self, sbml_species, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+	def readSbmlVariable(self, sbml_species, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
-        self.symbol.readSbml(sbml_species.getId(), sbml_level, sbml_version)
+		self.symbol.readSbml(sbml_species.getId(), sbml_level, sbml_version)
 
-        if sbml_species.isSetHasOnlySubstanceUnits():
-            self.hasOnlySubstanceUnits = sbml_species.getHasOnlySubstanceUnits()
+		if sbml_species.isSetHasOnlySubstanceUnits():
+			self.hasOnlySubstanceUnits = sbml_species.getHasOnlySubstanceUnits()
 
-        elif sbml_level in [1,2]:
-            self.hasOnlySubstanceUnits = False
+		elif sbml_level in [1,2]:
+			self.hasOnlySubstanceUnits = False
 
-        if sbml_species.isSetInitialAmount():
-            self.isInitialized = True
-            self.isDeclaredConcentration = False
-            self.value.readSbml(sbml_species.getInitialAmount(), sbml_level, sbml_version)
+		if sbml_species.isSetInitialAmount():
+			self.isInitialized = True
+			self.isDeclaredConcentration = False
+			self.value.readSbml(sbml_species.getInitialAmount(), sbml_level, sbml_version)
 
-        elif sbml_species.isSetInitialConcentration():
-            self.isInitialized = True
-            self.isDeclaredConcentration = True
-            self.value.readSbml(sbml_species.getInitialConcentration(), sbml_level, sbml_version)
-            self.value.setInternalMathFormula(self.value.getInternalMathFormula()*self.getCompartment().symbol.getInternalMathFormula())
-            # print self.value.getInternalMathFormula()
+		elif sbml_species.isSetInitialConcentration():
+			self.isInitialized = True
+			self.isDeclaredConcentration = True
+			self.value.readSbml(sbml_species.getInitialConcentration(), sbml_level, sbml_version)
+			self.value.setInternalMathFormula(self.value.getInternalMathFormula()*self.getCompartment().symbol.getInternalMathFormula())
+			# print self.value.getInternalMathFormula()
 
-        if sbml_species.isSetBoundaryCondition():
-            self.boundaryCondition = sbml_species.getBoundaryCondition()
+		if sbml_species.isSetBoundaryCondition():
+			self.boundaryCondition = sbml_species.getBoundaryCondition()
 
-        elif sbml_level in [1,2]:
-            self.boundaryCondition = False
+		elif sbml_level in [1,2]:
+			self.boundaryCondition = False
 
 
-        if sbml_species.isSetConstant():
-            self.constant = sbml_species.getConstant()
+		if sbml_species.isSetConstant():
+			self.constant = sbml_species.getConstant()
 
-        elif sbml_level in [1,2]:
-            self.constant = False
+		elif sbml_level in [1,2]:
+			self.constant = False
 
-        if sbml_level >= 3 and sbml_species.isSetConversionFactor():
-            self.conversionFactor = MathFormula(self.__model)
-            self.conversionFactor.readSbml(sbml_species.getConversionFactor(), sbml_level, sbml_version)
+		if sbml_level >= 3 and sbml_species.isSetConversionFactor():
+			self.conversionFactor = MathFormula(self.__model)
+			self.conversionFactor.readSbml(sbml_species.getConversionFactor(), sbml_level, sbml_version)
 
 
-    def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
-        sbml_sp = sbml_model.createSpecies()
+		sbml_sp = sbml_model.createSpecies()
 
-        Variable.writeSbml(self, sbml_sp, sbml_level, sbml_version)
-        SbmlObject.writeSbml(self, sbml_sp, sbml_level, sbml_version)
-        HasUnits.writeSbml(self, sbml_sp, sbml_level, sbml_version)
+		Variable.writeSbml(self, sbml_sp, sbml_level, sbml_version)
+		SbmlObject.writeSbml(self, sbml_sp, sbml_level, sbml_version)
+		HasUnits.writeSbml(self, sbml_sp, sbml_level, sbml_version)
 
-        sbml_sp.setCompartment(self.getCompartment().getSbmlId())
+		sbml_sp.setCompartment(self.getCompartment().getSbmlId())
 
 
-    def writeSbmlVariable(self, sbml_sp, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+	def writeSbmlVariable(self, sbml_sp, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
-        if self.isInitialized:
-            t_value = self.value.getSbmlMathFormula(sbml_level, sbml_version)
-            if not self.isDeclaredConcentration:
-                sbml_sp.setInitialAmount(t_value.getValue())
-            else:
-                t_formula = MathFormula(self.__model)
-                t_formula.setInternalMathFormula(self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula())
-                sbml_sp.setInitialConcentration(t_formula.getValueMathFormula())
+		if self.isInitialized:
+			t_value = self.value.getSbmlMathFormula(sbml_level, sbml_version)
+			if not self.isDeclaredConcentration:
+				sbml_sp.setInitialAmount(t_value.getValue())
+			else:
+				t_formula = MathFormula(self.__model)
+				t_formula.setInternalMathFormula(self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula())
+				sbml_sp.setInitialConcentration(t_formula.getValueMathFormula())
 
-        if self.boundaryCondition is not None and (sbml_level >= 3 or self.boundaryCondition is not False):
-            sbml_sp.setBoundaryCondition(self.boundaryCondition)
+		if self.boundaryCondition is not None and (sbml_level >= 3 or self.boundaryCondition is not False):
+			sbml_sp.setBoundaryCondition(self.boundaryCondition)
 
-        if ((sbml_level == 2 and self.hasOnlySubstanceUnits)
-            or sbml_level == 3):
-            sbml_sp.setHasOnlySubstanceUnits(self.hasOnlySubstanceUnits)
+		if ((sbml_level == 2 and self.hasOnlySubstanceUnits)
+			or sbml_level == 3):
+			sbml_sp.setHasOnlySubstanceUnits(self.hasOnlySubstanceUnits)
 
-        if self.constant is not None and (sbml_level == 3 or (sbml_level == 2 and self.constant)):
-            sbml_sp.setConstant(self.constant)
+		if self.constant is not None and (sbml_level == 3 or (sbml_level == 2 and self.constant)):
+			sbml_sp.setConstant(self.constant)
 
 
-        if sbml_level >= 3 and self.conversionFactor is not None:
-            sbml_sp.setConversionFactor(formulaToL3String(
-                self.conversionFactor.writeSbml(sbml_level, sbml_version)))
+		if sbml_level >= 3 and self.conversionFactor is not None:
+			sbml_sp.setConversionFactor(formulaToL3String(
+				self.conversionFactor.writeSbml(sbml_level, sbml_version)))
 
 
 
-    def isInReactions(self, including_fast_reactions=False):
-        """ The purpose of this function is to test is the species's amount
-            is actually modified by a reaction. Thus not checking the Modifiers
-            makes sense.
-        """
+	def isInReactions(self, including_fast_reactions=False):
+		""" The purpose of this function is to test is the species's amount
+			is actually modified by a reaction. Thus not checking the Modifiers
+			makes sense.
+		"""
 
-        # print "> Entering isInReactions : %s" % self.getSbmlId()
+		# print "> Entering isInReactions : %s" % self.getSbmlId()
 
-        for i_reaction, reaction in enumerate(self.__model.listOfReactions.values()):
-            # print "\n> reaction #%d" % i_reaction
-            if not reaction.fast or including_fast_reactions:
-                # print "well, first, it's not fast"
-                if reaction.listOfReactants:
-                    for i, reactant in enumerate(reaction.listOfReactants.values()):
-                        # print ">>> reactant #%d : %s" % (i, reactant.getSpecies().getSbmlId())
-                        if reactant.getSpecies() == self:
-                            return True
+		for i_reaction, reaction in enumerate(self.__model.listOfReactions.values()):
+			# print "\n> reaction #%d" % i_reaction
+			if not reaction.fast or including_fast_reactions:
+				# print "well, first, it's not fast"
+				if reaction.listOfReactants:
+					for i, reactant in enumerate(reaction.listOfReactants.values()):
+						# print ">>> reactant #%d : %s" % (i, reactant.getSpecies().getSbmlId())
+						if reactant.getSpecies() == self:
+							return True
 
-                # # TODO
-                # # This might break some stuff, needs to pass the sbml test suite
-                # if reaction.listOfModifiers:
-                #     for modifier in reaction.listOfModifiers.values():
-                #         if modifier.getSpecies() == self:
-                #             return True
+				# # TODO
+				# # This might break some stuff, needs to pass the sbml test suite
+				# if reaction.listOfModifiers:
+				#     for modifier in reaction.listOfModifiers.values():
+				#         if modifier.getSpecies() == self:
+				#             return True
 
-                if reaction.listOfProducts:
-                    for i, product in enumerate(reaction.listOfProducts.values()):
-                        # print ">>> product #%d : %s" % (i, product.getSpecies().getSbmlId())
-                        if product.getSpecies() == self:
-                            return True
+				if reaction.listOfProducts:
+					for i, product in enumerate(reaction.listOfProducts.values()):
+						# print ">>> product #%d : %s" % (i, product.getSpecies().getSbmlId())
+						if product.getSpecies() == self:
+							return True
 
-        return False
+		return False
 
 
-    def isInFastReactions(self):
-        """ The purpose of this function is to test is the species's amount
-            is actually modified by a reaction. Thus not checking the Modifiers
-            makes sense.
-        """
+	def isInFastReactions(self):
+		""" The purpose of this function is to test is the species's amount
+			is actually modified by a reaction. Thus not checking the Modifiers
+			makes sense.
+		"""
 
-        for reaction in self.__model.listOfReactions.values():
-                if reaction.listOfReactants:
-                    for reactant in reaction.listOfReactants.values():
-                        if reactant.getSpecies() == self:
-                            if reaction.fast:
-                                return True
-                            else:
-                                return False
+		for reaction in self.__model.listOfReactions.values():
+				if reaction.listOfReactants:
+					for reactant in reaction.listOfReactants.values():
+						if reactant.getSpecies() == self:
+							if reaction.fast:
+								return True
+							else:
+								return False
 
-                if reaction.listOfProducts:
-                    for product in reaction.listOfProducts.values():
-                        if product.getSpecies() == self:
-                            if reaction.fast:
-                                return True
-                            else:
-                                return False
+				if reaction.listOfProducts:
+					for product in reaction.listOfProducts.values():
+						if product.getSpecies() == self:
+							if reaction.fast:
+								return True
+							else:
+								return False
 
-        return False
+		return False
 
 
-    def getODE(self, including_fast_reactions=False, math_type=MathFormula.MATH_INTERNAL, forcedConcentration=False, symbols=False):
+	def getODE(self, including_fast_reactions=False, math_type=MathFormula.MATH_INTERNAL, forcedConcentration=False, symbols=False):
 
-        if self.constant == True:
-            return MathFormula.ZERO
+		if self.constant == True:
+			return MathFormula.ZERO
 
-        elif self.isRateRuled():
-            return self.isRuledBy().getDefinition(math_type, forcedConcentration)
+		elif self.isRateRuled():
+			return self.isRuledBy().getDefinition(math_type, forcedConcentration)
 
-        elif self.isInReactions(including_fast_reactions):
+		elif self.isInReactions(including_fast_reactions):
 
-            ode = MathFormula.ZERO
+			ode = MathFormula.ZERO
 
-            if not self.boundaryCondition:
-                for reaction in self.__model.listOfReactions.values():
-                    if not reaction.fast or including_fast_reactions:
-                        ode += reaction.getODE(self, math_type, forcedConcentration, symbols)
+			if not self.boundaryCondition:
+				for reaction in self.__model.listOfReactions.values():
+					if not reaction.fast or including_fast_reactions:
+						ode += reaction.getODE(self, math_type, forcedConcentration, symbols)
 
-            if self.conversionFactor is not None:
-                ode *= self.conversionFactor.getMathFormula(math_type)
+			if self.conversionFactor is not None:
+				ode *= self.conversionFactor.getMathFormula(math_type)
 
-            elif self.__model.conversionFactor is not None:
-                ode *= self.__model.conversionFactor.getMathFormula(math_type)
+			elif self.__model.conversionFactor is not None:
+				ode *= self.__model.conversionFactor.getMathFormula(math_type)
 
-            return ode
+			return ode
 
 
 
-    def getMathValue(self, forcedConcentration=False):
+	def getMathValue(self, forcedConcentration=False):
 
-        if forcedConcentration and (self.isDeclaredConcentration or not self.hasOnlySubstanceUnits):
-            t_formula = MathFormula(self.__model)
-            t_formula.setInternalMathFormula(self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula())
-            return t_formula
-        else:
-            return self.value
+		if forcedConcentration and (self.isDeclaredConcentration or not self.hasOnlySubstanceUnits):
+			t_formula = MathFormula(self.__model)
+			t_formula.setInternalMathFormula(self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula())
+			return t_formula
+		else:
+			return self.value
 
 
-    def getValue(self):
+	def getValue(self):
 
-        if self.isDeclaredConcentration:
-            return float(self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula())
-        else:
-            return Variable.getValue(self)
+		if self.isDeclaredConcentration:
+			return float(self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula())
+		else:
+			return Variable.getValue(self)
 
 
-    def setValue(self, value):
-        self.isInitialized = True
+	def setValue(self, value):
+		self.isInitialized = True
 
-        if self.isDeclaredConcentration:
-            self.value.setInternalMathFormula(value*self.getCompartment().symbol.getInternalMathFormula())
-        else:
-            Variable.setValue(self, value)
+		if self.isDeclaredConcentration:
+			self.value.setInternalMathFormula(value*self.getCompartment().symbol.getInternalMathFormula())
+		else:
+			Variable.setValue(self, value)
 
-        # print self.value.getInternalMathFormula()
+		# print self.value.getInternalMathFormula()
 
-    # def renameSbmlId(self, old_sbml_id, new_sbml_id):
+	# def renameSbmlId(self, old_sbml_id, new_sbml_id):
 
-        # old_symbol = SympySymbol(old_sbml_id)
-        #
-        # if old_symbol in self.definition.getInternalMathFormula().atoms():
-        #     t_definition = MathFormula(self.__model, MathFormula.MATH_ALGEBRAICRULE)
-        #     t_definition.setInternalMathFormula(self.definition.getInternalMathFormula.subs(old_symbol, SympySymbol(new_sbml_id)))
-        #
-        # if self.value is not None:
-        #     self.value.renameSbmlId(old_sbml_id, new_sbml_id)
-        #
-        # for reactant in self.listOfReactants.values():
-        #     reactant.renameSbmlId(old_sbml_id, new_sbml_id)
-        #
-        # for product in self.listOfProducts.values():
-        #     product.renameSbmlId(old_sbml_id, new_sbml_id)
+		# old_symbol = SympySymbol(old_sbml_id)
+		#
+		# if old_symbol in self.definition.getInternalMathFormula().atoms():
+		#     t_definition = MathFormula(self.__model, MathFormula.MATH_ALGEBRAICRULE)
+		#     t_definition.setInternalMathFormula(self.definition.getInternalMathFormula.subs(old_symbol, SympySymbol(new_sbml_id)))
+		#
+		# if self.value is not None:
+		#     self.value.renameSbmlId(old_sbml_id, new_sbml_id)
+		#
+		# for reactant in self.listOfReactants.values():
+		#     reactant.renameSbmlId(old_sbml_id, new_sbml_id)
+		#
+		# for product in self.listOfProducts.values():
+		#     product.renameSbmlId(old_sbml_id, new_sbml_id)
 
 
-    def hasUnits(self):
+	def hasUnits(self):
 
-        if self.hasOnlySubstanceUnits:
-            return HasUnits.hasUnits(self)
-        else:
-            return HasUnits.hasUnits(self) and self.getCompartment().hasUnits()
+		if self.hasOnlySubstanceUnits:
+			return HasUnits.hasUnits(self)
+		else:
+			return HasUnits.hasUnits(self) and self.getCompartment().hasUnits()
 
 
 
-    def setUnits(self, unit, prefix=""):
+	def setUnits(self, unit, prefix=""):
 
-        if unit is not None:
-            if self.hasOnlySubstanceUnits:
-                HasUnits.setUnits(self, unit, prefix)
-            else:
-                if unit is not None and self.getCompartment().getUnits() is not None:
-                    HasUnits.setUnits(self, self.__model.listOfUnitDefinitions.getAmountUnit(unit,
-                                                        self.getCompartment().getUnits()), prefix)
+		if unit is not None:
+			if self.hasOnlySubstanceUnits:
+				HasUnits.setUnits(self, unit, prefix)
+			else:
+				if unit is not None and self.getCompartment().getUnits() is not None:
+					HasUnits.setUnits(self, self.__model.listOfUnitDefinitions.getAmountUnit(unit,
+														self.getCompartment().getUnits()), prefix)
 
-    def getUnits(self):
+	def getUnits(self):
 
-        #print " Gettings units of species %s" % self.getNameOrSbmlId()
-        if self.hasOnlySubstanceUnits:
-            return self.unit
-        else:
-            #print "Saved concentration unit : %s" % str(self.concentrationUnit)
-            if self.concentrationUnit is None:
-                if HasUnits.getUnits(self) is not None and self.getCompartment().getUnits() is not None:
-                    self.concentrationUnit = self.__model.listOfUnitDefinitions.getConcentrationUnit(HasUnits.getUnits(self),
-                                                            self.getCompartment().getUnits())
-                    return self.concentrationUnit
-            else:
-                return self.concentrationUnit
-                #return self.__model.listOfUnitDefinitions.getConcentrationUnit(self.unit,
-                #                                            self.__compartment.getUnits())
+		#print " Gettings units of species %s" % self.getNameOrSbmlId()
+		if self.hasOnlySubstanceUnits:
+			return self.unit
+		else:
+			#print "Saved concentration unit : %s" % str(self.concentrationUnit)
+			if self.concentrationUnit is None:
+				if HasUnits.getUnits(self) is not None and self.getCompartment().getUnits() is not None:
+					self.concentrationUnit = self.__model.listOfUnitDefinitions.getConcentrationUnit(HasUnits.getUnits(self),
+															self.getCompartment().getUnits())
+					return self.concentrationUnit
+			else:
+				return self.concentrationUnit
+				#return self.__model.listOfUnitDefinitions.getConcentrationUnit(self.unit,
+				#                                            self.__compartment.getUnits())
 
 
-    def getCompartment(self):
-        if self.__compartment is not None:
-            return self.__model.listOfCompartments[self.__compartment]
+	def getCompartment(self):
+		if self.__compartment is not None:
+			return self.__model.listOfCompartments[self.__compartment]
 
-    def setCompartment(self, compartment, prefix="", shift=0, subs={}, deletions=[], replacements={}):
+	def setCompartment(self, compartment, prefix="", shift=0, subs={}, deletions=[], replacements={}):
 
-        t_symbol = Symbol(compartment.getSbmlId())
-        if t_symbol in subs.keys():
-            t_sbml_id = str(subs[t_symbol])
-            tt_symbol = Symbol(t_sbml_id)
-            if tt_symbol in replacements.keys():
-                t_sbml_id = str(replacements[tt_symbol])
-        else:
-            t_sbml_id = prefix+compartment.getSbmlId()
+		t_symbol = Symbol(compartment.getSbmlId())
+		if t_symbol in subs.keys():
+			t_sbml_id = str(subs[t_symbol])
+			tt_symbol = Symbol(t_sbml_id)
+			if tt_symbol in replacements.keys():
+				t_sbml_id = str(replacements[tt_symbol])
+		else:
+			t_sbml_id = prefix+compartment.getSbmlId()
 
-        self.__compartment = self.__model.listOfCompartments.getBySbmlId(t_sbml_id).objId
+		self.__compartment = self.__model.listOfCompartments.getBySbmlId(t_sbml_id).objId
 
-        # self.__compartment = self.__model.listOfCompartments.getBySbmlId(prefix+compartment.getSbmlId()).objId
-        # self.__compartment = compartment.objId + shift
+		# self.__compartment = self.__model.listOfCompartments.getBySbmlId(prefix+compartment.getSbmlId()).objId
+		# self.__compartment = compartment.objId + shift

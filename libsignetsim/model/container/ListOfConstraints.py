@@ -32,35 +32,35 @@ from libsignetsim.settings.Settings import Settings
 
 
 class ListOfConstraints(ListOf, HasIds, SbmlObject):
-    """ Class for the listOfConstraints in a sbml model """
+	""" Class for the listOfConstraints in a sbml model """
 
-    def __init__ (self, model=None):
+	def __init__ (self, model=None):
 
-        self.__model = model
-        ListOf.__init__(self, model)
-        HasIds.__init__(self, model)
-        SbmlObject.__init__(self, model)
-
-
-    def readSbml(self, sbml_list_of_constraints,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-        """ Reads a constraints' list from a sbml file """
-
-        for constraint in sbml_list_of_constraints:
-            t_constraint = Constraint(self.__model, self.nextId())
-            t_constraint.readSbml(constraint, sbml_level, sbml_version)
-            ListOf.add(self, t_constraint)
-
-        SbmlObject.readSbml(self, sbml_list_of_constraints, sbml_level, sbml_version)
+		self.__model = model
+		ListOf.__init__(self, model)
+		HasIds.__init__(self, model)
+		SbmlObject.__init__(self, model)
 
 
-    def writeSbml(self, sbml_model,
-                    sbml_level=Settings.defaultSbmlLevel,
-                    sbml_version=Settings.defaultSbmlVersion):
-        """ Writes a constraints' list to a sbml file """
+	def readSbml(self, sbml_list_of_constraints,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+		""" Reads a constraints' list from a sbml file """
 
-        for constraint in ListOf.values(self):
-            constraint.writeSbml(sbml_model,sbml_level, sbml_version)
+		for constraint in sbml_list_of_constraints:
+			t_constraint = Constraint(self.__model, self.nextId())
+			t_constraint.readSbml(constraint, sbml_level, sbml_version)
+			ListOf.add(self, t_constraint)
 
-        SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
+		SbmlObject.readSbml(self, sbml_list_of_constraints, sbml_level, sbml_version)
+
+
+	def writeSbml(self, sbml_model,
+					sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+		""" Writes a constraints' list to a sbml file """
+
+		for constraint in ListOf.values(self):
+			constraint.writeSbml(sbml_model,sbml_level, sbml_version)
+
+		SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
