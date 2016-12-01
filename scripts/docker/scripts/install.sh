@@ -1,3 +1,4 @@
+#!/bin/bash
 apt-get update 
 apt-get upgrade -y
 apt-get install -y virtualenv git make \
@@ -6,4 +7,3 @@ apt-get install -y virtualenv git make \
 	apache2 libapache2-mod-wsgi \
 	libsundials-serial-dev libsundials-serial
 apt-get clean
-

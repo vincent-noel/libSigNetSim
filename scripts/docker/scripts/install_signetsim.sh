@@ -1,3 +1,4 @@
+#!/bin/bash
 
 cd /root/libSigNetSim
 virtualenv venv
