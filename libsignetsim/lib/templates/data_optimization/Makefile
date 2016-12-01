@@ -23,9 +23,9 @@ GDIR = $(SRCDIR)
 
 FLAGS = -Wall -Werror -pedantic -std=gnu99
 LIBS = -lsundials_cvode -lsundials_nvecserial -lsundials_ida -lm
-OBJ = main.o scoreFunctions.o model.o data.o optim.o $(IOBJ)
-SOBJ = $(LIBDIR)/libplsa-serial.so
-POBJ = $(LIBDIR)/libplsa-parallel.so
+OBJ = scoreFunctions.o model.o data.o optim.o $(IOBJ)
+SOBJ = $(LIBDIR)/libplsa-serial.so main.o
+POBJ = $(LIBDIR)/libplsa-parallel.so main_p.o
 IOBJ = $(LIBDIR)/integrate.so
 
 
@@ -52,6 +52,9 @@ optim.o: $(GDIR)/optim.c $(GDIR)/optim.h
 #Other ones
 main.o:	$(SRCDIR)/main.c
 	gcc $(FLAGS) -c $(SRCDIR)/main.c
+
+main_p.o:	$(SRCDIR)/main.c
+	mpicc $(FLAGS) -c -DMPI $(SRCDIR)/main.c -o main_p.o
 
 scoreFunctions.o: $(SRCDIR)/scoreFunctions.c $(SRCDIR)/scoreFunctions.h
 	gcc $(FLAGS) -c $(SRCDIR)/scoreFunctions.c

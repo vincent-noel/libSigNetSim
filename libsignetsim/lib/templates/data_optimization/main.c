@@ -30,6 +30,9 @@
  *   along with SigNetSim.  If not, see <http://www.gnu.org/licenses/>.       *
  *                                                                            *
  ******************************************************************************/
+#ifdef MPI
+#include <mpi.h>
+#endif
 
 #include "plsa/sa.h"
 #include "plsa/config.h"
@@ -42,35 +45,71 @@
 int main(int argc, char **argv )
 {
 
-  setLogDir("logs");
+#ifdef MPI
+  	// MPI initialization steps
+  	int nnodes, myid;
 
-  // Initializing the scoring function
-  // First, the model
-  init_models();
-  list_of_models * t_models = getListOfModels();
-  ModelDefinition * working_model = t_models->models[0];
-  // Integration * integration = getIntegration();
-  // Then, the data
-  init_data();
-  Experiment * experiments = getListOfExperiments();
-  int nb_experiments = getNbExperiments();
+  	int rc = MPI_Init(NULL, NULL); 	     /* initializes the MPI environment */
+  	if (rc != MPI_SUCCESS)
+  	    printf (" > Error starting MPI program. \n");
 
-  // Finally, we initialize the data and print the reference
-  InitializeModelVsDataScoreFunction(working_model, experiments, nb_experiments);
-  PrintReferenceData(getLogDir());
+  	MPI_Comm_size(MPI_COMM_WORLD, &nnodes);        /* number of processors? */
+  	MPI_Comm_rank(MPI_COMM_WORLD, &myid);         /* ID of local processor? */
+
+#endif
 
 
-  // Initializing the optimization parameters
-  init_settings();
+    // Initializing the scoring function
+    // First, the model
+    init_models();
+    list_of_models * t_models = getListOfModels();
+    ModelDefinition * working_model = t_models->models[0];
+    // Integration * integration = getIntegration();
+    // Then, the data
+    init_data();
+    Experiment * experiments = getListOfExperiments();
+    int nb_experiments = getNbExperiments();
+
+    // Finally, we initialize the data and print the reference
+    InitializeModelVsDataScoreFunction(working_model, experiments, nb_experiments);
+
+
+
+
+
+
+
+
+
+
+
+
+  	// define the optimization settings
+#ifdef MPI
+  	SAType * settings = InitPLSA(nnodes, myid);
+#else
+  	SAType * settings = InitPLSA();
+#endif
+
+
+  // setLogDir("logs");
+
+
+
+
+  // // Initializing the optimization parameters
+  // init_settings();
   init_params(working_model);
 
-  // Setting the score function
-  SAType * settings = getOptimSettings();
+
+
+
   settings->scoreFunction = &computeScore;
   settings->printFunction = &saveBestResult;
 
   PArrPtr * params = getOptimParameters();
 
+  PrintReferenceData(getLogDir());
   // Running the optimization
   runPLSA(params);
 
@@ -79,6 +118,19 @@ int main(int argc, char **argv )
   FinalizeScoreFunction();
   finalize_data();
   finalize_models();
+  // print final parameter value and score
+#ifdef MPI
+//   if (myid == 0)
+//   {
+// #endif
+// 	  printf("final value : %10.7f\n", param);
+// 	  printf("final score : %g\n", final_score);
+// #ifdef MPI
+//   }
 
+
+  // terminates MPI execution environment
+  MPI_Finalize();
+#endif
   return 0;
 }
