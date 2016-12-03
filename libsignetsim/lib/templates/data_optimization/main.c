@@ -34,10 +34,7 @@
 #include <mpi.h>
 #endif
 
-#include "plsa/sa.h"
-#include "plsa/config.h"
 #include "scoreFunctions.h"
-
 #include "optim.h"
 #include "model.h"
 #include "data.h"
@@ -46,35 +43,33 @@ int main(int argc, char **argv )
 {
 
 #ifdef MPI
-  	// MPI initialization steps
-  	int nnodes, myid;
+	  // MPI initialization steps
+	  int nnodes, myid;
 
-  	int rc = MPI_Init(NULL, NULL); 	     /* initializes the MPI environment */
-  	if (rc != MPI_SUCCESS)
-  	    printf (" > Error starting MPI program. \n");
+	  int rc = MPI_Init(NULL, NULL); 	     /* initializes the MPI environment */
+	  if (rc != MPI_SUCCESS)
+		  printf (" > Error starting MPI program. \n");
 
-  	MPI_Comm_size(MPI_COMM_WORLD, &nnodes);        /* number of processors? */
-  	MPI_Comm_rank(MPI_COMM_WORLD, &myid);         /* ID of local processor? */
+	  MPI_Comm_size(MPI_COMM_WORLD, &nnodes);        /* number of processors? */
+	  MPI_Comm_rank(MPI_COMM_WORLD, &myid);         /* ID of local processor? */
 
 #endif
 
 
-    // Initializing the scoring function
-    // First, the model
-    init_models();
-    list_of_models * t_models = getListOfModels();
-    ModelDefinition * working_model = t_models->models[0];
-    // Integration * integration = getIntegration();
-    // Then, the data
-    init_data();
-    Experiment * experiments = getListOfExperiments();
-    int nb_experiments = getNbExperiments();
+	// Initializing the scoring function
+	// First, the model
+	init_models();
+	list_of_models * t_models = getListOfModels();
+	ModelDefinition * working_model = t_models->models[0];
+	// Integration * integration = getIntegration();
+	// Then, the data
+	init_data();
+	Experiment * experiments = getListOfExperiments();
+	int nb_experiments = getNbExperiments();
 
-    // Finally, we initialize the data and print the reference
-    InitializeModelVsDataScoreFunction(working_model, experiments, nb_experiments);
+	// Finally, we initialize the data and print the reference
 
-
-
+	InitializeModelVsDataScoreFunction(working_model, experiments, nb_experiments);
 
 
 
@@ -84,11 +79,14 @@ int main(int argc, char **argv )
 
 
 
-  	// define the optimization settings
+
+
+
+	  // define the optimization settings
 #ifdef MPI
-  	SAType * settings = InitPLSA(nnodes, myid);
+	  SAType * settings = InitPLSA(nnodes, myid);
 #else
-  	SAType * settings = InitPLSA();
+	  SAType * settings = InitPLSA();
 #endif
 
 
@@ -105,11 +103,30 @@ int main(int argc, char **argv )
 
 
   settings->scoreFunction = &computeScore;
-  settings->printFunction = &saveBestResult;
+#ifdef MPI
+	if (myid == 0)
+	{
+#endif
+		settings->printFunction = &saveBestResult;
+#ifdef MPI
+	}
+	else
+	{
+		settings->printFunction = NULL;
+	}
+#endif
+
 
   PArrPtr * params = getOptimParameters();
 
-  PrintReferenceData(getLogDir());
+  #ifdef MPI
+	  if (myid == 0)
+	  {
+  #endif
+	  PrintReferenceData(getLogDir());
+  #ifdef MPI
+	  }
+  #endif
   // Running the optimization
   runPLSA(params);
 
@@ -119,18 +136,10 @@ int main(int argc, char **argv )
   finalize_data();
   finalize_models();
   // print final parameter value and score
+
 #ifdef MPI
-//   if (myid == 0)
-//   {
-// #endif
-// 	  printf("final value : %10.7f\n", param);
-// 	  printf("final score : %g\n", final_score);
-// #ifdef MPI
-//   }
-
-
-  // terminates MPI execution environment
   MPI_Finalize();
 #endif
+
   return 0;
 }

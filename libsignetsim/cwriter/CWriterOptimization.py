@@ -77,29 +77,19 @@ class CWriterOptimization(object):
 		f_c.write("#include <stdlib.h>\n")
 		f_c.write("#include \"optim.h\"\n")
 
-		f_h.write("#include \"../src/plsa/sa.h\"\n")
-		# f_h.write("#include \"../src/plsa/config.h\"\n")
+		f_h.write("#include \"plsa/sa.h\"\n")
+		f_h.write("#include \"plsa/config.h\"\n")
 		f_h.write("#include \"integrate/models.h\"\n")
 
 
 
 	def writeOptimizationGlobals(self, f_c, f_h):
 
-		# f_h.write("double             best_score;\n\n")
-		f_c.write("\n")
-		# f_c.write("optim_parameters optim_params;\n")
 		f_c.write("PArrPtr * my_plist;\n")
 		f_c.write("SAType * settings;\n")
 
 
 	def writeOptimizationGlobalMethods(self, f_c, f_h):
-
-		# f_h.write("optim_parameters * get_optim_parameters(void);\n")
-		# f_c.write("\n")
-		# f_c.write("optim_parameters * get_optim_parameters(void)\n")
-		# f_c.write("{\n")
-		# f_c.write("    return &optim_params;\n")
-		# f_c.write("}\n\n")
 
 		f_h.write("SAType * getOptimSettings();\n")
 		f_c.write("SAType * getOptimSettings(void)\n")
@@ -111,11 +101,6 @@ class CWriterOptimization(object):
 		f_c.write("PArrPtr * getOptimParameters(void)\n")
 		f_c.write("{\n\treturn my_plist;\n}\n\n")
 
-		# f_h.write("ModelDefinition * getWorkingModel();\n")
-		# f_c.write("ModelDefinition * getWorkingModel()\n")
-		# f_c.write("{\n")
-		# f_c.write("  return working_model;\n")
-		# f_c.write("}\n\n")
 
 	def writeOptimizationSettings(self, f_c, f_h, nb_procs=1):
 
@@ -124,10 +109,9 @@ class CWriterOptimization(object):
 		f_c.write("\tsettings = InitPLSA();\n")
 		f_c.write("}\n\n")
 
-
-		f_h.write("void finalize_settings();\n")
-		f_c.write("void finalize_settings(){\n")
-		f_c.write("\tfree(settings) ;\n}\n\n")
+		# f_h.write("void finalize_settings();\n")
+		# f_c.write("void finalize_settings(){\n")
+		# f_c.write("\tfree(settings) ;\n}\n\n")
 
 	def writeOptimizationParameters(self, f_c, f_h):
 
@@ -161,15 +145,15 @@ class CWriterOptimization(object):
 
 			if parameter_active:
 				t_param = self.workingModel.listOfParameters[parameter_objid]
-				f_c.write("\tmy_plist->array[%d] = (ParamList) {&(model->constant_variables[%d].value), (Range) {%g, %g}};\n" % (nb_params, t_param.ind, parameter_min, parameter_max))
+				f_c.write("\tmy_plist->array[%d] = (ParamList) {&(model->constant_variables[%d].value), (Range) {%g, %g}, \"%s\"};\n" % (nb_params, t_param.ind, parameter_min, parameter_max, parameter_name))
 				nb_params += 1
 
 		f_c.write("}")
 
 
-		f_h.write("void finalize_params();\n")
-		f_c.write("void finalize_params()\n")
-		f_c.write("{\n\tfree(my_plist->array);\n}\n\n")
+		# f_h.write("void finalize_params();\n")
+		# f_c.write("void finalize_params()\n")
+		# f_c.write("{\n\tfree(my_plist->array);\n}\n\n")
 
 
 
