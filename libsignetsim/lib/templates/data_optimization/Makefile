@@ -22,7 +22,7 @@ IDIR = $(SRCDIR)/integrate
 GDIR = $(SRCDIR)
 
 FLAGS = -Wall -Werror -pedantic -std=gnu99
-LIBS = -lsundials_cvode -lsundials_nvecserial -lsundials_ida -lm
+LIBS = -lsundials_cvode -lsundials_nvecserial -lsundials_ida -lm -llapack -latlas -lblas
 OBJ = scoreFunctions.o model.o data.o optim.o $(IOBJ)
 SOBJ = $(LIBDIR)/libplsa-serial.so main.o
 POBJ = $(LIBDIR)/libplsa-parallel.so main_p.o

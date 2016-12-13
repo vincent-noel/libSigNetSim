@@ -46,7 +46,7 @@ class SbmlMathWriter(object):
 
 
 		formula = self.translateForSbml(self.getInternalMathFormula(), sbml_level, sbml_version)
-		if Settings.verbose:
+		if Settings.verbose >= 2:
 			print "\n> writeSbml"
 			print ">> input : %s" % srepr(self.getInternalMathFormula())
 			print ">> output : %s" % self.printSbml(formula, sbml_level, sbml_version)

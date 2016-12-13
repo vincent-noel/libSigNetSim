@@ -53,7 +53,7 @@ class SbmlMathReader(object):
 		#     self.simplifiedInternalTree = self.translateForDeveloppedInternal(self.translateForInternal(formula, sbml_level, sbml_version, True))
 		#     self.simplifiedInternalTree_v2 = self.translateForDeveloppedInternal(self.translateForInternal(formula, sbml_level, sbml_version, False, False))
 
-		if Settings.verbose:
+		if Settings.verbose >= 2:
 			print "\n> readSbml : "
 			print ">> input : %s" % self.printSbml(formula)
 			print ">> output simplified : %s" % str(self.internalTree)

@@ -73,7 +73,7 @@ class CMathWriter(object):
 	def writeCCode(self, tree):
 
 		math = self.translateForC(tree)
-		if Settings.verbose:
+		if Settings.verbose >= 2:
 			print "\n> writeCCode"
 			print ">> input : %s" % srepr(tree)
 			print ">> input simplified : %s" % str(tree)

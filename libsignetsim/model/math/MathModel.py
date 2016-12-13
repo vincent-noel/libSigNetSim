@@ -104,21 +104,7 @@ class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
 			self.checkInitialValues()
 			# print "Initial values checked"
 
-		t1 = time()
-		if Settings.verbose:
-			print "> Model built (%.2gs)" % (t1-t0)
 
-		self.buildStoichiometryMatrix()
-
-		t1a = time()
-		if Settings.verbose:
-			print "> Stoichiometry matrix built (%.2gs)" % (t1a-t1)
-
-		self.findConservationLaws()
-
-		t2 = time()
-		if Settings.verbose:
-			print "> Conservation laws found (%.2gs)" % (t2-t1a)
 
 		# print self.listOfSpecies.hasBoundaryConditions()
 		# print dont_reduce
@@ -130,6 +116,21 @@ class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
 			and not self.listOfSpecies.hasBoundaryConditions()
 			and not dont_reduce):
 
+			t1 = time()
+
+			self.buildStoichiometryMatrix()
+
+			t1a = time()
+			if Settings.verbose:
+				print "> Stoichiometry matrix built (%.2gs)" % (t1a-t1)
+
+			self.findConservationLaws()
+
+			t2 = time()
+			if Settings.verbose:
+				print "> Conservation laws found (%.2gs)" % (t2-t1a)
+
+
 			# print vars_to_keep
 			self.buildReducedSystem(vars_to_keep=vars_to_keep)
 			self.developODEs()
@@ -138,7 +139,9 @@ class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
 
 #        self.buildJacobianMatrix()
 		# self.printSystem()
-
+		t1 = time()
+		if Settings.verbose:
+			print "> Model built (%.2gs)" % (t1-t0)
 
 	def printSystem(self):
 
