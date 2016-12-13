@@ -10,4 +10,4 @@ install:
 
 
 script:
-  - echo "import libsignetsim" | python
+  - python -m unittest discover libsignetsim -v

@@ -1,0 +1,653 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" version="1">
+  <model name="Bianconi2012Model" substanceUnits="mole" timeUnits="second" extentUnits="mole">
+    <listOfUnitDefinitions>
+      <unitDefinition id="per_second">
+        <listOfUnits>
+          <unit kind="second" exponent="-1" scale="0" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+    </listOfUnitDefinitions>
+    <listOfCompartments>
+      <compartment id="cell_nsclc" spatialDimensions="3" size="1" units="litre" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species id="Sos1_4430401P03Rik_9630010N06_AI449023_active" name="Sos1_4430401P03Rik_9630010N06_AI449023_active" compartment="cell_nsclc" initialAmount="0"/>
+      <species id="Sos1_4430401P03Rik_9630010N06_AI449023" name="Sos1_4430401P03Rik_9630010N06_AI449023" compartment="cell_nsclc" initialAmount="120000"/>
+      <species id="Egfr_9030024J15Rik_AI552599_Erbb_Errb1_Errp_Wa5_wa_2_wa2_active" name="Egfr_9030024J15Rik_AI552599_Erbb_Errb1_Errp_Wa5_wa_2_wa2_active" compartment="cell_nsclc" initialAmount="8000"/>
+      <species id="Hras_H_ras_Ha_ras_Harvey_ras_Hras_1_Hras1_Kras2_c_H_ras_c_Ha_ras_c_rasHa_ras_active" name="Hras_H_ras_Ha_ras_Harvey_ras_Hras_1_Hras1_Kras2_c_H_ras_c_Ha_ras_c_rasHa_ras_active" compartment="cell_nsclc" initialAmount="0"/>
+      <species id="Hras_H_ras_Ha_ras_Harvey_ras_Hras_1_Hras1_Kras2_c_H_ras_c_Ha_ras_c_rasHa_ras" name="Hras_H_ras_Ha_ras_Harvey_ras_Hras_1_Hras1_Kras2_c_H_ras_c_Ha_ras_c_rasHa_ras" compartment="cell_nsclc" initialAmount="120000"/>
+      <species id="Mapk1_9030612K14Rik_AA407128_AU018647_C78273_ERK_Erk2_MAPK2_PRKM2_Prkm1_p41mapk_p42mapk_active" name="Mapk1_9030612K14Rik_AA407128_AU018647_C78273_ERK_Erk2_MAPK2_PRKM2_Prkm1_p41mapk_p42mapk_active" compartment="cell_nsclc" initialAmount="0"/>
+      <species id="Mapk1_9030612K14Rik_AA407128_AU018647_C78273_ERK_Erk2_MAPK2_PRKM2_Prkm1_p41mapk_p42mapk" name="Mapk1_9030612K14Rik_AA407128_AU018647_C78273_ERK_Erk2_MAPK2_PRKM2_Prkm1_p41mapk_p42mapk" compartment="cell_nsclc" initialAmount="600000"/>
+      <species id="Map2k1_MAPKK1_MEKK1_Mek1_Prkmk1_active" name="Map2k1_MAPKK1_MEKK1_Mek1_Prkmk1_active" compartment="cell_nsclc" initialAmount="0"/>
+      <species id="P90Rsk_active" name="P90Rsk_active" compartment="cell_nsclc" initialAmount="0"/>
+      <species id="Csf1r_AI323359_CD115_CSF_1R_Csfmr_Fim_2_Fms_M_CSF_R_M_CSFR" name="Csf1r_AI323359_CD115_CSF_1R_Csfmr_Fim_2_Fms_M_CSF_R_M_CSFR" compartment="cell_nsclc" initialAmount="800"/>
+      <species id="Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha_active" name="Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha_active" compartment="cell_nsclc" initialAmount="0"/>
+      <species id="Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha" name="Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha" compartment="cell_nsclc" initialAmount="120000"/>
+      <species id="Akt1_Akt_PKB_PKB_Akt_PKBalpha_Rac_active" name="Akt1_Akt_PKB_PKB_Akt_PKBalpha_Rac_active" compartment="cell_nsclc" initialAmount="0"/>
+      <species id="Akt1_Akt_PKB_PKB_Akt_PKBalpha_Rac" name="Akt1_Akt_PKB_PKB_Akt_PKBalpha_Rac" compartment="cell_nsclc" initialAmount="600000"/>
+      <species id="PP2A" name="PP2A" compartment="cell_nsclc" initialAmount="120000"/>
+      <species id="Raf1_6430402F14Rik_AA990557_BB129353_Craf1_D830050J10Rik_Raf_1_c_Raf_v_Raf_active" name="Raf1_6430402F14Rik_AA990557_BB129353_Craf1_D830050J10Rik_Raf_1_c_Raf_v_Raf_active" compartment="cell_nsclc" initialAmount="0"/>
+      <species id="Raf1_6430402F14Rik_AA990557_BB129353_Craf1_D830050J10Rik_Raf_1_c_Raf_v_Raf" name="Raf1_6430402F14Rik_AA990557_BB129353_Craf1_D830050J10Rik_Raf_1_c_Raf_v_Raf" compartment="cell_nsclc" initialAmount="120000"/>
+      <species id="Map2k1_MAPKK1_MEKK1_Mek1_Prkmk1" name="Map2k1_MAPKK1_MEKK1_Mek1_Prkmk1" compartment="cell_nsclc" initialAmount="600000"/>
+      <species id="Rasa2_5430433H21Rik_AA517451_AU023900_GAP1m_active" name="Rasa2_5430433H21Rik_AA517451_AU023900_GAP1m_active" compartment="cell_nsclc" initialAmount="120000"/>
+      <species id="RafPP" name="RafPP" compartment="cell_nsclc" initialAmount="120000"/>
+      <species id="P90Rsk" name="P90Rsk" compartment="cell_nsclc" initialAmount="120000"/>
+    </listOfSpecies>
+    <listOfParameters>
+      <parameter id="reaction_1_KM_SOS_E" value="6086070" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_1_k_SOS_E" value="694.731" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_2_KM_Ras_SOS" value="35954.3" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_2_k_Ras_SOS" value="32.344" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_3_gamma_EGFR" value="0.02" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_4_KM_ERK_MekActive" value="1007340" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_4_k_ERK_MekActive" value="9.85367" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_5_KM_D_SOS_P90Rsk" value="896896" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_5_k_D_SOS_P90Rsk" value="161197" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_6_KM_A_SOS_I" value="100000" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_6_k_A_SOS_I" value="500" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_7_KM_PI3K_IGF1R" value="184912" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_7_k_PI3K_IGF1R" value="10.6737" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_8_KM_PI3K_EGF1R" value="184912" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_8_k_PI3K_EGF1R" value="10.6737" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_9_KM_AKT_PI3K" value="653951" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_9_k_AKT_PI3K" value="0.0566279" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_10_kd_AKT" value="0.005" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_11_KM_ERKactive_PP2A" value="3496490" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_11_k_ERKactive_PP2A" value="8.8912" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_12_KM_PI3K_Ras" value="272056" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_12_k_PI3K_Ras" value="0.0771067" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_13_KM_Raf_RasActive" value="62464.6" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_13_k_Raf_RasActive" value="0.884096" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_14_KM_Mek_Raf_active" value="4768350" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_14_k_Mek_Raf_active" value="185.759" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_15_KM_Raf_AKT" value="119355" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_15_k_Raf_AKT" value="15.1212" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_16_KM_RasActiveRasGap" value="1432410" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_16_k_RasActiveRasGap" value="1509.36" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_17_KM_MekActivePP2A" value="518753" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_17_k_MekActivePP2A" value="2.83243" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_18_gamma_IGFR" value="0.02" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_19_kd_PI3K_a" value="0.005" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_20_KM_RasActive_RafPP" value="1061.71" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_20_k_RasActive_RafPP" value="0.126329" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_21_KM_P90Rsk_ERKActive" value="763523" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_21_k_P90Rsk_ERKActive" value="0.0213697" units="moles_per_second" constant="true"/>
+      <parameter id="reaction_22_kd_P90Rsk" value="0.005" units="moles_per_second" constant="true"/>
+    </listOfParameters>
+    <listOfReactions>
+      <reaction id="reaction_1" name="SOS_conformational_activation" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Sos1_4430401P03Rik_9630010N06_AI449023"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="Sos1_4430401P03Rik_9630010N06_AI449023_active"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="Egfr_9030024J15Rik_AI552599_Erbb_Errb1_Errp_Wa5_wa_2_wa2_active"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> reaction_1_k_SOS_E </ci>
+                <ci> Egfr_9030024J15Rik_AI552599_Erbb_Errb1_Errp_Wa5_wa_2_wa2_active </ci>
+                <ci> Sos1_4430401P03Rik_9630010N06_AI449023 </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> reaction_1_KM_SOS_E </ci>
+                <ci> Sos1_4430401P03Rik_9630010N06_AI449023 </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_2" name="kRas_activation" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Hras_H_ras_Ha_ras_Harvey_ras_Hras_1_Hras1_Kras2_c_H_ras_c_Ha_ras_c_rasHa_ras"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="Hras_H_ras_Ha_ras_Harvey_ras_Hras_1_Hras1_Kras2_c_H_ras_c_Ha_ras_c_rasHa_ras_active"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="Sos1_4430401P03Rik_9630010N06_AI449023_active"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> reaction_2_k_Ras_SOS </ci>
+                <ci> Sos1_4430401P03Rik_9630010N06_AI449023_active </ci>
+                <ci> Hras_H_ras_Ha_ras_Harvey_ras_Hras_1_Hras1_Kras2_c_H_ras_c_Ha_ras_c_rasHa_ras </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> reaction_2_KM_Ras_SOS </ci>
+                <ci> Hras_H_ras_Ha_ras_Harvey_ras_Hras_1_Hras1_Kras2_c_H_ras_c_Ha_ras_c_rasHa_ras </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_3" name="EGFR_degradation" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Egfr_9030024J15Rik_AI552599_Erbb_Errb1_Errp_Wa5_wa_2_wa2_active"/>
+        </listOfReactants>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> reaction_3_gamma_EGFR </ci>
+              <ci> Egfr_9030024J15Rik_AI552599_Erbb_Errb1_Errp_Wa5_wa_2_wa2_active </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_4" name="ERK_activation_by_Mek" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Mapk1_9030612K14Rik_AA407128_AU018647_C78273_ERK_Erk2_MAPK2_PRKM2_Prkm1_p41mapk_p42mapk"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="Mapk1_9030612K14Rik_AA407128_AU018647_C78273_ERK_Erk2_MAPK2_PRKM2_Prkm1_p41mapk_p42mapk_active"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="Map2k1_MAPKK1_MEKK1_Mek1_Prkmk1_active"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> reaction_4_k_ERK_MekActive </ci>
+                <ci> Map2k1_MAPKK1_MEKK1_Mek1_Prkmk1_active </ci>
+                <ci> Mapk1_9030612K14Rik_AA407128_AU018647_C78273_ERK_Erk2_MAPK2_PRKM2_Prkm1_p41mapk_p42mapk </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> reaction_4_KM_ERK_MekActive </ci>
+                <ci> Mapk1_9030612K14Rik_AA407128_AU018647_C78273_ERK_Erk2_MAPK2_PRKM2_Prkm1_p41mapk_p42mapk </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_5" name="SOS_deactivation_by_P90" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Sos1_4430401P03Rik_9630010N06_AI449023_active"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="Sos1_4430401P03Rik_9630010N06_AI449023"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="P90Rsk_active"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> reaction_5_k_D_SOS_P90Rsk </ci>
+                <ci> P90Rsk_active </ci>
+                <ci> Sos1_4430401P03Rik_9630010N06_AI449023_active </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> reaction_5_KM_D_SOS_P90Rsk </ci>
+                <ci> Sos1_4430401P03Rik_9630010N06_AI449023_active </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_6" name="SOS_activation_by_IGF" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Sos1_4430401P03Rik_9630010N06_AI449023"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="Sos1_4430401P03Rik_9630010N06_AI449023_active"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="Csf1r_AI323359_CD115_CSF_1R_Csfmr_Fim_2_Fms_M_CSF_R_M_CSFR"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> reaction_6_k_A_SOS_I </ci>
+                <ci> Csf1r_AI323359_CD115_CSF_1R_Csfmr_Fim_2_Fms_M_CSF_R_M_CSFR </ci>
+                <ci> Sos1_4430401P03Rik_9630010N06_AI449023 </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> reaction_6_KM_A_SOS_I </ci>
+                <ci> Sos1_4430401P03Rik_9630010N06_AI449023 </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_7" name="PI3KCA_activation_by_IGF1R" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha_active"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="Csf1r_AI323359_CD115_CSF_1R_Csfmr_Fim_2_Fms_M_CSF_R_M_CSFR"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> reaction_7_k_PI3K_IGF1R </ci>
+                <ci> Csf1r_AI323359_CD115_CSF_1R_Csfmr_Fim_2_Fms_M_CSF_R_M_CSFR </ci>
+                <ci> Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> reaction_7_KM_PI3K_IGF1R </ci>
+                <ci> Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_8" name="PI3KCA_activation_by_EGF" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha_active"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="Egfr_9030024J15Rik_AI552599_Erbb_Errb1_Errp_Wa5_wa_2_wa2_active"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> reaction_8_k_PI3K_EGF1R </ci>
+                <ci> Egfr_9030024J15Rik_AI552599_Erbb_Errb1_Errp_Wa5_wa_2_wa2_active </ci>
+                <ci> Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> reaction_8_KM_PI3K_EGF1R </ci>
+                <ci> Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_9" name="AKT_activation_by_PI3KCA" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Akt1_Akt_PKB_PKB_Akt_PKBalpha_Rac"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="Akt1_Akt_PKB_PKB_Akt_PKBalpha_Rac_active"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha_active"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> reaction_9_k_AKT_PI3K </ci>
+                <ci> Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha_active </ci>
+                <ci> Akt1_Akt_PKB_PKB_Akt_PKBalpha_Rac </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> reaction_9_KM_AKT_PI3K </ci>
+                <ci> Akt1_Akt_PKB_PKB_Akt_PKBalpha_Rac </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_10" name="AKT_deactivation" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Akt1_Akt_PKB_PKB_Akt_PKBalpha_Rac_active"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="Akt1_Akt_PKB_PKB_Akt_PKBalpha_Rac"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> reaction_10_kd_AKT </ci>
+              <ci> Akt1_Akt_PKB_PKB_Akt_PKBalpha_Rac_active </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_11" name="ERK_deactivation_by_PP2A" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Mapk1_9030612K14Rik_AA407128_AU018647_C78273_ERK_Erk2_MAPK2_PRKM2_Prkm1_p41mapk_p42mapk_active"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="Mapk1_9030612K14Rik_AA407128_AU018647_C78273_ERK_Erk2_MAPK2_PRKM2_Prkm1_p41mapk_p42mapk"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="PP2A"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> reaction_11_k_ERKactive_PP2A </ci>
+                <ci> PP2A </ci>
+                <ci> Mapk1_9030612K14Rik_AA407128_AU018647_C78273_ERK_Erk2_MAPK2_PRKM2_Prkm1_p41mapk_p42mapk_active </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> reaction_11_KM_ERKactive_PP2A </ci>
+                <ci> Mapk1_9030612K14Rik_AA407128_AU018647_C78273_ERK_Erk2_MAPK2_PRKM2_Prkm1_p41mapk_p42mapk_active </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_12" name="PI3KCA_activation_by_kRas" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha_active"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="Hras_H_ras_Ha_ras_Harvey_ras_Hras_1_Hras1_Kras2_c_H_ras_c_Ha_ras_c_rasHa_ras_active"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> reaction_12_k_PI3K_Ras </ci>
+                <ci> Hras_H_ras_Ha_ras_Harvey_ras_Hras_1_Hras1_Kras2_c_H_ras_c_Ha_ras_c_rasHa_ras_active </ci>
+                <ci> Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> reaction_12_KM_PI3K_Ras </ci>
+                <ci> Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_13" name="Raf_activation_by_kRas" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Raf1_6430402F14Rik_AA990557_BB129353_Craf1_D830050J10Rik_Raf_1_c_Raf_v_Raf"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="Raf1_6430402F14Rik_AA990557_BB129353_Craf1_D830050J10Rik_Raf_1_c_Raf_v_Raf_active"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="Hras_H_ras_Ha_ras_Harvey_ras_Hras_1_Hras1_Kras2_c_H_ras_c_Ha_ras_c_rasHa_ras_active"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> reaction_13_k_Raf_RasActive </ci>
+                <ci> Hras_H_ras_Ha_ras_Harvey_ras_Hras_1_Hras1_Kras2_c_H_ras_c_Ha_ras_c_rasHa_ras_active </ci>
+                <ci> Raf1_6430402F14Rik_AA990557_BB129353_Craf1_D830050J10Rik_Raf_1_c_Raf_v_Raf </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> reaction_13_KM_Raf_RasActive </ci>
+                <ci> Raf1_6430402F14Rik_AA990557_BB129353_Craf1_D830050J10Rik_Raf_1_c_Raf_v_Raf </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_14" name="Mek_activation_by_Raf" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Map2k1_MAPKK1_MEKK1_Mek1_Prkmk1"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="Map2k1_MAPKK1_MEKK1_Mek1_Prkmk1_active"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="Raf1_6430402F14Rik_AA990557_BB129353_Craf1_D830050J10Rik_Raf_1_c_Raf_v_Raf_active"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> reaction_14_k_Mek_Raf_active </ci>
+                <ci> Raf1_6430402F14Rik_AA990557_BB129353_Craf1_D830050J10Rik_Raf_1_c_Raf_v_Raf_active </ci>
+                <ci> Map2k1_MAPKK1_MEKK1_Mek1_Prkmk1 </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> reaction_14_KM_Mek_Raf_active </ci>
+                <ci> Map2k1_MAPKK1_MEKK1_Mek1_Prkmk1 </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_15" name="Raf_deactivation_by_AKT" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Raf1_6430402F14Rik_AA990557_BB129353_Craf1_D830050J10Rik_Raf_1_c_Raf_v_Raf_active"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="Raf1_6430402F14Rik_AA990557_BB129353_Craf1_D830050J10Rik_Raf_1_c_Raf_v_Raf"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="Akt1_Akt_PKB_PKB_Akt_PKBalpha_Rac_active"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> reaction_15_k_Raf_AKT </ci>
+                <ci> Akt1_Akt_PKB_PKB_Akt_PKBalpha_Rac_active </ci>
+                <ci> Raf1_6430402F14Rik_AA990557_BB129353_Craf1_D830050J10Rik_Raf_1_c_Raf_v_Raf_active </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> reaction_15_KM_Raf_AKT </ci>
+                <ci> Raf1_6430402F14Rik_AA990557_BB129353_Craf1_D830050J10Rik_Raf_1_c_Raf_v_Raf_active </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_16" name="Ras_deactivation_by_RasGab" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Hras_H_ras_Ha_ras_Harvey_ras_Hras_1_Hras1_Kras2_c_H_ras_c_Ha_ras_c_rasHa_ras_active"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="Hras_H_ras_Ha_ras_Harvey_ras_Hras_1_Hras1_Kras2_c_H_ras_c_Ha_ras_c_rasHa_ras"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="Rasa2_5430433H21Rik_AA517451_AU023900_GAP1m_active"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> reaction_16_k_RasActiveRasGap </ci>
+                <ci> Rasa2_5430433H21Rik_AA517451_AU023900_GAP1m_active </ci>
+                <ci> Hras_H_ras_Ha_ras_Harvey_ras_Hras_1_Hras1_Kras2_c_H_ras_c_Ha_ras_c_rasHa_ras_active </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> reaction_16_KM_RasActiveRasGap </ci>
+                <ci> Hras_H_ras_Ha_ras_Harvey_ras_Hras_1_Hras1_Kras2_c_H_ras_c_Ha_ras_c_rasHa_ras_active </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_17" name="Mek_deactivation_by_PP2A" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Map2k1_MAPKK1_MEKK1_Mek1_Prkmk1_active"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="Map2k1_MAPKK1_MEKK1_Mek1_Prkmk1"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="PP2A"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> reaction_17_k_MekActivePP2A </ci>
+                <ci> PP2A </ci>
+                <ci> Map2k1_MAPKK1_MEKK1_Mek1_Prkmk1_active </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> reaction_17_KM_MekActivePP2A </ci>
+                <ci> Map2k1_MAPKK1_MEKK1_Mek1_Prkmk1_active </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_18" name="IGFR_active_degradation" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Csf1r_AI323359_CD115_CSF_1R_Csfmr_Fim_2_Fms_M_CSF_R_M_CSFR"/>
+        </listOfReactants>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> reaction_18_gamma_IGFR </ci>
+              <ci> Csf1r_AI323359_CD115_CSF_1R_Csfmr_Fim_2_Fms_M_CSF_R_M_CSFR </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_19" name="PI3KCA_deactivation" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha_active"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> reaction_19_kd_PI3K_a </ci>
+              <ci> Pik3ca_6330412C24Rik_caPI3K_p110_p110alpha_active </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_20" name="deactivation_by_RafPP" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Raf1_6430402F14Rik_AA990557_BB129353_Craf1_D830050J10Rik_Raf_1_c_Raf_v_Raf_active"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="Raf1_6430402F14Rik_AA990557_BB129353_Craf1_D830050J10Rik_Raf_1_c_Raf_v_Raf"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="RafPP"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> reaction_20_k_RasActive_RafPP </ci>
+                <ci> RafPP </ci>
+                <ci> Raf1_6430402F14Rik_AA990557_BB129353_Craf1_D830050J10Rik_Raf_1_c_Raf_v_Raf_active </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> reaction_20_KM_RasActive_RafPP </ci>
+                <ci> Raf1_6430402F14Rik_AA990557_BB129353_Craf1_D830050J10Rik_Raf_1_c_Raf_v_Raf_active </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_21" name="P90_activation_by_ERK" reversible="false">
+        <listOfReactants>
+          <speciesReference species="P90Rsk"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="P90Rsk_active"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="Mapk1_9030612K14Rik_AA407128_AU018647_C78273_ERK_Erk2_MAPK2_PRKM2_Prkm1_p41mapk_p42mapk_active"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> reaction_21_k_P90Rsk_ERKActive </ci>
+                <ci> Mapk1_9030612K14Rik_AA407128_AU018647_C78273_ERK_Erk2_MAPK2_PRKM2_Prkm1_p41mapk_p42mapk_active </ci>
+                <ci> P90Rsk </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> reaction_21_KM_P90Rsk_ERKActive </ci>
+                <ci> P90Rsk </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_22" name="P90_deactivation" reversible="false">
+        <listOfReactants>
+          <speciesReference species="P90Rsk_active"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="P90Rsk"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> reaction_22_kd_P90Rsk </ci>
+              <ci> P90Rsk_active </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+    </listOfReactions>
+  </model>
+</sbml>
