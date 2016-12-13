@@ -55,7 +55,6 @@ class Experiment(object):
 		species = []
 		for condition in self.listOfConditions.values():
 			species += condition.getTreatedVariables()
-		print species
 
 		if len(species) > 1:
 			return list(set(species))

@@ -66,12 +66,8 @@ class ModelVsTimeseriesOptimization(Optimization, CWriterModelVsDataOptimization
 
 	def writeOptimizationFiles(self, nb_procs=1):
 
-		# print "Should be first god damn it"
 		Optimization.writeOptimizationFilesMain(self, nb_procs)
 		vars_to_keep = self.findTreatedVariables()
-
-		# print "Finished calling Optimization.writeOptimizationFiles"
-
 		CWriterModelVsDataOptimization.writeOptimizationFiles(self, nb_procs)
 
 

@@ -78,7 +78,7 @@ class TestOptimization(unittest.TestCase):
 		list_of_observations = ListOfExperimentalData()
 		for i, data in enumerate(reference_data):
 			t_observation = ExperimentalData()
-			t_observation.readDB('P', reference_times[i], data, 0, False, 0, 0)
+			t_observation.readDB('P', reference_times[i], data, 0, False, None, None)
 			list_of_observations.add(t_observation)
 
 		condition = ExperimentalCondition()

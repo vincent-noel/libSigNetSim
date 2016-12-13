@@ -174,7 +174,6 @@ class OptimizationExecution(object):
 		# if self.monitor:
 		#     t = OptimizationMonitor(self)  #threading.Thread(target=self.monitorOptimization)
 		#     t.start()
-
 		self.startTime = int(time())
 
 		res = self.compile(nb_procs)
