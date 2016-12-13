@@ -55,7 +55,7 @@ class CWriterOptimization(object):
 		mkdir(join(self.getTempDirectory(), "src/plsa"))
 		copyfile(join(Settings.basePath, "lib/plsa/src/sa.h"), join(self.getTempDirectory(), "src/plsa/sa.h"))
 		copyfile(join(Settings.basePath, "lib/plsa/src/config.h"), join(self.getTempDirectory(), "src/plsa/config.h"))
-		copyfile(join(Settings.basePath, "lib/plsa/src/global.h"), join(self.getTempDirectory(), "src/plsa/global.h"))
+		copyfile(join(Settings.basePath, "lib/plsa/src/types.h"), join(self.getTempDirectory(), "src/plsa/types.h"))
 
 		copyfile(join(Settings.basePath, "lib/scoreFunctions.h"), join(self.getTempDirectory(), "src/scoreFunctions.h"))
 		copyfile(join(Settings.basePath, "lib/scoreFunctions.c"), join(self.getTempDirectory(), "src/scoreFunctions.c"))
@@ -103,11 +103,11 @@ class CWriterOptimization(object):
 
 
 	def writeOptimizationSettings(self, f_c, f_h, nb_procs=1):
-
-		f_h.write("void init_settings();\n")
-		f_c.write("void init_settings(){\n")
-		f_c.write("\tsettings = InitPLSA();\n")
-		f_c.write("}\n\n")
+		pass
+		# f_h.write("void init_settings();\n")
+		# f_c.write("void init_settings(){\n")
+		# f_c.write("\tsettings = InitPLSA();\n")
+		# f_c.write("}\n\n")
 
 		# f_h.write("void finalize_settings();\n")
 		# f_c.write("void finalize_settings(){\n")

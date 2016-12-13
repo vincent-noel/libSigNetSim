@@ -399,30 +399,30 @@ void saveBestResult(char * path, int proc)
 			if (t_cond->nb_observed_values > 0)
 			{
 				// Writing all trajectories from the condition
-				char t_filename[MAX_RECORD];
-				sprintf(t_filename,"%s/exp_%d_cond_%d_proc_%d", path, i_exp, i_cond, proc);
-				FILE * f_res = fopen(t_filename,"w");
-
+				// char t_filename[MAX_RECORD];
+				// sprintf(t_filename,"%s/exp_%d_cond_%d_proc_%d", path, i_exp, i_cond, proc);
+				// FILE * f_res = fopen(t_filename,"w");
+				//
 				IntegrationResult * t_res = sf_all_results[i_exp][i_cond];
-				int i_time;
-				for (i_time = 0; i_time < t_res->nb_samples; i_time++)
-				{
-
-					fprintf(f_res, "%g", t_res->t[i_time]);
-
-
-					int i_var;
-					for (i_var = 0; i_var < t_res->nb_dimensions; i_var++)
-					{
-						fprintf(f_res, "\t%g",t_res->y[i_var][i_time]);
-
-
-					}
-					fprintf(f_res, "\n");
-
-
-				}
-				fclose(f_res);
+				// int i_time;
+				// for (i_time = 0; i_time < t_res->nb_samples; i_time++)
+				// {
+				//
+				// 	fprintf(f_res, "%g", t_res->t[i_time]);
+				//
+				//
+				// 	int i_var;
+				// 	for (i_var = 0; i_var < t_res->nb_dimensions; i_var++)
+				// 	{
+				// 		fprintf(f_res, "\t%g",t_res->y[i_var][i_time]);
+				//
+				//
+				// 	}
+				// 	fprintf(f_res, "\n");
+				//
+				//
+				// }
+				// fclose(f_res);
 
 
 				int i_obs;

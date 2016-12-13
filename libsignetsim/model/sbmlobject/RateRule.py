@@ -73,15 +73,11 @@ class RateRule(Rule, MathRateRule):
 
 		Rule.copy(self, obj, prefix, shift, subs, deletions, conversions)
 
-		print obj.getVariable().getSbmlId()
-		print subs
-		print replacements
 		t_symbol = Symbol(obj.getVariable().getSbmlId())
 		if t_symbol in subs.keys():
 			t_sbml_id = str(subs[t_symbol])
 			tt_symbol = Symbol(t_sbml_id)
-			print ""
-			print t_sbml_id
+
 
 			if tt_symbol in replacements.keys():
 				t_sbml_id = str(replacements[tt_symbol])
