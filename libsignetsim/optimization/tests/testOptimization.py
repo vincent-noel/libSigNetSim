@@ -102,5 +102,8 @@ class TestOptimization(unittest.TestCase):
 										nb_procs=2)
 
 		score = fit.runOptimization(2, None, None)
+		parameters = fit.readOptimizationOutput()
+
 		self.assertEqual(score, 0.082)
-	
+		self.assertEqual(parameters[m.listOfParameters.getBySbmlId('vmax')], 18198.88690055613)
+		self.assertEqual(parameters[m.listOfParameters.getBySbmlId('km')], 742789.479924893)

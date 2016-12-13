@@ -45,6 +45,7 @@ class OptimizationExecution(object):
 		self.monitor = False
 		self.optimizationId = int(time()*1000)
 		self.directory = None
+		self.finalScore = None
 		# mkdir(self.getTempDirectory())
 
 
@@ -186,8 +187,8 @@ class OptimizationExecution(object):
 
 				self.stopTime = int(time())
 				self.elapsedTime = self.stopTime - self.startTime
-
-				return self.readFinalScore()
+				self.finalScore = self.readFinalScore()
+				return self.finalScore
 			elif Settings.verbose:
 				print "> Execution failed !"
 		elif Settings.verbose:

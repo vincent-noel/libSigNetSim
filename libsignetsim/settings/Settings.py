@@ -83,7 +83,7 @@ class Settings(object):
 	optimizationDefaultCompartmentLowerBound = 1e-8
 	optimizationDefaultCompartmentUpperBound = 1e+8
 
-	verbose = 0
+	verbose = 1
 	showSbmlErrors = False
 
 	defaultCVODEmaxNumSteps = 5000

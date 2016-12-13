@@ -155,6 +155,7 @@ class OptimizationParameters(object):
 
 		f_optimized_parameters = open(join(self.getTempDirectory(), "logs/params/output"), 'r')
 		now_reading = 0
+		result = {}
 		for line in f_optimized_parameters:
 			# Comments
 			if line.startswith("#"):
@@ -164,29 +165,13 @@ class OptimizationParameters(object):
 			elif not line.strip():
 				pass
 
-			# Parameter_label
-			# elif line.strip() == "[constants]":
-			# 	now_reading = 1
-			# elif line.strip() == "[initial_values]":
-			# 	now_reading = 2
 			else:
 
 				data = line.strip().split(":")
 
 				if self.workingModel.listOfVariables.containsSbmlId(data[0].strip()):
 					t_var = self.workingModel.listOfVariables.getBySbmlId(data[0].strip())
-					print "New value of %s : %g" % (t_var.getNameOrSbmlId(), float(data[1].strip()))
-				#
-				# if now_reading == 1:
-				# 	t_ind = int(data[0])
-				# 	t_value = float(data[1])
-				#
-				# 	self.workingModel.variablesConstant[t_ind].setValue(t_value)
-				#
-				# elif now_reading == 2:
-				# 	t_ind = int(data[0])
-				# 	t_value = float(data[1])
-				#
-				# 	self.initialValuesToFit_v2[t_ind].setValue(t_value)
+					result.update({t_var: float(data[1].strip())})
 
 		f_optimized_parameters.close()
+		return result
