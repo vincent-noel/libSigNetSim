@@ -136,7 +136,7 @@ class OptimizationExecution(object):
 
 
 		if (getsize(self.getTempDirectory() + "err_optim") > 0 or
-			not isfile(self.getTempDirectory() + "final_score")):
+			not isfile(self.getTempDirectory() + "logs/score/score")):
 
 
 			err = open(self.getTempDirectory() + "err_optim")
@@ -154,7 +154,7 @@ class OptimizationExecution(object):
 
 	def readFinalScore(self):
 
-		file_final_score = open(self.getTempDirectory() + "final_score")
+		file_final_score = open(self.getTempDirectory() + "logs/score/score")
 		final_score = float(file_final_score.readline())
 
 		final_score = max(round(final_score, int(-log10(Settings.defaultPlsaCriterion))),

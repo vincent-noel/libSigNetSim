@@ -98,10 +98,9 @@ class TestOptimization(unittest.TestCase):
 		fit = ModelVsTimeseriesOptimization(workingModel=m,
 										list_of_experiments={0:experiment},
 										mapping=None,
-										parameters_to_fit=selected_parameters)
-		fit.runOptimization(2, None, None)
-		# _,y = sim.getRawData()[0]
-		# model_data = y['P']
-		#
-		# for i, t_data in enumerate(reference_data):
-		# 	self.assertAlmostEqual(t_data, model_data[i], delta=1e-6)
+										parameters_to_fit=selected_parameters,
+										nb_procs=2)
+
+		score = fit.runOptimization(2, None, None)
+		self.assertEqual(score, 0.082)
+	

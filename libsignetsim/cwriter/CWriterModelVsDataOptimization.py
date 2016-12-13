@@ -73,7 +73,6 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 	def writeOptimizationFiles(self, nb_procs):
 
 		CWriterOptimization.writeOptimizationFiles(self, nb_procs)
-		print "finished copying libs"
 		self.writeModelFiles()
 		self.writeDataFiles()
 		self.writeOptimFiles(nb_procs)

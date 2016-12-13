@@ -51,10 +51,12 @@ class Optimization(OptimizationExecution, OptimizationParameters):
 
 
 	def writeOptimizationFilesMain(self, nb_procs=1):
-		print "Should be second god damn it"
+		# print "Should be second god damn it"
 
 		mkdir(self.getTempDirectory())
-		self.workingModel.parentDoc.writeSbml(join(self.getTempDirectory(), "model.sbml"))
+
+		if self.workingModel.parentDoc is not None:
+			self.workingModel.parentDoc.writeSbml(join(self.getTempDirectory(), "model.sbml"))
 		self.workingModel.build(dont_reduce=True)
 		# OptimizationParameters.writeOptimizationInput(self)
 
@@ -75,33 +77,33 @@ class Optimization(OptimizationExecution, OptimizationParameters):
 
 	def getBestResult(self, nb_procs):
 
-		if isfile(join(self.getTempDirectory(), "optimization_files/score/score_0")):
-			if nb_procs > 1:
+		if isfile(join(self.getTempDirectory(), "logs/score/score")):
+			# if nb_procs > 1:
+			#
+			# 	best_scores = []
+			#
+			# 	for i in range(0,nb_procs):
+			#
+			# 		f_best_score = open(join(self.getTempDirectory(), "logs/score/score_%s" % str(i)), 'r')
+			# 		t_score = f_best_score.readline().strip()
+			# 		if t_score is not None and t_score != "":
+			# 			best_scores.append(float(t_score))
+			# 		else:
+			# 			return (-1, 1e+100)
+			# 		f_best_score.close()
+			#
+			# 	return [(i,b) for i,b in enumerate(best_scores) if b == min(best_scores)][0]
+			#
+			# elif nb_procs >= 0:
 
-				best_scores = []
+			f_best_score = open(join(self.getTempDirectory(), "logs/score/score"), 'r')
+			t_score = f_best_score.readline()
+			if t_score is not None and t_score != "":
+				res = float(t_score)
+			else:
+				return (-1, 1e+100)
+			f_best_score.close()
 
-				for i in range(0,nb_procs):
-
-					f_best_score = open(join(self.getTempDirectory(), "optimization_files/score/score_%s" % str(i)), 'r')
-					t_score = f_best_score.readline().strip()
-					if t_score is not None and t_score != "":
-						best_scores.append(float(t_score))
-					else:
-						return (-1, 1e+100)
-					f_best_score.close()
-
-				return [(i,b) for i,b in enumerate(best_scores) if b == min(best_scores)][0]
-
-			elif nb_procs >= 0:
-
-				f_best_score = open(join(self.getTempDirectory(), "optimization_files/score/score_0"), 'r')
-				t_score = f_best_score.readline()
-				if t_score is not None and t_score != "":
-					res = float(t_score)
-				else:
-					return (-1, 1e+100)
-				f_best_score.close()
-
-				return (0, res)
+			return (0, res)
 
 		return (-1,1e+100)

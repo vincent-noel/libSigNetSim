@@ -36,7 +36,7 @@ from os.path import isfile
 
 class ModelVsTimeseriesOptimization(Optimization, CWriterModelVsDataOptimization, NoiseGenerator):
 
-	def __init__ (self, workingModel, parameters_to_fit=None, list_of_experiments=None, reference_data=None, mapping=None, noise=0, sampling=None):
+	def __init__ (self, workingModel, parameters_to_fit=None, list_of_experiments=None, reference_data=None, mapping=None, noise=0, sampling=None, nb_procs=1):
 
 		self.workingModel = workingModel
 
@@ -60,15 +60,17 @@ class ModelVsTimeseriesOptimization(Optimization, CWriterModelVsDataOptimization
 		self.mapping = mapping
 		self.noise = noise
 		self.sampling = sampling
+		self.writeOptimizationFiles(nb_procs)
+
 
 
 	def writeOptimizationFiles(self, nb_procs=1):
 
-		print "Should be first god damn it"
+		# print "Should be first god damn it"
 		Optimization.writeOptimizationFilesMain(self, nb_procs)
 		vars_to_keep = self.findTreatedVariables()
 
-		print "Finished calling Optimization.writeOptimizationFiles"
+		# print "Finished calling Optimization.writeOptimizationFiles"
 
 		CWriterModelVsDataOptimization.writeOptimizationFiles(self, nb_procs)
 
