@@ -11,7 +11,14 @@ class MyInstall(install):
 		#Downloading and compiling plsa library
 		subprocess.call(['git', 'clone', 'https://github.com/vincent-noel/plsa.git', 'libsignetsim/lib/plsa'])
 		subprocess.call(['make', '-C', 'libsignetsim/lib/plsa', 'all'])
+
+		#Compiling the numerical integration code
 		subprocess.call(['make', '-C', 'libsignetsim/lib/integrate'])
+
+		#Some old installs need to update distribute to install (at least) matplotlib
+		subprocess.call(['easy_install', '-U', 'distribute'])
+
+		#Installing the python dependencies
 		subprocess.call(['pip', 'install', '-r', 'requirements.txt'])
 
 		install.do_egg_install(self)
