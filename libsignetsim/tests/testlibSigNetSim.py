@@ -29,10 +29,10 @@ from libsignetsim.model.SbmlDocument import SbmlDocument
 
 class TestlibSigNetSim(unittest.TestCase):
 	""" Tests high level functions """
-
-
-	def testModelOpen(self):
-
-		doc = SbmlDocument()
-		doc.readSbml("libsignetsim/tests/input/Ras--MAPK_v2.sbml")
-		self.assertEqual(doc.getModelInstance().getName(), 'Ras--MAPK_v2')
+	#
+	#
+	# def testModelOpen(self):
+	#
+	# 	doc = SbmlDocument()
+	# 	doc.readSbml("libsignetsim/tests/input/Ras--MAPK_v2.sbml")
+	# 	self.assertEqual(doc.getModelInstance().getName(), 'Ras--MAPK_v2')

@@ -9,7 +9,7 @@ You will need MPI libraries to execute C code in parallel
 	libopenmpi-dev openmpi-bin
 
 
-You will need Sundials library to perform numerical integration
+You will need Sundials library to perform numerical integration (which needs Lapack, Atlas and Blas libraries)
 
 	libsundials-serial-dev libsundials-serial liblapack-dev libblas-dev libatlas-base-dev
 
@@ -19,7 +19,7 @@ You will need Git to download the non-linear optimization library, and Pip to do
 	git python-pip
 
 
-And some other packages that you might need, depending on your actual install (mainly used to install python dependencies)
+And some other packages that you might need, depending on your actual install (mainly used to build python dependencies)
 
 	python-dev python-setuptools subversion libfreetype6-dev libpng12-dev gfortran g++ gcc make pkg-config
 

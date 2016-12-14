@@ -68,17 +68,12 @@ class TestOptimization(unittest.TestCase):
 		s.setValue(12)
 		p.setValue(0)
 
-		#Initial guess
-		vmax.setValue(1)
-		km.setValue(1)
-
-
 		# Building the experiment
 		list_of_treatments = ListOfExperimentalData()
 		list_of_observations = ListOfExperimentalData()
 		for i, data in enumerate(reference_data):
 			t_observation = ExperimentalData()
-			t_observation.readDB('P', reference_times[i], data, 0, False, None, None)
+			t_observation.readDB('P', reference_times[i], data)
 			list_of_observations.add(t_observation)
 
 		condition = ExperimentalCondition()
@@ -89,14 +84,11 @@ class TestOptimization(unittest.TestCase):
 
 		selected_parameters = []
 		for parameter in m.listOfParameters.values():
-			selected_parameters.append((None, parameter.objId, True,
-									parameter.getNameOrSbmlId(),
-									parameter.getValue(),
-									1e-6, 1e+6))
+			selected_parameters.append((parameter, 1, 1e-6, 1e+6))
 
 
 		fit = ModelVsTimeseriesOptimization(workingModel=m,
-										list_of_experiments={0:experiment},
+										list_of_experiments=[experiment],
 										mapping=None,
 										parameters_to_fit=selected_parameters,
 										nb_procs=2)
@@ -107,3 +99,73 @@ class TestOptimization(unittest.TestCase):
 		self.assertEqual(score, 0.082)
 		self.assertEqual(parameters[m.listOfParameters.getBySbmlId('vmax')], 18198.88690055613)
 		self.assertEqual(parameters[m.listOfParameters.getBySbmlId('km')], 742789.479924893)
+
+
+
+	def testOptimizeMichaelisMentenLocalParameters(self):
+
+		# Reference data to fit against
+		reference_times = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+		reference_data = [0.0, 1.897738450655051, 3.756955074247717,
+						5.56216742392093, 7.287473256778753, 8.886428870529057,
+						10.27109002756082, 11.2877220979055, 11.80436967759331,
+						11.95991169490768, 11.99256430291778, 11.99865017124369,
+						11.99975594720175, 11.99995589772631, 11.99999202708974,
+						11.99999855444305, 11.99999973767934, 11.99999993029574,
+						11.99999999125534, 11.99999999568526, 12.00000000008859]
+
+		# Buildng the model
+		m = Model()
+		m.setName("Enzymatic Reaction")
+
+		e = m.listOfSpecies.new("E")
+		s = m.listOfSpecies.new("S")
+		p = m.listOfSpecies.new("P")
+
+
+		r = m.listOfReactions.new("Enzymatic reaction")
+		r.listOfReactants.add(s)
+		r.listOfModifiers.add(e)
+		r.listOfProducts.add(p)
+
+		vmax = r.listOfLocalParameters.new("vmax")
+		km = r.listOfLocalParameters.new("km")
+
+		r.kineticLaw.setPrettyPrintMathFormula("vmax*E*S/(km+S)")
+
+		e.setValue(10)
+		s.setValue(12)
+		p.setValue(0)
+
+
+		# Building the experiment
+		list_of_treatments = ListOfExperimentalData()
+		list_of_observations = ListOfExperimentalData()
+		for i, data in enumerate(reference_data):
+			t_observation = ExperimentalData()
+			t_observation.readDB('P', reference_times[i], data)
+			list_of_observations.add(t_observation)
+
+		condition = ExperimentalCondition()
+		condition.read(list_of_treatments, list_of_observations)
+
+		experiment = Experiment()
+		experiment.addCondition(condition)
+
+		selected_parameters = []
+		for parameter in r.listOfLocalParameters.values():
+			selected_parameters.append((parameter, 1, 1e-6, 1e+6))
+
+
+		fit = ModelVsTimeseriesOptimization(workingModel=m,
+										list_of_experiments=[experiment],
+										mapping=None,
+										parameters_to_fit=selected_parameters,
+										nb_procs=2)
+
+		score = fit.runOptimization(2, None, None)
+		parameters = fit.readOptimizationOutput()
+
+		self.assertEqual(score, 0.082)
+		self.assertEqual(parameters[r.listOfLocalParameters.getBySbmlId('vmax')], 18198.88690055613)
+		self.assertEqual(parameters[r.listOfLocalParameters.getBySbmlId('km')], 742789.479924893)

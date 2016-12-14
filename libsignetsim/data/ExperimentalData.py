@@ -40,7 +40,8 @@ class ExperimentalData(object):
 		self.name = ""
 
 
-	def readDB(self, name, time, value, value_dev=0, steady_state=False, min_steady_state=0, max_steady_state=0,quantification_ratio=1):
+	def readDB(self, name, time, value, value_dev=0, steady_state=False,
+				min_steady_state=0, max_steady_state=0, quantification_ratio=1):
 
 		self.name = name
 		self.t = time

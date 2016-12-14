@@ -60,7 +60,7 @@ class ModelVsTimeseriesOptimization(Optimization, CWriterModelVsDataOptimization
 		self.mapping = mapping
 		self.noise = noise
 		self.sampling = sampling
-		self.writeOptimizationFiles(nb_procs)
+		# self.writeOptimizationFiles(nb_procs)
 
 
 
@@ -75,7 +75,7 @@ class ModelVsTimeseriesOptimization(Optimization, CWriterModelVsDataOptimization
 		if self.listOfExperiments is not None and len(self.listOfExperiments) > 0:
 
 			variables = []
-			for experiment in self.listOfExperiments.values():
+			for experiment in self.listOfExperiments:
 				variables += experiment.getTreatedVariables()
 
 			if len(variables) > 1:
@@ -165,3 +165,9 @@ class ModelVsTimeseriesOptimization(Optimization, CWriterModelVsDataOptimization
 						print "> Unexpected behaviour in the observed concentration files"
 
 			f_observed_concentrations.close()
+
+
+	def runOptimization(self, nb_procs, timeout=None, maxiter=None):
+
+		self.writeOptimizationFiles(nb_procs)
+		return Optimization.runOptimization(self, nb_procs, timeout, maxiter)

@@ -40,9 +40,6 @@ class Optimization(OptimizationExecution, OptimizationParameters):
 
 	def __init__ (self, SigNetSim=None, workingModel=None, parameters_to_fit=None, optimization_type=MODEL_VS_DATA):
 
-		# self.SigNetSim = SigNetSim
-		# if self.SigNetSim is not None:
-
 		self.workingModel = workingModel
 		self.optimizationType = optimization_type
 
@@ -51,16 +48,12 @@ class Optimization(OptimizationExecution, OptimizationParameters):
 
 
 	def writeOptimizationFilesMain(self, nb_procs=1):
-		# print "Should be second god damn it"
 
 		mkdir(self.getTempDirectory())
 
 		if self.workingModel.parentDoc is not None:
 			self.workingModel.parentDoc.writeSbml(join(self.getTempDirectory(), "model.sbml"))
 		self.workingModel.build(dont_reduce=True)
-		# OptimizationParameters.writeOptimizationInput(self)
-
-
 
 
 	def initializeOptimizationParameters(self):
@@ -78,24 +71,6 @@ class Optimization(OptimizationExecution, OptimizationParameters):
 	def getBestResult(self, nb_procs):
 
 		if isfile(join(self.getTempDirectory(), "logs/score/score")):
-			# if nb_procs > 1:
-			#
-			# 	best_scores = []
-			#
-			# 	for i in range(0,nb_procs):
-			#
-			# 		f_best_score = open(join(self.getTempDirectory(), "logs/score/score_%s" % str(i)), 'r')
-			# 		t_score = f_best_score.readline().strip()
-			# 		if t_score is not None and t_score != "":
-			# 			best_scores.append(float(t_score))
-			# 		else:
-			# 			return (-1, 1e+100)
-			# 		f_best_score.close()
-			#
-			# 	return [(i,b) for i,b in enumerate(best_scores) if b == min(best_scores)][0]
-			#
-			# elif nb_procs >= 0:
-
 			f_best_score = open(join(self.getTempDirectory(), "logs/score/score"), 'r')
 			t_score = f_best_score.readline()
 			if t_score is not None and t_score != "":

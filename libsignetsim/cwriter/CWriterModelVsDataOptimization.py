@@ -45,7 +45,7 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 
 		#Find out max time
 		time_max = 0
-		for experiment in self.listOfExperiments.values():
+		for experiment in self.listOfExperiments:
 			if time_max < experiment.getMaxTime():
 				time_max = experiment.getMaxTime()
 
@@ -59,13 +59,11 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 
 			#While all values are not true
 			cant_do_better = True
-			for experiment in self.listOfExperiments.values():
+			for experiment in self.listOfExperiments:
 				for t_point in experiment.getTimes():
 					if float(t_point) > 0:
 						#If the ratio between the sample time and the sampling time is superior to 1
 						cant_do_better &= int(float(t_point)/time_ech) >= 1
-
-					# time_ech = 30
 
 		return (time_max, time_ech)
 
@@ -87,15 +85,9 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 		f_h = open(h_filename, 'w')
 
 		self.writeOptimizationFilesHeaders(f_c, f_h)
-
 		self.writeOptimizationGlobals(f_c, f_h)
 		self.writeOptimizationGlobalMethods(f_c, f_h)
-
-		self.writeOptimizationSettings(f_c, f_h, nb_procs)
 		self.writeOptimizationParameters(f_c, f_h)
-
-		# self.writeOptimizationFinalizeSettings(f_c, f_h)
-		# self.writeOptimizationFinalizeSettings(f_c, f_h)
 
 		f_c.close()
 		f_h.close()

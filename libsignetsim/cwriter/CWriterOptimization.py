@@ -102,58 +102,18 @@ class CWriterOptimization(object):
 		f_c.write("{\n\treturn my_plist;\n}\n\n")
 
 
-	def writeOptimizationSettings(self, f_c, f_h, nb_procs=1):
-		pass
-		# f_h.write("void init_settings();\n")
-		# f_c.write("void init_settings(){\n")
-		# f_c.write("\tsettings = InitPLSA();\n")
-		# f_c.write("}\n\n")
-
-		# f_h.write("void finalize_settings();\n")
-		# f_c.write("void finalize_settings(){\n")
-		# f_c.write("\tfree(settings) ;\n}\n\n")
-
 	def writeOptimizationParameters(self, f_c, f_h):
 
 		f_h.write("void init_params(ModelDefinition * model);\n")
 		f_c.write("void init_params(ModelDefinition * model)\n{\n")
 
-		nb_params = 0
-		for parameter in self.parameters:
-			(parameter_reaction,
-				parameter_objid,
-				parameter_active,
-				parameter_name,
-				parameter_value,
-				parameter_min,
-				parameter_max) = parameter
 
-			if parameter_active:
-				nb_params += 1
+		f_c.write("\tmy_plist = InitPLSAParameters(%d);\n" % len(self.parameters))
 
-		f_c.write("\tmy_plist = InitPLSAParameters(%d);\n" % nb_params)
-
-		nb_params = 0
-		for parameter in self.parameters:
-			(parameter_reaction,
-				parameter_objid,
-				parameter_active,
-				parameter_name,
-				parameter_value,
-				parameter_min,
-				parameter_max) = parameter
-
-			if parameter_active:
-				t_param = self.workingModel.listOfParameters[parameter_objid]
-				f_c.write("\tmy_plist->array[%d] = (ParamList) {&(model->constant_variables[%d].value), (Range) {%g, %g}, \"%s\"};\n" % (nb_params, t_param.ind, parameter_min, parameter_max, parameter_name))
-				nb_params += 1
+		for (i_param, (param, value, lb, ub)) in enumerate(self.parameters):
+			f_c.write("\tmy_plist->array[%d] = (ParamList) {&(model->constant_variables[%d].value), %g, (Range) {%g, %g}, \"%s\"};\n" % (i_param, param.ind, value, lb, ub, param.symbol.getPrettyPrintMathFormula()))
 
 		f_c.write("}")
-
-
-		# f_h.write("void finalize_params();\n")
-		# f_c.write("void finalize_params()\n")
-		# f_c.write("{\n\tfree(my_plist->array);\n}\n\n")
 
 
 

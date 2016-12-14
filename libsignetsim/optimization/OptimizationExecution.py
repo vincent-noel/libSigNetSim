@@ -169,7 +169,7 @@ class OptimizationExecution(object):
 		return final_score
 
 
-	def runOptimization(self, nb_procs, timeout, maxiter):
+	def runOptimization(self, nb_procs, timeout=None, maxiter=None):
 
 		# if self.monitor:
 		#     t = OptimizationMonitor(self)  #threading.Thread(target=self.monitorOptimization)

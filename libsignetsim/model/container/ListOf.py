@@ -84,7 +84,7 @@ class ListOf(dict):
 
 	def getByPos(self, pos):
 		""" Find sbml objects by their position """
-		return self.__getitem__(self.keys()[pos])
+		return self.values()[pos]
 
 
 	def getPosById(self, id):

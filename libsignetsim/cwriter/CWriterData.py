@@ -124,7 +124,7 @@ class CWriterData(object):
 			f_c.write("\n")
 
 
-			for i, experiment in enumerate(self.listOfExperiments.values()):
+			for i, experiment in enumerate(self.listOfExperiments):
 
 				f_c.write("    experiments[%d].name = \"%s\";\n" % (i, experiment.name))
 				f_c.write("    experiments[%d].nb_conditions = %d;\n" % (i, len(experiment.listOfConditions.keys())))
@@ -221,7 +221,7 @@ class CWriterData(object):
 		f_c.write("{\n")
 		if self.listOfExperiments is not None and len(self.listOfExperiments) > 0:
 			# print self.listOfExperiments
-			for i, experiment in enumerate(self.listOfExperiments.values()):
+			for i, experiment in enumerate(self.listOfExperiments):
 				for j, condition in enumerate(experiment.listOfConditions.values()):
 
 					if len(condition.listOfInitialConditions.keys()) > 0:
