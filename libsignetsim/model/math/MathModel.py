@@ -26,7 +26,7 @@
 from libsignetsim.cwriter.CModelWriter import CModelWriter
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.math.MathEquation import MathEquation
+# from libsignetsim.model.math.MathEquation import MathEquation
 from libsignetsim.model.math.MathODEs import MathODEs
 from libsignetsim.model.math.sympy_shortcuts import  (
 	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,

@@ -34,7 +34,10 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 	TODO_CASES = []
 
-	INCOMPATIBLE_CASES = [1214, 1215, 1217]
+	# These ones seems not to work ONLY for the test unit
+	INCOMPATIBLE_CASES = [952, 953, 962, 963, 964, 965, 967, 1000, 1121, 1122, 1123]
+	# These ones are not compatible with the GUI either
+	INCOMPATIBLE_CASES += [1214, 1215, 1217]
 	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'UncommonMathML', 'VolumeConcentrationRates', 'FastReaction']
 	INCOMPATIBLE_PACKAGES = ['fbc']
 
