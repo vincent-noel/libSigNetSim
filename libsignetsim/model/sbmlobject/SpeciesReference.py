@@ -115,9 +115,10 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 
 					if sbml_level == 1:
 						self.stoichiometry.setInternalMathFormula(
-							SympyRational(
-								float(sbmlSpeciesReference.getStoichiometry()),
-								float(sbmlSpeciesReference.getDenominator())))
+							SympyMul(
+								SympyFloat(float(sbmlSpeciesReference.getStoichiometry())),
+								SympyPow(SympyFloat(float(sbmlSpeciesReference.getDenominator())),
+											SympyInteger(-1))))
 
 					else:
 						self.stoichiometry.readSbml(

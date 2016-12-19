@@ -465,16 +465,20 @@ class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
 
 	def solveSystem(self, system, variables):
 
-		print "\n\n> Calling solver with DAEs only : "
-		print ">> System : "
-		for equ in system:
-			print ">>> " + str(equ)
+		if Settings.verbose >= 1:
 
-		print ">> Solve for : " + str(variables)
+			print "\n\n> Calling solver with DAEs only : "
+			print ">> System : "
+			for equ in system:
+				print ">>> " + str(equ)
+
+			print ">> Solve for : " + str(variables)
 
 
 		res = solve(system,variables)
-		print ">> Result : %s\n\n" % str(res)
+
+		if Settings.verbose >= 1:
+			print ">> Result : %s\n\n" % str(res)
 
 		solved_initial_conditions = {}
 
@@ -503,15 +507,28 @@ class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
 		f_system = t_daes
 		f_vars = [t_symbol.getFinalMathFormula() for t_symbol in self.DAE_symbols]
 		f_vars = list(set(f_vars))
+		# print self.DAE_symbols
+		# print f_system
+		# print f_vars
 
 		(f_system, f_vars) = self.loadKnownInitialValues(f_system, f_vars, force=True)
+
+		# print f_system
+		# print f_vars
 
 		if False in f_system:
 			f_system = t_daes
 			f_vars = [t_symbol.getFinalMathFormula() for t_symbol in self.DAE_symbols]
 			f_vars = list(set(f_vars))
 
-			(f_system, f_vars) = self.loadKnownInitialValues(f_system, f_vars, self.DAE_vars)
+			# print f_system
+			# print f_vars
+			dae_vars = [var.symbol.getInternalMathFormula() for var in self.listOfVariables.values() if var.isAlgebraic()]
+			# print dae_vars
+			(f_system, f_vars) = self.loadKnownInitialValues(f_system, f_vars, dae_vars)
+
+			# print f_system
+			# print f_vars
 			solved_initial_conditions = self.solveSystem(f_system, f_vars)
 			self.saveFoundInitialValues(solved_initial_conditions)
 

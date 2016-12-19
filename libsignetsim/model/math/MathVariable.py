@@ -163,7 +163,7 @@ class MathVariable(object):
 		if self.type == self.VAR_ODE:
 			return self.ind
 
-		if self.type == self.VAR_DAE:
+		elif self.type == self.VAR_DAE:
 			return self.__model.nbOdes + self.ind
 		elif self.type == self.VAR_ASS:
 			return self.__model.nbOdes + self.__model.nbAlgebraics + self.ind

@@ -1,9 +1,9 @@
 #!/bin/bash
-apt-get update 
+apt-get update
 apt-get upgrade -y
-apt-get install -y virtualenv git make \
-	python-dev g++ \
-	libopenmpi-dev openmpi-bin \
-	apache2 libapache2-mod-wsgi \
-	libsundials-serial-dev libsundials-serial
+apt-get install -y libopenmpi-dev openmpi-bin libsundials-serial-dev \
+					libsundials-serial liblapack-dev libblas-dev libatlas-dev \
+					libfreetype6-dev libpng12-dev libatlas-base-dev python-dev \
+					python-pip python-setuptools git subversion gfortran g++ \
+					gcc make pkg-config virtualenv
 apt-get clean

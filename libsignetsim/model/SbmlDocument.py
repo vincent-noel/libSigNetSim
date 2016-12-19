@@ -53,7 +53,7 @@ class SbmlDocument(object):
 		self.sbmlLevel = Settings.defaultSbmlLevel
 		self.sbmlVersion = Settings.defaultSbmlVersion
 		self.documentPath = path
-
+		self.isCompatible = None
 		if model is None:
 			self.model = Model(parent_doc=self, is_main_model=True)
 		else:
@@ -80,6 +80,15 @@ class SbmlDocument(object):
 	def isCompEnabled(self):
 		return self.useCompPackage
 
+	def checkCompatible(self, doc):
+		""" This function checks if the documents
+		needs a non-implemented package """
+
+		for i in range(doc.getNumPlugins()):
+			if doc.getPlugin(i).getPackageName() != "comp":
+				return False
+			else:
+				return True
 
 
 	def readSbml(self, sbml_filename):
@@ -108,6 +117,8 @@ class SbmlDocument(object):
 									"Error instanciating the SBMLReader !")
 
 		sbmlDoc = sbmlReader.readSBML(t_filename)
+
+		self.isCompatible = self.checkCompatible(sbmlDoc)
 
 		if sbmlDoc.getNumErrors() > 0:
 			if sbmlDoc.getError(0).getErrorId() == XMLFileUnreadable:
@@ -192,7 +203,10 @@ class SbmlDocument(object):
 			t0 = time()
 			t_instance = ModelInstance(self.model, self)
 			t1 = time()
-			print "> Instance produced in %.2gs" % (t1-t0)
+
+			if Settings.verbose >= 1:
+				print "> Instance produced in %.2gs" % (t1-t0)
+
 			return t_instance
 		else:
 			return self.model

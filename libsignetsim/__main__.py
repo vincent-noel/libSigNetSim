@@ -2,7 +2,7 @@
 """ __main__.py
 
 
-    This file is made to be called by the SBML Test Suite
+	This file is made to be called by the SBML Test Suite
 
 
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
@@ -35,78 +35,78 @@ import traceback
 
 class __main__():
 
-    def __init__(self):
+	def __init__(self):
 
-        if len(argv) > 1:
-            self.readArgs(argv)
-
-
-    def readArgs(self, argv):
-
-        parser = OptionParser()
-
-        parser.add_option("-v", "--verbose", dest="verbose", help="Verbose mode", nargs=0)
-
-        parser.add_option("-k", "--keepfiles", dest="keep_files", help="Keep temporary files", nargs=0)
-
-        parser.add_option("-c", "--test-conformity", dest="test_conformity", nargs=3,
-                          help="Generate output for specified case. To use with Sbml Test Suite", metavar="CASE LEVEL VERSION")
-
-        parser.add_option("-e", "--test-export", dest="test_export", nargs=3,
-                          help="Test sbml output for specified case. To use with Sbml Test Suite", metavar="CASE LEVEL VERSION")
-
-        (options, _) = parser.parse_args()
-
-        if options.verbose is not None:
-            Settings.verbose = 1
-
-        if options.keep_files is not None:
-            Setting.simulationKeepFiles = True
+		if len(argv) > 1:
+			self.readArgs(argv)
 
 
-        if options.test_conformity is not None:
+	def readArgs(self, argv):
 
-            try:
-                simulation = SbmlTestCaseSimulation(
-                                options.test_conformity[0],
-                                options.test_conformity[1],
-                                options.test_conformity[2],
-                                test_export=False)
+		parser = OptionParser()
 
-                simulation.run()
+		parser.add_option("-v", "--verbose", dest="verbose", help="Verbose mode", nargs=0)
 
-            except ModelException as e:
-                print "Caught %s" % str(type(e))
-                print "> %s" % e.message
-                traceback.print_exc()
+		parser.add_option("-k", "--keepfiles", dest="keep_files", help="Keep temporary files", nargs=0)
 
-            except SimulationException as e:
-                print "Caught %s" % str(type(e))
-                print "> %s" % e.message
-                traceback.print_exc()
+		parser.add_option("-c", "--test-conformity", dest="test_conformity", nargs=3,
+						  help="Generate output for specified case. To use with Sbml Test Suite", metavar="CASE LEVEL VERSION")
+
+		parser.add_option("-e", "--test-export", dest="test_export", nargs=3,
+						  help="Test sbml output for specified case. To use with Sbml Test Suite", metavar="CASE LEVEL VERSION")
+
+		(options, _) = parser.parse_args()
+
+		if options.verbose is not None:
+			Settings.verbose = 1
+
+		if options.keep_files is not None:
+			Setting.simulationKeepFiles = True
 
 
-        elif options.test_export is not None:
+		if options.test_conformity is not None:
 
-            try:
-                simulation = SbmlTestCaseSimulation(
-                                options.test_export[0],
-                                options.test_export[1],
-                                options.test_export[2],
-                                test_export=True)
-                simulation.run()
+			try:
+				simulation = SbmlTestCaseSimulation(
+								int(options.test_conformity[0]),
+								options.test_conformity[1],
+								options.test_conformity[2],
+								test_export=False)
 
-            except ModelException as e:
-                print "Caught %s" % str(type(e))
-                print "> %s" % e.message
-                traceback.print_exc()
+				simulation.runTestSuiteWraper()
 
-            except SimulationException as e:
-                print "Caught %s" % str(type(e))
-                print "> %s" % e.message
-                traceback.print_exc()
+			except ModelException as e:
+				print "Caught %s" % str(type(e))
+				print "> %s" % e.message
+				traceback.print_exc()
+
+			except SimulationException as e:
+				print "Caught %s" % str(type(e))
+				print "> %s" % e.message
+				traceback.print_exc()
+
+
+		elif options.test_export is not None:
+
+			try:
+				simulation = SbmlTestCaseSimulation(
+								int(options.test_export[0]),
+								options.test_export[1],
+								options.test_export[2],
+								test_export=True)
+				simulation.runTestSuiteWraper()
+
+			except ModelException as e:
+				print "Caught %s" % str(type(e))
+				print "> %s" % e.message
+				traceback.print_exc()
+
+			except SimulationException as e:
+				print "Caught %s" % str(type(e))
+				print "> %s" % e.message
+				traceback.print_exc()
 
 
 
 if __name__ == "__main__":
-    __main__()
+	__main__()

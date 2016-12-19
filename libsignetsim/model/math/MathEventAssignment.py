@@ -40,7 +40,7 @@ from libsignetsim.model.math.sympy_shortcuts import  (
 	SympyStrictGreaterThan, SympyStrictLessThan,
 	SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
 	SympyMax, SympyMin)
-
+import sympy
 class MathEventAssignment(object):
 
 	def __init__(self, model):
@@ -56,9 +56,10 @@ class MathEventAssignment(object):
 		self.definition.readSbml(sbml_event_assignment.getMath())
 
 		if self.getVariable().isConcentration():
+			t_comp = self.getVariable().getCompartment()
 			self.definition.setInternalMathFormula(
-				SympyMul(self.definition.getInternalMathFormula(),
-						self.getVariable().getCompartment().symbol.getInternalMathFormula()))
+					SympyMul(self.definition.getInternalMathFormula(),
+								t_comp.symbol.getInternalMathFormula()))
 
 
 	def writeSbml(self, sbml_event_assignment, sbml_level, sbml_version):
@@ -68,10 +69,10 @@ class MathEventAssignment(object):
 		t_variable = self.variable.getSbmlMathFormula(sbml_level, sbml_version).getName()
 
 		if self.getVariable().isConcentration():
-
+			t_comp = self.getVariable().getCompartment()
 			t_definition.setInternalMathFormula(
 				SympyMul(t_definition.getInternalMathFormula(),
-							SympyPow(self.getVariable().getCompartment().symbol.getInternalMathFormula(),
+							SympyPow(t_comp.symbol.getInternalMathFormula(),
 								SympyInteger(-1))))
 
 

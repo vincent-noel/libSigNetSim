@@ -88,32 +88,32 @@ class CModelWriter(object):
 		for i_var, variable_ode in enumerate(self.variablesOdes):
 
 			f_c.write("  %s.derivative_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_DERIVATIVE};\n" % (
-							variable_name, i_var, variable_ode.getCValue(), variable_ode.getSbmlId()))
+							variable_name, i_var, variable_ode.getCValue(), variable_ode.symbol.getPrettyPrintMathFormula()))
 
 			if self.hasDAEs:
 				f_c.write("  %s.der_der_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_DER_DER};\n" % (
-								variable_name, i_var, variable_ode.getDerivativeCValue(), variable_ode.getSbmlId()))
+								variable_name, i_var, variable_ode.getDerivativeCValue(), variable_ode.symbol.getPrettyPrintMathFormula()))
 
 		for i_var, variable_ass in enumerate(self.variablesAssignment):
 
 			f_c.write("  %s.assignment_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_ASSIGNMENT};\n" % (
-								variable_name, i_var, variable_ass.getCValue(), variable_ass.getSbmlId()))
+								variable_name, i_var, variable_ass.getCValue(), variable_ass.symbol.getPrettyPrintMathFormula()))
 
 		for i_var, variable_cst in enumerate(self.variablesConstant):
 
 			f_c.write("  %s.constant_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_CONSTANT};\n" % (
-								variable_name, i_var, variable_cst.getCValue(), variable_cst.getSbmlId()))
+								variable_name, i_var, variable_cst.getCValue(), variable_cst.symbol.getPrettyPrintMathFormula()))
 
 
 		for i_var, variable_alg in enumerate(self.variablesAlgebraic):
 
 			f_c.write("  %s.algebraic_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_ALGEBRAIC};\n" % (
-								variable_name, i_var, variable_alg.getCValue(), variable_alg.getSbmlId()))
+								variable_name, i_var, variable_alg.getCValue(), variable_alg.symbol.getPrettyPrintMathFormula()))
 
 
 			if self.hasDAEs:
 				f_c.write("  %s.alg_der_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_ALG_DER};\n" % (
-								variable_name, i_var, variable_alg.getDerivativeCValue(), variable_alg.getSbmlId()))
+								variable_name, i_var, variable_alg.getDerivativeCValue(), variable_alg.symbol.getPrettyPrintMathFormula()))
 
 		f_c.write("  %s.nb_init_assignments = %d;\n" % (variable_name, len(self.listOfInitialAssignments.keys()) + self.listOfSpecies.nbFormulaInitialization()))
 
@@ -143,7 +143,7 @@ class CModelWriter(object):
 		f_c.write("  %s.integration_settings->t_min = %g;\n" % (variable_name, time_min))
 		f_c.write("  %s.integration_settings->t_max = %g;\n" % (variable_name, time_max))
 		f_c.write("  %s.integration_settings->t_sampling = %g;\n" % (variable_name, time_ech))
-		f_c.write("  %s.integration_settings->nb_samples = (int) ((%s.integration_settings->t_max-%s.integration_settings->t_min)/%s.integration_settings->t_sampling)+1;\n" % (variable_name, variable_name, variable_name, variable_name))
+		f_c.write("  %s.integration_settings->nb_samples = (int) round((%s.integration_settings->t_max-%s.integration_settings->t_min)/%s.integration_settings->t_sampling)+1;\n" % (variable_name, variable_name, variable_name, variable_name))
 		f_c.write("  %s.integration_settings->abs_tol = %g;\n" % (variable_name, abs_tol))
 		f_c.write("  %s.integration_settings->rel_tol = %g;\n" % (variable_name, rel_tol))
 		f_c.write("  %s.integration_functions = malloc(sizeof(IntegrationFunctions));\n" % variable_name)
@@ -171,7 +171,7 @@ class CModelWriter(object):
 		f_c.write("  %s.integration_options->max_num_steps = %g;\n" % (variable_name, Settings.defaultCVODEmaxNumSteps))
 		f_c.write("  %s.integration_options->max_conv_fails = %g;\n" % (variable_name, Settings.defaultCVODEMaxConvFails))
 		f_c.write("  %s.integration_options->max_err_test_fails = %g;\n" % (variable_name, Settings.defaultCVODEMaxErrFails))
-		f_c.write("  rt_set_precision(RCONST(%g));\n" % abs_tol)
+		f_c.write("  rt_set_precision(RCONST(1e-16));\n")
 		f_c.write("}\n\n")
 
 	def writeSimulationFinalization(self, f_h, f_c, model_id):
@@ -478,6 +478,7 @@ class CModelWriter(object):
 								event_assignment.definition.getCMathFormula()))
 
 					else:
+						# print "event assignment = %s" % event_assignment.definition.getCMathFormula()
 						f_c.write("    data->events_memory[%d][%d] = %s;\n"
 								% (i_event, i_assignment,
 								event_assignment.definition.getCMathFormula()))

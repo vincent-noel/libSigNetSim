@@ -206,7 +206,7 @@ class SbmlMathReader(object):
 			return SympyNan
 
 		elif tree.getType() == libsbml.AST_RATIONAL:
-			return SympyRational(tree.getNumerator(), tree.getDenominator())
+			return SympyRational(SympyInteger(tree.getNumerator()), SympyInteger(tree.getDenominator()))
 
 
 		elif tree.isNumber():
@@ -314,9 +314,10 @@ class SbmlMathReader(object):
 			elif tree.getType() == libsbml.AST_DIVIDE:
 				if tree.getChild(0).isNumber() and tree.getChild(1).isNumber():
 
-					t_tree = SympyRational(1,10)
-					t_tree.p = self.translateForInternal(tree.getChild(0), simplified, develop)
-					t_tree.q = self.translateForInternal(tree.getChild(1), simplified, develop)
+					t_tree = SympyRational(
+						SympyInteger(self.translateForInternal(tree.getChild(0), simplified, develop)),
+						SympyInteger(self.translateForInternal(tree.getChild(1), simplified, develop)))
+
 					return t_tree
 
 				else:

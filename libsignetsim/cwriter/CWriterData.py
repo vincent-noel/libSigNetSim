@@ -26,7 +26,7 @@ from libsignetsim.settings.Settings import Settings
 
 class CWriterData(object):
 
-	def __init__ (self, listOfExperiments=None, mapping=None, workingModel=None, interpolate=True, subdir=None):
+	def __init__ (self, listOfExperiments=None, mapping=None, workingModel=None, interpolate=False, subdir=None):
 
 		self.mapping = mapping
 		self.listOfExperiments = listOfExperiments

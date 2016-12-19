@@ -22,7 +22,7 @@
 
 """
 
-from os.path import abspath, join, dirname
+from os.path import abspath, join, dirname, expanduser
 
 class Settings(object):
 
@@ -85,7 +85,8 @@ class Settings(object):
 
 	verbose = 0
 	showSbmlErrors = False
-
+	sbmlTestCasesPath = join(expanduser('~'),".test-suite/")
+	sbmlTestResultsPath = join('/tmp',".test-suite-results/")
 	defaultCVODEmaxNumSteps = 5000
 	defaultCVODEMaxConvFails = 100
 	defaultCVODEMaxErrFails = 70
