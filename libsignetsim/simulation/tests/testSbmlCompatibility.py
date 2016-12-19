@@ -2,8 +2,7 @@
 """ testSbmlCompatibility.py
 
 
-	This file is made for 'high level' tests, using various components
-
+	This file is made for the semantic test cases from the SBML Test Suite
 
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
 
@@ -30,14 +29,14 @@ from libsignetsim.model.SbmlDocument import SbmlDocument
 from libsignetsim.settings.Settings import Settings
 
 class TestSbmlCompatibility(unittest.TestCase):
-	""" Tests high level functions """
+	""" Tests SBML semantic test cases """
 
-	TODO_CASES = []
+	TODO_CASES = range(1100, 1300)
 
 	# These ones seems not to work ONLY for the test unit
-	INCOMPATIBLE_CASES = [952, 953, 962, 963, 964, 965, 967, 1000, 1121, 1122, 1123]
+	#INCOMPATIBLE_CASES = [952, 953, 962, 963, 964, 965, 967, 1000, 1121, 1122, 1123]
 	# These ones are not compatible with the GUI either
-	INCOMPATIBLE_CASES += [1214, 1215, 1217]
+	INCOMPATIBLE_CASES = [1000, 1121, 1169, 1214, 1215, 1217]
 	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'UncommonMathML', 'VolumeConcentrationRates', 'FastReaction']
 	INCOMPATIBLE_PACKAGES = ['fbc']
 
@@ -132,7 +131,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 	def runCase(self, case):
 
-		keep_files = False
+		keep_files = True
 
 		nb_cases = 0
 		nb_success = 0

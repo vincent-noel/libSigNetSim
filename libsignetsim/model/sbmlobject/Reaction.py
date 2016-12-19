@@ -26,7 +26,8 @@
 from libsignetsim.model.container.ListOfParameters import ListOfParameters
 from libsignetsim.model.container.ListOfSpeciesReference import ListOfSpeciesReference
 
-from libsignetsim.model.math.MathKineticLaw import MathKineticLaw
+# from libsignetsim.model.math.MathKineticLaw import MathKineticLaw
+from libsignetsim.model.sbmlobject.KineticLaw import KineticLaw
 from libsignetsim.model.math.MathFormula import MathFormula
 
 # from libsignetsim.model.sbmlobject.HasId import HasId
@@ -54,7 +55,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 	""" Parent class for Sbml reaction """
 
 
-	def __init__ (self, model, obj_id, name=None, reaction_type=MathKineticLaw.UNDEFINED):
+	def __init__ (self, model, obj_id, name=None, reaction_type=KineticLaw.UNDEFINED):
 
 		self.model = model
 		self.objId = obj_id
@@ -79,7 +80,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 		# self.setName(name)
 		# print "Name is none : %s" % str(name == None)
 		Variable.new(self, name, Variable.REACTION)
-		self.kineticLaw = MathKineticLaw(self.model, self)
+		self.kineticLaw = KineticLaw(self.model, self)
 
 	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[],
 				replacements={}, conversions={},
@@ -100,11 +101,11 @@ class Reaction(Variable, SbmlObject, HasUnits):
 			self.listOfLocalParameters.copy(obj.listOfLocalParameters, prefix, shift, subs, deletions, replacements)
 
 		if obj.kineticLaw is not None:
-			self.kineticLaw = MathKineticLaw(self.model, self)
+			self.kineticLaw = KineticLaw(self.model, self)
 			self.kineticLaw.copy(obj, prefix, shift, subs, deletions, replacements, conversions, extent_conversion, time_conversion)
 
 			self.value = MathFormula(self.model)
-			t_formula = self.kineticLaw.getInternalMathFormula()
+			t_formula = self.kineticLaw.definition.getInternalMathFormula()
 
 			self.value.setInternalMathFormula(t_formula)
 			self.constant = obj.constant
@@ -143,7 +144,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 			t_params = reaction.getKineticLaw().getListOfParameters()
 			self.listOfLocalParameters.readSbml(t_params,
 												sbml_level, sbml_version)
-			self.kineticLaw = MathKineticLaw(self.model, self)
+			self.kineticLaw = KineticLaw(self.model, self)
 			self.kineticLaw.readSbml(reaction.getKineticLaw().getMath(),
 										sbml_level, sbml_version)
 
@@ -156,8 +157,11 @@ class Reaction(Variable, SbmlObject, HasUnits):
 		self.symbol.readSbml(variable.getId(), sbml_level, sbml_version)
 
 		# self.isInitialized = True
-		self.value = self.kineticLaw
-		self.constant = False
+		if self.kineticLaw is not None:
+			self.value = self.kineticLaw.definition
+			self.constant = False
+		else:
+			self.constant = True
 
 
 	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
@@ -191,7 +195,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 		if self.kineticLaw is not None:
 			kinetic_law = sbml_reaction.createKineticLaw()
-			kinetic_law.setMath(self.kineticLaw.getSbmlMathFormula(sbml_level, sbml_version))
+			kinetic_law.setMath(self.kineticLaw.definition.getSbmlMathFormula(sbml_level, sbml_version))
 			self.listOfLocalParameters.writeSbml(kinetic_law, sbml_level, sbml_version)
 
 
@@ -205,29 +209,29 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 		self.reversible = reversible
 
-		if reaction_type == MathKineticLaw.UNDEFINED and math is not None:
-			self.kineticLaw = MathKineticLaw(self.model, self)
-			self.kineticLaw.setPrettyPrintMathFormula(math)
+		if reaction_type == KineticLaw.UNDEFINED and math is not None:
+			self.kineticLaw = KineticLaw(self.model, self)
+			self.kineticLaw.definition.setPrettyPrintMathFormula(math)
 
 		elif parameters is not None:
-			if reaction_type == MathKineticLaw.MASS_ACTION:
-				self.kineticLaw = MathKineticLaw(self.model, self)
+			if reaction_type == KineticLaw.MASS_ACTION:
+				self.kineticLaw = KineticLaw(self.model, self)
 				self.kineticLaw.setMassAction(parameters, reversible)
 
-			elif reaction_type == MathKineticLaw.MICHAELIS:
-				self.kineticLaw = MathKineticLaw(self.model, self)
+			elif reaction_type == KineticLaw.MICHAELIS:
+				self.kineticLaw = KineticLaw(self.model, self)
 				self.kineticLaw.setMichaelis(parameters)
 
-			elif reaction_type == MathKineticLaw.HILL:
-				self.kineticLaw = MathKineticLaw(self.model, self)
+			elif reaction_type == KineticLaw.HILL:
+				self.kineticLaw = KineticLaw(self.model, self)
 				self.kineticLaw.setHill(parameters)
 
-		self.value = self.kineticLaw
+		self.value = self.kineticLaw.definition
 		self.constant = False
 
 	def updateKineticLaw(self, kinetic_law):
 		""" Update the kinetic law of the reaction """
-		self.kineticLaw.setMathFormula(kinetic_law)
+		self.kineticLaw.definition.setMathFormula(kinetic_law)
 
 
 	def getKineticLaw(self, math_type=MathFormula.MATH_DEVINTERNAL, forcedConcentration=False):
@@ -237,7 +241,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 	def getKineticLawDerivative(self, variable, math_type):
 		""" Returns the kinetic law's derivative in the specified format """
-		return self.kineticLaw.getMathFormulaDerivative(variable, math_type)
+		return self.kineticLaw.definition.getMathFormulaDerivative(variable, math_type)
 
 
 	def getReactionDescription(self):

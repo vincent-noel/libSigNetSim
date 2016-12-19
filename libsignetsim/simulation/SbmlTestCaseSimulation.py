@@ -256,7 +256,7 @@ class SbmlTestCaseSimulation(TimeseriesSimulation):
 							# print "%.10g, %.10g (%10g, abs)" % (t_value, t_expected_value, abs(t_value-t_expected_value))
 
 					elif var == 'time':
-						if traj_times[i_timepoint] != t_expected_value:
+						if abs(traj_times[i_timepoint] - t_expected_value) > (self.testAbsTol + self.testRelTol*t_expected_value):
 							result = False
 							timeError = True
 							# print "TIME !!!!!!!!!!!!!!!!!!"
