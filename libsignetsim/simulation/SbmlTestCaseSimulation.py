@@ -250,7 +250,7 @@ class SbmlTestCaseSimulation(TimeseriesSimulation):
 
 	#            |C_ij - U_ij| <= (T_a + T_r * |C_ij|)
 
-						if abs(t_value-t_expected_value) > (self.testAbsTol + self.testRelTol**abs(t_expected_value)):
+						if abs(t_value-t_expected_value) > (self.testAbsTol + self.testRelTol*abs(t_expected_value)):
 							result = False
 							showAlert = True
 							print "%.10g, %.10g (%10g, abs)" % (t_value, t_expected_value, abs(t_value-t_expected_value))
