@@ -33,7 +33,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 	TODO_CASES = []#range(1100, 1300)
 
-	INCOMPATIBLE_CASES = [1217]
+	INCOMPATIBLE_CASES = [962, 1217]
 	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'UncommonMathML', 'VolumeConcentrationRates', 'FastReaction']
 	INCOMPATIBLE_PACKAGES = ['fbc']
 
