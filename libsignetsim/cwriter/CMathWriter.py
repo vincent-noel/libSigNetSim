@@ -95,7 +95,7 @@ class CMathWriter(object):
 			return "t"
 
 		elif variable == "_avogadro_":
-			return "rt_na"
+			return "RT_NA"
 
 		t_var = None
 
@@ -185,19 +185,19 @@ class CMathWriter(object):
 			return "RCONST(0.0)"
 
 		elif tree == SympyPi:
-			return "rt_pi"
+			return "RT_PI"
 
 		elif tree.func == SympyE or tree.func == SympyExp1:
-			return "rt_e"
+			return "RT_E"
 
 		elif tree == SympyInf:
-			return "rt_inf"
+			return "RT_INF"
 
 		elif tree == -SympyInf:
-			return "-rt_inf"
+			return "-RT_INF"
 
 		elif tree == SympyNan:
-			return "rt_nan"
+			return "RT_NAN"
 
 		elif tree == SympyTrue or tree == True:
 			return "1"

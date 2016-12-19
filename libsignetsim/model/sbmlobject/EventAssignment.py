@@ -24,17 +24,16 @@
 
 
 from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.math.MathEventAssignment import MathEventAssignment
-from libsignetsim.model.math.MathEventTrigger import MathEventTrigger
 from libsignetsim.model.math.MathSymbol import MathSymbol
 from libsignetsim.model.sbmlobject.HasId import HasId
 from libsignetsim.model.sbmlobject.SbmlObject import SbmlObject
 
 from libsignetsim.settings.Settings import Settings
-from sympy import Symbol
+from libsignetsim.model.math.sympy_shortcuts import (
+	SympySymbol, SympyInteger, SympyMul, SympyPow)
 
 
-class EventAssignment(MathEventAssignment, SbmlObject):
+class EventAssignment(SbmlObject):
 	""" Class definition for event assignments """
 
 	def __init__(self, model, obj_id, event=None):
@@ -42,9 +41,11 @@ class EventAssignment(MathEventAssignment, SbmlObject):
 		self.__model = model
 		self.objId = obj_id
 		SbmlObject.__init__(self, model)
-		MathEventAssignment.__init__(self, model)
+		# MathEventAssignment.__init__(self, model)
 		self.event = event
 		self.__var = None
+		self.variable = MathSymbol(model)
+		self.definition = MathFormula(model, MathFormula.MATH_EVENTASSIGNMENT)
 
 
 	def readSbml(self, sbml_event_assignment, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
@@ -53,23 +54,45 @@ class EventAssignment(MathEventAssignment, SbmlObject):
 		SbmlObject.readSbml(self, sbml_event_assignment, sbml_level, sbml_version)
 		self.__var = self.__model.listOfVariables[sbml_event_assignment.getVariable()]
 		self.__var.addEventAssignmentBy(self.event)
-		MathEventAssignment.readSbml(self, sbml_event_assignment, sbml_level, sbml_version)
+
+		self.variable.readSbml(sbml_event_assignment.getVariable())
+		self.definition.readSbml(sbml_event_assignment.getMath())
+
+		if self.getVariable().isConcentration():
+			t_comp = self.getVariable().getCompartment()
+			self.definition.setInternalMathFormula(
+					SympyMul(self.definition.getInternalMathFormula(),
+								t_comp.symbol.getInternalMathFormula()))
 
 	def writeSbml(self, sbml_event, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Writes event assignemnt to a sbml file """
 
 		sbml_event_assignment = sbml_event.createEventAssignment()
 		SbmlObject.writeSbml(self, sbml_event_assignment, sbml_level, sbml_version)
-		MathEventAssignment.writeSbml(self, sbml_event_assignment, sbml_level, sbml_version)
+
+		t_definition = MathFormula(self.__model, MathFormula.MATH_EVENTASSIGNMENT)
+		t_definition.setInternalMathFormula(self.definition.getInternalMathFormula())
+		t_variable = self.variable.getSbmlMathFormula(sbml_level, sbml_version).getName()
+
+		if self.getVariable().isConcentration():
+			t_comp = self.getVariable().getCompartment()
+			t_definition.setInternalMathFormula(
+				SympyMul(t_definition.getInternalMathFormula(),
+							SympyPow(t_comp.symbol.getInternalMathFormula(),
+								SympyInteger(-1))))
+
+
+		sbml_event_assignment.setVariable(t_variable)
+		sbml_event_assignment.setMath(t_definition.getSbmlMathFormula())
 
 
 	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):
 		SbmlObject.copy(self, obj, prefix, shift)
 
-		t_symbol = Symbol(obj.getVariable().getSbmlId())
+		t_symbol = SympySymbol(obj.getVariable().getSbmlId())
 		if t_symbol in subs.keys():
 			t_sbml_id = str(subs[t_symbol])
-			tt_symbol = Symbol(t_sbml_id)
+			tt_symbol = SympySymbol(t_sbml_id)
 			if tt_symbol in replacements.keys():
 				t_sbml_id = str(replacements[tt_symbol])
 		else:
@@ -77,7 +100,20 @@ class EventAssignment(MathEventAssignment, SbmlObject):
 
 		self.__var = self.__model.listOfVariables[t_sbml_id]
 		self.__var.addEventAssignmentBy(self.event)
-		MathEventAssignment.copy(self, obj, prefix, shift, subs, deletions, replacements, conversions, time_conversion)
+
+		t_convs = {}
+		for var, conversion in conversions.items():
+			t_convs.update({var:var/conversion})
+
+		t_definition = obj.definition.getInternalMathFormula().subs(subs).subs(replacements).subs(t_convs)
+
+		t_var_symbol = obj.variable.getInternalMathFormula().subs(subs).subs(replacements)
+		if t_var_symbol in conversions:
+			t_definition *= conversions[t_var_symbol]
+
+		self.variable.setInternalMathFormula(t_var_symbol)
+		self.definition.setInternalMathFormula(t_definition)
+
 
 	def getVariable(self):
 		return self.__var
@@ -106,3 +142,14 @@ class EventAssignment(MathEventAssignment, SbmlObject):
 	def setAssignment(self, value):
 
 		self.definition.setPrettyPrintMathFormula(str(value))
+
+
+
+	def renameSbmlId(self, old_sbml_id, new_sbml_id):
+		old_symbol = SympySymbol(old_sbml_id)
+
+		if self.variable.getInternalMathFormula() == old_symbol:
+			self.variable.setInternalMathFormula(SympySymbol(new_sbml_id))
+
+		if old_symbol in self.definition.getInternalMathFormula().atoms():
+			self.definition.setInternalMathFormula(self.definition.getInternalMathFormula.subs(old_symbol, SympySymbol(new_sbml_id)))

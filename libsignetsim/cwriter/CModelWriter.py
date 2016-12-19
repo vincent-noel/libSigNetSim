@@ -171,7 +171,8 @@ class CModelWriter(object):
 		f_c.write("  %s.integration_options->max_num_steps = %g;\n" % (variable_name, Settings.defaultCVODEmaxNumSteps))
 		f_c.write("  %s.integration_options->max_conv_fails = %g;\n" % (variable_name, Settings.defaultCVODEMaxConvFails))
 		f_c.write("  %s.integration_options->max_err_test_fails = %g;\n" % (variable_name, Settings.defaultCVODEMaxErrFails))
-		f_c.write("  rt_set_precision(RCONST(1e-16));\n")
+		# f_c.write("  rt_set_precision(RCONST(1e-16));\n")
+		f_c.write("  rt_set_precision(RCONST(%g));\n" % abs_tol)
 		f_c.write("}\n\n")
 
 	def writeSimulationFinalization(self, f_h, f_c, model_id):

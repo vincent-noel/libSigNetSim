@@ -312,7 +312,7 @@ class SbmlMathReader(object):
 					return t_tree
 
 			elif tree.getType() == libsbml.AST_DIVIDE:
-				if tree.getChild(0).isNumber() and tree.getChild(1).isNumber():
+				if tree.getChild(0).isInteger() and tree.getChild(1).isInteger():
 
 					t_tree = SympyRational(
 						SympyInteger(self.translateForInternal(tree.getChild(0), simplified, develop)),

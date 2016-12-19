@@ -27,7 +27,8 @@ from libsignetsim.model.SbmlDocument import SbmlDocument
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.MathFormula import MathFormula
 
-from os.path import join, expanduser
+from os.path import join, expanduser, exists
+from os import mkdir
 
 class SbmlTestCaseSimulation(TimeseriesSimulation):
 
@@ -201,7 +202,7 @@ class SbmlTestCaseSimulation(TimeseriesSimulation):
 			(traj_times, trajs) = self.rawData[0]
 
 			showAlert = False
-
+			timeError = False
 			for i_timepoint, timepoint in enumerate(timepoints):
 
 				for i_var, var in enumerate(variables):
@@ -257,13 +258,15 @@ class SbmlTestCaseSimulation(TimeseriesSimulation):
 					elif var == 'time':
 						if traj_times[i_timepoint] != t_expected_value:
 							result = False
-
-							print "TIME !!!!!!!!!!!!!!!!!!"
+							timeError = True
+							# print "TIME !!!!!!!!!!!!!!!!!!"
 					else:
 						print "cannot find variable %s" % var
 
 			if showAlert:
 				print "precision error"
+			if timeError:
+				print "time error"
 				# print variables
 				# print trajs.keys()
 				# print self.listOfModels[0].listOfVariables.keys()
@@ -290,6 +293,10 @@ class SbmlTestCaseSimulation(TimeseriesSimulation):
 	def writeSbmlTestOutput(self):
 
 		if self.rawData is not None:
+
+			if not exists(Settings.sbmlTestResultsPath):
+				mkdir(Settings.sbmlTestResultsPath)
+
 			results_file = open(self.getResultsFilename(), 'w')
 			(traj_times, trajs) = self.rawData[0]
 

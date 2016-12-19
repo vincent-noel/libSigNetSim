@@ -34,6 +34,12 @@
 #include <sundials/sundials_types.h> /* definition of type realtype */
 #include <math.h>
 
+#define RT_PI RCONST(M_PI)
+#define RT_E RCONST(M_E)
+#define RT_NA RCONST(6.02214179E+23)
+#define RT_NAN RCONST(NAN)
+#define RT_INF RCONST(INFINITY)
+
 void rt_set_precision(realtype prec);
 
 int rt_eq(realtype x, realtype y);
@@ -76,8 +82,8 @@ realtype rt_asech(realtype x);
 realtype rt_acsc(realtype x);
 realtype rt_acsch(realtype x);
 
-realtype rt_pi;
-realtype rt_e;
-realtype rt_na;
-realtype rt_nan;
-realtype rt_inf;
+// realtype RT_PI = RCONST(M_PI);
+// realtype RT_E = RCONST(M_E);
+// realtype RT_NA = RCONST(6.02214179E+23);
+// realtype RT_NAN = RCONST(NAN);
+// realtype RT_INF = RCONST(INFINITY);

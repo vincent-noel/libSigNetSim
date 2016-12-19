@@ -32,10 +32,13 @@ from libsignetsim.settings.Settings import Settings
 class TestSbmlCompatibility(unittest.TestCase):
 	""" Tests high level functions """
 
-	INCOMPATIBLE_CASES = [917, 918, 919, 936, 950, 951, 952, 953, 954, 955, 956, 957, 958, 959, 960, 961, 962, 963, 964, 965, 967, 1000, 1121, 1122, 1123, 1214, 1215, 1217, 1160, 1169]
-	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'UncommonMathML', 'VolumeConcentrationRates', 'FastReaction', 'AlgebraicRule']
+	TODO_CASES = []
+
+	INCOMPATIBLE_CASES = [1214, 1215, 1217]
+	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'UncommonMathML', 'VolumeConcentrationRates', 'FastReaction']
 	INCOMPATIBLE_PACKAGES = ['fbc']
 
+	SEMANTIC_CASES_LINK = "http://downloads.sourceforge.net/project/sbml/test-suite/3.2.0/case-archives/sbml-semantic-test-cases-2016-07-27.zip"
 
 	def __init__(self, *args, **kwargs):
 
@@ -48,19 +51,22 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 	def testSbmlCompatibility(self):
 
-		# if not os.path.exists(self.testSuitePath):
-		present_dir = os.getcwd()
-		cmd = "cd %s; wget http://downloads.sourceforge.net/project/sbml/test-suite/3.1.1/cases-archive/sbml-test-cases-2014-10-22.zip -O temp.zip; unzip -nq temp.zip; rm temp.zip; cd %s" % (Settings.tempDirectory, present_dir)
-		os.system(cmd)
 		self.testSuitePath = Settings.tempDirectory
 		Settings.sbmlTestCasesPath = "/tmp/"
+
+		if not os.path.exists(os.path.join(self.testSuitePath, "cases")):
+
+			present_dir = os.getcwd()
+			cmd = "cd %s; wget %s -O temp.zip; unzip -nq temp.zip; rm temp.zip; cd %s" % (Settings.tempDirectory, self.SEMANTIC_CASES_LINK, present_dir)
+			os.system(cmd)
 
 		self.loadTestCasesInfo()
 		self.assertEqual(self.runTestCases(), True)
 
-		os.system("rm -r /tmp/cases/; rm -r /tmp/test-suite-results")
+		# os.system("rm -r /tmp/cases/; rm -r /tmp/test-suite-results")
 
 	def loadTestCasesInfo(self, path=None):
+		""" Loads cases info from the .cases-tags-map """
 
 		self.testCasesPath = os.path.join(
 								os.path.join(self.testSuitePath, "cases")
@@ -97,6 +103,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 					self.testCasesVersions.update({case_id: versions})
 			cases_tags_map.close()
 
+
 	def runTestCases(self):
 
 		nb_success = 0
@@ -112,7 +119,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 					and tag.strip().split(':')[0] in self.INCOMPATIBLE_PACKAGES):
 					compatible = False
 
-			if compatible and case_id not in self.INCOMPATIBLE_CASES:# in [390]:#[663, 664, 762, 569, 570, 575]:
+			if compatible and case_id not in self.INCOMPATIBLE_CASES and (self.TODO_CASES == [] or case_id in self.TODO_CASES):# in [390]:#[663, 664, 762, 569, 570, 575]:
 				(t_success, t_cases) = self.runCase(case_id)
 				nb_success += t_success
 				nb_cases += t_cases
