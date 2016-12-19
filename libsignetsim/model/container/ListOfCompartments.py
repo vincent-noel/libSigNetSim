@@ -25,8 +25,8 @@
 
 from libsignetsim.model.container.ListOf import ListOf
 from libsignetsim.model.container.HasIds import HasIds
-from libsignetsim.model.sbmlobject.SbmlObject import SbmlObject
-from libsignetsim.model.sbmlobject.Compartment import Compartment
+from libsignetsim.model.sbml.SbmlObject import SbmlObject
+from libsignetsim.model.sbml.Compartment import Compartment
 from libsignetsim.model.ModelException import ModelException
 from libsignetsim.settings.Settings import Settings
 

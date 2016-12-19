@@ -24,12 +24,12 @@
 
 
 from libsignetsim.model.container.ListOf import ListOf
-from libsignetsim.model.sbmlobject.SbmlObject import SbmlObject
+from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
-from libsignetsim.model.sbmlobject.Rule import Rule
-from libsignetsim.model.sbmlobject.AssignmentRule import AssignmentRule
-from libsignetsim.model.sbmlobject.RateRule import RateRule
-from libsignetsim.model.sbmlobject.AlgebraicRule import AlgebraicRule
+from libsignetsim.model.sbml.Rule import Rule
+from libsignetsim.model.sbml.AssignmentRule import AssignmentRule
+from libsignetsim.model.sbml.RateRule import RateRule
+from libsignetsim.model.sbml.AlgebraicRule import AlgebraicRule
 from libsignetsim.settings.Settings import Settings
 from libsbml import RULE_TYPE_SCALAR, RULE_TYPE_RATE
 

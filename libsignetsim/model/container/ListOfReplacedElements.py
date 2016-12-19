@@ -24,9 +24,9 @@
 
 
 from libsignetsim.model.container.ListOf import ListOf
-from libsignetsim.model.sbmlobject.SimpleSbmlObject import SimpleSbmlObject
+from libsignetsim.model.sbml.SimpleSbmlObject import SimpleSbmlObject
 
-from libsignetsim.model.sbmlobject.SbmlReplacedElement import SbmlReplacedElement
+from libsignetsim.model.sbml.SbmlReplacedElement import SbmlReplacedElement
 from libsignetsim.settings.Settings import Settings
 
 class ListOfReplacedElements(ListOf):#, SimpleSbmlObject):

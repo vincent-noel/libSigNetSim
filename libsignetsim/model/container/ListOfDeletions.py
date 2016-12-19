@@ -25,9 +25,9 @@
 
 from libsignetsim.model.container.ListOf import ListOf
 from libsignetsim.model.container.HasIds import HasIds
-from libsignetsim.model.sbmlobject.SbmlObject import SbmlObject
+from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
-from libsignetsim.model.sbmlobject.SbmlDeletion import SbmlDeletion
+from libsignetsim.model.sbml.SbmlDeletion import SbmlDeletion
 from libsignetsim.settings.Settings import Settings
 
 class ListOfDeletions(ListOf, HasIds):#, SbmlObject):

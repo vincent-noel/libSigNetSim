@@ -28,8 +28,8 @@ from libsignetsim.model.Variable import Variable
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.container.ListOfReplacedElements import ListOfReplacedElements
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger
-from libsignetsim.model.sbmlobject.SbmlObject import SbmlObject
-from libsignetsim.model.sbmlobject.SpeciesReference import SpeciesReference
+from libsignetsim.model.sbml.SbmlObject import SbmlObject
+from libsignetsim.model.sbml.SpeciesReference import SpeciesReference
 
 class ModelInstance(Model):
 	""" Sbml model class """

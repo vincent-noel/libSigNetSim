@@ -24,7 +24,7 @@
 
 
 from libsignetsim.model.math.MathVariable import MathVariable
-from libsignetsim.model.sbmlobject.SbmlVariable import SbmlVariable
+from libsignetsim.model.sbml.SbmlVariable import SbmlVariable
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.ModelException import ModelException
 

@@ -447,8 +447,6 @@ class SbmlMathReader(object):
 				i_cond = 0
 				t_pieces = []
 
-
-
 				while i_arg < tree.getNumChildren():
 
 					if (i_arg+1) < tree.getNumChildren():
@@ -456,18 +454,12 @@ class SbmlMathReader(object):
 						t_value = self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop)
 						t_condition = self.translateForInternal(tree.getChild(i_arg+1), sbml_level, sbml_version, simplified, develop)
 						t_pieces.append((t_value, t_condition))
-						# print t_value
-						# print t_condition
 						i_arg += 2
 					else:
 						# print "and there we have the else"
 						t_value = self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop)
 						t_pieces.append((t_value, True))
 						i_arg += 1
-
-				# print "\n> Result :"
-				# print t_pieces
-				# print *(t_pieces)
 
 				return SympyPiecewise(*t_pieces, evaluate=False)
 
@@ -534,29 +526,106 @@ class SbmlMathReader(object):
 		elif tree.isRelational():
 
 			if tree.getType() == libsbml.AST_RELATIONAL_EQ:
-				return SympyEqual(
+				t_res = SympyEqual(
 						self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
 						self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False)
 
+				if tree.getNumChildren() > 2:
+					# Here the idea is to make a chain, like a==b && b==c && c==d, which should be equal to a==b==c==d
+					t_final_res = [t_res]
+					for child in range(2, tree.getNumChildren()):
+						t_final_res.append(SympyEqual(
+								self.translateForInternal(tree.getChild(child-1), sbml_level, sbml_version, simplified, develop),
+								self.translateForInternal(tree.getChild(child), sbml_level, sbml_version, simplified, develop), evaluate=False))
+					return SympyAnd(*t_final_res, evaluate=False)
+				else:
+					return t_res
+
+
 			elif tree.getType() == libsbml.AST_RELATIONAL_NEQ:
-				return SympyUnequal(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
-									self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False)
+				t_res = SympyUnequal(
+						self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
+						self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False)
+
+				if tree.getNumChildren() > 2:
+					# Here the idea is to make a chain, like a!=b && b!=c && c!=d, which should be equal to a!=b!=c!=d
+					t_final_res = [t_res]
+					for child in range(2, tree.getNumChildren()):
+						t_final_res.append(SympyUnequal(
+								self.translateForInternal(tree.getChild(child-1), sbml_level, sbml_version, simplified, develop),
+								self.translateForInternal(tree.getChild(child), sbml_level, sbml_version, simplified, develop), evaluate=False))
+					return SympyAnd(*t_final_res, evaluate=False)
+				else:
+					return t_res
+
 
 			elif tree.getType() == libsbml.AST_RELATIONAL_GT:
-				return SympyStrictGreaterThan(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
-												self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False)
+				t_res = SympyStrictGreaterThan(
+						self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
+						self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False)
+
+				if tree.getNumChildren() > 2:
+					# Here the idea is to make a chain, like a>b && b>c, which should be equal to a>b>c
+					t_final_res = [t_res]
+					for child in range(2, tree.getNumChildren()):
+						t_final_res.append(SympyStrictGreaterThan(
+								self.translateForInternal(tree.getChild(child-1), sbml_level, sbml_version, simplified, develop),
+								self.translateForInternal(tree.getChild(child), sbml_level, sbml_version, simplified, develop), evaluate=False))
+					return SympyAnd(*t_final_res, evaluate=False)
+				else:
+					return t_res
+
 
 			elif tree.getType() == libsbml.AST_RELATIONAL_LT:
-				return SympyStrictLessThan(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
-											self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False)
+				t_res = SympyStrictLessThan(
+						self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
+						self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False)
+
+				if tree.getNumChildren() > 2:
+					# Here the idea is to make a chain, like a<b && b<c, which should be equal to a<b<c
+					t_final_res = [t_res]
+					for child in range(2, tree.getNumChildren()):
+						t_final_res.append(SympyStrictLessThan(
+								self.translateForInternal(tree.getChild(child-1), sbml_level, sbml_version, simplified, develop),
+								self.translateForInternal(tree.getChild(child), sbml_level, sbml_version, simplified, develop), evaluate=False))
+					return SympyAnd(*t_final_res, evaluate=False)
+				else:
+					return t_res
+
 
 			elif tree.getType() == libsbml.AST_RELATIONAL_GEQ:
-				return SympyGreaterThan(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
-										self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False)
+				t_res = SympyGreaterThan(
+						self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
+						self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False)
+
+				if tree.getNumChildren() > 2:
+					# Here the idea is to make a chain, like a>=b && b>=c, which should be equal to a>=b>=c
+					t_final_res = [t_res]
+					for child in range(2, tree.getNumChildren()):
+						t_final_res.append(SympyGreaterThan(
+								self.translateForInternal(tree.getChild(child-1), sbml_level, sbml_version, simplified, develop),
+								self.translateForInternal(tree.getChild(child), sbml_level, sbml_version, simplified, develop), evaluate=False))
+					return SympyAnd(*t_final_res, evaluate=False)
+				else:
+					return t_res
+
 
 			elif tree.getType() == libsbml.AST_RELATIONAL_LEQ:
-				return SympyLessThan(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
-										self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False)
+				t_res = SympyLessThan(
+						self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
+						self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False)
+
+				if tree.getNumChildren() > 2:
+					# Here the idea is to make a chain, like a<=b && b<=c, which should be equal to a<=b<=c
+					t_final_res = [t_res]
+					for child in range(2, tree.getNumChildren()):
+						t_final_res.append(SympyLessThan(
+								self.translateForInternal(tree.getChild(child-1), sbml_level, sbml_version, simplified, develop),
+								self.translateForInternal(tree.getChild(child), sbml_level, sbml_version, simplified, develop), evaluate=False))
+					return SympyAnd(*t_final_res, evaluate=False)
+				else:
+					return t_res
+
 
 			else:
 				raise ModelException(ModelException.SBML_ERROR, "Unknown relational operator")
@@ -601,7 +670,6 @@ class SbmlMathReader(object):
 			return SympySymbol("_time_")
 
 		elif tree.getType() == libsbml.AST_NAME_AVOGADRO or tree.getType() == libsbml.AST_TYPECODE_CSYMBOL_AVOGADRO:
-			print "Avogadro detected 2"
 			return SympySymbol("_avogadro_")
 
 		else:

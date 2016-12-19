@@ -25,7 +25,7 @@
 
 from re import sub
 
-from libsignetsim.model.sbmlobject.SbmlVariable import SbmlVariable
+from libsignetsim.model.sbml.SbmlVariable import SbmlVariable
 
 class ListOfSbmlVariables(object):
 	""" Parent class for all the ListOf_ containers in a sbml model """

@@ -25,9 +25,9 @@
 
 from libsignetsim.model.container.ListOf import ListOf
 from libsignetsim.model.container.HasIds import HasIds
-from libsignetsim.model.sbmlobject.SbmlObject import SbmlObject
+from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
-from libsignetsim.model.sbmlobject.UnitDefinition import UnitDefinition
+from libsignetsim.model.sbml.UnitDefinition import UnitDefinition
 from libsignetsim.settings.Settings import Settings
 from copy import deepcopy
 

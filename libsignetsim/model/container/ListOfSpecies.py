@@ -25,9 +25,9 @@
 
 from libsignetsim.model.container.ListOf import ListOf
 from libsignetsim.model.container.HasIds import HasIds
-from libsignetsim.model.sbmlobject.SbmlObject import SbmlObject
+from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
-from libsignetsim.model.sbmlobject.Species import Species
+from libsignetsim.model.sbml.Species import Species
 from libsignetsim.model.ModelException import ModelException
 from libsignetsim.settings.Settings import Settings
 

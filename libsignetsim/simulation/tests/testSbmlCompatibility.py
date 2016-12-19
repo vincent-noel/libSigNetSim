@@ -33,9 +33,11 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 	TODO_CASES = []#range(1100, 1300)
 
-	INCOMPATIBLE_CASES = [1214, 1215, 1217]
+	INCOMPATIBLE_CASES = [1217]
 	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'UncommonMathML', 'VolumeConcentrationRates', 'FastReaction']
 	INCOMPATIBLE_PACKAGES = ['fbc']
+
+	STOCHASTIC_CASES = [962, 964, 965, 966]
 
 	SEMANTIC_CASES_LINK = "http://downloads.sourceforge.net/project/sbml/test-suite/3.2.0/case-archives/sbml-semantic-test-cases-2016-07-27.zip"
 
@@ -126,7 +128,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 	def runCase(self, case):
 
-		keep_files = True
+		keep_files = False
 
 		nb_cases = 0
 		nb_success = 0
@@ -158,7 +160,17 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 
 					else:
-						print ">> l%dv%d : ERROR (%.2gs)" % (level, version, time.time()-start)
+						if case in self.STOCHASTIC_CASES:
+							# Those have one more try if they fail. Twice in a row would be really unlucky
+							test = SbmlTestCaseSimulation(case, str(level), str(version), keep_files=keep_files)
+							res_exec = test.run()
+
+							if res_exec:
+								nb_success += 1
+							else:
+								print ">> l%dv%d : ERROR (%.2gs)" % (level, version, time.time()-start)
+						else:
+							print ">> l%dv%d : ERROR (%.2gs)" % (level, version, time.time()-start)
 				except:
 					print ">> case %d, %dv%d : ERROR" % (int(case), level, version)
 

@@ -26,9 +26,9 @@
 
 from libsignetsim.model.container.ListOf import ListOf
 from libsignetsim.model.container.HasIds import HasIds
-from libsignetsim.model.sbmlobject.SbmlObject import SbmlObject
+from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
-from libsignetsim.model.sbmlobject.Reaction import Reaction
+from libsignetsim.model.sbml.Reaction import Reaction
 from libsignetsim.settings.Settings import Settings
 
 class ListOfReactions(ListOf, HasIds, SbmlObject):

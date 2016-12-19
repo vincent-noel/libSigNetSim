@@ -25,9 +25,9 @@
 
 from libsignetsim.model.container.ListOf import ListOf
 from libsignetsim.model.container.HasIds import HasIds
-from libsignetsim.model.sbmlobject.SbmlObject import SbmlObject
+from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
-from libsignetsim.model.sbmlobject.SbmlModelDefinition import SbmlModelDefinition
+from libsignetsim.model.sbml.SbmlModelDefinition import SbmlModelDefinition
 from libsignetsim.settings.Settings import Settings
 
 class ListOfModelDefinitions(ListOf, HasIds):#, SbmlObject):

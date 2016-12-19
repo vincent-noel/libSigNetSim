@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-""" ListOfConstraints.py
+""" SbmlModelDefinition.py
 
 
-	This file ...
 
 
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
@@ -22,45 +21,38 @@
 
 """
 
-
-from libsignetsim.model.container.ListOf import ListOf
-from libsignetsim.model.container.HasIds import HasIds
+from libsignetsim.model.sbml.HasId import HasId
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
-from libsignetsim.model.sbml.Constraint import Constraint
+from libsignetsim.model.Model import Model
 from libsignetsim.settings.Settings import Settings
 
+class SbmlModelDefinition(HasId, SbmlObject):
 
-class ListOfConstraints(ListOf, HasIds, SbmlObject):
-	""" Class for the listOfConstraints in a sbml model """
-
-	def __init__ (self, model=None):
+	def __init__(self, model, obj_id):
 
 		self.__model = model
-		ListOf.__init__(self, model)
-		HasIds.__init__(self, model)
+		self.objId = obj_id
+
+		HasId.__init__(self, model)
 		SbmlObject.__init__(self, model)
 
+		self.modelDefinition = Model(obj_id=self.objId, parent_doc=self.__model.parentDoc)
 
-	def readSbml(self, sbml_list_of_constraints,
+
+	def readSbml(self, sbml_model_definition,
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
-		""" Reads a constraints' list from a sbml file """
 
-		for constraint in sbml_list_of_constraints:
-			t_constraint = Constraint(self.__model, self.nextId())
-			t_constraint.readSbml(constraint, sbml_level, sbml_version)
-			ListOf.add(self, t_constraint)
-
-		SbmlObject.readSbml(self, sbml_list_of_constraints, sbml_level, sbml_version)
+		HasId.readSbml(self, sbml_model_definition, sbml_level, sbml_version)
+		self.modelDefinition.readSbml(sbml_model_definition, sbml_level, sbml_version)
+		SbmlObject.readSbml(self, sbml_model_definition, sbml_level, sbml_version)
 
 
-	def writeSbml(self, sbml_model,
+	def writeSbml(self, sbml_model_definition,
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
-		""" Writes a constraints' list to a sbml file """
 
-		for constraint in ListOf.values(self):
-			constraint.writeSbml(sbml_model,sbml_level, sbml_version)
-
-		SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
+		HasId.writeSbml(self, sbml_model_definition, sbml_level, sbml_version)
+		self.modelDefinition.writeSbml(sbml_model_definition, sbml_level, sbml_version)
+		SbmlObject.writeSbml(self, sbml_model_definition, sbml_level, sbml_version)

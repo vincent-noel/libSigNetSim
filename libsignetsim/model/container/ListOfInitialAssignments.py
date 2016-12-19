@@ -24,9 +24,9 @@
 
 
 from libsignetsim.model.container.ListOf import ListOf
-from libsignetsim.model.sbmlobject.SbmlObject import SbmlObject
+from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
-from libsignetsim.model.sbmlobject.InitialAssignment import InitialAssignment
+from libsignetsim.model.sbml.InitialAssignment import InitialAssignment
 from libsignetsim.settings.Settings import Settings
 
 

@@ -23,7 +23,7 @@
 """
 
 
-from libsignetsim.model.sbmlobject.SbmlModel import SbmlModel
+from libsignetsim.model.sbml.SbmlModel import SbmlModel
 from libsignetsim.model.math.MathModel import MathModel
 from libsignetsim.model.ListOfVariables import ListOfVariables
 

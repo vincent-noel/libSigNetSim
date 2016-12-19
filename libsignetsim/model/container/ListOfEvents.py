@@ -24,9 +24,9 @@
 
 
 from libsignetsim.model.container.ListOf import ListOf
-from libsignetsim.model.sbmlobject.SbmlObject import SbmlObject
+from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
-from libsignetsim.model.sbmlobject.Event import Event
+from libsignetsim.model.sbml.Event import Event
 from libsignetsim.settings.Settings import Settings
 
 
