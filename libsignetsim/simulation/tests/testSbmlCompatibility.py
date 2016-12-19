@@ -31,7 +31,7 @@ from libsignetsim.settings.Settings import Settings
 class TestSbmlCompatibility(unittest.TestCase):
 	""" Tests SBML semantic test cases """
 
-	TODO_CASES = range(1100, 1300)
+	TODO_CASES = []#range(1100, 1300)
 
 	# These ones seems not to work ONLY for the test unit
 	#INCOMPATIBLE_CASES = [952, 953, 962, 963, 964, 965, 967, 1000, 1121, 1122, 1123]
