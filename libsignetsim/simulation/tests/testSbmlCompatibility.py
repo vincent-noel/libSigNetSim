@@ -33,10 +33,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 	TODO_CASES = []#range(1100, 1300)
 
-	# These ones seems not to work ONLY for the test unit
-	#INCOMPATIBLE_CASES = [952, 953, 962, 963, 964, 965, 967, 1000, 1121, 1122, 1123]
-	# These ones are not compatible with the GUI either
-	INCOMPATIBLE_CASES = [1000, 1121, 1169, 1214, 1215, 1217]
+	INCOMPATIBLE_CASES = [1214, 1215, 1217]
 	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'UncommonMathML', 'VolumeConcentrationRates', 'FastReaction']
 	INCOMPATIBLE_PACKAGES = ['fbc']
 
@@ -64,8 +61,6 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 		self.loadTestCasesInfo()
 		self.assertEqual(self.runTestCases(), True)
-
-		# os.system("rm -r /tmp/cases/; rm -r /tmp/test-suite-results")
 
 	def loadTestCasesInfo(self, path=None):
 		""" Loads cases info from the .cases-tags-map """
