@@ -50,7 +50,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 		# if not os.path.exists(self.testSuitePath):
 		present_dir = os.getcwd()
-		cmd = "cd %s; wget http://downloads.sourceforge.net/project/sbml/test-suite/3.1.1/cases-archive/sbml-test-cases-2014-10-22.zip -O temp.zip; unzip -n temp.zip; rm temp.zip; cd %s" % (Settings.tempDirectory, present_dir)
+		cmd = "cd %s; wget http://downloads.sourceforge.net/project/sbml/test-suite/3.1.1/cases-archive/sbml-test-cases-2014-10-22.zip -O temp.zip; unzip -nq temp.zip; rm temp.zip; cd %s" % (Settings.tempDirectory, present_dir)
 		os.system(cmd)
 		self.testSuitePath = Settings.tempDirectory
 		Settings.sbmlTestCasesPath = "/tmp/"
@@ -58,7 +58,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 		self.loadTestCasesInfo()
 		self.assertEqual(self.runTestCases(), True)
 
-		os.system("rm -r /tmp/cases/; rm -r test-suite-results")
+		os.system("rm -r /tmp/cases/; rm -r /tmp/test-suite-results")
 
 	def loadTestCasesInfo(self, path=None):
 
