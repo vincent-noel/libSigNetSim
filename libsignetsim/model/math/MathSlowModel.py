@@ -22,137 +22,20 @@
 
 """
 
-
-from libsignetsim.cwriter.CModelWriter import CModelWriter
+from libsignetsim.model.math.MathModel import MathModel
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.MathFormula import MathFormula
-# from libsignetsim.model.math.MathEquation import MathEquation
-from libsignetsim.model.math.MathODEs import MathODEs
-from libsignetsim.model.math.sympy_shortcuts import  (
-	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
-	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
-	SympyInf, SympyNan, SympyAdd, SympyMul, SympyPow,
-	SympyFunction, SympyUndefinedFunction, SympyLambda, SympyDerivative,
-	SympyCeiling, SympyFloor, SympyAbs, SympyLog, SympyExp, SympyPiecewise,
-	SympyFactorial, SympyRoot, SympyAcos, SympyAsin, SympyAtan, SympyAcosh,
-	SympyAsinh, SympyAtanh, SympyCos, SympySin, SympyTan, SympyAcot,
-	SympyAcoth, SympyCosh, SympySinh, SympyTanh, SympySec, SympyCsc,
-	SympyCot, SympyCoth, SympyAcsc, SympyAsec,
-	SympyEqual, SympyUnequal, SympyGreaterThan, SympyLessThan,
-	SympyStrictGreaterThan, SympyStrictLessThan,
-	SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
-	SympyMax, SympyMin)
-from libsignetsim.model.math.MathCFEs import MathCFEs
-from libsignetsim.model.math.MathDAEs import MathDAEs
 
-from libsignetsim.model.math.MathVariable import MathVariable
-from libsignetsim.model.math.MathConservationLaws import MathConservationLaws
-from libsignetsim.model.math.MathJacobianMatrix import MathJacobianMatrix
-from libsignetsim.model.math.MathStoichiometryMatrix import MathStoichiometryMatrix
-from libsignetsim.model.ListOfVariables import ListOfVariables
-from libsignetsim.model.Variable import Variable
-from sympy import simplify, diff, solve, zeros
-from time import time
 
-class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
-					MathConservationLaws, MathJacobianMatrix,
-					MathStoichiometryMatrix):
+class MathSlowModel(MathModel):
 	""" Sbml model class """
 
-	def __init__ (self, obj_id=0):
+	def __init__ (self, parent_model=None):
 		""" Constructor of model class """
 
-		CModelWriter.__init__(self, obj_id)
-		MathODEs.__init__(self)
-		MathCFEs.__init__(self)
-		MathDAEs.__init__(self)
-		MathConservationLaws.__init__(self)
-		MathJacobianMatrix.__init__(self)
-		MathStoichiometryMatrix.__init__(self)
+		MathModel.__init__(self)
+		self.parentModel = parent_model
 
-		self.listOfFinalVariables = ListOfVariables(self)
-
-		self.nbOdes = None
-		self.nbAssignments = None
-		self.nbConstants = None
-		self.nbAlgebraics = None
-
-		self.variablesOdes = None
-		self.variablesAssignment = None
-		self.variablesConstant = None
-		self.variablesAlgebraic = None
-		self.__upToDate = False
-
-		self.stoichiometryMatrix = None
-
-
-	def isUpToDate(self):
-		return self.__upToDate
-
-	def setUpToDate(self, value):
-		self.__upToDate = value
-
-	def buildModel(self, vars_to_keep=[], dont_reduce=False):
-
-		t0 = time()
-		self.buildCFE()
-		self.buildODEs()
-		if self.listOfRules.hasAlgebraicRule():
-
-			self.hasDAEs = True
-			self.buildDAEs()
-			self.checkInitialValues()
-			# print "Initial values checked"
-
-
-
-		# print self.listOfSpecies.hasBoundaryConditions()
-		# print dont_reduce
-
-		if self.listOfReactions.hasFastReaction():
-			self.buildSlowSubstem()
-
-		elif (len(self.listOfEvents) == 0 and len(self.listOfReactions) > 0
-			and not self.listOfSpecies.hasBoundaryConditions()
-			and not dont_reduce):
-
-			t1 = time()
-
-			self.buildStoichiometryMatrix()
-
-			t1a = time()
-			if Settings.verbose:
-				print "> Stoichiometry matrix built (%.2gs)" % (t1a-t1)
-
-			self.findConservationLaws()
-
-			t2 = time()
-			if Settings.verbose:
-				print "> Conservation laws found (%.2gs)" % (t2-t1a)
-
-
-			# print vars_to_keep
-			self.buildReducedSystem(vars_to_keep=vars_to_keep)
-			self.developODEs()
-			if Settings.verbose:
-				print "> Model reduced (%.2gs)" % (time()-t2)
-
-#        self.buildJacobianMatrix()
-		# self.printSystem()
-		t1 = time()
-		if Settings.verbose:
-			print "> Model built (%.2gs)" % (t1-t0)
-
-	def printSystem(self):
-
-		print "\n> Full system : "
-
-		self.printCFEs()
-		self.printODEs()
-		self.printDAEs()
-		self.printConservationLaws()
-
-		print "-----------------------------"
 
 	def buildSlowSubstem(self):
 
@@ -162,7 +45,7 @@ class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
 		self.fastConservationLaws = []
 
 
-		for reaction in self.listOfReactions.values():
+		for reaction in self.parentModel.listOfReactions.values():
 			if reaction.fast:
 				self.fastLaws.append(reaction.kineticLaw.getFinalMathFormula())
 
@@ -197,7 +80,7 @@ class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
 
 				for ii, tt_res in enumerate(t_res):
 
-					t_species = self.listOfSpecies.values()[ii]
+					t_species = self.parentModel.listOfSpecies.values()[ii]
 
 					# Getting symbol
 					tt_symbol = t_species.symbol.getFinalMathFormula()
@@ -209,7 +92,7 @@ class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
 					if t_species.hasInitialAssignment():
 						tt_value = t_species.hasInitialAssignmentBy().getExpressionMath().getFinalMathFormula()
 
-						for tt_species in self.listOfSpecies.values():
+						for tt_species in self.parentModel.listOfSpecies.values():
 							ttt_symbol = tt_species.symbol.getFinalMathFormula()
 							ttt_value = tt_species.value.getFinalMathFormula()
 							if ttt_symbol in tt_value.atoms(SympySymbol) and ttt_value is not None:
@@ -257,18 +140,18 @@ class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
 			# print "Fast variables : %s" % str(variables_fast_only)
 
 			for fast_law in self.fastLaws:
-				t_dae = MathFormula(self)
+				t_dae = MathFormula(self.parentModel)
 				t_dae.setFinalMathFormula(fast_law)
 				self.DAEs.append(t_dae)
 
 			for dae_var in variables_fast_only:
-				t_dae_var = MathFormula(self, MathFormula.MATH_VARIABLE)
+				t_dae_var = MathFormula(self.parentModel, MathFormula.MATH_VARIABLE)
 				t_dae_var.setFinalMathFormula(dae_var)
 				self.DAE_vars.append(t_dae_var)
 				self.DAE_symbols.append(t_dae_var)
 
-				t_var = self.listOfVariables[str(t_dae_var.getInternalMathFormula())]
-				self.listOfVariables.changeVariableType(t_var, MathVariable.VAR_DAE)
+				t_var = self.parentModel.listOfVariables[str(t_dae_var.getInternalMathFormula())]
+				self.parentModel.listOfVariables.changeVariableType(t_var, MathVariable.VAR_DAE)
 
 			self.DAE_vars = list(set(self.DAE_vars))
 			self.DAE_symbols = list(set(self.DAE_symbols))
@@ -283,7 +166,7 @@ class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
 
 			containsBoundaryConditions = False
 			for var in variables_mixtes:
-				t_var = self.listOfVariables[str(var.func)]
+				t_var = self.parentModel.listOfVariables[str(var.func)]
 				# print "mixed : " + t_var.getSbmlId()
 				if t_var.isSpecies() and t_var.boundaryCondition:
 					containsBoundaryConditions = True
@@ -293,7 +176,7 @@ class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
 			if not containsBoundaryConditions:
 
 				f_vars = [dae for dae in self.fastLaws_vars]
-				f_system = [SympyEqual(dae.getFinalMathFormula(), MathFormula.ZERO) for i, dae in enumerate(self.DAEs)]
+				f_system = [SympyEqual(dae.getFinalMathFormula(), MathFormula.ZERO) for i, dae in enumerate(self.parentModel.DAEs)]
 				f_system += self.fastConservationLaws
 
 
@@ -305,7 +188,7 @@ class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
 
 			else:
 				f_vars = [dae for dae in self.fastLaws_vars]
-				f_system = [SympyEqual(dae.getFinalMathFormula(), MathFormula.ZERO) for i, dae in enumerate(self.DAEs)]
+				f_system = [SympyEqual(dae.getFinalMathFormula(), MathFormula.ZERO) for i, dae in enumerate(self.parentModel.DAEs)]
 				# f_system += self.fastConservationLaws
 
 
@@ -328,11 +211,11 @@ class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
 			# Then we remove the fast variables from the conservation laws
 			t_der_cons = []
 			t_der_cons_vars = []
-			for i, law in enumerate(self.LHSs_v2):
+			for i, law in enumerate(self.parentModel.LHSs_v2):
 
 				containsFastSubsystem = True
 
-				for var in self.DAE_vars:
+				for var in self.parentModel.DAE_vars:
 					if not (var.getFinalMathFormula() in law.getFinalMathFormula().atoms(SympyFunction)):
 						containsFastSubsystem = False
 
@@ -365,30 +248,30 @@ class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
 				solved_variables = self.solveSystem(system, variables)
 
 				# print solved_variables
-				der_vars = [ode.getFinalMathFormula() for ode in self.ODE_der_vars]
+				der_vars = [ode.getFinalMathFormula() for ode in self.parentModel.ODE_der_vars]
 				der_mixtes = [diff(var, MathFormula.t) for var in variables_mixtes]
 
 				subs = {}
-				for i, var in enumerate(self.ODEs):
+				for i, var in enumerate(self.parentModel.ODEs):
 					# if self.ODE_der_vars[i].getFinalMathFormula() not in der_mixtes:
-						subs.update({self.ODE_der_vars[i].getFinalMathFormula():var.getFinalMathFormula()})
+						subs.update({self.parentModel.ODE_der_vars[i].getFinalMathFormula():var.getFinalMathFormula()})
 
 				# print subs
 
 				for variable, formula in solved_variables.items():
 
-					t_formula = MathFormula(self)
+					t_formula = MathFormula(self.parentModel)
 					t_formula.setFinalMathFormula(simplify(formula.subs(subs)))
 
-					t_variable = MathFormula(self)
+					t_variable = MathFormula(self.parentModel)
 					t_variable.setFinalMathFormula(variable)
 
 					if variable in der_vars:
 						t_index = der_vars.index(variable)
-						t_var = self.listOfVariables[str(self.ODE_vars[t_index].getInternalMathFormula())]
+						t_var = self.parentModel.listOfVariables[str(self.ODE_vars[t_index].getInternalMathFormula())]
 
 						if not (t_var.isSpecies() and t_var.boundaryCondition):
-							self.ODEs[t_index] = t_formula
+							self.parentModel.ODEs[t_index] = t_formula
 
 			# else:
 			#     fixed_fast_systen = True
@@ -451,7 +334,7 @@ class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
 
 		for var, value in solved_initial_conditions.items():
 			# print var
-			for variable in self.listOfVariables.values():
+			for variable in self.parentModel.listOfVariables.values():
 				# print "-" + str(variable.symbol.getFinalMathFormula())
 				if var == variable.symbol.getFinalMathFormula():
 					# print "initialization = %g" % value
@@ -503,9 +386,9 @@ class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
 	def checkInitialValues(self):
 
 
-		t_daes = [SympyEqual(dae.getFinalMathFormula(), SympyInteger(0)) for dae in self.DAEs]
+		t_daes = [SympyEqual(dae.getFinalMathFormula(), SympyInteger(0)) for dae in self.parentModel.DAEs]
 		f_system = t_daes
-		f_vars = [t_symbol.getFinalMathFormula() for t_symbol in self.DAE_symbols]
+		f_vars = [t_symbol.getFinalMathFormula() for t_symbol in self.parentModel.DAE_symbols]
 		f_vars = list(set(f_vars))
 		# print self.DAE_symbols
 		# print f_system
@@ -518,12 +401,12 @@ class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
 
 		if False in f_system:
 			f_system = t_daes
-			f_vars = [t_symbol.getFinalMathFormula() for t_symbol in self.DAE_symbols]
+			f_vars = [t_symbol.getFinalMathFormula() for t_symbol in self.parentModel.DAE_symbols]
 			f_vars = list(set(f_vars))
 
 			# print f_system
 			# print f_vars
-			dae_vars = [var.symbol.getInternalMathFormula() for var in self.listOfVariables.values() if var.isAlgebraic()]
+			dae_vars = [var.symbol.getInternalMathFormula() for var in self.parentModel.listOfVariables.values() if var.isAlgebraic()]
 			# print dae_vars
 			(f_system, f_vars) = self.loadKnownInitialValues(f_system, f_vars, dae_vars)
 
@@ -543,35 +426,35 @@ class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
 		self.findReducibleVariables(vars_to_keep=vars_to_keep)
 
 		# print self.reducibleVariables
-		t_reducible_vars = [var for var in self.reducibleVariables.keys()]
-		t_reducible_values = [var for var in self.reducibleVariables.values()]
+		t_reducible_vars = [var for var in self.parentModel.reducibleVariables.keys()]
+		t_reducible_values = [var for var in self.parentModel.reducibleVariables.values()]
 
-		if len(self.reducibleVariables) > 0:
+		if len(self.parentModel.reducibleVariables) > 0:
 
-			for i, ode_var in enumerate(self.ODE_vars):
+			for i, ode_var in enumerate(self.parentModel.ODE_vars):
 				if ode_var.getInternalMathFormula() in t_reducible_vars:
 
 					t_cfe = t_reducible_values[t_reducible_vars.index(ode_var.getInternalMathFormula())]
-					t_formula = MathFormula(self)
+					t_formula = MathFormula(self.parentModel)
 					t_formula.setInternalMathFormula(t_cfe)
-					self.CFEs.append(t_formula)
+					self.parentModel.CFEs.append(t_formula)
 
-					self.CFE_vars.append(ode_var)
-					self.CFE_types.append(MathCFEs.SOLVED)
+					self.parentModel.CFE_vars.append(ode_var)
+					self.parentModel.CFE_types.append(MathCFEs.SOLVED)
 
 					#Now changing the variable type
-					t_var = self.listOfVariables[str(ode_var.getInternalMathFormula())]
-					self.listOfVariables.changeVariableType(t_var, Variable.VAR_ASS)
+					t_var = self.parentModel.listOfVariables[str(ode_var.getInternalMathFormula())]
+					self.parentModel.listOfVariables.changeVariableType(t_var, Variable.VAR_ASS)
 
 				else:
-					reduced_odes.append(self.ODEs[i])
+					reduced_odes.append(self.parentModel.ODEs[i])
 					reduced_odes_vars.append(ode_var)
-					reduced_odes_der_vars.append(self.ODE_der_vars[i])
-					reduced_odes_symbols.append(self.ODE_symbols[i])
+					reduced_odes_der_vars.append(self.parentModel.ODE_der_vars[i])
+					reduced_odes_symbols.append(self.parentModel.ODE_symbols[i])
 
-			self.ODEs = reduced_odes
-			self.ODE_vars = reduced_odes_vars
-			self.ODE_der_vars = reduced_odes_der_vars
-			self.ODE_symbols = reduced_odes_symbols
+			self.parentModel.ODEs = reduced_odes
+			self.parentModel.ODE_vars = reduced_odes_vars
+			self.parentModel.ODE_der_vars = reduced_odes_der_vars
+			self.parentModel.ODE_symbols = reduced_odes_symbols
 
 			self.developCFEs()

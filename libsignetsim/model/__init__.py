@@ -45,14 +45,14 @@
 # from sbmlobject import Reaction
 # from sbmlobject import Rule
 # from sbmlobject import RuledVariable
-# from sbmlobject import SbmlDeletion
-# from sbmlobject import SbmlExternalModelDefinition
+# from sbmlobject import Deletion
+# from sbmlobject import ExternalModelDefinition
 # from sbmlobject import SbmlModel
-# from sbmlobject import SbmlModelDefinition
-# from sbmlobject import SbmlPort
-# from sbmlobject import SbmlReplacedBy
-# from sbmlobject import SbmlReplacedElement
-# from sbmlobject import SbmlSubModel
+# from sbmlobject import ModelDefinition
+# from sbmlobject import Port
+# from sbmlobject import ReplacedBy
+# from sbmlobject import ReplacedElement
+# from sbmlobject import SubModel
 # from sbmlobject import SbmlVariable
 # from sbmlobject import Species
 # from sbmlobject import SpeciesReference
@@ -84,24 +84,7 @@
 # from math import SbmlMathReader
 # from math import SbmlMathWriter
 #
-from container import ListOfCompartments
-from container import ListOfConstraints
-from container import ListOfDeletions
-from container import ListOfEvents
-from container import ListOfExternalModelDefinitions
-from container import ListOfFunctionDefinitions
-from container import ListOfInitialAssignments
-from container import ListOfModelDefinitions
-from container import ListOfParameters
-from container import ListOfPorts
-from container import ListOfReactions
-from container import ListOfReplacedElements
-from container import ListOfRules
-from container import ListOfSbmlObjects
-from container import ListOfSpecies
-from container import ListOfSpeciesReference
-from container import ListOfSubmodels
-from container import ListOfUnitDefinitions
+
 #
 #
 # from ListOfMathVariables import ListOfMathVariables

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" SbmlDeletion.py
+""" Deletion.py
 
 
 
@@ -26,7 +26,7 @@ from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.sbml.HasId import HasId
 from libsignetsim.model.sbml.HasRef import HasRef
 
-class SbmlDeletion(HasId, HasRef):
+class Deletion(HasId, HasRef):
 
 	def __init__(self, model, obj_id, parent_submodel):
 

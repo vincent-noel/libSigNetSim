@@ -23,11 +23,11 @@
 """
 
 
-from libsignetsim.model.container.ListOf import ListOf
-from libsignetsim.model.container.HasIds import HasIds
+from libsignetsim.model.sbml.container.ListOf import ListOf
+from libsignetsim.model.sbml.container.HasIds import HasIds
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
-from libsignetsim.model.sbml.SbmlDeletion import SbmlDeletion
+from libsignetsim.model.sbml.Deletion import Deletion
 from libsignetsim.settings.Settings import Settings
 
 class ListOfDeletions(ListOf, HasIds):#, SbmlObject):
@@ -47,7 +47,7 @@ class ListOfDeletions(ListOf, HasIds):#, SbmlObject):
 		""" Reads compartments' list from a sbml file """
 
 		for deletion in sbml_list_deletions:
-			t_deletion = SbmlDeletion(self.__model, self.nextId(), self.__parentSubmodel)
+			t_deletion = Deletion(self.__model, self.nextId(), self.__parentSubmodel)
 			t_deletion.readSbml(deletion, sbml_level, sbml_version)
 			ListOf.add(self, t_deletion)
 
@@ -69,7 +69,7 @@ class ListOfDeletions(ListOf, HasIds):#, SbmlObject):
 	def new(self):
 		""" Creates a new compartment """
 
-		t_deletion = SbmlDeletion(self.__model, self.nextId(), self.__parentSubmodel)
+		t_deletion = Deletion(self.__model, self.nextId(), self.__parentSubmodel)
 		ListOf.add(self, t_deletion)
 		return t_deletion
 

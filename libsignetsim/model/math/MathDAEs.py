@@ -89,7 +89,7 @@ class MathDAEs(object):
 
 	def addDAE(self, rule):
 
-		dae_definition = rule.getExpressionMath().getDeveloppedInternalMathFormula()
+		dae_definition = rule.getDefinition().getDeveloppedInternalMathFormula()
 		t_atoms = []
 		for t_atom in dae_definition.atoms(SympySymbol):
 			if t_atom != MathFormula.t:
@@ -110,7 +110,7 @@ class MathDAEs(object):
 		t_definition.setInternalMathFormula(dae_definition)
 		self.DAEs.append(t_definition)
 
-		dae_conc_definition = rule.getExpressionMath(forcedConcentration=True).getInternalMathFormula()
+		dae_conc_definition = rule.getDefinition(forcedConcentration=True).getInternalMathFormula()
 		t_conc_definition = MathFormula(self)
 		t_conc_definition.setInternalMathFormula(dae_conc_definition)
 		self.DAE_concentrations.append(t_conc_definition)

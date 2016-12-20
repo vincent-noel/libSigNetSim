@@ -23,11 +23,11 @@
 """
 
 
-from libsignetsim.model.container.ListOf import ListOf
-from libsignetsim.model.container.HasIds import HasIds
+from libsignetsim.model.sbml.container.ListOf import ListOf
+from libsignetsim.model.sbml.container.HasIds import HasIds
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
-from libsignetsim.model.sbml.SbmlModelDefinition import SbmlModelDefinition
+from libsignetsim.model.sbml.ModelDefinition import ModelDefinition
 from libsignetsim.settings.Settings import Settings
 
 class ListOfModelDefinitions(ListOf, HasIds):#, SbmlObject):
@@ -46,7 +46,7 @@ class ListOfModelDefinitions(ListOf, HasIds):#, SbmlObject):
 		""" Reads compartments' list from a sbml file """
 
 		for model in sbml_external_models:
-			t_model = SbmlModelDefinition(self.__model, self.nextId())
+			t_model = ModelDefinition(self.__model, self.nextId())
 			t_model.readSbml(model, sbml_level, sbml_version)
 			ListOf.add(self, t_model)
 
@@ -68,7 +68,7 @@ class ListOfModelDefinitions(ListOf, HasIds):#, SbmlObject):
 	def new(self, name=None, sbml_id=None):
 		""" Creates a new compartment """
 
-		t_model = SbmlModelDefinition(self.__model, self.nextId())
+		t_model = ModelDefinition(self.__model, self.nextId())
 		# t_model.new(name, sbml_id)
 		ListOf.add(self, t_model)
 		return t_model

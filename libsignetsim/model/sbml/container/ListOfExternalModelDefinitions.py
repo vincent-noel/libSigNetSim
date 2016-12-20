@@ -23,11 +23,11 @@
 """
 
 
-from libsignetsim.model.container.ListOf import ListOf
-from libsignetsim.model.container.HasIds import HasIds
+from libsignetsim.model.sbml.container.ListOf import ListOf
+from libsignetsim.model.sbml.container.HasIds import HasIds
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
-from libsignetsim.model.sbml.SbmlExternalModelDefinition import SbmlExternalModelDefinition
+from libsignetsim.model.sbml.ExternalModelDefinition import ExternalModelDefinition
 from libsignetsim.settings.Settings import Settings
 
 class ListOfExternalModelDefinitions(ListOf, HasIds):#, SbmlObject):
@@ -47,7 +47,7 @@ class ListOfExternalModelDefinitions(ListOf, HasIds):#, SbmlObject):
 		""" Reads external model definitions' list from a sbml file """
 
 		for model in sbml_external_models:
-			t_model = SbmlExternalModelDefinition(self.__model, self.nextId())
+			t_model = ExternalModelDefinition(self.__model, self.nextId())
 			t_model.readSbml(model, sbml_level, sbml_version)
 			ListOf.add(self, t_model)
 
@@ -69,7 +69,7 @@ class ListOfExternalModelDefinitions(ListOf, HasIds):#, SbmlObject):
 	def new(self):
 		""" Creates a new external model definition """
 
-		t_model = SbmlExternalModelDefinition(self.__model, self.nextId())
+		t_model = ExternalModelDefinition(self.__model, self.nextId())
 		ListOf.add(self, t_model)
 		return t_model
 

@@ -23,11 +23,11 @@
 """
 
 
-from libsignetsim.model.container.ListOf import ListOf
-from libsignetsim.model.container.HasIds import HasIds
+from libsignetsim.model.sbml.container.ListOf import ListOf
+from libsignetsim.model.sbml.container.HasIds import HasIds
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
-from libsignetsim.model.sbml.SbmlPort import SbmlPort
+from libsignetsim.model.sbml.Port import Port
 from libsignetsim.settings.Settings import Settings
 
 class ListOfPorts(ListOf, HasIds):#, SbmlObject):
@@ -47,7 +47,7 @@ class ListOfPorts(ListOf, HasIds):#, SbmlObject):
         """ Reads compartments' list from a sbml file """
 
         for port in sbml_list_ports:
-            t_port = SbmlPort(self.__model, self.nextId())
+            t_port = Port(self.__model, self.nextId())
             t_port.readSbml(port, sbml_level, sbml_version)
             ListOf.add(self, t_port)
 
@@ -69,7 +69,7 @@ class ListOfPorts(ListOf, HasIds):#, SbmlObject):
     def new(self):
         """ Creates a new compartment """
 
-        t_port = SbmlPort(self.__model, self.nextId())
+        t_port = Port(self.__model, self.nextId())
         # t_deletion.new(name, sbml_id)
         ListOf.add(self, t_port)
         return t_port

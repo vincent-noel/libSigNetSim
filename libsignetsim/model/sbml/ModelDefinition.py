@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" SbmlPort.py
+""" ModelDefinition.py
 
 
 
@@ -21,34 +21,38 @@
 
 """
 
-
-from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.sbml.HasId import HasId
-from libsignetsim.model.sbml.HasRef import HasRef
+from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
-class SbmlPort(HasId, HasRef):
+from libsignetsim.model.Model import Model
+from libsignetsim.settings.Settings import Settings
+
+class ModelDefinition(HasId, SbmlObject):
 
 	def __init__(self, model, obj_id):
 
 		self.__model = model
 		self.objId = obj_id
+
 		HasId.__init__(self, model)
-		HasRef.__init__(self, model)
+		SbmlObject.__init__(self, model)
+
+		self.modelDefinition = Model(obj_id=self.objId, parent_doc=self.__model.parentDoc)
 
 
-
-	def readSbml(self, sbml_port,
+	def readSbml(self, sbml_model_definition,
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
 
-		HasId.readSbml(self, sbml_port, sbml_level, sbml_version)
-		HasRef.readSbml(self, sbml_port, sbml_level, sbml_version)
+		HasId.readSbml(self, sbml_model_definition, sbml_level, sbml_version)
+		self.modelDefinition.readSbml(sbml_model_definition, sbml_level, sbml_version)
+		SbmlObject.readSbml(self, sbml_model_definition, sbml_level, sbml_version)
 
 
-
-	def writeSbml(self, sbml_port,
+	def writeSbml(self, sbml_model_definition,
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
 
-		HasId.writeSbml(self, sbml_port, sbml_level, sbml_version)
-		HasRef.writeSbml(self, sbml_port, sbml_level, sbml_version)
+		HasId.writeSbml(self, sbml_model_definition, sbml_level, sbml_version)
+		self.modelDefinition.writeSbml(sbml_model_definition, sbml_level, sbml_version)
+		SbmlObject.writeSbml(self, sbml_model_definition, sbml_level, sbml_version)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" SbmlReplacedElement.py
+""" ReplacedElement.py
 
 
 
@@ -27,7 +27,7 @@ from libsignetsim.settings.Settings import Settings
 
 from libsignetsim.model.sbml.HasRef import HasRef
 
-class SbmlReplacedElement(HasRef):
+class ReplacedElement(HasRef):
 
 	def __init__(self, model, obj_id):
 

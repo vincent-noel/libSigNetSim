@@ -42,8 +42,8 @@ class AssignmentRule(Rule):
 
 		self.__model = model
 		Rule.__init__(self, model, objId, Rule.RULE_ASSIGNMENT)
-		self.variable = MathSymbol(model)
-		self.definition = MathFormula(model, MathFormula.MATH_ASSIGNMENTRULE)
+		self.__variable = MathSymbol(model)
+		self.__definition = MathFormula(model, MathFormula.MATH_ASSIGNMENTRULE)
 		self.__var = None
 
 
@@ -55,13 +55,13 @@ class AssignmentRule(Rule):
 			self.__var = self.__model.listOfVariables[sbml_rule.getVariable()]
 			self.__var.setRuledBy(self)
 
-		self.variable.readSbml(sbml_rule.getVariable(), sbml_level, sbml_version)
-		self.definition.readSbml(sbml_rule.getMath(), sbml_level, sbml_version)
+		self.__variable.readSbml(sbml_rule.getVariable(), sbml_level, sbml_version)
+		self.__definition.readSbml(sbml_rule.getMath(), sbml_level, sbml_version)
 
-		if self.getVariable().isConcentration():
-			self.definition.setInternalMathFormula(
-					SympyMul(self.definition.getInternalMathFormula(),
-						self.getVariable().getCompartment().symbol.getInternalMathFormula()))
+		if self.__var.isConcentration():
+			self.__definition.setInternalMathFormula(
+					SympyMul(self.__definition.getInternalMathFormula(),
+						self.__var.getCompartment().symbol.getInternalMathFormula()))
 		# MathAssignmentRule.readSbml(self, sbml_rule, sbml_level, sbml_version)
 
 
@@ -79,13 +79,13 @@ class AssignmentRule(Rule):
 
 		Rule.writeSbml(self, sbml_rule, sbml_level, sbml_version)
 		t_definition = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
-		t_definition.setInternalMathFormula(self.definition.getInternalMathFormula())
-		t_variable = self.variable.getSbmlMathFormula(sbml_level, sbml_version).getName()
+		t_definition.setInternalMathFormula(self.__definition.getInternalMathFormula())
+		t_variable = self.__variable.getSbmlMathFormula(sbml_level, sbml_version).getName()
 
-		if self.getVariable().isConcentration():
+		if self.__var.isConcentration():
 			t_definition.setInternalMathFormula(
-					SympyMul(self.definition.getInternalMathFormula(),
-							 SympyPow(self.getVariable().getCompartment().symbol.getInternalMathFormula(),
+					SympyMul(self.__definition.getInternalMathFormula(),
+							 SympyPow(self.__var.getCompartment().symbol.getInternalMathFormula(),
 										SympyInteger(-1))))
 
 		sbml_rule.setVariable(t_variable)
@@ -114,22 +114,19 @@ class AssignmentRule(Rule):
 		for var, conversion in conversions.items():
 			t_convs.update({var:var/conversion})
 
-		t_definition = obj.definition.getInternalMathFormula().subs(subs).subs(replacements).subs(t_convs)
+		t_definition = obj.getDefinition().getInternalMathFormula().subs(subs).subs(replacements).subs(t_convs)
 
-		t_var_symbol = obj.variable.getInternalMathFormula().subs(subs).subs(replacements)
+		t_var_symbol = obj.getVariable().symbol.getInternalMathFormula().subs(subs).subs(replacements)
 		if t_var_symbol in conversions:
 			t_definition *= conversions[t_var_symbol]
 
-		self.definition.setInternalMathFormula(t_definition)
-		self.variable.setInternalMathFormula(t_var_symbol)
-		# MathAssignmentRule.copy(self, obj, prefix, shift, subs, deletions, replacements, conversions, time_conversion)
+		self.__definition.setInternalMathFormula(t_definition)
+		self.__variable.setInternalMathFormula(t_var_symbol)
 
 
 	def getVariable(self):
 		return self.__var
 
-	def getVariableMath(self):
-		return self.variable
 
 	def setVariable(self, variable):
 
@@ -138,84 +135,72 @@ class AssignmentRule(Rule):
 
 		self.__var = variable
 		self.__var.setRuledBy(self)
-		self.variable.setInternalVariable(variable.symbol.getInternalMathFormula())
+		self.__variable.setInternalVariable(variable.symbol.getInternalMathFormula())
 
 
-	def getExpression(self):
-		return self.getPrettyPrintDefinition()
+	def getDefinition(self, forcedConcentration=False):
 
-	def getExpressionMath(self):
-		return self.definition
+		if self.__var.isConcentration() and forcedConcentration:
+			t_definition = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
+			t_definition.setInternalMathFormula(
+							self.__definition.getInternalMathFormula()
+							/ self.__var.getCompartment().symbol.getInternalMathFormula())
+			return t_definition
+		else:
+			return self.__definition
 
-	def setExpression(self, string):
-		self.setPrettyPrintDefinition(string)
 
+	def setDefinition(self, definition):
+
+		if self.__var.isConcentration():
+			t_comp = self.__var.getCompartment()
+			t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
+			t_math_formula.setInternalMathFormula(
+						definition.getInternalMathFormula()
+						* t_comp.symbol.getInternalMathFormula()
+			)
+
+			self.__definition = t_math_formula
+
+		else:
+			self.__definition = definition
 
 
 	def setPrettyPrintDefinition(self, definition):
 
-		if self.getVariable().isConcentration():
-			t_comp = self.getVariable().getCompartment()
+		if self.__var.isConcentration():
+			t_comp = self.__var.getCompartment()
 			t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
 			t_math_formula.setPrettyPrintMathFormula(definition)
-			self.definition.setInternalMathFormula(t_math_formula.getInternalMathFormula()*t_comp.symbol.getInternalMathFormula())
+			self.__definition.setInternalMathFormula(t_math_formula.getInternalMathFormula()*t_comp.symbol.getInternalMathFormula())
 
 		else:
-			self.definition.setPrettyPrintMathFormula(definition)
-
-
-	def setPrettyPrintVariable(self, variable):
-		self.variable.setPrettyPrintMathFormula(variable)
+			self.__definition.setPrettyPrintMathFormula(definition)
 
 
 	def getPrettyPrintDefinition(self):
 
-		if self.getVariable().isConcentration():
-			t_comp = self.getVariable().getCompartment()
+		if self.__var.isConcentration():
+			t_comp = self.__var.getCompartment()
 			t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
-			t_math_formula.setInternalMathFormula(self.definition.getInternalMathFormula()/t_comp.symbol.getInternalMathFormula())
+			t_math_formula.setInternalMathFormula(self.__definition.getInternalMathFormula()/t_comp.symbol.getInternalMathFormula())
 			return t_math_formula.getPrettyPrintMathFormula()
 
 		else:
-			return self.definition.getPrettyPrintMathFormula()
-
-
-	def getDefinition(self, math_type=MathFormula.MATH_INTERNAL, forcedConcentration=False):
-
-		if self.getVariable().isConcentration() and forcedConcentration:
-			return (self.definition.getInternalMathFormula()
-						/ self.getVariable().getCompartment().symbol.getInternalMathFormula())
-		else:
-			return self.definition.getInternalMathFormula()
-
-	def getInternalDefinition(self, forcedConcentration=False):
-
-		t_formula = self.getDefinition(MathFormula.MATH_INTERNAL, forcedConcentration)
-
-		# print "yeah, that one !!"
-		# print t_formula
-		if forcedConcentration:
-			for species in self.__model.listOfSpecies.values():
-				if species.isConcentration():
-					t_fc = SympySymbol("_speciesForcedConcentration_%s_" % str(species.symbol.getInternalMathFormula()))
-					t_species = SympySymbol(species.getSbmlId())
-					t_formula = t_formula.subs({ t_fc : t_species })
-					# t_formula.setInternalMathFormula(t_internal)
-
-		return t_formula
+			return self.__definition.getPrettyPrintMathFormula()
 
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		old_symbol = SympySymbol(old_sbml_id)
 
-		if self.variable.getInternalMathFormula() == old_symbol:
-			self.variable.setInternalMathFormula(SympySymbol(new_sbml_id))
+		if self.__variable.getInternalMathFormula() == old_symbol:
+			self.__variable.setInternalMathFormula(SympySymbol(new_sbml_id))
 
-		if old_symbol in self.definition.getInternalMathFormula().atoms():
-			self.definition.setInternalMathFormula(self.definition.getInternalMathFormula().subs(old_symbol, SympySymbol(new_sbml_id)))
+		if old_symbol in self.__definition.getInternalMathFormula().atoms():
+			self.__definition.setInternalMathFormula(self.__definition.getInternalMathFormula().subs(old_symbol, SympySymbol(new_sbml_id)))
 
 
 	def containsVariable(self, variable):
-		return (variable.symbol.getInternalMathFormula() in self.definition.getInternalMathFormula().atoms()
-				or (variable.isSpecies() and SympySymbol("_speciesForcedConcentration_%s_" % str(variable.symbol.getInternalMathFormula())) in self.definition.getInternalMathFormula().atoms())
-				or variable.symbol.getInternalMathFormula() == self.variable.getInternalMathFormula())
+		return (variable.symbol.getInternalMathFormula() in self.__definition.getInternalMathFormula().atoms()
+				or (variable.isSpecies() and SympySymbol("_speciesForcedConcentration_%s_" % str(variable.symbol.getInternalMathFormula())) in self.__definition.getInternalMathFormula().atoms())
+				or variable.symbol.getInternalMathFormula() == self.__variable.getInternalMathFormula())

@@ -23,10 +23,10 @@
 """
 
 
-from libsignetsim.model.container.ListOf import ListOf
+from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.model.sbml.SimpleSbmlObject import SimpleSbmlObject
 
-from libsignetsim.model.sbml.SbmlReplacedElement import SbmlReplacedElement
+from libsignetsim.model.sbml.ReplacedElement import ReplacedElement
 from libsignetsim.settings.Settings import Settings
 
 class ListOfReplacedElements(ListOf):#, SimpleSbmlObject):
@@ -46,7 +46,7 @@ class ListOfReplacedElements(ListOf):#, SimpleSbmlObject):
 		""" Reads compartments' list from a sbml file """
 
 		for re in sbml_list_re:
-			t_re = SbmlReplacedElement(self.__model, self.nextId())
+			t_re = ReplacedElement(self.__model, self.nextId())
 			t_re.readSbml(re, sbml_level, sbml_version)
 			ListOf.add(self, t_re)
 
@@ -66,14 +66,14 @@ class ListOfReplacedElements(ListOf):#, SimpleSbmlObject):
 	def new(self):
 		""" Creates a new compartment """
 
-		t_replaced_element = SbmlReplacedElement(self.__model, self.nextId())
+		t_replaced_element = ReplacedElement(self.__model, self.nextId())
 		ListOf.add(self, t_replaced_element)
 		return t_replaced_element
 
 	def copy(self, obj, prefix="", shift=0):
 
 		for replaced_element in obj.values():
-			t_re = SbmlReplacedElement(self.__model, (replaced_element.objId + shift))
+			t_re = ReplacedElement(self.__model, (replaced_element.objId + shift))
 			t_re.copy(replaced_element, prefix, shift)
 			ListOf.add(self, t_re)
 

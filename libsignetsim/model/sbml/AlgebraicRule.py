@@ -36,7 +36,8 @@ class AlgebraicRule(Rule):
 
 		self.__model = model
 		Rule.__init__(self, model, objId, Rule.RULE_ALGEBRAIC)
-		self.definition = MathFormula(model, MathFormula.MATH_ALGEBRAICRULE)
+		self.__definition = MathFormula(model,
+										MathFormula.MATH_ALGEBRAICRULE)
 
 
 	def readSbml(self, sbml_rule,
@@ -44,7 +45,7 @@ class AlgebraicRule(Rule):
 					sbml_version=Settings.defaultSbmlVersion):
 
 		Rule.readSbml(self, sbml_rule, sbml_level, sbml_version)
-		self.definition.readSbml(sbml_rule.getMath(), sbml_level, sbml_version)
+		self.__definition.readSbml(sbml_rule.getMath(), sbml_level, sbml_version)
 
 
 	def writeSbml(self, sbml_model,
@@ -53,36 +54,23 @@ class AlgebraicRule(Rule):
 
 		sbml_rule = sbml_model.createAlgebraicRule()
 		Rule.writeSbml(self, sbml_rule, sbml_level, sbml_version)
-		sbml_rule.setMath(self.definition.getSbmlMathFormula(sbml_level, sbml_version))
+		sbml_rule.setMath(self.__definition.getSbmlMathFormula(sbml_level,
+																sbml_version))
 
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):
+	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[],
+				replacements={}, conversions={}, time_conversion=None):
+
 		Rule.copy(self, obj, prefix, shift)
-		self.definition.setInternalMathFormula(obj.definition.getInternalMathFormula().subs(subs).subs(replacements))
+		t_definition = obj.getDefinition().getInternalMathFormula().subs(subs).subs(replacements)
+		self.__definition.setInternalMathFormula(t_definition)
 
 
-	def getExpression(self):
-		return self.getPrettyPrintDefinition()
-
-
-	def setExpression(self, string):
-		self.setPrettyPrintDefinition(string)
-
-
-	def setPrettyPrintDefinition(self, definition):
-		self.definition.setPrettyPrintMathFormula(definition)
-		self.definition.setInternalMathFormula(SympyEqual(self.definition.getInternalMathFormula(), MathFormula.ZERO))
-
-
-	def getPrettyPrintDefinition(self):
-		return self.definition.getPrettyPrintMathFormula()
-
-
-	def getExpressionMath(self, forcedConcentration=False):
+	def getDefinition(self, forcedConcentration=False):
 
 		if forcedConcentration:
 			t_formula = MathFormula(self.__model)
-			t_formula.setInternalMathFormula(self.definition.getInternalMathFormula())
+			t_formula.setInternalMathFormula(self.__definition.getInternalMathFormula())
 
 			for species in self.__model.listOfSpecies.values():
 				if species.isConcentration():
@@ -94,17 +82,24 @@ class AlgebraicRule(Rule):
 
 			return t_formula
 		else:
-			return self.definition
+			return self.__definition
+
+
+	def setPrettyPrintDefinition(self, definition):
+		self.__definition.setPrettyPrintMathFormula(definition)
+
+	def getPrettyPrintDefinition(self):
+		return self.__definition.getPrettyPrintMathFormula()
 
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		old_symbol = SympySymbol(old_sbml_id)
 
-		if old_symbol in self.definition.getInternalMathFormula().atoms():
+		if old_symbol in self.__definition.getInternalMathFormula().atoms():
 			t_definition = MathFormula(self.__model, MathFormula.MATH_ALGEBRAICRULE)
-			t_definition.setInternalMathFormula(self.definition.getInternalMathFormula.subs(old_symbol, SympySymbol(new_sbml_id)))
+			t_definition.setInternalMathFormula(self.__definition.getInternalMathFormula.subs(old_symbol, SympySymbol(new_sbml_id)))
 
 
 	def containsVariable(self, variable):
-		return (variable.symbol.getInternalMathFormula() in self.definition.getInternalMathFormula().atoms()
-				or (variable.isSpecies() and SympySymbol("_speciesForcedConcentration_%s_" % str(variable.symbol.getInternalMathFormula())) in self.definition.getInternalMathFormula().atoms()))
+		return (variable.symbol.getInternalMathFormula() in self.__definition.getInternalMathFormula().atoms()
+				or (variable.isSpecies() and SympySymbol("_speciesForcedConcentration_%s_" % str(variable.symbol.getInternalMathFormula())) in self.__definition.getInternalMathFormula().atoms()))

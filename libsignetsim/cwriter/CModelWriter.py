@@ -234,11 +234,11 @@ class CModelWriter(object):
 		subs = {}
 		for rule in self.listOfRules.values():
 			if rule.isAssignment():
-				t_definition = rule.definition.getDeveloppedInternalMathFormula()
+				t_definition = rule.getDefinition().getDeveloppedInternalMathFormula()
 				if t_definition is not None:
 					t_definition.subs(subs)
 
-					subs.update({rule.variable.getInternalMathFormula():t_definition})
+					subs.update({rule.getVariable().symbol.getInternalMathFormula():t_definition})
 
 		# print subs
 		for species in self.listOfSpecies.values():

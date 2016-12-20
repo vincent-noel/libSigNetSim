@@ -23,7 +23,7 @@
 """
 
 
-from libsignetsim.model.container.ListOf import ListOf
+from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
 from libsignetsim.model.sbml.InitialAssignment import InitialAssignment

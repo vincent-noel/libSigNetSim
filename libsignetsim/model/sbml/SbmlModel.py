@@ -24,19 +24,19 @@
 
 
 
-from libsignetsim.model.container.ListOfSpecies import ListOfSpecies
-from libsignetsim.model.container.ListOfParameters import ListOfParameters
-from libsignetsim.model.container.ListOfReactions import ListOfReactions
-from libsignetsim.model.container.ListOfCompartments import ListOfCompartments
-from libsignetsim.model.container.ListOfFunctionDefinitions import ListOfFunctionDefinitions
-from libsignetsim.model.container.ListOfUnitDefinitions import ListOfUnitDefinitions
-from libsignetsim.model.container.ListOfRules import ListOfRules
-from libsignetsim.model.container.ListOfEvents import ListOfEvents
-from libsignetsim.model.container.ListOfConstraints import ListOfConstraints
-from libsignetsim.model.container.ListOfInitialAssignments import ListOfInitialAssignments
-from libsignetsim.model.container.ListOfSbmlObjects import ListOfSbmlObjects
-from libsignetsim.model.container.ListOfSubmodels import ListOfSubmodels
-from libsignetsim.model.container.ListOfPorts import ListOfPorts
+from libsignetsim.model.sbml.container.ListOfSpecies import ListOfSpecies
+from libsignetsim.model.sbml.container.ListOfParameters import ListOfParameters
+from libsignetsim.model.sbml.container.ListOfReactions import ListOfReactions
+from libsignetsim.model.sbml.container.ListOfCompartments import ListOfCompartments
+from libsignetsim.model.sbml.container.ListOfFunctionDefinitions import ListOfFunctionDefinitions
+from libsignetsim.model.sbml.container.ListOfUnitDefinitions import ListOfUnitDefinitions
+from libsignetsim.model.sbml.container.ListOfRules import ListOfRules
+from libsignetsim.model.sbml.container.ListOfEvents import ListOfEvents
+from libsignetsim.model.sbml.container.ListOfConstraints import ListOfConstraints
+from libsignetsim.model.sbml.container.ListOfInitialAssignments import ListOfInitialAssignments
+from libsignetsim.model.sbml.container.ListOfSbmlObjects import ListOfSbmlObjects
+from libsignetsim.model.sbml.container.ListOfSubmodels import ListOfSubmodels
+from libsignetsim.model.sbml.container.ListOfPorts import ListOfPorts
 
 from libsignetsim.model.ModelException import ModelException
 from libsignetsim.model.math.MathFormula import MathFormula

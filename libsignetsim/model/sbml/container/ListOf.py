@@ -23,7 +23,7 @@
 """
 
 
-# from libsignetsim.model.container.ListOfSbmlObjects import ListOfSbmlObjects
+# from libsignetsim.model.sbml.container.ListOfSbmlObjects import ListOfSbmlObjects
 
 class ListOf(dict):
 	""" Parent class for all the ListOf.* containers in a sbml model """

@@ -24,8 +24,8 @@
 
 
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.container.ListOfReplacedElements import ListOfReplacedElements
-from libsignetsim.model.sbml.SbmlReplacedBy import SbmlReplacedBy
+from libsignetsim.model.sbml.container.ListOfReplacedElements import ListOfReplacedElements
+from libsignetsim.model.sbml.ReplacedBy import ReplacedBy
 
 
 class HasReplacedElements(object):
@@ -62,7 +62,7 @@ class HasReplacedElements(object):
 
 			if t_object.isSetReplacedBy():
 				self.__hasReplacedBy = True
-				self.__replacedBy = SbmlReplacedBy(self.__model, self)
+				self.__replacedBy = ReplacedBy(self.__model, self)
 				self.__replacedBy.readSbml(
 						t_object.getReplacedBy(),
 						sbml_level, sbml_version)
@@ -121,7 +121,7 @@ class HasReplacedElements(object):
 	def getReplacedBy(self):
 		if not self.isReplaced():
 			self.__hasReplacedBy = True
-			self.__replacedBy = SbmlReplacedBy(self.__model, self)
+			self.__replacedBy = ReplacedBy(self.__model, self)
 
 		return self.__replacedBy
 
@@ -137,5 +137,5 @@ class HasReplacedElements(object):
 			self.__listOfReplacedElements.copy(obj.getListOfReplacedElements(), prefix, shift)
 
 		if obj.isReplaced():
-			self.__replacedBy = SbmlReplacedBy(self.__model, self)
+			self.__replacedBy = ReplacedBy(self.__model, self)
 			self.__replacedBy.copy(obj.isReplacedBy(), prefix, shift)

@@ -107,12 +107,14 @@ class MathCFEs(object):
 					self.CFE_types.append(self.ASSIGNMENT)
 
 					t_var = MathFormula(self, MathFormula.MATH_VARIABLE)
-					t_var.setInternalMathFormula(rule.variable.getInternalMathFormula())
+					t_var.setInternalMathFormula(rule.getVariable().symbol.getInternalMathFormula())
 					self.CFE_vars.append(t_var)
+					print t_var.getPrettyPrintMathFormula()
 
 					t_cfe = MathFormula(self)
-					t_cfe.setInternalMathFormula(rule.getInternalDefinition())
+					t_cfe.setInternalMathFormula(rule.getDefinition().getInternalMathFormula())
 					self.CFEs.append(t_cfe)
+					print t_cfe.getPrettyPrintMathFormula()
 
 
 		for reaction in self.listOfReactions.values():

@@ -23,8 +23,8 @@
 """
 
 
-from libsignetsim.model.container.ListOfParameters import ListOfParameters
-from libsignetsim.model.container.ListOfSpeciesReference import ListOfSpeciesReference
+from libsignetsim.model.sbml.container.ListOfParameters import ListOfParameters
+from libsignetsim.model.sbml.container.ListOfSpeciesReference import ListOfSpeciesReference
 
 # from libsignetsim.model.math.MathKineticLaw import MathKineticLaw
 from libsignetsim.model.sbml.KineticLaw import KineticLaw

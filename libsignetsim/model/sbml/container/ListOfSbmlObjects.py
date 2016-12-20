@@ -23,9 +23,9 @@
 """
 
 
-from libsignetsim.model.container.ListOf import ListOf
+from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.container.ListOfReplacedElements import ListOfReplacedElements
+from libsignetsim.model.sbml.container.ListOfReplacedElements import ListOfReplacedElements
 # from libsignetsim.model.Model import Model
 from libsbml import SyntaxChecker
 

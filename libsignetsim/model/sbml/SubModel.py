@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" SbmlSubModel.py
+""" SubModel.py
 
 
 
@@ -26,9 +26,9 @@ from libsignetsim.model.sbml.HasId import HasId
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.container.ListOfDeletions import ListOfDeletions
+from libsignetsim.model.sbml.container.ListOfDeletions import ListOfDeletions
 
-class SbmlSubModel(HasId):#, SbmlObject):
+class SubModel(HasId):#, SbmlObject):
 
 	def __init__(self, model, obj_id):
 

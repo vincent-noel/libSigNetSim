@@ -27,8 +27,8 @@
 from libsignetsim.model.Model import Model
 
 from libsignetsim.model.Variable import Variable
-from libsignetsim.model.container.ListOfModelDefinitions import ListOfModelDefinitions
-from libsignetsim.model.container.ListOfExternalModelDefinitions import ListOfExternalModelDefinitions
+from libsignetsim.model.sbml.container.ListOfModelDefinitions import ListOfModelDefinitions
+from libsignetsim.model.sbml.container.ListOfExternalModelDefinitions import ListOfExternalModelDefinitions
 from libsignetsim.model.ModelInstance import ModelInstance
 from libsignetsim.model.ModelException import ModelException, MissingModelException, MissingSubmodelException
 from libsignetsim.settings.Settings import Settings
