@@ -31,71 +31,71 @@ from libsignetsim.settings.Settings import Settings
 
 class Rule(SbmlObject):
 
-    RULE_ALGEBRAIC              =   0
-    RULE_ASSIGNMENT             =   1
-    RULE_RATE                   =   2
-    RULE_UNKNOWN                =   3
-    RULE_SPECIES_CONCENTRATION  =   4
-    RULE_COMPARTMENT_VOLUME     =   5
-    RULE_PARAMETER              =   6
+	RULE_ALGEBRAIC              =   0
+	RULE_ASSIGNMENT             =   1
+	RULE_RATE                   =   2
+	RULE_UNKNOWN                =   3
+	RULE_SPECIES_CONCENTRATION  =   4
+	RULE_COMPARTMENT_VOLUME     =   5
+	RULE_PARAMETER              =   6
 
-    ruleTypes = {RULE_ALGEBRAIC: "Algebraic rule",
-                 RULE_ASSIGNMENT: "Assignment rule",
-                 RULE_RATE: "Rate rule",
-                 RULE_SPECIES_CONCENTRATION: "Species concentration rule",
-                 RULE_COMPARTMENT_VOLUME: "Compartment volume rule",
-                 RULE_PARAMETER: "Parameter rule"}
-
-
-    def __init__ (self, model, objId, rule_type=None):
-
-        self.__model = model
-        self.objId = objId
-
-        SbmlObject.__init__(self, model)
-
-        self.ruleType = rule_type
-
-        self.variable = MathSymbol(model)
-        self.definition = MathFormula(model)
+	ruleTypes = {RULE_ALGEBRAIC: "Algebraic rule",
+				 RULE_ASSIGNMENT: "Assignment rule",
+				 RULE_RATE: "Rate rule",
+				 RULE_SPECIES_CONCENTRATION: "Species concentration rule",
+				 RULE_COMPARTMENT_VOLUME: "Compartment volume rule",
+				 RULE_PARAMETER: "Parameter rule"}
 
 
-    def readSbml(self, sbml_rule, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+	def __init__ (self, model, objId, rule_type=None):
 
-        SbmlObject.readSbml(self, sbml_rule, sbml_level, sbml_version)
+		self.__model = model
+		self.objId = objId
 
-    def writeSbml(self, sbml_rule, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+		SbmlObject.__init__(self, model)
 
-        SbmlObject.writeSbml(self, sbml_rule, sbml_level, sbml_version)
+		self.ruleType = rule_type
 
-    def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], conversions={}):
-
-        SbmlObject.copy(self, obj, prefix, shift)
-        self.ruleType = obj.ruleType
-
-    def isAssignment(self):
-
-        return self.ruleType == self.RULE_ASSIGNMENT
+		# self.variable = MathSymbol(model)
+		# self.definition = MathFormula(model)
 
 
-    def isRate(self):
+	def readSbml(self, sbml_rule, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
-        return self.ruleType == self.RULE_RATE
+		SbmlObject.readSbml(self, sbml_rule, sbml_level, sbml_version)
 
-    def isAlgebraic(self):
+	def writeSbml(self, sbml_rule, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
-        return self.ruleType == self.RULE_ALGEBRAIC
+		SbmlObject.writeSbml(self, sbml_rule, sbml_level, sbml_version)
+
+	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], conversions={}):
+
+		SbmlObject.copy(self, obj, prefix, shift)
+		self.ruleType = obj.ruleType
+
+	def isAssignment(self):
+
+		return self.ruleType == self.RULE_ASSIGNMENT
 
 
-    def getType(self):
+	def isRate(self):
 
-        return self.ruleType
+		return self.ruleType == self.RULE_RATE
+
+	def isAlgebraic(self):
+
+		return self.ruleType == self.RULE_ALGEBRAIC
 
 
-    def getRuleType(self):
+	def getType(self):
 
-        return self.ruleType
+		return self.ruleType
 
-    def getRuleTypeDescription(self):
 
-        return self.ruleTypes[self.ruleType]
+	def getRuleType(self):
+
+		return self.ruleType
+
+	def getRuleTypeDescription(self):
+
+		return self.ruleTypes[self.ruleType]

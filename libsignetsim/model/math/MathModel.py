@@ -413,7 +413,7 @@ class MathModel(CModelWriter, MathODEs, MathCFEs, MathDAEs,
 			t_value = None
 
 			if not variable.isReaction() and variable.hasInitialAssignment():
-				t_value = variable.hasInitialAssignmentBy().definition.getFinalMathFormula()
+				t_value = variable.hasInitialAssignmentBy().getDefinition().getFinalMathFormula()
 
 			elif not variable.isReaction() and variable.isAssignmentRuled():
 				t_value = variable.isRuledBy().getDefinition().getFinalMathFormula()

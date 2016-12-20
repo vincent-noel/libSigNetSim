@@ -42,7 +42,7 @@ class AssignmentRule(Rule):
 
 		self.__model = model
 		Rule.__init__(self, model, objId, Rule.RULE_ASSIGNMENT)
-		self.__variable = MathSymbol(model)
+
 		self.__definition = MathFormula(model, MathFormula.MATH_ASSIGNMENTRULE)
 		self.__var = None
 
@@ -55,14 +55,12 @@ class AssignmentRule(Rule):
 			self.__var = self.__model.listOfVariables[sbml_rule.getVariable()]
 			self.__var.setRuledBy(self)
 
-		self.__variable.readSbml(sbml_rule.getVariable(), sbml_level, sbml_version)
 		self.__definition.readSbml(sbml_rule.getMath(), sbml_level, sbml_version)
 
 		if self.__var.isConcentration():
 			self.__definition.setInternalMathFormula(
 					SympyMul(self.__definition.getInternalMathFormula(),
 						self.__var.getCompartment().symbol.getInternalMathFormula()))
-		# MathAssignmentRule.readSbml(self, sbml_rule, sbml_level, sbml_version)
 
 
 	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
@@ -80,7 +78,7 @@ class AssignmentRule(Rule):
 		Rule.writeSbml(self, sbml_rule, sbml_level, sbml_version)
 		t_definition = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
 		t_definition.setInternalMathFormula(self.__definition.getInternalMathFormula())
-		t_variable = self.__variable.getSbmlMathFormula(sbml_level, sbml_version).getName()
+		t_variable = self.__var.symbol.getSbmlMathFormula(sbml_level, sbml_version).getName()
 
 		if self.__var.isConcentration():
 			t_definition.setInternalMathFormula(
@@ -90,8 +88,6 @@ class AssignmentRule(Rule):
 
 		sbml_rule.setVariable(t_variable)
 		sbml_rule.setMath(t_definition.getSbmlMathFormula(sbml_level, sbml_version))
-
-		# MathAssignmentRule.writeSbml(self, sbml_rule, sbml_level, sbml_version)
 
 
 	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):
@@ -121,7 +117,6 @@ class AssignmentRule(Rule):
 			t_definition *= conversions[t_var_symbol]
 
 		self.__definition.setInternalMathFormula(t_definition)
-		self.__variable.setInternalMathFormula(t_var_symbol)
 
 
 	def getVariable(self):
@@ -135,7 +130,6 @@ class AssignmentRule(Rule):
 
 		self.__var = variable
 		self.__var.setRuledBy(self)
-		self.__variable.setInternalVariable(variable.symbol.getInternalMathFormula())
 
 
 	def getDefinition(self, forcedConcentration=False):
@@ -193,8 +187,8 @@ class AssignmentRule(Rule):
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		old_symbol = SympySymbol(old_sbml_id)
 
-		if self.__variable.getInternalMathFormula() == old_symbol:
-			self.__variable.setInternalMathFormula(SympySymbol(new_sbml_id))
+		if self.__var.symbol.getInternalMathFormula() == old_symbol:
+			self.__var.symbol.setInternalMathFormula(SympySymbol(new_sbml_id))
 
 		if old_symbol in self.__definition.getInternalMathFormula().atoms():
 			self.__definition.setInternalMathFormula(self.__definition.getInternalMathFormula().subs(old_symbol, SympySymbol(new_sbml_id)))
@@ -203,4 +197,4 @@ class AssignmentRule(Rule):
 	def containsVariable(self, variable):
 		return (variable.symbol.getInternalMathFormula() in self.__definition.getInternalMathFormula().atoms()
 				or (variable.isSpecies() and SympySymbol("_speciesForcedConcentration_%s_" % str(variable.symbol.getInternalMathFormula())) in self.__definition.getInternalMathFormula().atoms())
-				or variable.symbol.getInternalMathFormula() == self.__variable.getInternalMathFormula())
+				or variable.symbol.getInternalMathFormula() == self.__var.symbol.getInternalMathFormula())

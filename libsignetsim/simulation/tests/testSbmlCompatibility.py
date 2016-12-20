@@ -37,7 +37,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'UncommonMathML', 'VolumeConcentrationRates', 'FastReaction']
 	INCOMPATIBLE_PACKAGES = ['fbc']
 
-	STOCHASTIC_CASES = [962, 964, 965, 966]
+	STOCHASTIC_CASES = []
 
 	SEMANTIC_CASES_LINK = "http://downloads.sourceforge.net/project/sbml/test-suite/3.2.0/case-archives/sbml-semantic-test-cases-2016-07-27.zip"
 

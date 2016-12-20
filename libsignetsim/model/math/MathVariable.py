@@ -175,7 +175,7 @@ class MathVariable(object):
 	def getODE(self, including_fast_reactions=None, math_type=MathFormula.MATH_INTERNAL, forcedConcentration=False, symbols=False):
 
 		if self.isRateRuled():
-			return self.isRuledBy().getDefinition(math_type, forcedConcentration)
+			return self.isRuledBy().getDefinition(forcedConcentration).getMathFormula(math_type)
 
 		else:
 			return MathFormula.ZERO

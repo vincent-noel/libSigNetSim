@@ -269,7 +269,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			return MathFormula.ZERO
 
 		elif self.isRateRuled():
-			return self.isRuledBy().getDefinition(math_type, forcedConcentration)
+			return self.isRuledBy().getDefinition(forcedConcentration).getMathFormula(math_type)
 
 		elif self.isInReactions(including_fast_reactions):
 

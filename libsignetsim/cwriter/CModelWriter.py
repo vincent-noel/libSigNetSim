@@ -258,10 +258,10 @@ class CModelWriter(object):
 		for variable in self.listOfVariables.values():
 			if not variable.isReaction() and variable.hasInitialAssignment():
 				t_init_assignment = variable.hasInitialAssignmentBy()
-				t_init_ass_def = t_init_assignment.definition.getDeveloppedInternalMathFormula().subs(t_subs)
+				t_init_ass_def = t_init_assignment.getDefinition().getDeveloppedInternalMathFormula().subs(t_subs)
 				t_formula = MathFormula(self)
 				t_formula.setInternalMathFormula(t_init_ass_def)
-				f_c.write("  %s = %s;\n\n" % (t_init_assignment.variable.getCMathFormula(),
+				f_c.write("  %s = %s;\n\n" % (t_init_assignment.getVariable().symbol.getCMathFormula(),
 											  t_formula.getCMathFormula()))
 											#   t_init_assignment.definition.getCMathFormula()))
 
