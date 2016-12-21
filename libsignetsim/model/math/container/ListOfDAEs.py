@@ -59,6 +59,7 @@ class ListOfDAEs(list):
 		for var, val in self.__model.solvedInitialConditions.items():
 			t_subs.update({var.symbol.getInternalMathFormula():val.getInternalMathFormula()})
 
+		# print t_subs
 		for dae in self:
 			t_formula = MathFormula(self.__model)
 			t_formula.setInternalMathFormula(dae.getDefinition().getInternalMathFormula())

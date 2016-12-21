@@ -33,7 +33,8 @@ from os import mkdir, setpgrp, getcwd
 from os.path import join, isfile, exists, getsize
 from subprocess import call
 from shutil import rmtree
-
+from random import choice
+from string import ascii_uppercase, ascii_lowercase, digits
 
 class Simulation(CWriterSimulation):
 
@@ -58,7 +59,14 @@ class Simulation(CWriterSimulation):
 
 		self.keepFiles = keep_files#Settings.simulationKeepFiles
 		self.sessionId = None
-		self.simulationId = int(time()*1000)
+		self.simulationId = ''.join(choice(ascii_uppercase + ascii_lowercase + digits) for _ in range(12))
+
+
+
+
+		# def new_model_filename():
+		# 	rand_string = ''.join(choice(ascii_uppercase + ascii_lowercase + digits) for _ in range(6))
+
 
 		CWriterSimulation.__init__(self, list_of_models=list_of_models,
 						list_of_initial_values=list_of_initial_values,
@@ -119,10 +127,10 @@ class Simulation(CWriterSimulation):
 	def getTempDirectory(self):
 		if self.sessionId is None:
 			return join(Settings.tempDirectory,
-								"simulation_%s/" % str(self.simulationId))
+								"simulation_%s/" % self.simulationId)
 		else:
 			return join(self.sessionId,
-								("simulation_%s/" % str(self.simulationId)))
+								("simulation_%s/" % self.simulationId))
 
 
 	def isDone(self):
@@ -134,7 +142,6 @@ class Simulation(CWriterSimulation):
 
 
 	def writeSimulationFiles(self):
-
 
 		mkdir(self.getTempDirectory())
 		# self.writeModelsFile()

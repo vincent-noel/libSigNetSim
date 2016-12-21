@@ -227,7 +227,7 @@ class MathModel(CModelWriter):
 			if not t_var.isReaction() and t_var in variables:
 				variables.remove(t_var)
 				if t_var.value.getInternalMathFormula() is not None:
-					t_def = t_var.value.getInternalMathFormula().subs(subs)
+					t_def = t_var.value.getDeveloppedInternalMathFormula().subs(subs)
 					if t_def not in [SympyInf, -SympyInf, SympyNan]:
 						t_equ = SympyEqual(
 							t_var.symbol.getInternalMathFormula(),
@@ -271,6 +271,13 @@ class MathModel(CModelWriter):
 
 				print "ERROR !!!!!!! The result of the solver for initial conditions is yet another unknown format !"
 
+
+		for var in self.listOfVariables.values():
+			if var not in self.solvedInitialConditions.keys() and var.value.getInternalMathFormula() is not None:
+				# print var.symbol.getInternalMathFormula()
+				t_value = MathFormula(self)
+				t_value.setInternalMathFormula(var.value.getDeveloppedInternalMathFormula())
+				self.solvedInitialConditions.update({var:t_value})
 		# for var, value in res.items():
 		# 	t_var = self.listOfVariables[str(var)]
 		# 	t_value = MathFormula(self)
