@@ -115,7 +115,8 @@ class CModelWriter(object):
 				f_c.write("  %s.alg_der_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_ALG_DER};\n" % (
 								variable_name, i_var, variable_alg.getDerivativeCValue(), variable_alg.symbol.getPrettyPrintMathFormula()))
 
-		f_c.write("  %s.nb_init_assignments = %d;\n" % (variable_name, len(self.listOfInitialAssignments.keys()) + self.listOfSpecies.nbFormulaInitialization()))
+		# f_c.write("  %s.nb_init_assignments = %d;\n" % (variable_name, len(self.listOfInitialAssignments.keys()) + self.listOfSpecies.nbFormulaInitialization()))
+		f_c.write("  %s.nb_init_assignments = 1;\n" % (variable_name))
 
 		f_c.write("  %s.nb_events = %d;\n" % (variable_name, len(self.listOfEvents.keys())))
 		f_c.write("  %s.nb_roots = %d;\n" % (variable_name, self.listOfEvents.nbRoots()))
@@ -151,7 +152,8 @@ class CModelWriter(object):
 		if self.hasDAEs:
 			f_c.write("  %s.integration_functions->funcIdaPtr = &func_ida_%d;\n" % (variable_name, model_id))
 			f_c.write("  %s.integration_functions->isDAE = 1;\n" % variable_name)
-			f_c.write("  %s.integration_functions->init_conditions_solved = %d;\n" % (variable_name, 1 if self.init_conditions_solved else 0))
+			# f_c.write("  %s.integration_functions->init_conditions_solved = %d;\n" % (variable_name, 1 if self.init_conditions_solved else 0))
+			f_c.write("  %s.integration_functions->init_conditions_solved = 0;\n" % (variable_name))
 		else:
 			f_c.write("  %s.integration_functions->isDAE = 0;\n" % variable_name)
 			f_c.write("  %s.integration_functions->funcPtr = &func_cvode_%d;\n" % (variable_name, model_id))
@@ -182,8 +184,6 @@ class CModelWriter(object):
 
 		f_h.write("void finalize_model_%d();\n" % model_id)
 		f_c.write("void finalize_model_%d()\n{\n" % model_id)
-
-
 
 		if self.nbOdes > 0:
 			f_c.write("  free(%s.derivative_variables);\n" % variable_name)
@@ -230,51 +230,53 @@ class CModelWriter(object):
 		# f_c.write("  printf(\"> Initial assignments\\n\");\n")
 		# f_c.write("  compute_rules_%d(t, y, user_data);\n" % model_id)
 
-		# print "Building subs"
-		subs = {}
-		for rule in self.listOfRules.values():
-			if rule.isAssignment():
-				t_definition = rule.getDefinition().getDeveloppedInternalMathFormula()
-				if t_definition is not None:
-					t_definition.subs(subs)
+		# # print "Building subs"
+		# subs = {}
+		# for rule in self.listOfRules.values():
+		# 	if rule.isAssignment():
+		# 		t_definition = rule.getDefinition().getDeveloppedInternalMathFormula()
+		# 		if t_definition is not None:
+		# 			t_definition.subs(subs)
+		#
+		# 			subs.update({rule.getVariable().symbol.getInternalMathFormula():t_definition})
+		#
+		# # print subs
+		# for species in self.listOfSpecies.values():
+		# 	if (species.isConcentration() or species.isDeclaredConcentration) and not self.listOfInitialAssignments.hasInitialAssignment(species):
+		# 		t_value = species.value.getDeveloppedInternalMathFormula()
+		# 		if t_value is not None:
+		# 			t_value = t_value.subs(subs)
+		#
+		# 			subs.update({species.symbol.getInternalMathFormula(): t_value})
+		#
+		# # print subs
+		# t_subs = {}
+		# for sub, value in subs.items():
+		# 	t_subs.update({sub: value.subs(subs)})
+		#
+		# # print t_subs
+		# for variable in self.listOfVariables.values():
+		# 	if not variable.isReaction() and variable.hasInitialAssignment():
+		# 		t_init_assignment = variable.hasInitialAssignmentBy()
+		# 		t_init_ass_def = t_init_assignment.getDefinition().getDeveloppedInternalMathFormula().subs(t_subs)
+		# 		t_formula = MathFormula(self)
+		# 		t_formula.setInternalMathFormula(t_init_ass_def)
+		# 		f_c.write("  %s = %s;\n\n" % (t_init_assignment.getVariable().symbol.getCMathFormula(),
+		# 									  t_formula.getCMathFormula()))
+		# 									#   t_init_assignment.definition.getCMathFormula()))
+		#
+		# for species in self.listOfSpecies.values():
+		# 	if (species.isConcentration() or species.isDeclaredConcentration) and not self.listOfInitialAssignments.hasInitialAssignment(species):
+		# 		t_init_val = species.value.getDeveloppedInternalMathFormula()
+		# 		if t_init_val is not None:
+		# 			t_init_val = t_init_val.subs(t_subs)
+		# 		t_formula = MathFormula(self)
+		# 		t_formula.setInternalMathFormula(t_init_val)
+		# 		f_c.write("  %s = %s;\n\n" % (species.symbol.getCMathFormula(),
+		# 									   t_formula.getCMathFormula()))
 
-					subs.update({rule.getVariable().symbol.getInternalMathFormula():t_definition})
-
-		# print subs
-		for species in self.listOfSpecies.values():
-			if (species.isConcentration() or species.isDeclaredConcentration) and not self.listOfInitialAssignments.hasInitialAssignment(species):
-				t_value = species.value.getDeveloppedInternalMathFormula()
-				if t_value is not None:
-					t_value = t_value.subs(subs)
-
-					subs.update({species.symbol.getInternalMathFormula(): t_value})
-
-		# print subs
-		t_subs = {}
-		for sub, value in subs.items():
-			t_subs.update({sub: value.subs(subs)})
-
-		# print t_subs
-		for variable in self.listOfVariables.values():
-			if not variable.isReaction() and variable.hasInitialAssignment():
-				t_init_assignment = variable.hasInitialAssignmentBy()
-				t_init_ass_def = t_init_assignment.getDefinition().getDeveloppedInternalMathFormula().subs(t_subs)
-				t_formula = MathFormula(self)
-				t_formula.setInternalMathFormula(t_init_ass_def)
-				f_c.write("  %s = %s;\n\n" % (t_init_assignment.getVariable().symbol.getCMathFormula(),
-											  t_formula.getCMathFormula()))
-											#   t_init_assignment.definition.getCMathFormula()))
-
-		for species in self.listOfSpecies.values():
-			if (species.isConcentration() or species.isDeclaredConcentration) and not self.listOfInitialAssignments.hasInitialAssignment(species):
-				t_init_val = species.value.getDeveloppedInternalMathFormula()
-				if t_init_val is not None:
-					t_init_val = t_init_val.subs(t_subs)
-				t_formula = MathFormula(self)
-				t_formula.setInternalMathFormula(t_init_val)
-				f_c.write("  %s = %s;\n\n" % (species.symbol.getCMathFormula(),
-											   t_formula.getCMathFormula()))
-
+		for var, value in self.solvedInitialConditions.items():
+			f_c.write("%s = %s;\n" % (var.symbol.getCMathFormula(), value.getCMathFormula()))
 
 		f_c.write("  return 0;\n")
 		f_c.write("}\n\n")
@@ -294,15 +296,16 @@ class CModelWriter(object):
 		f_c.write("  compute_rules_%d(t, y, user_data);\n" % model_id)
 
 		i_var = 0
-		for i_ode, _ in enumerate(self.ODEs):
-			t_var = self.listOfVariables[str(self.ODE_vars[i_ode].getFinalMathFormula().func)]
+		for i_ode, t_ode in enumerate(self.listOfODEs):
+			# t_var = self.listOfVariables[str(self.ODE_vars[i_ode].getFinalMathFormula().func)]
+			t_var = t_ode.getVariable()
 			f_c.write("  // ODE\n")
-			f_c.write("  Ith(r, %d) = %s - Ith(ydot, %d);\n\n" % (i_var+1, self.getCODE(i_ode), t_var.ind+1))
+			f_c.write("  Ith(r, %d) = %s - Ith(ydot, %d);\n\n" % (i_var+1, t_ode.getDefinition().getCMathFormula(), t_var.ind+1))
 			i_var += 1
 
-		for i_dae, _ in enumerate(self.DAEs):
+		for i_dae, t_dae in enumerate(self.listOfDAEs):
 			f_c.write("  // DAE\n")
-			f_c.write("  Ith(r, %d) = %s;\n\n" % (i_var+1, self.getCDAE(i_dae)))
+			f_c.write("  Ith(r, %d) = %s;\n\n" % (i_var+1, t_dae.getDefinition().getCMathFormula()))
 			i_var += 1
 
 		f_c.write("  return 0;\n")
@@ -322,11 +325,11 @@ class CModelWriter(object):
 		f_c.write("  compute_rules_%d(t,y, user_data);\n" % model_id)
 
 		i_var = 0
-		for i_ode, _ in enumerate(self.ODEs):
-			t_var = self.listOfVariables[str(self.ODE_vars[i_ode].getFinalMathFormula().func)]
-
+		for i_ode, t_ode in enumerate(self.listOfODEs):
+			# t_var = self.listOfVariables[str(self.ODE_vars[i_ode].getFinalMathFormula().func)]
+			t_var = t_ode.getVariable()
 			f_c.write("  // ODE\n")
-			f_c.write("  Ith(ydot, %d) = %s;\n\n" % ( t_var.ind+1, self.getCODE(i_ode)))
+			f_c.write("  Ith(ydot, %d) = %s;\n\n" % ( t_var.ind+1, t_ode.getDefinition().getCMathFormula()))
 			i_var += 1
 
 		f_c.write("  return 0;\n")
@@ -374,18 +377,18 @@ class CModelWriter(object):
 
 		f_h.write("int compute_rules_%d(realtype t, N_Vector y, void * user_data);\n" % model_id)
 		f_c.write("int compute_rules_%d(realtype t, N_Vector y, void * user_data)\n{\n" % model_id)
-		if len(self.CFEs) > 0:
+		if len(self.listOfCFEs) > 0:
 			f_c.write("  IntegrationData * data = (IntegrationData *) user_data;\n")
 			f_c.write("  N_Vector cst = data->constant_variables;\n")
 			f_c.write("  N_Vector ass = data->assignment_variables;\n")
 			# f_c.write("  N_Vector alg = data->algebraic_variables;\n")
 
-			for i_cfe, _ in enumerate(self.CFEs):
+			for i_cfe, t_cfe in enumerate(self.listOfCFEs.developpedCFEs):
 
 				# t_var = self.listOfVariables[str(self.CFE_vars[i_cfe].getFinalMathFormula().func)]
-				t_var = self.listOfVariables[str(self.CFE_vars[i_cfe].getFinalMathFormula().func)]
+				t_var = t_cfe.getVariable()
 				f_c.write("  Ith(ass, %s) = %s;\n" % (t_var.ind+1,
-														self.getCCFE(i_cfe)))
+														t_cfe.getDefinition().getCMathFormula()))
 
 		f_c.write("  return 0;\n}\n")
 

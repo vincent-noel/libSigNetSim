@@ -33,7 +33,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 	TODO_CASES = []#range(1100, 1300)
 
-	INCOMPATIBLE_CASES = [962, 1217]
+	INCOMPATIBLE_CASES = [962]
 	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'UncommonMathML', 'VolumeConcentrationRates', 'FastReaction']
 	INCOMPATIBLE_PACKAGES = ['fbc']
 
@@ -123,7 +123,8 @@ class TestSbmlCompatibility(unittest.TestCase):
 				nb_success += t_success
 				nb_cases += t_cases
 
-		print "\n> %d success out of %d tests (%.0f%%)" % (nb_success, nb_cases, nb_success*100/nb_cases)
+		if nb_cases > 0:
+			print "\n> %d success out of %d tests (%.0f%%)" % (nb_success, nb_cases, nb_success*100/nb_cases)
 		return nb_cases == nb_success
 
 	def runCase(self, case):
@@ -150,28 +151,28 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 				nb_cases += 1
 
-				try:
-					test = SbmlTestCaseSimulation(case, str(level), str(version), keep_files=keep_files)
-					res_exec = test.run()
+				# try:
+				test = SbmlTestCaseSimulation(case, str(level), str(version), keep_files=keep_files)
+				res_exec = test.run()
 
-					if res_exec:
+				if res_exec:
 
-						nb_success += 1
+					nb_success += 1
 
 
-					else:
-						if case in self.STOCHASTIC_CASES:
-							# Those have one more try if they fail. Twice in a row would be really unlucky
-							test = SbmlTestCaseSimulation(case, str(level), str(version), keep_files=keep_files)
-							res_exec = test.run()
+				else:
+					if case in self.STOCHASTIC_CASES:
+						# Those have one more try if they fail. Twice in a row would be really unlucky
+						test = SbmlTestCaseSimulation(case, str(level), str(version), keep_files=keep_files)
+						res_exec = test.run()
 
-							if res_exec:
-								nb_success += 1
-							else:
-								print ">> l%dv%d : ERROR (%.2gs)" % (level, version, time.time()-start)
+						if res_exec:
+							nb_success += 1
 						else:
 							print ">> l%dv%d : ERROR (%.2gs)" % (level, version, time.time()-start)
-				except:
-					print ">> case %d, %dv%d : ERROR" % (int(case), level, version)
+					else:
+						print ">> l%dv%d : ERROR (%.2gs)" % (level, version, time.time()-start)
+				# except:
+				# 	print ">> case %d, %dv%d : ERROR" % (int(case), level, version)
 
 		return (nb_success, nb_cases)

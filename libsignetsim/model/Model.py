@@ -42,13 +42,13 @@ class Model(SbmlModel, MathModel):
 		SbmlModel.__init__(self, parent_doc, obj_id)
 		MathModel.__init__(self, obj_id)
 		self.listOfVariables = ListOfVariables(self)
-		self.listOfInstanceVariables = ListOfVariables(self)
+		# self.listOfInstanceVariables = ListOfVariables(self)
 
-	def build(self, vars_to_keep=[], dont_reduce=False):
+	def build(self, vars_to_keep=[], dont_reduce=False, tmin=0):
 
-		self.listOfInstanceVariables.buildInstance()
+		# self.listOfInstanceVariables.buildInstance()
 		self.listOfVariables.classifyVariables()
-		MathModel.buildModel(self, vars_to_keep=vars_to_keep, dont_reduce=dont_reduce)
+		MathModel.buildModel(self, vars_to_keep=vars_to_keep, dont_reduce=dont_reduce, tmin=tmin)
 
 	def cleanBeforePickle(self):
 		self.listOfVariables.cleanFinal()

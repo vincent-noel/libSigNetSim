@@ -29,10 +29,14 @@ from libsignetsim.model.math.MathFormula import MathFormula
 class DAE(object):
 	""" DAE class """
 
-	def __init__ (self):
+	def __init__ (self, model):
 		""" Constructor of ode class """
-
+		self.__model = model
 		self.__definition = None
 
 	def new(self, definition):
 		self.__definition = definition
+
+
+	def getDefinition(self):
+		return self.__definition

@@ -211,7 +211,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 		if reaction_type == KineticLaw.UNDEFINED and math is not None:
 			self.kineticLaw = KineticLaw(self.model, self)
-			self.kineticLaw.definition.setPrettyPrintMathFormula(math)
+			self.kineticLaw.getDefinition().setPrettyPrintMathFormula(math)
 
 		elif parameters is not None:
 			if reaction_type == KineticLaw.MASS_ACTION:
@@ -226,12 +226,12 @@ class Reaction(Variable, SbmlObject, HasUnits):
 				self.kineticLaw = KineticLaw(self.model, self)
 				self.kineticLaw.setHill(parameters)
 
-		self.value = self.kineticLaw.definition
+		self.value = self.kineticLaw.getDefinition()
 		self.constant = False
 
 	def updateKineticLaw(self, kinetic_law):
 		""" Update the kinetic law of the reaction """
-		self.kineticLaw.definition.setMathFormula(kinetic_law)
+		self.kineticLaw.getDefinition().setMathFormula(kinetic_law)
 
 
 	def getKineticLaw(self, math_type=MathFormula.MATH_DEVINTERNAL, forcedConcentration=False):
@@ -241,7 +241,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 	def getKineticLawDerivative(self, variable, math_type):
 		""" Returns the kinetic law's derivative in the specified format """
-		return self.kineticLaw.definition.getMathFormulaDerivative(variable, math_type)
+		return self.kineticLaw.getDefinition().getMathFormulaDerivative(variable, math_type)
 
 
 	def getReactionDescription(self):
@@ -376,6 +376,51 @@ class Reaction(Variable, SbmlObject, HasUnits):
 				ode += t_ode
 
 		return ode
+
+
+	def getODE_v2(self, species, forcedConcentration=False, symbols=False):
+
+		ode = MathFormula.ZERO
+
+		if self.listOfReactants:
+			for reactant in self.listOfReactants.values():
+
+				t_ode = MathFormula.ZERO
+
+				if reactant.getSpecies() == species:
+
+					if not symbols:
+						t_ode -= self.kineticLaw.getDefinition(forcedConcentration).getInternalMathFormula()
+					else:
+						t_ode -= self.symbol.getInternalMathFormula()
+
+					if not reactant.stoichiometry.isOne():
+						t_ode *= reactant.stoichiometry.getInternalMathFormula()
+
+				ode += t_ode
+
+
+		if self.listOfProducts:
+			for product in self.listOfProducts.values():
+				t_ode = MathFormula.ZERO
+
+				if product.getSpecies() == species:
+
+					if not symbols:
+						t_ode += self.kineticLaw.getDefinition(forcedConcentration).getInternalMathFormula()
+					else:
+						t_ode += self.symbol.getInternalMathFormula()
+
+					if not product.stoichiometry.isOne():
+						t_ode *= product.stoichiometry.getInternalMathFormula()
+
+				ode += t_ode
+
+		t_formula = MathFormula(self.model)
+		t_formula.setInternalMathFormula(ode)
+
+		return t_formula
+
 
 
 	# def getODEDerivative(self, species):

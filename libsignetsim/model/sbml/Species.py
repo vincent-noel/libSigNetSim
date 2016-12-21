@@ -290,6 +290,38 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 
 
+	def getODE_v2(self, including_fast_reactions=True, forcedConcentration=False, symbols=False):
+
+		t_formula = MathFormula(self.__model)
+
+		if self.constant == True:
+			t_formula.setInternalMathFormula(MathFormula.ZERO)
+			return t_formula
+
+		elif self.isRateRuled():
+			t_formula.setInternalMathFormula(self.isRuledBy().getDefinition(forcedConcentration).getInternalMathFormula())
+			return t_formula
+
+		elif self.isInReactions(including_fast_reactions):
+
+			ode = MathFormula.ZERO
+
+			if not self.boundaryCondition:
+				for reaction in self.__model.listOfReactions.values():
+					if not reaction.fast or including_fast_reactions:
+						ode += reaction.getODE_v2(self, forcedConcentration, symbols).getInternalMathFormula()
+
+			if self.conversionFactor is not None:
+				ode *= self.conversionFactor.getInternalMathFormula()
+
+			elif self.__model.conversionFactor is not None:
+				ode *= self.__model.conversionFactor.getInternalMathFormula()
+
+			t_formula.setInternalMathFormula(ode)
+			return t_formula
+
+
+
 	def getMathValue(self, forcedConcentration=False):
 
 		if forcedConcentration and (self.isDeclaredConcentration or not self.hasOnlySubstanceUnits):

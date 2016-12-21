@@ -23,7 +23,11 @@
 """
 
 
+from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.DAE import DAE
+from libsignetsim.model.math.sympy_shortcuts import SympyEqual, SympyInteger
+from sympy import solve
+
 
 class ListOfDAEs(list):
 	""" Sbml model class """
@@ -37,11 +41,61 @@ class ListOfDAEs(list):
 
 	def build(self):
 
-		for rule in self.listOfRules.values():
+		for rule in self.__model.listOfRules.values():
 			if rule.isAlgebraic():
+				self.__model.hasDAEs = True
 				t_dae = DAE(self.__model)
-				t_dae.new(dae.getExpressionMath())
+				t_dae.new(rule.getDefinition())
 				list.append(self, t_dae)
 
 
-	def buildDAE(self, dae):
+	def solveInitialConditions(self, tmin=0):
+
+		system = []
+		system_vars = []
+
+		t_subs = {}
+		for var, val in self.__model.solvedInitialConditions.items():
+			t_subs.update({var.symbol.getInternalMathFormula():val.getInternalMathFormula()})
+
+		for dae in self:
+			t_formula = MathFormula(self.__model)
+			t_formula.setInternalMathFormula(dae.getDefinition().getInternalMathFormula())
+			t_formula.setInternalMathFormula(t_formula.getDeveloppedInternalMathFormula().subs(t_subs))
+
+			system.append(
+				SympyEqual(
+					t_formula.getFinalMathFormula(),
+					SympyInteger(0)
+				)
+			)
+
+		system_vars = []
+		for var in self.__model.listOfVariables.values():
+			if var.value.getInternalMathFormula() is None and var.isAlgebraic():
+				system_vars.append(var.symbol.getInternalMathFormula())
+
+
+		if len(system_vars) > 0:
+			res = solve(system, system_vars)
+
+			if res is not True and len(res) > 0:
+				if isinstance(res, dict):
+					for var, value in res.items():
+						t_var = self.__model.listOfVariables[str(var)]
+						t_value = MathFormula(self.__model)
+						t_value.setInternalMathFormula(value)
+						self.__model.solvedInitialConditions.update({t_var:t_value})
+
+				elif isinstance(res[0], dict):
+					for var, value in res[0].items():
+						t_var = self.__model.listOfVariables[str(var)]
+						t_value = MathFormula(self.__model)
+						t_value.setInternalMathFormula(value)
+						self.__model.solvedInitialConditions.update({t_var:t_value})
+				elif isinstance(res[0], tuple):
+					for i_var, value in enumerate(res[0]):
+						t_var = self.__model.listOfVariables[str(system_vars[i_var])]
+						t_value = MathFormula(self.__model)
+						t_value.setInternalMathFormula(value)
+						self.__model.solvedInitialConditions.update({t_var:t_value})

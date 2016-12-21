@@ -74,6 +74,13 @@ class MathSymbol(MathFormula):
 			return SympyDerivative(f, MathFormula.t)
 
 
+	def getDerivative(self):
+
+		f = MathFormula.getInternalMathFormula(self)
+		t_formula = MathFormula(self.__model, MathFormula.MATH_VARIABLE)
+		t_formula.setInternalMathFormula(SympyDerivative(f, MathFormula.t))
+		return t_formula
+
 	def getInternalMathFormulaDerivative(self):
 		return self.getMathFormulaDerivative(MathFormula.MATH_INTERNAL)
 

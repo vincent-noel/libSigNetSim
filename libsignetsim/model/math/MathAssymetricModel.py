@@ -54,7 +54,7 @@ from libsignetsim.model.Variable import Variable
 from sympy import simplify, diff, solve, zeros
 from time import time
 
-class MathAssymetricModel(MathModel):
+class MathAsymmetricModel(MathModel):
 	""" Sbml model class """
 
 	def __init__ (self, obj_id=0):

@@ -45,6 +45,7 @@ class MathVariable(object):
 		self.ind = None
 
 		self.symbol = MathSymbol(self.__model, is_from_reaction)
+
 		self.value = MathFormula(self.__model)
 		self.derivative_value = MathFormula(self.__model)
 
@@ -179,6 +180,16 @@ class MathVariable(object):
 
 		else:
 			return MathFormula.ZERO
+
+	def getODE_v2(self, including_fast_reactions=True, forcedConcentration=False):
+
+		if self.isRateRuled():
+			return self.isRuledBy().getDefinition(forcedConcentration)
+
+		else:
+			t_formula = MathFormula(self.__model)
+			t_formula.setInternalMathFormula(MathFormula.ZERO)
+			return t_formula
 
 
 

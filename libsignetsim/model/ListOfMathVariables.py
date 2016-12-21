@@ -201,26 +201,26 @@ class ListOfMathVariables(object):
 		# print "ALGs"
 		# print [var.getSbmlId() for var in self.__model.variablesAlgebraic]
 
-	def buildInstance(self):
-
-		pass
-
-	# def buildVariablesSubs(self):
-	#     """
-	#         Here is's kinda weird. We still cannot pickle Sympy functions
-	#         so we can't save one within the model object.
-	#         So this function will only be called on a "as needed" basis
+	# def buildInstance(self):
 	#
-	#     """
-	#     t_variableSubs = {}
-	#     for var in self.values():
-	#         if var.isDerivative() or var.isAssignment():
+	# 	pass
 	#
-	#             t_symbol = var.symbol.getInternalMathFormula()
-	#             t_function = SympyFunction(str(t_symbol))(MathFormula.t)
-	#
-	#             t_variableSubs.update({t_symbol: t_function})
-	#     return t_variableSubs
+	# # def buildVariablesSubs(self):
+	# #     """
+	# #         Here is's kinda weird. We still cannot pickle Sympy functions
+	# #         so we can't save one within the model object.
+	# #         So this function will only be called on a "as needed" basis
+	# #
+	# #     """
+	# #     t_variableSubs = {}
+	# #     for var in self.values():
+	# #         if var.isDerivative() or var.isAssignment():
+	# #
+	# #             t_symbol = var.symbol.getInternalMathFormula()
+	# #             t_function = SympyFunction(str(t_symbol))(MathFormula.t)
+	# #
+	# #             t_variableSubs.update({t_symbol: t_function})
+	# #     return t_variableSubs
 
 	def getInternalToFinal(self, forcedConcentration=False):
 		"""

@@ -41,7 +41,7 @@ class ListOfODEs(list):
 
 				t_ode = ODE(self.__model)
 				t_ode.new(variable,
-							variable.getODE(including_fast_reactions))
+							variable.getODE_v2(including_fast_reactions))
 
 				list.append(self, t_ode)
 
@@ -72,3 +72,10 @@ class ListOfODEs(list):
 	# 				tt_ode = tt_ode.subs(t_cfe_var.getInternalMathFormula(), self.CFEs[i_cfe_var].getInternalMathFormula())
 	# 		self.ODEs[i_ode].setInternalMathFormula(tt_ode)
 	# 		# self.ODEs[i_ode].setInternalMathFormula(simplify(tt_ode))
+
+	def printODEs(self):
+
+		print "-----------------------------"
+		for t_ode in enumerate(self):
+			print ">> %s = %s" % (str(t_cfe.getVariable().symbol.getDerivative().getDeveloppedInternalMathFormula()),
+								str(t_cfe.getDefinition().getDeveloppedInternalMathFormula()))

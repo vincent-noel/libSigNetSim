@@ -119,6 +119,43 @@ class KineticLaw(KineticLawIdentifier):
 
 		return MathFormula.getMathFormula(t_formula, math_type)
 
+
+
+
+	def getDefinition(self, forcedConcentration=False):
+
+		t_formula = MathFormula(self.__model, MathFormula.MATH_KINETICLAW)
+
+		if forcedConcentration and len(self.reaction.listOfReactants) > 0:
+				first_reactant = self.reaction.listOfReactants[0].getSpecies()
+				if first_reactant.isConcentration():
+					t_comp = first_reactant.getCompartment()
+					t_formula.setInternalMathFormula(
+								self.definition.getInternalMathFormula()
+								/ t_comp.symbol.getInternalMathFormula())
+
+		else:
+			t_formula.setInternalMathFormula(self.definition.getInternalMathFormula())
+
+		# print "\n getMathFormula from kinetic law : " + str(forcedConcentration)
+		# print t_formula.getInternalMathFormula()
+
+		if forcedConcentration:
+			for species in self.__model.listOfSpecies.values():
+				if species.isConcentration():
+					t_internal = MathFormula.getInternalMathFormula(t_formula)
+					t_fc = SympySymbol("_speciesForcedConcentration_%s_" % str(species.symbol.getInternalMathFormula()))
+					t_species = SympySymbol(species.getSbmlId())
+					t_internal = t_internal.subs({ t_fc : t_species })
+					t_formula.setInternalMathFormula(t_internal)
+
+		# print t_formula.getInternalMathFormula()
+
+		return t_formula
+
+
+
+
 	def setPrettyPrintMathFormula(self, definition):
 
 		if len(self.reaction.listOfReactants) > 0:

@@ -29,9 +29,10 @@ from libsignetsim.model.math.MathFormula import MathFormula
 class ODE(object):
 	""" ODE class """
 
-	def __init__ (self):
+	def __init__ (self, model):
 		""" Constructor of ode class """
 
+		self.__model = model
 		self.__variable = None
 		self.__definition = None
 
@@ -40,3 +41,10 @@ class ODE(object):
 
 		self.__variable = variable
 		self.__definition = definition
+
+
+	def getVariable(self):
+		return self.__variable
+
+	def getDefinition(self):
+		return self.__definition

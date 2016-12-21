@@ -23,8 +23,10 @@
 """
 
 from libsignetsim.model.math.CFE import CFE
-
-class ListOfCFEs(ListOf):
+from libsignetsim.model.math.MathFormula import MathFormula
+from libsignetsim.model.math.sympy_shortcuts import SympyInf, SympyNan, SympyEqual
+from sympy import solve
+class ListOfCFEs(list):
 	""" Sbml model class """
 
 
@@ -33,75 +35,95 @@ class ListOfCFEs(ListOf):
 
 		self.__model = model
 		list.__init__(self)
-
+		self.developpedCFEs = []
 
 	def build(self):
 
-		if self.listOfRules.hasAssignmentRule():
-			for rule in self.listOfRules.values():
+		if self.__model.listOfRules.hasAssignmentRule():
+			for rule in self.__model.listOfRules.values():
 				if rule.isAssignment():
-					list.append(self, self.buildCFE(rule.getVariable(), rule.definition, CFE.ASSIGNMENT))
-					#
-					#
-					# self.CFE_types.append(self.ASSIGNMENT)
-					#
-					# t_var = MathFormula(self, MathFormula.MATH_VARIABLE)
-					# t_var.setInternalMathFormula(rule.variable.getInternalMathFormula())
-					# self.CFE_vars.append(t_var)
-					#
-					# t_cfe = MathFormula(self)
-					# t_cfe.setInternalMathFormula(rule.getInternalDefinition())
-					# self.CFEs.append(t_cfe)
+					t_cfe = CFE(self.__model, CFE.ASSIGNMENT)
+					t_cfe.new(rule.getVariable(), rule.getDefinition())
 
+					list.append(self, t_cfe)
 
-		for reaction in self.listOfReactions.values():
-			# self.CFE_types.append(self.REACTION)
-			#
-			# t_var = MathFormula(self, MathFormula.MATH_VARIABLE)
-			# t_var.setInternalMathFormula(reaction.symbol.getInternalMathFormula())
-			# self.CFE_vars.append(t_var)
-			#
-			# t_cfe = MathFormula(self)
-			# t_cfe.setInternalMathFormula(reaction.value.getInternalMathFormula())
-			# self.CFEs.append(t_cfe)
-			list.append(self,self.buildCFE(reaction, reaction.value, CFE.REACTION))
+		for reaction in self.__model.listOfReactions.values():
+			t_cfe = CFE(self.__model, CFE.REACTION)
+			t_cfe.new(reaction, reaction.value)
 
-		# self.developCFEs()
+			list.append(self, t_cfe)
 
-	def buildCFE(self, variable, definition, cfe_type):
+		self.developCFEs()
 
-		t_cfe = CFE(self.__model, cfe_type)
-		t_cfe.new(variable, definition)
-		return t_cfe
 
 	def developCFEs(self):
 
-		# print "developping CFEs"
-		# Here we just develop the expression,
-		# so that no closed-form depends on another.
-		# Just to be sure not to get any ordering constraints
-		# In two passes, not sure it's the right thing to do, but it works
+		self.developpedCFEs = []
 
-		if len(self.CFEs) > 0:
-			for i_cfe, t_cfe in enumerate(self.CFEs):
-				tt_cfe = t_cfe.getDeveloppedInternalMathFormula()
-				for i_cfe_var, t_cfe_var in enumerate(self.CFE_vars):
-					if t_cfe_var.getInternalMathFormula() in tt_cfe.atoms(SympySymbol) and i_cfe_var < i_cfe:
-						tt_cfe = tt_cfe.subs(t_cfe_var.getInternalMathFormula(), self.CFEs[i_cfe_var].getInternalMathFormula())
-				self.CFEs[i_cfe].setInternalMathFormula(tt_cfe)
+		if len(self) > 0:
 
+			system = []
+			system_vars = []
 
-			for i_cfe, t_cfe in enumerate(self.CFEs):
-				tt_cfe = t_cfe.getDeveloppedInternalMathFormula()
-				for i_cfe_var, t_cfe_var in enumerate(self.CFE_vars):
-					if t_cfe_var.getInternalMathFormula() in tt_cfe.atoms(SympySymbol):
-						tt_cfe = tt_cfe.subs(t_cfe_var.getInternalMathFormula(), self.CFEs[i_cfe_var].getInternalMathFormula())
-				self.CFEs[i_cfe].setInternalMathFormula(simplify(tt_cfe))
+			for t_cfe in self:
+				if t_cfe.isAssignment():# or t_cfe.isReaction():
+					t_def = t_cfe.getDefinition().getDeveloppedInternalMathFormula()
+					if t_def not in [SympyInf, -SympyInf, SympyNan]:
+						t_equ = SympyEqual(
+							t_cfe.getVariable().symbol.getInternalMathFormula(),
+							t_def
+						)
+						system.append(t_equ)
+						system_vars.append(t_cfe.getVariable().symbol.getInternalMathFormula())
 
+				elif t_cfe.isReaction():
+					self.developpedCFEs.append(t_cfe)
+
+			# print system
+			# print system_vars
+			if len(system_vars) > 0:
+				res = solve(system, system_vars)
+
+				print res
+
+				if res is not True and len(res) > 0:
+					# self[:] = []
+					if isinstance(res, dict):
+						for var, value in res.items():
+							t_var = self.__model.listOfVariables[str(var)]
+							t_value = MathFormula(self.__model)
+							t_value.setInternalMathFormula(value)
+							t_cfe = CFE(self.__model)
+							t_cfe.new(t_var, t_value)
+							self.developpedCFEs.append(t_cfe)
+
+					elif isinstance(res[0], dict):
+						for var, value in res[0].items():
+							t_var = self.__model.listOfVariables[str(var)]
+							t_value = MathFormula(self.__model)
+							t_value.setInternalMathFormula(value)
+							t_cfe = CFE(self.__model)
+							t_cfe.new(t_var, t_value)
+							self.developpedCFEs.append(t_cfe)
+
+					elif isinstance(res[0], tuple):
+						for i_var, value in enumerate(res[0]):
+							t_var = self.__model.listOfVariables[str(system_vars[i_var])]
+							t_value = MathFormula(self.__model)
+							t_value.setInternalMathFormula(value)
+							t_cfe = CFE(self.__model)
+							t_cfe.new(t_var, t_value)
+							self.developpedCFEs.append(t_cfe)
+
+					else:
+
+						print "ERROR !!!!!!! The result of the solver for initial conditions is yet another unknown format !"
+			else:
+				self.developpedCFEs = self
 
 	def printCFEs(self):
 
 		print "-----------------------------"
-		for i_equ, equ in enumerate(self.CFEs):
-			print ">> %s = %s" % (str(self.CFE_vars[i_equ].getDeveloppedInternalMathFormula()),
-								str(equ.getDeveloppedInternalMathFormula()))
+		for t_cfe in enumerate(self):
+			print ">> %s = %s" % (str(t_cfe.getVariable().symbol.getDeveloppedInternalMathFormula()),
+								str(t_cfe.getDefinition().getDeveloppedInternalMathFormula()))
