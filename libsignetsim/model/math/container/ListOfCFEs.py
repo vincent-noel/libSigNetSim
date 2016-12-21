@@ -66,7 +66,7 @@ class ListOfCFEs(list):
 			system_vars = []
 
 			for t_cfe in self:
-				if t_cfe.isAssignment():# or t_cfe.isReaction():
+				if t_cfe.isAssignment():
 					t_def = t_cfe.getDefinition().getDeveloppedInternalMathFormula()
 					if t_def not in [SympyInf, -SympyInf, SympyNan]:
 						t_equ = SympyEqual(
@@ -84,10 +84,10 @@ class ListOfCFEs(list):
 			if len(system_vars) > 0:
 				res = solve(system, system_vars)
 
-				print res
+				# print res
 
 				if res is not True and len(res) > 0:
-					# self[:] = []
+
 					if isinstance(res, dict):
 						for var, value in res.items():
 							t_var = self.__model.listOfVariables[str(var)]

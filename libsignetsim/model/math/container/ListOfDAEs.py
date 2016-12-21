@@ -55,6 +55,7 @@ class ListOfDAEs(list):
 		system_vars = []
 
 		t_subs = {}
+
 		for var, val in self.__model.solvedInitialConditions.items():
 			t_subs.update({var.symbol.getInternalMathFormula():val.getInternalMathFormula()})
 
@@ -75,10 +76,45 @@ class ListOfDAEs(list):
 			if var.value.getInternalMathFormula() is None and var.isAlgebraic():
 				system_vars.append(var.symbol.getInternalMathFormula())
 
+		# print system
+		# print system_vars
+		if False in system:
+			for var in self.__model.listOfVariables.values():
+				if var.isAlgebraic():
+					del self.__model.solvedInitialConditions[var]
 
+			system = []
+			system_vars = []
+
+			t_subs = {}
+
+			for var, val in self.__model.solvedInitialConditions.items():
+				t_subs.update({var.symbol.getInternalMathFormula():val.getInternalMathFormula()})
+
+			for dae in self:
+				t_formula = MathFormula(self.__model)
+				t_formula.setInternalMathFormula(dae.getDefinition().getInternalMathFormula())
+				t_formula.setInternalMathFormula(t_formula.getDeveloppedInternalMathFormula().subs(t_subs))
+
+				system.append(
+					SympyEqual(
+						t_formula.getFinalMathFormula(),
+						SympyInteger(0)
+					)
+				)
+
+			system_vars = []
+			for var in self.__model.listOfVariables.values():
+				if var.isAlgebraic():
+					system_vars.append(var.symbol.getInternalMathFormula())
+
+		# print system
+		# print system_vars
 		if len(system_vars) > 0:
-			res = solve(system, system_vars)
 
+
+			res = solve(system, system_vars)
+			# print res
 			if res is not True and len(res) > 0:
 				if isinstance(res, dict):
 					for var, value in res.items():

@@ -31,9 +31,9 @@ from libsignetsim.settings.Settings import Settings
 class TestSbmlCompatibility(unittest.TestCase):
 	""" Tests SBML semantic test cases """
 
-	TODO_CASES = []#range(1100, 1300)
+	TODO_CASES = []
 
-	INCOMPATIBLE_CASES = [962]
+	INCOMPATIBLE_CASES = [962] #Not compatible with ubuntu:precise ..!!??!!
 	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'UncommonMathML', 'VolumeConcentrationRates', 'FastReaction']
 	INCOMPATIBLE_PACKAGES = ['fbc']
 
