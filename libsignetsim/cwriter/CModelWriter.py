@@ -100,9 +100,8 @@ class CModelWriter(object):
 								variable_name, i_var, variable_ass.getCValue(), variable_ass.symbol.getPrettyPrintMathFormula()))
 
 		for i_var, variable_cst in enumerate(self.variablesConstant):
-
 			f_c.write("  %s.constant_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_CONSTANT};\n" % (
-								variable_name, i_var, variable_cst.getCValue(), variable_cst.symbol.getPrettyPrintMathFormula()))
+								variable_name, i_var, self.solvedInitialConditions[variable_cst].getCMathFormula(), variable_cst.symbol.getPrettyPrintMathFormula()))
 
 
 		for i_var, variable_alg in enumerate(self.variablesAlgebraic):
@@ -276,7 +275,8 @@ class CModelWriter(object):
 		# 									   t_formula.getCMathFormula()))
 
 		for var, value in self.solvedInitialConditions.items():
-			f_c.write("%s = %s;\n" % (var.symbol.getCMathFormula(), value.getCMathFormula()))
+			if not var.isConstant():
+				f_c.write("%s = %s;\n" % (var.symbol.getCMathFormula(), value.getCMathFormula()))
 
 		f_c.write("  return 0;\n")
 		f_c.write("}\n\n")
