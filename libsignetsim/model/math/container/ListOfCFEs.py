@@ -24,8 +24,10 @@
 
 from libsignetsim.model.math.CFE import CFE
 from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.math.sympy_shortcuts import SympyInf, SympyNan, SympyEqual
+from libsignetsim.model.math.sympy_shortcuts import SympyInf, SympyNan, SympyEqual, SympySymbol
+from libsignetsim.settings.Settings import Settings
 from sympy import solve
+from time import time
 class ListOfCFEs(list):
 	""" Sbml model class """
 
@@ -58,6 +60,7 @@ class ListOfCFEs(list):
 
 	def developCFEs(self):
 
+		t0 = time()
 		self.developpedCFEs = []
 
 		if len(self) > 0:
@@ -74,7 +77,13 @@ class ListOfCFEs(list):
 							t_def
 						)
 						system.append(t_equ)
-						system_vars.append(t_cfe.getVariable().symbol.getInternalMathFormula())
+						if len(t_def.atoms(SympySymbol)) > 0 and t_def.atoms(SympySymbol) != set([SympySymbol("_time_")]):
+							# print t_def.atoms(SympySymbol)
+							# print t_def.atoms(SympySymbol) == set([SympySymbol("_time_")])
+							system_vars.append(t_cfe.getVariable().symbol.getInternalMathFormula())
+						else:
+							self.developpedCFEs.append(t_cfe)
+
 
 				elif t_cfe.isReaction():
 					self.developpedCFEs.append(t_cfe)
@@ -120,6 +129,9 @@ class ListOfCFEs(list):
 						print "ERROR !!!!!!! The result of the solver for initial conditions is yet another unknown format !"
 			else:
 				self.developpedCFEs = self
+		t1 = time()
+		if Settings.verbose >= 1:
+			print "> Finished developping closed forms (%.2gs)" % (t1-t0)
 
 	def printCFEs(self):
 

@@ -100,8 +100,14 @@ class CModelWriter(object):
 								variable_name, i_var, variable_ass.getCValue(), variable_ass.symbol.getPrettyPrintMathFormula()))
 
 		for i_var, variable_cst in enumerate(self.variablesConstant):
+
+			if variable_cst in self.solvedInitialConditions:
+				t_value = self.solvedInitialConditions[variable_cst]
+			else:
+				t_value = variable_cst.value
+
 			f_c.write("  %s.constant_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_CONSTANT};\n" % (
-								variable_name, i_var, self.solvedInitialConditions[variable_cst].getCMathFormula(), variable_cst.symbol.getPrettyPrintMathFormula()))
+								variable_name, i_var, t_value.getCMathFormula(), variable_cst.symbol.getPrettyPrintMathFormula()))
 
 
 		for i_var, variable_alg in enumerate(self.variablesAlgebraic):
@@ -479,13 +485,13 @@ class CModelWriter(object):
 					if event.delay is not None:
 						f_c.write("    memory[%d] = %s;\n"
 								% (i_assignment,
-								event_assignment.definition.getCMathFormula()))
+								event_assignment.getDefinition().getCMathFormula()))
 
 					else:
 						# print "event assignment = %s" % event_assignment.definition.getCMathFormula()
 						f_c.write("    data->events_memory[%d][%d] = %s;\n"
 								% (i_event, i_assignment,
-								event_assignment.definition.getCMathFormula()))
+								event_assignment.getDefinition().getCMathFormula()))
 
 
 			f_c.write("  }\n\n")
@@ -519,11 +525,11 @@ class CModelWriter(object):
 					if event.useValuesFromTriggerTime:
 						if event.delay is not None:
 							f_c.write("      %s = memory[%d];\n"
-								% (event_assignment.variable.getCMathFormula(),
+								% (event_assignment.getVariable().symbol.getCMathFormula(),
 									i_assignment))
 						else:
 							f_c.write("      %s = data->events_memory[%d][%d];\n"
-								% (event_assignment.variable.getCMathFormula(),
+								% (event_assignment.getVariable().symbol.getCMathFormula(),
 									i_event, i_assignment))
 					else:
 						# We need to put an empty statement for some weird rule
@@ -531,12 +537,12 @@ class CModelWriter(object):
 						f_c.write("      ;\n")
 						f_c.write("      realtype t_var_%d_%d = %s;\n"
 								% (i_event, i_assignment,
-									event_assignment.definition.getCMathFormula()))
+									event_assignment.getDefinition().getCMathFormula()))
 				for i_assignment, event_assignment in enumerate(event.listOfEventAssignments):
 					if not event.useValuesFromTriggerTime:
 
 						f_c.write("      %s = t_var_%d_%d;\n"
-								% (event_assignment.variable.getCMathFormula(),
+								% (event_assignment.getVariable().symbol.getCMathFormula(),
 									i_event, i_assignment))
 
 				f_c.write("      break;\n")

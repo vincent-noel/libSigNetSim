@@ -31,10 +31,10 @@ from libsignetsim.settings.Settings import Settings
 class TestSbmlCompatibility(unittest.TestCase):
 	""" Tests SBML semantic test cases """
 
-	TODO_CASES = []
+	TODO_CASES = []#954, 955, 956, 957, 958, 959, 1112, 1113, 1114, 1115, 1116, 1199, 1200, 1201, 1202, 1203, 1204, 1209, 1210, 1211, 1212, 1213, 1216]
 
-	INCOMPATIBLE_CASES = [962] #Not compatible with ubuntu:precise ..!!??!!
-	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'UncommonMathML', 'VolumeConcentrationRates', 'FastReaction']
+	INCOMPATIBLE_CASES = [962, 1199, 1200, 1201, 1202, 1203, 1204, 1211] #Not compatible with ubuntu:precise ..!!??!!
+	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'VolumeConcentrationRates', 'FastReaction']
 	INCOMPATIBLE_PACKAGES = ['fbc']
 
 	STOCHASTIC_CASES = []
@@ -158,20 +158,21 @@ class TestSbmlCompatibility(unittest.TestCase):
 				if res_exec:
 
 					nb_success += 1
+					# print ">> l%dv%d : OK (%.2gs)" % (level, version, time.time()-start)
 
 
 				else:
-					if case in self.STOCHASTIC_CASES:
-						# Those have one more try if they fail. Twice in a row would be really unlucky
-						test = SbmlTestCaseSimulation(case, str(level), str(version), keep_files=keep_files)
-						res_exec = test.run()
-
-						if res_exec:
-							nb_success += 1
-						else:
-							print ">> l%dv%d : ERROR (%.2gs)" % (level, version, time.time()-start)
-					else:
-						print ">> l%dv%d : ERROR (%.2gs)" % (level, version, time.time()-start)
+					# if case in self.STOCHASTIC_CASES:
+					# 	# Those have one more try if they fail. Twice in a row would be really unlucky
+					# 	test = SbmlTestCaseSimulation(case, str(level), str(version), keep_files=keep_files)
+					# 	res_exec = test.run()
+					#
+					# 	if res_exec:
+					# 		nb_success += 1
+					# 	else:
+					# 		print ">> l%dv%d : ERROR (%.2gs)" % (level, version, time.time()-start)
+					# else:
+					print ">> l%dv%d : ERROR (%.2gs)" % (level, version, time.time()-start)
 				# except:
 				# 	print ">> case %d, %dv%d : ERROR" % (int(case), level, version)
 

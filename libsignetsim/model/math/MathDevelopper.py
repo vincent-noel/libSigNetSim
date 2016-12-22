@@ -79,8 +79,8 @@ class MathDevelopper(object):
 
 			res_match = match(r"_functionDefinition_(\d+)_", str(tree.func))
 			t_id = int(res_match.groups()[0])
-			t_definition = self.__model.listOfFunctionDefinitions[t_id].getMathFormulaFunction()
-			t_arguments = list(self.__model.listOfFunctionDefinitions[t_id].getMathFormulaFunctionArguments())
+			t_definition = self.__model.listOfFunctionDefinitions[t_id].getDefinition().getInternalMathFormula().args[1]
+			t_arguments = list(self.__model.listOfFunctionDefinitions[t_id].getDefinition().getInternalMathFormula().args[0])
 
 			for child in range(0, len(tree.args)):
 				t_definition = t_definition.subs(t_arguments[child], self.translateForDeveloppedInternal(tree.args[child]))

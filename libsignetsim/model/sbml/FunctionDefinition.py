@@ -38,7 +38,7 @@ class FunctionDefinition(HasId, SbmlObject):
 
 		HasId.__init__(self, model)
 		SbmlObject.__init__(self, model)
-		self.definition = MathFormula(model, MathFormula.MATH_FUNCTION)
+		self.__definition = MathFormula(model, MathFormula.MATH_FUNCTION)
 
 
 	def readSbml(self, sbml_function_definition, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
@@ -46,30 +46,25 @@ class FunctionDefinition(HasId, SbmlObject):
 
 		HasId.readSbml(self, sbml_function_definition, sbml_level, sbml_version)
 		SbmlObject.readSbml(self, sbml_function_definition, sbml_level, sbml_version)
-		self.definition.readSbml(sbml_function_definition.getMath(), sbml_level, sbml_version)
+		self.__definition.readSbml(sbml_function_definition.getMath(), sbml_level, sbml_version)
 
 
 	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Writes a function definition to a sbml file """
 
 		t_function_definition = sbml_model.createFunctionDefinition()
-
 		HasId.writeSbml(self, t_function_definition, sbml_level, sbml_version)
 		SbmlObject.writeSbml(self, t_function_definition, sbml_level, sbml_version)
-		t_function_definition.setMath(self.definition.writeSbml(sbml_level, sbml_version))
+		t_function_definition.setMath(self.__definition.writeSbml(sbml_level, sbml_version))
 
 
 	def copy(self, obj, prefix="", shift=0):
 		HasId.copy(self, obj, prefix, shift)
 		SbmlObject.copy(self, obj, prefix, shift)
-		self.definition.setInternalMathFormula(obj.definition.getInternalMathFormula())
+		self.__definition.setInternalMathFormula(obj.getDefinition().getInternalMathFormula())
 		if prefix != "":
-			self.definition.renameSbmlId(obj.getSbmlId(), prefix+obj.getSbmlId())
+			self.__definition.renameSbmlId(obj.getSbmlId(), prefix+obj.getSbmlId())
 
 
-	def getMathFormulaFunction(self):
-		return self.definition.getMathFormula(MathFormula.MATH_INTERNAL).args[1]
-
-
-	def getMathFormulaFunctionArguments(self):
-		return self.definition.getMathFormula(MathFormula.MATH_INTERNAL).args[0]
+	def getDefinition(self):
+		return self.__definition

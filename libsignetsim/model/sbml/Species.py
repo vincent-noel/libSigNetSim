@@ -263,30 +263,30 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		return False
 
 
-	def getODE(self, including_fast_reactions=False, math_type=MathFormula.MATH_INTERNAL, forcedConcentration=False, symbols=False):
-
-		if self.constant == True:
-			return MathFormula.ZERO
-
-		elif self.isRateRuled():
-			return self.isRuledBy().getDefinition(forcedConcentration).getMathFormula(math_type)
-
-		elif self.isInReactions(including_fast_reactions):
-
-			ode = MathFormula.ZERO
-
-			if not self.boundaryCondition:
-				for reaction in self.__model.listOfReactions.values():
-					if not reaction.fast or including_fast_reactions:
-						ode += reaction.getODE(self, math_type, forcedConcentration, symbols)
-
-			if self.conversionFactor is not None:
-				ode *= self.conversionFactor.getMathFormula(math_type)
-
-			elif self.__model.conversionFactor is not None:
-				ode *= self.__model.conversionFactor.getMathFormula(math_type)
-
-			return ode
+	# def getODE(self, including_fast_reactions=False, math_type=MathFormula.MATH_INTERNAL, forcedConcentration=False, symbols=False):
+	#
+	# 	if self.constant == True:
+	# 		return MathFormula.ZERO
+	#
+	# 	elif self.isRateRuled():
+	# 		return self.isRuledBy().getDefinition(forcedConcentration).getMathFormula(math_type)
+	#
+	# 	elif self.isInReactions(including_fast_reactions):
+	#
+	# 		ode = MathFormula.ZERO
+	#
+	# 		if not self.boundaryCondition:
+	# 			for reaction in self.__model.listOfReactions.values():
+	# 				if not reaction.fast or including_fast_reactions:
+	# 					ode += reaction.getODE(self, math_type, forcedConcentration, symbols)
+	#
+	# 		if self.conversionFactor is not None:
+	# 			ode *= self.conversionFactor.getMathFormula(math_type)
+	#
+	# 		elif self.__model.conversionFactor is not None:
+	# 			ode *= self.__model.conversionFactor.getMathFormula(math_type)
+	#
+	# 		return ode
 
 
 
@@ -347,25 +347,6 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			self.value.setInternalMathFormula(value*self.getCompartment().symbol.getInternalMathFormula())
 		else:
 			Variable.setValue(self, value)
-
-		# print self.value.getInternalMathFormula()
-
-	# def renameSbmlId(self, old_sbml_id, new_sbml_id):
-
-		# old_symbol = SympySymbol(old_sbml_id)
-		#
-		# if old_symbol in self.definition.getInternalMathFormula().atoms():
-		#     t_definition = MathFormula(self.__model, MathFormula.MATH_ALGEBRAICRULE)
-		#     t_definition.setInternalMathFormula(self.definition.getInternalMathFormula.subs(old_symbol, SympySymbol(new_sbml_id)))
-		#
-		# if self.value is not None:
-		#     self.value.renameSbmlId(old_sbml_id, new_sbml_id)
-		#
-		# for reactant in self.listOfReactants.values():
-		#     reactant.renameSbmlId(old_sbml_id, new_sbml_id)
-		#
-		# for product in self.listOfProducts.values():
-		#     product.renameSbmlId(old_sbml_id, new_sbml_id)
 
 
 	def hasUnits(self):

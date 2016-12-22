@@ -52,7 +52,6 @@ class EventTrigger(MathFormula):
 		self.__model = model
 
 		MathFormula.__init__(self, model, MathFormula.MATH_EQUATION)
-		# self.definition = MathFormula(model, MathFormula.MATH_EQUATION)
 
 		self.initialValue = True
 		self.isPersistent = True
@@ -61,7 +60,6 @@ class EventTrigger(MathFormula):
 	def readSbml(self, sbml_trigger, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Reads an event definition from a sbml file """
 
-		# self.definition.readSbml(sbml_trigger.getMath(), sbml_level, sbml_version)
 		MathFormula.readSbml(self, sbml_trigger.getMath(), sbml_level, sbml_version)
 
 		if sbml_level >= 3:
@@ -73,7 +71,6 @@ class EventTrigger(MathFormula):
 		""" Writes an event definition to a sbml file """
 
 		sbml_trigger = sbml_event.createTrigger()
-		# sbml_trigger.setMath(self.definition.writeSbml(sbml_level, sbml_version))
 		sbml_trigger.setMath(MathFormula.writeSbml(self, sbml_level, sbml_version))
 
 		if sbml_level >= 3:
@@ -89,7 +86,6 @@ class EventTrigger(MathFormula):
 		for var, conversion in conversions.items():
 			t_convs.update({var:var/conversion})
 
-		# self.definition.setInternalMathFormula(obj.definition.getInternalMathFormula().subs(subs).subs(replacements).subs(t_convs))
 		MathFormula.setInternalMathFormula(self, obj.getInternalMathFormula().subs(subs).subs(replacements).subs(t_convs))
 
 		self.initialValue = obj.initialValue
@@ -99,9 +95,9 @@ class EventTrigger(MathFormula):
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 
 		old_symbol = SympySymbol(old_sbml_id)
-		if old_symbol in self.definition.getInternalMathFormula().atoms():
-			self.definition.setInternalMathFormula(
-				self.definition.getInternalMathFormula().subs(
+		if old_symbol in MathFormula.getInternalMathFormula(self).atoms():
+			MathFormula.setInternalMathFormula(self,
+				MathFormula.getInternalMathFormula(self).subs(
 					old_symbol,
 					SympySymbol(new_sbml_id)
 				)
@@ -118,7 +114,6 @@ class EventTrigger(MathFormula):
 			if t_var.isConcentration():
 				t_subs_mask.update({t_var.symbol.getInternalMathFormula():SympySymbol("_speciesForcedConcentration_%s_" % str(t_var.symbol.getInternalMathFormula()))})
 
-		# self.definition.setInternalMathFormula(t_trigger.getInternalMathFormula().subs(t_subs_mask))
 		MathFormula.setInternalMathFormula(self, t_trigger.getInternalMathFormula().subs(t_subs_mask))
 
 

@@ -56,9 +56,6 @@ class Rule(SbmlObject):
 
 		self.ruleType = rule_type
 
-		# self.variable = MathSymbol(model)
-		# self.definition = MathFormula(model)
-
 
 	def readSbml(self, sbml_rule, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 

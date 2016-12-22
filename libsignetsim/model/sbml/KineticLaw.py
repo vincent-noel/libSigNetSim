@@ -49,7 +49,7 @@ class KineticLaw(KineticLawIdentifier):
 	def __init__(self, model, isFromReaction):
 
 		self.__model = model
-		self.definition = MathFormula(model, MathFormula.MATH_KINETICLAW, isFromReaction)
+		self.__definition = MathFormula(model, MathFormula.MATH_KINETICLAW, isFromReaction)
 		# MathFormula.__init__(self, model,
 		# 						MathFormula.MATH_KINETICLAW, isFromReaction)
 		KineticLawIdentifier.__init__(self, model, isFromReaction)
@@ -65,7 +65,7 @@ class KineticLaw(KineticLawIdentifier):
 		for var, conversion in conversions.items():
 			t_convs.update({var:var/conversion})
 
-		t_formula = obj.kineticLaw.definition.getInternalMathFormula().subs(subs).subs(replacements).subs(t_convs)
+		t_formula = obj.kineticLaw.getDefinition().getInternalMathFormula().subs(subs).subs(replacements).subs(t_convs)
 
 		if extent_conversion is not None:
 			t_formula *= extent_conversion.getInternalMathFormula()
@@ -73,53 +73,16 @@ class KineticLaw(KineticLawIdentifier):
 		if time_conversion is not None:
 			t_formula /= time_conversion.getInternalMathFormula()
 
-		self.definition.setInternalMathFormula(t_formula)
+		self.__definition.setInternalMathFormula(t_formula)
 
 	def readSbml(self, sbml_math,
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
 
-		# MathFormula.readSbml(self, sbml_math, sbml_level, sbml_version)
-
-		self.definition.readSbml(sbml_math, sbml_level, sbml_version)
+		self.__definition.readSbml(sbml_math, sbml_level, sbml_version)
 		# And the we should look for the Kinetic law Here
 		# But since it may take time, we will do it on demand
 		# KineticLawIdentifier.findKineticLaw(self)
-		# print "reading kinetic law"
-		# print MathFormula.getInternalMathFormula(self)
-
-	def getMathFormula(self, math_type, forcedConcentration=False):
-
-		t_formula = MathFormula(self.__model, MathFormula.MATH_KINETICLAW)
-
-		if forcedConcentration and len(self.reaction.listOfReactants) > 0:
-				first_reactant = self.reaction.listOfReactants[0].getSpecies()
-				if first_reactant.isConcentration():
-					t_comp = first_reactant.getCompartment()
-					t_formula.setInternalMathFormula(
-								self.definition.getInternalMathFormula()
-								/ t_comp.symbol.getInternalMathFormula())
-
-		else:
-			t_formula.setInternalMathFormula(self.definition.getInternalMathFormula())
-
-		# print "\n getMathFormula from kinetic law : " + str(forcedConcentration)
-		# print t_formula.getInternalMathFormula()
-
-		if forcedConcentration:
-			for species in self.__model.listOfSpecies.values():
-				if species.isConcentration():
-					t_internal = MathFormula.getInternalMathFormula(t_formula)
-					t_fc = SympySymbol("_speciesForcedConcentration_%s_" % str(species.symbol.getInternalMathFormula()))
-					t_species = SympySymbol(species.getSbmlId())
-					t_internal = t_internal.subs({ t_fc : t_species })
-					t_formula.setInternalMathFormula(t_internal)
-
-		# print t_formula.getInternalMathFormula()
-
-		return MathFormula.getMathFormula(t_formula, math_type)
-
-
 
 
 	def getDefinition(self, forcedConcentration=False):
@@ -131,14 +94,12 @@ class KineticLaw(KineticLawIdentifier):
 				if first_reactant.isConcentration():
 					t_comp = first_reactant.getCompartment()
 					t_formula.setInternalMathFormula(
-								self.definition.getInternalMathFormula()
+								self.__definition.getInternalMathFormula()
 								/ t_comp.symbol.getInternalMathFormula())
 
 		else:
-			t_formula.setInternalMathFormula(self.definition.getInternalMathFormula())
+			t_formula.setInternalMathFormula(self.__definition.getInternalMathFormula())
 
-		# print "\n getMathFormula from kinetic law : " + str(forcedConcentration)
-		# print t_formula.getInternalMathFormula()
 
 		if forcedConcentration:
 			for species in self.__model.listOfSpecies.values():
@@ -149,11 +110,7 @@ class KineticLaw(KineticLawIdentifier):
 					t_internal = t_internal.subs({ t_fc : t_species })
 					t_formula.setInternalMathFormula(t_internal)
 
-		# print t_formula.getInternalMathFormula()
-
 		return t_formula
-
-
 
 
 	def setPrettyPrintMathFormula(self, definition):
@@ -164,17 +121,17 @@ class KineticLaw(KineticLawIdentifier):
 				t_comp = first_reactant.getCompartment()
 				t_math_formula = MathFormula(self.__model, MathFormula.MATH_KINETICLAW)
 				t_math_formula.setPrettyPrintMathFormula(definition)
-				self.definition.setInternalMathFormula(t_math_formula.getInternalMathFormula()*t_comp.symbol.getInternalMathFormula())
+				self.__definition.setInternalMathFormula(t_math_formula.getInternalMathFormula()*t_comp.symbol.getInternalMathFormula())
 
 			else:
-				self.definition.setPrettyPrintMathFormula(definition)
+				self.__definition.setPrettyPrintMathFormula(definition)
 
 		else:
 			MathFormula.setPrettyPrintMathFormula(self, definition)
 
 		if self.reaction.value is None:
 			self.reaction.value = MathFormula(self.__model)
-		self.reaction.value.setInternalMathFormula(self.definition.getInternalMathFormula())
+		self.reaction.value.setInternalMathFormula(self.__definition.getInternalMathFormula())
 
 
 	def getPrettyPrintMathFormula(self):
@@ -184,12 +141,12 @@ class KineticLaw(KineticLawIdentifier):
 			if first_reactant.isConcentration():
 				t_comp = first_reactant.getCompartment()
 				t_math_formula = MathFormula(self.__model, MathFormula.MATH_KINETICLAW)
-				t_math_formula.setInternalMathFormula(self.definition.getInternalMathFormula()/t_comp.symbol.getInternalMathFormula())
+				t_math_formula.setInternalMathFormula(self.__definition.getInternalMathFormula()/t_comp.symbol.getInternalMathFormula())
 				t_math_formula = t_math_formula.getPrettyPrintMathFormula()
 			else:
-				t_math_formula = self.definition.getPrettyPrintMathFormula()
+				t_math_formula = self.__definition.getPrettyPrintMathFormula()
 		else:
-			t_math_formula = self.definition.getPrettyPrintMathFormula()
+			t_math_formula = self.__definition.getPrettyPrintMathFormula()
 
 		if self.reaction.listOfLocalParameters > 0:
 			t_math_formula = t_math_formula.replace("_local_%d_" % (self.reaction.objId), "")
@@ -266,9 +223,7 @@ class KineticLaw(KineticLawIdentifier):
 				print first_modifier.getCompartment().symbol.getInternalMathFormula()
 				t_formula *= first_modifier.getCompartment().symbol.getInternalMathFormula()
 
-		# print "Kinetic law"
-		# print t_formula
-		self.definition.setInternalMathFormula(simplify(t_formula))
+		self.__definition.setInternalMathFormula(simplify(t_formula))
 
 
 	def setMichaelis(self, parameters):
@@ -291,7 +246,7 @@ class KineticLaw(KineticLawIdentifier):
 			if not first_modifier.hasOnlySubstanceUnits:
 				t_formula *= first_modifier.getCompartment().symbol.getInternalMathFormula()
 
-		self.definition.setInternalMathFormula(simplify(t_formula))
+		self.__definition.setInternalMathFormula(simplify(t_formula))
 
 
 
@@ -317,7 +272,7 @@ class KineticLaw(KineticLawIdentifier):
 			if not first_modifier.hasOnlySubstanceUnits:
 				t_formula *= first_modifier.getCompartment().symbol.getInternalMathFormula()
 
-		self.definition.setInternalMathFormula(simplify(t_formula))
+		self.__definition.setInternalMathFormula(simplify(t_formula))
 
 
 
@@ -326,13 +281,13 @@ class KineticLaw(KineticLawIdentifier):
 		t_symbol = SympySymbol(old_sbml_id)
 		t_local_symbol = SympySymbol("_local_%d_%s" % (self.reaction.objId, old_sbml_id))
 		t_concentration_symbol = SympySymbol("_speciesForcedConcentration_%s_" % old_sbml_id)
-		if t_symbol in self.definition.getInternalMathFormula().atoms():
-			self.definition.renameSbmlId(old_sbml_id, new_sbml_id)
-		elif t_local_symbol in self.definition.getInternalMathFormula().atoms():
-			self.definition.setInternalMathFormula(
-				self.definition.getInternalMathFormula().subs(t_local_symbol,
+		if t_symbol in self.__definition.getInternalMathFormula().atoms():
+			self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
+		elif t_local_symbol in self.__definition.getInternalMathFormula().atoms():
+			self.__definition.setInternalMathFormula(
+				self.__definition.getInternalMathFormula().subs(t_local_symbol,
 					SympySymbol("_local_%d_%s" % (self.reaction.objId, new_sbml_id))))
-		elif t_concentration_symbol in self.definition.getInternalMathFormula().atoms():
-			self.defnition.setInternalMathFormula(
-				self.definition.getInternalMathFormula().subs(
+		elif t_concentration_symbol in self.__definition.getInternalMathFormula().atoms():
+			self.__definition.setInternalMathFormula(
+				self.__definition.getInternalMathFormula().subs(
 					t_concentration_symbol, SympySymbol("_speciesForcedConcentration_%s_" % new_sbml_id)))

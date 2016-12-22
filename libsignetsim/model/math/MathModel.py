@@ -51,10 +51,10 @@ from libsignetsim.model.math.MathJacobianMatrix import MathJacobianMatrix
 from libsignetsim.model.math.MathStoichiometryMatrix import MathStoichiometryMatrix
 from libsignetsim.model.ListOfVariables import ListOfVariables
 from libsignetsim.model.Variable import Variable
-from sympy import simplify, diff, solve, zeros, solveset, linsolve
+from sympy import simplify, diff, solve, zeros, solveset, linsolve, srepr
 from time import time
 
-
+from libsignetsim.model.ModelException import ModelException
 from libsignetsim.model.math.container.ListOfODEs import ListOfODEs
 from libsignetsim.model.math.container.ListOfCFEs import ListOfCFEs
 from libsignetsim.model.math.container.ListOfDAEs import ListOfDAEs
@@ -182,6 +182,7 @@ class MathModel(CModelWriter):
 			The idea is to have a value for each variable
 			"""
 
+		t0 = time()
 		self.solvedInitialConditions = {}
 
 		variables = self.listOfVariables.values()
@@ -192,11 +193,15 @@ class MathModel(CModelWriter):
 		# starting time. that's why we have this tmin argument since the
 		# build() call. Maybe the computing of the initial conditions
 		# should be a separate call
-		subs = {SympySymbol("_time_"): SympyFloat(tmin)}
-
+		if tmin == 0:
+			subs = {SympySymbol("_time_"): SympyInteger(tmin)}
+		else:
+			subs = {SympySymbol("_time_"): SympyFloat(tmin)}
+		# print subs
 		for t_cfe in self.listOfCFEs:
 			if t_cfe.isAssignment() and t_cfe.getVariable() in variables:
 				variables.remove(t_cfe.getVariable())
+				# print srepr(t_cfe.getDefinition().getDeveloppedInternalMathFormula())
 				t_def = t_cfe.getDefinition().getDeveloppedInternalMathFormula().subs(subs)
 				if t_def not in [SympyInf, -SympyInf, SympyNan]:
 					t_equ = SympyEqual(
@@ -204,8 +209,12 @@ class MathModel(CModelWriter):
 						t_def
 					)
 					system.append(t_equ)
-					system_vars.append(t_cfe.getVariable().symbol.getInternalMathFormula())
-
+					if len(t_def.atoms(SympySymbol)) > 0:
+						system_vars.append(t_cfe.getVariable().symbol.getInternalMathFormula())
+					else:
+						t_formula = MathFormula(self)
+						t_formula.setInternalMathFormula(t_def)
+						self.solvedInitialConditions.update({t_cfe.getVariable(): t_formula})
 
 		for t_init in self.listOfInitialAssignments.values():
 			if t_init.getVariable() in variables:
@@ -217,7 +226,13 @@ class MathModel(CModelWriter):
 						t_def
 					)
 					system.append(t_equ)
-					system_vars.append(t_init.getVariable().symbol.getInternalMathFormula())
+					if len(t_def.atoms(SympySymbol)) > 0:
+						system_vars.append(t_init.getVariable().symbol.getInternalMathFormula())
+
+					else:
+						t_formula = MathFormula(self)
+						t_formula.setInternalMathFormula(t_def)
+						self.solvedInitialConditions.update({t_init.getVariable(): t_formula})
 				else:
 					t_formula = MathFormula(self)
 					t_formula.setInternalMathFormula(t_def)
@@ -243,6 +258,10 @@ class MathModel(CModelWriter):
 
 		#TODO: This is kinda slow in big system. We need to remove the ones
 		# we don't need (hopefully just from system_vars will be enough)
+
+		# print system
+		# print system_vars
+
 		res = solve(system, system_vars)
 
 		# print res
@@ -271,6 +290,22 @@ class MathModel(CModelWriter):
 
 				print "ERROR !!!!!!! The result of the solver for initial conditions is yet another unknown format !"
 
+		subs = {}
+		for var, value in self.solvedInitialConditions.items():
+			if len(value.getInternalMathFormula().atoms(SympySymbol)) == 0:
+				subs.update({var.symbol.getInternalMathFormula(): value.getInternalMathFormula()})
+
+		final = {}
+		for var, value in self.solvedInitialConditions.items():
+			# if len(value.getInternalMathFormula().atoms(SympySymbol)) > 0:
+			t_formula = MathFormula(self)
+			t_formula.setInternalMathFormula(value.getInternalMathFormula().subs(subs))
+			final.update({var: t_formula})
+
+		self.solvedInitialConditions = final
+
+
+
 
 		for var in self.listOfVariables.values():
 			if var not in self.solvedInitialConditions.keys() and var.value.getInternalMathFormula() is not None:
@@ -283,7 +318,9 @@ class MathModel(CModelWriter):
 		# 	t_value = MathFormula(self)
 		# 	t_value.setInternalMathFormula(value)
 		# 	self.solvedInitialConditions.update({t_var: t_value})
-
+		t1 = time()
+		if Settings.verbose >= 1:
+			print "> Finished calculating initial conditions (%.2gs)" % (t1-t0)
 	#
 	# def buildSlowSubstem(self):
 	#

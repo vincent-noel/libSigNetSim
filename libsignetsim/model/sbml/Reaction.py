@@ -105,7 +105,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 			self.kineticLaw.copy(obj, prefix, shift, subs, deletions, replacements, conversions, extent_conversion, time_conversion)
 
 			self.value = MathFormula(self.model)
-			t_formula = self.kineticLaw.definition.getInternalMathFormula()
+			t_formula = self.kineticLaw.getDefinition().getInternalMathFormula()
 
 			self.value.setInternalMathFormula(t_formula)
 			self.constant = obj.constant
@@ -158,7 +158,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 		# self.isInitialized = True
 		if self.kineticLaw is not None:
-			self.value = self.kineticLaw.definition
+			self.value = self.kineticLaw.getDefinition()
 			self.constant = False
 		else:
 			self.constant = True
@@ -195,7 +195,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 		if self.kineticLaw is not None:
 			kinetic_law = sbml_reaction.createKineticLaw()
-			kinetic_law.setMath(self.kineticLaw.definition.getSbmlMathFormula(sbml_level, sbml_version))
+			kinetic_law.setMath(self.kineticLaw.getDefinition().getSbmlMathFormula(sbml_level, sbml_version))
 			self.listOfLocalParameters.writeSbml(kinetic_law, sbml_level, sbml_version)
 
 
@@ -336,47 +336,6 @@ class Reaction(Variable, SbmlObject, HasUnits):
 		for product in self.listOfProducts.values():
 			product.renameSbmlId(old_sbml_id, new_sbml_id)
 
-	def getODE(self, species, math_type=MathFormula.MATH_INTERNAL, forcedConcentration=False, symbols=False):
-
-		ode = MathFormula.ZERO
-
-		if self.listOfReactants:
-			for reactant in self.listOfReactants.values():
-
-				t_ode = MathFormula.ZERO
-
-				if reactant.getSpecies() == species:
-
-
-					if not symbols:
-						t_ode -= self.getKineticLaw(math_type, forcedConcentration)
-					else:
-						t_ode -= self.symbol.getMathFormula(math_type)
-
-					if not reactant.stoichiometry.isOne():
-						t_ode *= reactant.stoichiometry.getMathFormula(math_type)
-
-				ode += t_ode
-
-
-		if self.listOfProducts:
-			for product in self.listOfProducts.values():
-				t_ode = MathFormula.ZERO
-
-				if product.getSpecies() == species:
-
-					if not symbols:
-						t_ode += self.getKineticLaw(math_type, forcedConcentration)
-					else:
-						t_ode += self.symbol.getMathFormula(math_type)
-
-					if not product.stoichiometry.isOne():
-						t_ode *= product.stoichiometry.getMathFormula(math_type)
-
-				ode += t_ode
-
-		return ode
-
 
 	def getODE_v2(self, species, forcedConcentration=False, symbols=False):
 
@@ -420,26 +379,6 @@ class Reaction(Variable, SbmlObject, HasUnits):
 		t_formula.setInternalMathFormula(ode)
 
 		return t_formula
-
-
-
-	# def getODEDerivative(self, species):
-	#
-	#     ode_der = MathFormula.ZERO
-	#
-	#     if self.listOfReactants:
-	#         for reactant in self.listOfReactants.values():
-	#             if reactant.getSpecies() == species:
-	#                 ode_der -= self.getKineticLawDerivative(variable)*reactant.stoichiometry.getMathFormulaDerivative(variable)
-	#
-	#
-	#     if self.listOfProducts:
-	#         for product in self.listOfProducts.values():
-	#             if product.getSpecies() == species:
-	#                 ode_der += self.getKineticLawDerivative(variable)*product.stoichiometry.getMathFormulaDerivative(variable)
-	#
-	#     return ode_der
-	#
 
 
 	def getStoichiometryMatrix(self):

@@ -41,11 +41,9 @@ class EventAssignment(SbmlObject):
 		self.__model = model
 		self.objId = obj_id
 		SbmlObject.__init__(self, model)
-		# MathEventAssignment.__init__(self, model)
 		self.event = event
 		self.__var = None
-		self.variable = MathSymbol(model)
-		self.definition = MathFormula(model, MathFormula.MATH_EVENTASSIGNMENT)
+		self.__definition = MathFormula(model, MathFormula.MATH_EVENTASSIGNMENT)
 
 
 	def readSbml(self, sbml_event_assignment, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
@@ -55,14 +53,14 @@ class EventAssignment(SbmlObject):
 		self.__var = self.__model.listOfVariables[sbml_event_assignment.getVariable()]
 		self.__var.addEventAssignmentBy(self.event)
 
-		self.variable.readSbml(sbml_event_assignment.getVariable())
-		self.definition.readSbml(sbml_event_assignment.getMath())
+		self.__definition.readSbml(sbml_event_assignment.getMath())
 
-		if self.getVariable().isConcentration():
-			t_comp = self.getVariable().getCompartment()
-			self.definition.setInternalMathFormula(
-					SympyMul(self.definition.getInternalMathFormula(),
+		if self.__var.isConcentration():
+			t_comp = self.__var.getCompartment()
+			self.__definition.setInternalMathFormula(
+					SympyMul(self.__definition.getInternalMathFormula(),
 								t_comp.symbol.getInternalMathFormula()))
+
 
 	def writeSbml(self, sbml_event, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Writes event assignemnt to a sbml file """
@@ -71,11 +69,11 @@ class EventAssignment(SbmlObject):
 		SbmlObject.writeSbml(self, sbml_event_assignment, sbml_level, sbml_version)
 
 		t_definition = MathFormula(self.__model, MathFormula.MATH_EVENTASSIGNMENT)
-		t_definition.setInternalMathFormula(self.definition.getInternalMathFormula())
-		t_variable = self.variable.getSbmlMathFormula(sbml_level, sbml_version).getName()
+		t_definition.setInternalMathFormula(self.__definition.getInternalMathFormula())
+		t_variable = self.__var.symbol.getSbmlMathFormula(sbml_level, sbml_version).getName()
 
-		if self.getVariable().isConcentration():
-			t_comp = self.getVariable().getCompartment()
+		if self.__var.isConcentration():
+			t_comp = self.__var.getCompartment()
 			t_definition.setInternalMathFormula(
 				SympyMul(t_definition.getInternalMathFormula(),
 							SympyPow(t_comp.symbol.getInternalMathFormula(),
@@ -105,21 +103,20 @@ class EventAssignment(SbmlObject):
 		for var, conversion in conversions.items():
 			t_convs.update({var:var/conversion})
 
-		t_definition = obj.definition.getInternalMathFormula().subs(subs).subs(replacements).subs(t_convs)
+		t_definition = obj.getDefinition().getInternalMathFormula().subs(subs).subs(replacements).subs(t_convs)
 
-		t_var_symbol = obj.variable.getInternalMathFormula().subs(subs).subs(replacements)
+		t_var_symbol = obj.getVariable().symbol.getInternalMathFormula().subs(subs).subs(replacements)
 		if t_var_symbol in conversions:
 			t_definition *= conversions[t_var_symbol]
 
-		self.variable.setInternalMathFormula(t_var_symbol)
-		self.definition.setInternalMathFormula(t_definition)
+		self.__definition.setInternalMathFormula(t_definition)
 
 
 	def getVariable(self):
 		return self.__var
 
 	def getVariableMath(self):
-		return self.variable
+		return self.__var.symbol
 
 
 	def setVariable(self, variable):
@@ -129,27 +126,30 @@ class EventAssignment(SbmlObject):
 
 		self.__var = variable
 		self.__var.addEventAssignmentBy(self.event)
-		self.variable.setInternalVariable(variable.symbol.getInternalMathFormula())
+
 
 	def getAssignment(self):
 
-		return self.definition.getPrettyPrintMathFormula()
+		return self.__definition.getPrettyPrintMathFormula()
 
 	def getAssignmentMath(self):
 
-		return self.definition
+		return self.__definition
 
 	def setAssignment(self, value):
 
-		self.definition.setPrettyPrintMathFormula(str(value))
+		self.__definition.setPrettyPrintMathFormula(str(value))
 
+	def getDefinition(self):
 
+		return self.__definition
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		old_symbol = SympySymbol(old_sbml_id)
 
-		if self.variable.getInternalMathFormula() == old_symbol:
-			self.variable.setInternalMathFormula(SympySymbol(new_sbml_id))
-
-		if old_symbol in self.definition.getInternalMathFormula().atoms():
-			self.definition.setInternalMathFormula(self.definition.getInternalMathFormula.subs(old_symbol, SympySymbol(new_sbml_id)))
+		if old_symbol in self.__definition.getInternalMathFormula().atoms():
+			t_definition = self.__definition.getInternalMathFormula.subs(
+												old_symbol,
+												SympySymbol(new_sbml_id)
+			)
+			self.__definition.setInternalMathFormula(t_definition)
