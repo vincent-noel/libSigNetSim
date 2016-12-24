@@ -36,7 +36,7 @@ from libsignetsim.model.math.sympy_shortcuts import  (
 	SympyEqual, SympyUnequal, SympyGreaterThan, SympyLessThan,
 	SympyStrictGreaterThan, SympyStrictLessThan,
 	SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
-	SympyMax, SympyMin)
+	SympyMax, SympyMin, SympyITE)
 
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.ModelException import ModelException
@@ -358,6 +358,23 @@ class CMathWriter(object):
 				line_end = line_end + ")"
 
 			line = line + ":(RCONST(0.0))" + line_end
+			# print line
+			return line
+
+		# AST_FUNCTION_PIECEWISE
+		elif tree.func == SympyITE:
+			print srepr(tree)
+			t_cond = tree.args[0]
+			t_val = tree.args[1]
+			t_other_val = tree.args[2]
+			line = "(%s?%s:%s)" % (self.translateForC(t_cond), self.translateForC(t_val), self.translateForC(t_other_val))
+
+			# for piece in range(1, len(tree.args)):
+			# 	(t_val, t_cond) = tree.args[piece]
+			# 	line = line + ":(%s?%s" % (self.translateForC(t_cond), self.translateForC(t_val))
+			# 	line_end = line_end + ")"
+
+			# line = line + ":(RCONST(0.0))" + line_end
 			# print line
 			return line
 

@@ -55,6 +55,8 @@ from sympy.functions.elementary.complexes import Abs as SympyAbs
 from sympy.functions.elementary.exponential import log as SympyLog
 from sympy.functions.elementary.exponential import exp as SympyExp
 from sympy.functions.elementary.piecewise import Piecewise as SympyPiecewise
+from sympy.functions.elementary.piecewise import ExprCondPair as SympyExprCondPair
+
 from sympy.functions.combinatorial.factorials import factorial as SympyFactorial
 from sympy.functions import root as SympyRoot
 
@@ -98,6 +100,7 @@ from sympy.logic.boolalg import Xor as SympyXor
 from sympy.logic.boolalg import Not as SympyNot
 from sympy.logic.boolalg import BooleanTrue as SympyTrue
 from sympy.logic.boolalg import BooleanFalse as SympyFalse
+from sympy.logic.boolalg import ITE as SympyITE
 
 from sympy.functions.elementary.miscellaneous import Max as SympyMax
 from sympy.functions.elementary.miscellaneous import Min as SympyMin

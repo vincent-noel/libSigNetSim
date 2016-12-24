@@ -443,26 +443,36 @@ class SbmlMathReader(object):
 
 				# AST_FUNCTION_PIECEWISE
 			elif tree.getType() == libsbml.AST_FUNCTION_PIECEWISE:
+				print libsbml.formulaToL3String(tree)
 				i_arg = 0
 				i_cond = 0
 				t_pieces = []
-
+				value_piecewise = False
 				while i_arg < tree.getNumChildren():
 
 					if (i_arg+1) < tree.getNumChildren():
 						# print "here we have a full condition"
 						t_value = self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop)
 						t_condition = self.translateForInternal(tree.getChild(i_arg+1), sbml_level, sbml_version, simplified, develop)
+
+						if isinstance(t_value, bool):
+							value_piecewise = True
+
+						# if isinstance(t_condition, SympyPiecewise):
 						t_pieces.append((t_value, t_condition))
 						i_arg += 2
 					else:
 						# print "and there we have the else"
 						t_value = self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop)
+						if isinstance(t_value, bool):
+							value_piecewise = True
 						t_pieces.append((t_value, True))
 						i_arg += 1
 
-				return SympyPiecewise(*t_pieces, evaluate=False)
-
+				if not value_piecewise:
+					return SympyPiecewise(*t_pieces, evaluate=False)
+				else:
+					return SympyITE(t_pieces[0][1], t_pieces[0][0], t_pieces[1][0])
 
 				# AST_FUNCTION_POWER
 			elif tree.getType() == libsbml.AST_FUNCTION_POWER:

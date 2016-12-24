@@ -36,9 +36,9 @@ from libsignetsim.model.math.sympy_shortcuts import  (
 	SympyEqual, SympyUnequal, SympyGreaterThan, SympyLessThan,
 	SympyStrictGreaterThan, SympyStrictLessThan,
 	SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
-	SympyMax, SympyMin)
+	SympyMax, SympyMin, SympyExprCondPair, SympyFactorial, SympyITE)
 from re import match
-
+from sympy import srepr
 class MathDevelopper(object):
 	""" Class for handling math formulaes """
 
@@ -97,7 +97,20 @@ class MathDevelopper(object):
 				for child in range(0, len(tree.args)):
 					t_children.append(self.translateForDeveloppedInternal(tree.args[child]))
 
-				return tree.func(*tuple(t_children))
+				# print ""
+				# print srepr(tree.func)
+				# print t_children
+				# print [srepr(child) for child in t_children]
+				# print ""
+				# # if SympyE in t_children:
+				# # 	print "Found E"
+				# # 	return tree.func(*tuple(t_children))
+				#
+				if tree.func in [SympyExprCondPair, SympyITE]:
+					return tree.func(*tuple(t_children))
+				#
+				# else:
+				return tree.func(*tuple(t_children), evaluate=False)
 
 			else:
 				return tree

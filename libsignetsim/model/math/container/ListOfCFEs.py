@@ -24,9 +24,9 @@
 
 from libsignetsim.model.math.CFE import CFE
 from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.math.sympy_shortcuts import SympyInf, SympyNan, SympyEqual, SympySymbol
+from libsignetsim.model.math.sympy_shortcuts import SympyPiecewise, SympyITE, SympyInf, SympyNan, SympyEqual, SympySymbol
 from libsignetsim.settings.Settings import Settings
-from sympy import solve
+from sympy import solve, sympify
 from time import time
 class ListOfCFEs(list):
 	""" Sbml model class """
@@ -62,7 +62,7 @@ class ListOfCFEs(list):
 
 		t0 = time()
 		self.developpedCFEs = []
-
+		continueDevelop = True
 		if len(self) > 0:
 
 			system = []
@@ -75,7 +75,11 @@ class ListOfCFEs(list):
 						t_equ = SympyEqual(
 							t_cfe.getVariable().symbol.getInternalMathFormula(),
 							t_def
-						)
+						).evalf()
+
+						if len(t_equ.atoms(SympyITE, SympyPiecewise)) > 0:
+							continueDevelop = False
+
 						system.append(t_equ)
 						if len(t_def.atoms(SympySymbol)) > 0 and t_def.atoms(SympySymbol) != set([SympySymbol("_time_")]):
 							# print t_def.atoms(SympySymbol)
@@ -88,12 +92,12 @@ class ListOfCFEs(list):
 				elif t_cfe.isReaction():
 					self.developpedCFEs.append(t_cfe)
 
-			# print system
-			# print system_vars
-			if len(system_vars) > 0:
+			print system
+			print system_vars
+			if len(system_vars) > 0 and continueDevelop:
 				res = solve(system, system_vars)
 
-				# print res
+				print res
 
 				if res is not True and len(res) > 0:
 

@@ -206,7 +206,7 @@ class MathModel(CModelWriter):
 				if t_def not in [SympyInf, -SympyInf, SympyNan]:
 					t_equ = SympyEqual(
 						t_cfe.getVariable().symbol.getInternalMathFormula(),
-						t_def
+						t_def.doit()
 					)
 					system.append(t_equ)
 					if len(t_def.atoms(SympySymbol)) > 0:
@@ -223,7 +223,7 @@ class MathModel(CModelWriter):
 				if t_def not in [SympyInf, -SympyInf, SympyNan]:
 					t_equ = SympyEqual(
 						t_init.getVariable().symbol.getInternalMathFormula(),
-						t_def
+						t_def.doit()
 					)
 					system.append(t_equ)
 					if len(t_def.atoms(SympySymbol)) > 0:
@@ -246,7 +246,7 @@ class MathModel(CModelWriter):
 					if t_def not in [SympyInf, -SympyInf, SympyNan]:
 						t_equ = SympyEqual(
 							t_var.symbol.getInternalMathFormula(),
-							t_def
+							t_def.doit()
 						)
 						system.append(t_equ)
 						system_vars.append(t_var.symbol.getInternalMathFormula())

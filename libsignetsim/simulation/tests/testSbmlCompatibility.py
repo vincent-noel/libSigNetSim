@@ -33,11 +33,10 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 	TODO_CASES = []#954, 955, 956, 957, 958, 959, 1112, 1113, 1114, 1115, 1116, 1199, 1200, 1201, 1202, 1203, 1204, 1209, 1210, 1211, 1212, 1213, 1216]
 
-	INCOMPATIBLE_CASES = [962, 1199, 1200, 1201, 1202, 1203, 1204, 1211] #Not compatible with ubuntu:precise ..!!??!!
+	INCOMPATIBLE_CASES = [962]#, 1199, 1200, 1201, 1202, 1203, 1204, 1211] #Not compatible with ubuntu:precise ..!!??!!
 	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'VolumeConcentrationRates', 'FastReaction']
-	INCOMPATIBLE_PACKAGES = ['fbc']
 
-	STOCHASTIC_CASES = []
+	COMPATIBLE_PACKAGES = ['comp']
 
 	SEMANTIC_CASES_LINK = "http://downloads.sourceforge.net/project/sbml/test-suite/3.2.0/case-archives/sbml-semantic-test-cases-2016-07-27.zip"
 
@@ -115,7 +114,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 					compatible = False
 
 				elif (':' in tag.strip()
-					and tag.strip().split(':')[0] in self.INCOMPATIBLE_PACKAGES):
+					and tag.strip().split(':')[0] not in self.COMPATIBLE_PACKAGES):
 					compatible = False
 
 			if compatible and case_id not in self.INCOMPATIBLE_CASES and (self.TODO_CASES == [] or case_id in self.TODO_CASES):# in [390]:#[663, 664, 762, 569, 570, 575]:
@@ -152,27 +151,17 @@ class TestSbmlCompatibility(unittest.TestCase):
 				nb_cases += 1
 
 				# try:
+
 				test = SbmlTestCaseSimulation(case, str(level), str(version), keep_files=keep_files)
 				res_exec = test.run()
 
 				if res_exec:
-
 					nb_success += 1
 					# print ">> l%dv%d : OK (%.2gs)" % (level, version, time.time()-start)
 
-
 				else:
-					# if case in self.STOCHASTIC_CASES:
-					# 	# Those have one more try if they fail. Twice in a row would be really unlucky
-					# 	test = SbmlTestCaseSimulation(case, str(level), str(version), keep_files=keep_files)
-					# 	res_exec = test.run()
-					#
-					# 	if res_exec:
-					# 		nb_success += 1
-					# 	else:
-					# 		print ">> l%dv%d : ERROR (%.2gs)" % (level, version, time.time()-start)
-					# else:
 					print ">> l%dv%d : ERROR (%.2gs)" % (level, version, time.time()-start)
+
 				# except:
 				# 	print ">> case %d, %dv%d : ERROR" % (int(case), level, version)
 
