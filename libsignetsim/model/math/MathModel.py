@@ -26,8 +26,6 @@
 from libsignetsim.cwriter.CModelWriter import CModelWriter
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.MathFormula import MathFormula
-# from libsignetsim.model.math.MathEquation import MathEquation
-from libsignetsim.model.math.MathODEs import MathODEs
 from libsignetsim.model.math.sympy_shortcuts import  (
 	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
 	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
@@ -42,8 +40,7 @@ from libsignetsim.model.math.sympy_shortcuts import  (
 	SympyStrictGreaterThan, SympyStrictLessThan,
 	SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
 	SympyMax, SympyMin)
-from libsignetsim.model.math.MathCFEs import MathCFEs
-from libsignetsim.model.math.MathDAEs import MathDAEs
+
 
 from libsignetsim.model.math.MathVariable import MathVariable
 from libsignetsim.model.math.MathConservationLaws import MathConservationLaws
@@ -73,9 +70,7 @@ class MathModel(CModelWriter):
 		self.listOfDAEs = ListOfDAEs(self)
 		self.solvedInitialConditions = None
 		self.hasDAEs = False
-		# MathODEs.__init__(self)
-		# MathCFEs.__init__(self)
-		# MathDAEs.__init__(self)
+
 		# MathConservationLaws.__init__(self)
 		# MathJacobianMatrix.__init__(self)
 		# MathStoichiometryMatrix.__init__(self)
@@ -113,13 +108,7 @@ class MathModel(CModelWriter):
 
 		if len(self.listOfDAEs) > 0:
 			self.listOfDAEs.solveInitialConditions(tmin)
-		# if self.listOfRules.hasAlgebraicRule():
-		#
-		# 	self.hasDAEs = True
-		# 	self.listOfDAEs.build()
-		# 	self.listOfDAEs.checkInitialValues()
-			# self.checkInitialValues()
-			# print "Initial values checked"
+
 
 
 
@@ -156,6 +145,20 @@ class MathModel(CModelWriter):
 
 #        self.buildJacobianMatrix()
 		# self.printSystem()
+
+		compRateRuled = False
+
+		for species in self.listOfSpecies.values():
+			if species.isRateRuled() and species.getCompartment().isRateRuled():
+				compRateRuled = True
+
+		# for comp in self.listOfCompartments.values():
+		# 	if comp.isRateRuled():
+
+		# if compRateRuled:
+		# 	raise ModelException(ModelException.SBML_ERROR, "Comp is rate ruled !")
+
+
 		t1 = time()
 		if Settings.verbose:
 			print "> Model built (%.2gs)" % (t1-t0)
@@ -177,9 +180,10 @@ class MathModel(CModelWriter):
 			and assignment rules. We actually need to solve them to make sure
 			all dependencies are respected
 
-			So the idea is to build a system with all the info, and solve it
+			So the idea is to build a system with all the assignment rules, the
+			initial assigments, and the initial values, and solve it for the
+			variables whose initial value depends on other variables
 
-			The idea is to have a value for each variable
 			"""
 
 		t0 = time()
@@ -197,11 +201,10 @@ class MathModel(CModelWriter):
 			subs = {SympySymbol("_time_"): SympyInteger(tmin)}
 		else:
 			subs = {SympySymbol("_time_"): SympyFloat(tmin)}
-		# print subs
+
 		for t_cfe in self.listOfCFEs:
-			if t_cfe.isAssignment() and t_cfe.getVariable() in variables:
+			if t_cfe.getVariable() in variables:
 				variables.remove(t_cfe.getVariable())
-				# print srepr(t_cfe.getDefinition().getDeveloppedInternalMathFormula())
 				t_def = t_cfe.getDefinition().getDeveloppedInternalMathFormula().subs(subs)
 				if t_def not in [SympyInf, -SympyInf, SympyNan]:
 					t_equ = SympyEqual(
@@ -280,14 +283,15 @@ class MathModel(CModelWriter):
 					t_value = MathFormula(self)
 					t_value.setInternalMathFormula(value)
 					self.solvedInitialConditions.update({t_var:t_value})
+
 			elif isinstance(res[0], tuple):
 				for i_var, value in enumerate(res[0]):
 					t_var = self.listOfVariables[str(system_vars[i_var])]
 					t_value = MathFormula(self)
 					t_value.setInternalMathFormula(value)
 					self.solvedInitialConditions.update({t_var:t_value})
-			else:
 
+			else:
 				print "ERROR !!!!!!! The result of the solver for initial conditions is yet another unknown format !"
 
 		subs = {}
@@ -305,19 +309,31 @@ class MathModel(CModelWriter):
 		self.solvedInitialConditions = final
 
 
-
-
 		for var in self.listOfVariables.values():
 			if var not in self.solvedInitialConditions.keys() and var.value.getInternalMathFormula() is not None:
 				# print var.symbol.getInternalMathFormula()
 				t_value = MathFormula(self)
 				t_value.setInternalMathFormula(var.value.getDeveloppedInternalMathFormula())
 				self.solvedInitialConditions.update({var:t_value})
-		# for var, value in res.items():
-		# 	t_var = self.listOfVariables[str(var)]
-		# 	t_value = MathFormula(self)
-		# 	t_value.setInternalMathFormula(value)
-		# 	self.solvedInitialConditions.update({t_var: t_value})
+
+		subs = {}
+
+		if tmin == 0:
+			subs = {SympySymbol("_time_"): SympyInteger(tmin)}
+		else:
+			subs = {SympySymbol("_time_"): SympyFloat(tmin)}
+		for var, value in self.solvedInitialConditions.items():
+			if value.getInternalMathFormula() is not None:
+				subs.update({var.symbol.getInternalMathFormula(): value.getInternalMathFormula()})
+
+		# print "last subs"
+		# print subs
+		for t_cfe in self.listOfCFEs:
+
+			# print var.symbol.getInternalMathFormula()
+			t_value = MathFormula(self)
+			t_value.setInternalMathFormula(t_cfe.getDefinition().getDeveloppedInternalMathFormula().subs(subs))
+			self.solvedInitialConditions.update({t_cfe.getVariable():t_value})
 		t1 = time()
 		if Settings.verbose >= 1:
 			print "> Finished calculating initial conditions (%.2gs)" % (t1-t0)

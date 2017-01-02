@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+1207#!/usr/bin/env python
 """ testSbmlCompatibility.py
 
 
@@ -31,10 +31,10 @@ from libsignetsim.settings.Settings import Settings
 class TestSbmlCompatibility(unittest.TestCase):
 	""" Tests SBML semantic test cases """
 
-	TODO_CASES = []#954, 955, 956, 957, 958, 959, 1112, 1113, 1114, 1115, 1116, 1199, 1200, 1201, 1202, 1203, 1204, 1209, 1210, 1211, 1212, 1213, 1216]
+	TODO_CASES = []
 
-	INCOMPATIBLE_CASES = [962]#, 1199, 1200, 1201, 1202, 1203, 1204, 1211] #Not compatible with ubuntu:precise ..!!??!!
-	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'VolumeConcentrationRates', 'FastReaction']
+	INCOMPATIBLE_CASES = [962]#962, Not compatible with ubuntu:precise, others not solved yet
+	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'FastReaction']
 
 	COMPATIBLE_PACKAGES = ['comp']
 

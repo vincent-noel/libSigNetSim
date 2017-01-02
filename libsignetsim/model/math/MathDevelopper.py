@@ -51,16 +51,35 @@ class MathDevelopper(object):
 	def translateVariableForDeveloppedInternal(self, variable):
 
 		if str(variable).startswith("_speciesForcedConcentration_"):
+			# print variable
 			res_match = match(r"_speciesForcedConcentration_(.*)_", str(variable))
 
 			t_sbml_id = str(res_match.groups()[0])
 			t_species = self.__model.listOfVariables.getBySbmlId(t_sbml_id)
 			t_compartment = t_species.getCompartment()
-
+			#
+			# if (t_species.isRateRuled()
+			# 	and not t_species.hasOnlySubstanceUnits
+			# 	and t_species.getCompartment().isRateRuled()):
+			# 	return t_species.symbol.getInternalMathFormula()
+			#
+			# else:
 			return SympyMul(t_species.symbol.getInternalMathFormula(),
-								SympyPow(t_compartment.symbol.getInternalMathFormula(),
-											SympyInteger(-1)))
+							SympyPow(t_compartment.symbol.getInternalMathFormula(),
+										SympyInteger(-1)))
 
+		# elif self.__model.listOfVariables.containsSbmlId(str(variable)):
+		# 	t_sbml_id = str(variable)
+		# 	t_variable = self.__model.listOfVariables.getBySbmlId(t_sbml_id)
+		# 	if (t_variable.isSpecies()
+		# 		and not t_variable.hasOnlySubstanceUnits
+		# 		and t_variable.isRateRuled()
+		# 		and t_variable.getCompartment().isRateRuled()):
+		# 		print "Fuck yeah its a special case"
+		# 		return SympyMul(variable,
+		# 			t_variable.getCompartment().symbol.getInternalMathFormula())
+		# 	else:
+		# 		return variable
 		else:
 			return variable
 
@@ -97,19 +116,10 @@ class MathDevelopper(object):
 				for child in range(0, len(tree.args)):
 					t_children.append(self.translateForDeveloppedInternal(tree.args[child]))
 
-				# print ""
-				# print srepr(tree.func)
-				# print t_children
-				# print [srepr(child) for child in t_children]
-				# print ""
-				# # if SympyE in t_children:
-				# # 	print "Found E"
-				# # 	return tree.func(*tuple(t_children))
-				#
+				# Seems like not evaluating is not an option for these ones...
 				if tree.func in [SympyExprCondPair, SympyITE]:
 					return tree.func(*tuple(t_children))
-				#
-				# else:
+
 				return tree.func(*tuple(t_children), evaluate=False)
 
 			else:

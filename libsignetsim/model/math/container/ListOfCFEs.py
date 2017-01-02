@@ -92,12 +92,12 @@ class ListOfCFEs(list):
 				elif t_cfe.isReaction():
 					self.developpedCFEs.append(t_cfe)
 
-			print system
-			print system_vars
+			# print system
+			# print system_vars
 			if len(system_vars) > 0 and continueDevelop:
 				res = solve(system, system_vars)
 
-				print res
+				# print res
 
 				if res is not True and len(res) > 0:
 

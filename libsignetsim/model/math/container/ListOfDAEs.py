@@ -25,7 +25,7 @@
 
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.DAE import DAE
-from libsignetsim.model.math.sympy_shortcuts import SympyEqual, SympyInteger
+from libsignetsim.model.math.sympy_shortcuts import SympyEqual, SympyInteger, SympySymbol
 from sympy import solve
 
 
@@ -136,3 +136,20 @@ class ListOfDAEs(list):
 						t_value = MathFormula(self.__model)
 						t_value.setInternalMathFormula(value)
 						self.__model.solvedInitialConditions.update({t_var:t_value})
+
+
+		subs = {}
+
+		if tmin == 0:
+			subs = {SympySymbol("_time_"): SympyInteger(tmin)}
+		else:
+			subs = {SympySymbol("_time_"): SympyFloat(tmin)}
+		for var, value in self.__model.solvedInitialConditions.items():
+			if value.getInternalMathFormula() is not None:
+				subs.update({var.symbol.getInternalMathFormula(): value.getInternalMathFormula()})
+		for t_cfe in self.__model.listOfCFEs:
+
+			# print var.symbol.getInternalMathFormula()
+			t_value = MathFormula(self.__model)
+			t_value.setInternalMathFormula(t_cfe.getDefinition().getDeveloppedInternalMathFormula().subs(subs))
+			self.__model.solvedInitialConditions.update({t_cfe.getVariable():t_value})

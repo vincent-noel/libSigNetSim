@@ -299,7 +299,22 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			return t_formula
 
 		elif self.isRateRuled():
-			t_formula.setInternalMathFormula(self.isRuledBy().getDefinition(forcedConcentration).getInternalMathFormula())
+			t_rule = self.isRuledBy().getDefinition(forcedConcentration).getInternalMathFormula()
+			# if not self.hasOnlySubstanceUnits and self.getCompartment().isRateRuled():
+			# 	t_formula.setInternalMathFormula(t_rule/self.getCompartment().symbol.getInternalMathFormula())
+
+			if self.getCompartment().isRateRuled() and not t_rule == MathFormula.ZERO:
+				""" Then things get complicated. We need to add a term :
+				 	amount_species * rate_comp / comp
+				"""
+				t_formula_corrector = MathFormula(self.__model)
+				t_amount_species = self.symbol.getInternalMathFormula()
+				t_comp_rate = self.getCompartment().isRuledBy().getDefinition(forcedConcentration).getInternalMathFormula()
+				t_comp = self.getCompartment().symbol.getInternalMathFormula()
+
+				t_formula.setInternalMathFormula(t_rule + t_amount_species*t_comp_rate/t_comp)
+			else:
+				t_formula.setInternalMathFormula(t_rule)
 			return t_formula
 
 		elif self.isInReactions(including_fast_reactions):
@@ -370,11 +385,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 	def getUnits(self):
 
-		#print " Gettings units of species %s" % self.getNameOrSbmlId()
 		if self.hasOnlySubstanceUnits:
 			return self.unit
 		else:
-			#print "Saved concentration unit : %s" % str(self.concentrationUnit)
 			if self.concentrationUnit is None:
 				if HasUnits.getUnits(self) is not None and self.getCompartment().getUnits() is not None:
 					self.concentrationUnit = self.__model.listOfUnitDefinitions.getConcentrationUnit(HasUnits.getUnits(self),
@@ -382,8 +395,6 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 					return self.concentrationUnit
 			else:
 				return self.concentrationUnit
-				#return self.__model.listOfUnitDefinitions.getConcentrationUnit(self.unit,
-				#                                            self.__compartment.getUnits())
 
 
 	def getCompartment(self):

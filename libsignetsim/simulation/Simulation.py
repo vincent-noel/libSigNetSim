@@ -343,6 +343,8 @@ class Simulation(CWriterSimulation):
 		# Concentrations. So we need to transform them back
 		for key, variable in self.listOfModels[0].listOfVariables.iteritems():
 			if variable.isConcentration():
+				# if (variable.isRateRuled() and variable.isSpecies() and variable.getCompartment().isRateRuled()):
+				# 	raise SimulationException(SimulationException.SIM_ERROR, "poil")
 				# print "I'm a concentration !! %s" % variable.getSbmlId()
 				t_traj = trajs[key]
 				# print t_traj

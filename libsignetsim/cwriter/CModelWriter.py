@@ -86,34 +86,41 @@ class CModelWriter(object):
 				f_c.write("  %s.alg_der_variables = (ModelVariable *) malloc(sizeof(ModelVariable) * %s.nb_algebraic_variables);\n" % (variable_name, variable_name))
 
 		for i_var, variable_ode in enumerate(self.variablesOdes):
+			t_value = self.solvedInitialConditions[variable_ode]
 
 			f_c.write("  %s.derivative_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_DERIVATIVE};\n" % (
-							variable_name, i_var, variable_ode.getCValue(), variable_ode.symbol.getPrettyPrintMathFormula()))
+							variable_name, i_var, t_value.getCMathFormula(), variable_ode.symbol.getPrettyPrintMathFormula()))
 
 			if self.hasDAEs:
 				f_c.write("  %s.der_der_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_DER_DER};\n" % (
 								variable_name, i_var, variable_ode.getDerivativeCValue(), variable_ode.symbol.getPrettyPrintMathFormula()))
 
 		for i_var, variable_ass in enumerate(self.variablesAssignment):
+			if variable_ass.isReaction():
+				t_value = MathFormula(self)
+				t_value.setInternalMathFormula(MathFormula.ZERO)
+			else:
+				t_value = self.solvedInitialConditions[variable_ass]
 
 			f_c.write("  %s.assignment_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_ASSIGNMENT};\n" % (
-								variable_name, i_var, variable_ass.getCValue(), variable_ass.symbol.getPrettyPrintMathFormula()))
+								variable_name, i_var, t_value.getCMathFormula(), variable_ass.symbol.getPrettyPrintMathFormula()))
 
 		for i_var, variable_cst in enumerate(self.variablesConstant):
 
-			if variable_cst in self.solvedInitialConditions:
-				t_value = self.solvedInitialConditions[variable_cst]
-			else:
-				t_value = variable_cst.value
+			# if variable_cst in self.solvedInitialConditions:
+			t_value = self.solvedInitialConditions[variable_cst]
+			# else:
+				# t_value = variable_cst.value
 
 			f_c.write("  %s.constant_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_CONSTANT};\n" % (
 								variable_name, i_var, t_value.getCMathFormula(), variable_cst.symbol.getPrettyPrintMathFormula()))
 
 
 		for i_var, variable_alg in enumerate(self.variablesAlgebraic):
+			t_value = self.solvedInitialConditions[variable_alg]
 
 			f_c.write("  %s.algebraic_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_ALGEBRAIC};\n" % (
-								variable_name, i_var, variable_alg.getCValue(), variable_alg.symbol.getPrettyPrintMathFormula()))
+								variable_name, i_var, t_value.getCMathFormula(), variable_alg.symbol.getPrettyPrintMathFormula()))
 
 
 			if self.hasDAEs:
@@ -121,7 +128,7 @@ class CModelWriter(object):
 								variable_name, i_var, variable_alg.getDerivativeCValue(), variable_alg.symbol.getPrettyPrintMathFormula()))
 
 		# f_c.write("  %s.nb_init_assignments = %d;\n" % (variable_name, len(self.listOfInitialAssignments.keys()) + self.listOfSpecies.nbFormulaInitialization()))
-		f_c.write("  %s.nb_init_assignments = 1;\n" % (variable_name))
+		f_c.write("  %s.nb_init_assignments = 0;\n" % (variable_name))
 
 		f_c.write("  %s.nb_events = %d;\n" % (variable_name, len(self.listOfEvents.keys())))
 		f_c.write("  %s.nb_roots = %d;\n" % (variable_name, self.listOfEvents.nbRoots()))
@@ -280,9 +287,9 @@ class CModelWriter(object):
 		# 		f_c.write("  %s = %s;\n\n" % (species.symbol.getCMathFormula(),
 		# 									   t_formula.getCMathFormula()))
 
-		for var, value in self.solvedInitialConditions.items():
-			if not var.isConstant():
-				f_c.write("%s = %s;\n" % (var.symbol.getCMathFormula(), value.getCMathFormula()))
+		# for var, value in self.solvedInitialConditions.items():
+		# 	if not var.isConstant():
+		# 		f_c.write("%s = %s;\n" % (var.symbol.getCMathFormula(), value.getCMathFormula()))
 
 		f_c.write("  return 0;\n")
 		f_c.write("}\n\n")

@@ -443,7 +443,7 @@ class SbmlMathReader(object):
 
 				# AST_FUNCTION_PIECEWISE
 			elif tree.getType() == libsbml.AST_FUNCTION_PIECEWISE:
-				print libsbml.formulaToL3String(tree)
+				# print libsbml.formulaToL3String(tree)
 				i_arg = 0
 				i_cond = 0
 				t_pieces = []

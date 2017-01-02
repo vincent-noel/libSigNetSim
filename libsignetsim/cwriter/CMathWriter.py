@@ -363,7 +363,7 @@ class CMathWriter(object):
 
 		# AST_FUNCTION_PIECEWISE
 		elif tree.func == SympyITE:
-			print srepr(tree)
+			# print srepr(tree)
 			t_cond = tree.args[0]
 			t_val = tree.args[1]
 			t_other_val = tree.args[2]
