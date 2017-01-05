@@ -30,6 +30,7 @@ from libsignetsim.model.Variable import Variable
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.sbml.HasUnits import HasUnits
 from libsignetsim.settings.Settings import Settings
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol
 from copy import copy
 
 class Parameter(Variable, SbmlObject, InitiallyAssignedVariable,
@@ -64,19 +65,20 @@ class Parameter(Variable, SbmlObject, InitiallyAssignedVariable,
 
 
 
-	def copy(self, parameter, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversion_factor=None):
-
-		#
-		# self.localParameter = parameter.localParameter
-		# self.reaction = parameter.reaction
-
+	def copy(self, parameter, prefix="", shift=0, subs={}, deletions=[],
+				replacements={}, conversion_factor=None):
 
 		SbmlObject.copy(self, parameter, prefix, shift)
 		InitiallyAssignedVariable.copy(self, parameter, prefix, shift)
 		EventAssignedVariable.copy(self, parameter, prefix, shift)
 		RuledVariable.copy(self, parameter, prefix, shift)
 		HasUnits.copy(self, parameter, prefix, shift)
-		Variable.copy(self, parameter, prefix, shift, subs, deletions, replacements, conversion_factor)
+		Variable.copy(self, parameter, prefix, shift, subs, deletions,
+						replacements, conversion_factor)
+
+		if self.localParameter:
+			self.symbol.setInternalVariable(
+				SympySymbol("_local_%d_%s" % (self.reaction.objId, self.getSbmlId())))
 
 
 	def new(self, name, value=1, constant=True, unit=None):

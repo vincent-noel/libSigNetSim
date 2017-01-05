@@ -209,6 +209,9 @@ class MathModel(CModelWriter):
 		system = []
 		system_vars = []
 
+		# for var in self.listOfVariables.values():
+		# 	print "%s : %s" % (var.getSbmlId(), str(var.symbol.getInternalMathFormula()))
+
 		# TODO: Those are initial values, so the time needs to be set to the
 		# starting time. that's why we have this tmin argument since the
 		# build() call. Maybe the computing of the initial conditions
@@ -275,9 +278,6 @@ class MathModel(CModelWriter):
 						self.solvedInitialConditions.update({t_var: t_formula})
 
 
-		#TODO: This is kinda slow in big system. We need to remove the ones
-		# we don't need (hopefully just from system_vars will be enough)
-
 		# print system
 		# print system_vars
 
@@ -315,6 +315,9 @@ class MathModel(CModelWriter):
 			if len(value.getInternalMathFormula().atoms(SympySymbol)) == 0:
 				subs.update({var.symbol.getInternalMathFormula(): value.getInternalMathFormula()})
 
+		# print "final subs"
+		# print subs
+
 		final = {}
 		for var, value in self.solvedInitialConditions.items():
 			# if len(value.getInternalMathFormula().atoms(SympySymbol)) > 0:
@@ -324,6 +327,11 @@ class MathModel(CModelWriter):
 
 		self.solvedInitialConditions = final
 
+		# for key, value in self.solvedInitialConditions.items():
+		# 	print "%s : %s" % (
+		# 		key.getSbmlId(),
+		# 		str(value.getDeveloppedInternalMathFormula())
+		# 	)
 
 		for var in self.listOfVariables.values():
 			if var not in self.solvedInitialConditions.keys() and var.value.getInternalMathFormula() is not None:
@@ -353,6 +361,13 @@ class MathModel(CModelWriter):
 		t1 = time()
 		if Settings.verbose >= 1:
 			print "> Finished calculating initial conditions (%.2gs)" % (t1-t0)
+
+
+		# for key, value in self.solvedInitialConditions.items():
+		# 	print "%s : %s" % (
+		# 		key.getSbmlId(),
+		# 		str(value.getDeveloppedInternalMathFormula())
+		# 	)
 	#
 	# def buildSlowSubstem(self):
 	#

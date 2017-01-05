@@ -64,8 +64,8 @@ class SbmlVariable(HasId):
 		else:
 			t_sbml_id = prefix + obj.getSbmlId()
 			self.__model.listOfVariables.addVariable(self, t_sbml_id)
-
 		self.sbmlType = obj.sbmlType
+
 
 
 

@@ -63,9 +63,11 @@ class MathVariable(object):
 		self.setDerivativeValue(0)
 
 	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversion_factor=None):
-
+		#
+		# if self.isParameter() and self.localParameter:
+		# 	self.symbol.setInternalVariable(SympySymbol("_local_%d_%s" % (self.reaction.objId, self.getSbmlId())))
+		# else:
 		self.symbol.setInternalVariable(obj.symbol.getInternalMathFormula().subs(subs))
-
 
 		if obj.value is not None and obj.value.getInternalMathFormula() is not None:
 			if conversion_factor is None:

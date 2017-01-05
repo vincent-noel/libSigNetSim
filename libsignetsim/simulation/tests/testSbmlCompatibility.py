@@ -129,8 +129,6 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 	def runCase(self, case):
 
-		keep_files = False
-
 		nb_cases = 0
 		nb_success = 0
 
@@ -153,7 +151,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 				# try:
 
-				test = SbmlTestCaseSimulation(case, str(level), str(version), keep_files=keep_files)
+				test = SbmlTestCaseSimulation(case, str(level), str(version), keep_files=False)
 				res_exec = test.run()
 
 				if res_exec:

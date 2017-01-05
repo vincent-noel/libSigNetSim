@@ -64,7 +64,7 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 
 
 	def addVariable(self, variable, string=None):
-
+		
 		t_sbmlId = ListOfSbmlVariables.newSbmlId(self, variable, string)
 		dict.update(self, {t_sbmlId: variable})
 		return t_sbmlId
