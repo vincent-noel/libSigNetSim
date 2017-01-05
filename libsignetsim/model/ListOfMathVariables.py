@@ -145,6 +145,8 @@ class ListOfMathVariables(object):
 
 	def changeVariableType(self, variable, new_type):
 
+		# print "Changing variable %s to type %d" % (str(variable.symbol.getInternalMathFormula), new_type)
+
 		if variable.isDerivative():
 			self.__model.variablesOdes.remove(variable)
 			self.__model.nbOdes -= 1
@@ -190,37 +192,6 @@ class ListOfMathVariables(object):
 			var.ind = i
 
 
-		# print ""
-		# print ""
-		# print "ODEs"
-		# print [var.getSbmlId() for var in self.__model.variablesOdes]
-		# print "ASSs"
-		# print [var.getSbmlId() for var in self.__model.variablesAssignment]
-		# print "CSTs"
-		# print [var.getSbmlId() for var in self.__model.variablesConstant]
-		# print "ALGs"
-		# print [var.getSbmlId() for var in self.__model.variablesAlgebraic]
-
-	# def buildInstance(self):
-	#
-	# 	pass
-	#
-	# # def buildVariablesSubs(self):
-	# #     """
-	# #         Here is's kinda weird. We still cannot pickle Sympy functions
-	# #         so we can't save one within the model object.
-	# #         So this function will only be called on a "as needed" basis
-	# #
-	# #     """
-	# #     t_variableSubs = {}
-	# #     for var in self.values():
-	# #         if var.isDerivative() or var.isAssignment():
-	# #
-	# #             t_symbol = var.symbol.getInternalMathFormula()
-	# #             t_function = SympyFunction(str(t_symbol))(MathFormula.t)
-	# #
-	# #             t_variableSubs.update({t_symbol: t_function})
-	# #     return t_variableSubs
 
 	def getInternalToFinal(self, forcedConcentration=False):
 		"""

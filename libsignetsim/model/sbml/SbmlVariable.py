@@ -45,43 +45,24 @@ class SbmlVariable(HasId):
 
 
 	def new(self, name, sbml_type=PARAMETER):
+
 		self.sbmlType = sbml_type
 		t_sbmlId = self.__model.listOfVariables.addVariable(self, name)
-		# print "Return from add variable"
-		# print t_sbmlId
 		HasId.new(self, name, t_sbmlId)
-		# print "Name nd sbml id"
-		# print name == None
-		# print self.getName()
 
-		# print self.getSbmlId()
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
+	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[],
+				replacements={}):
 
 
 		HasId.copy(self, obj, prefix, shift, subs, deletions, replacements)
 
 		if self.isParameter() and self.localParameter:
-			# print "Adding %s to the list of variables" %  "_local_%d_%s" % (self.reaction.objId, prefix + obj.getSbmlId())
-			self.__model.listOfVariables.addVariable(self, "_local_%d_%s" % (self.reaction.objId, prefix + obj.getSbmlId()))
+			self.__model.listOfVariables.addVariable(self,
+			"_local_%d_%s" % (self.reaction.objId, prefix + obj.getSbmlId()))
+
 		else:
-			# print obj
-			# print obj.isReplaced()
-
-			# t_sbml_id = None
-			# if Symbol(obj.getSbmlId()) in subs.keys():
-			#     t_sbml_id = str(subs[Symbol(obj.getSbmlId())])
-			# else:
 			t_sbml_id = prefix + obj.getSbmlId()
-			#
-			# if obj.isReplaced():
-			#     # print "> Adding..."
-			#     # print obj.getSbmlId()
-			#     self.__model.listOfVariables.addVariable(self, obj.getSbmlId())
-			#
-			# else:
-			# print "Adding %s to the list of variables" %  t_sbml_id
-
 			self.__model.listOfVariables.addVariable(self, t_sbml_id)
 
 		self.sbmlType = obj.sbmlType

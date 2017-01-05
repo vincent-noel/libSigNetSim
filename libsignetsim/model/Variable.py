@@ -85,34 +85,34 @@ class Variable(SbmlVariable, MathVariable):
 		return self.__model.listOfRules.algebraicContainsVariable(self)
 
 
-	def getTopLevelSbmlId(self):
-		if self.__model.isMainModel:
-			return self.getSbmlId()
-		else:
-			return self.__model.parentDoc.model.listOfSubmodels.getBySbmlId(self.__model.getSbmlId()).getSbmlId() + "__" + self.getSbmlId()
+	# def getTopLevelSbmlId(self):
+	# 	if self.__model.isMainModel:
+	# 		return self.getSbmlId()
+	# 	else:
+	# 		return self.__model.parentDoc.model.listOfSubmodels.getBySbmlId(self.__model.getSbmlId()).getSbmlId() + "__" + self.getSbmlId()
 
-	def getPrefix(self):
-		if self.__model.isMainModel:
-			return ""
-		else:
-			# print self.__model.getSbmlId()
-			# print [sm.getSbmlId() for sm in self.__model.parentDoc.model.listOfSubmodels.values()]
-			# print self.__model.parentDoc.model.listOfSubmodels.getBySbmlId(self.__model.getSbmlId()).getSbmlId()
-			return self.__model.parentDoc.model.listOfSubmodels.getBySbmlId(self.__model.getSbmlId()).getSbmlId()
+	# def getPrefix(self):
+	# 	if self.__model.isMainModel:
+	# 		return ""
+	# 	else:
+	# 		# print self.__model.getSbmlId()
+	# 		# print [sm.getSbmlId() for sm in self.__model.parentDoc.model.listOfSubmodels.values()]
+	# 		# print self.__model.parentDoc.model.listOfSubmodels.getBySbmlId(self.__model.getSbmlId()).getSbmlId()
+	# 		return self.__model.parentDoc.model.listOfSubmodels.getBySbmlId(self.__model.getSbmlId()).getSbmlId()
 
-	def getFlattenSbmlId(self):
-
-		# if self.__model.isMainModel:
-		#     prefix = ""
-		# else:
-		#     prefix = self.__model.parentDoc.model.listOfSubmodels.getBySbmlId(self.__model.getSbmlId()).getSbmlId()
-
-		if self.isMarkedToBeReplaced:
-			sbml_id = self.isMarkedToBeReplacedBy.getTopLevelSbmlId()
-		else:
-			sbml_id = self.getTopLevelSbmlId()
-		#
-		# if prefix == "":
-		return sbml_id
-		# else:
-		#     return "%s__%s" % (prefix, sbml_id)
+	# def getFlattenSbmlId(self):
+	#
+	# 	# if self.__model.isMainModel:
+	# 	#     prefix = ""
+	# 	# else:
+	# 	#     prefix = self.__model.parentDoc.model.listOfSubmodels.getBySbmlId(self.__model.getSbmlId()).getSbmlId()
+	#
+	# 	if self.isMarkedToBeReplaced:
+	# 		sbml_id = self.isMarkedToBeReplacedBy.getTopLevelSbmlId()
+	# 	else:
+	# 		sbml_id = self.getTopLevelSbmlId()
+	# 	#
+	# 	# if prefix == "":
+	# 	return sbml_id
+	# 	# else:
+	# 	#     return "%s__%s" % (prefix, sbml_id)

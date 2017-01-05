@@ -41,11 +41,23 @@ class ListOfODEs(list):
 
 				t_ode = ODE(self.__model)
 				t_ode.new(variable,
-							variable.getODE_v2(including_fast_reactions))
+							variable.getODE(including_fast_reactions))
 
 				list.append(self, t_ode)
 
 
+	def buildFromModel(self, model, including_fast_reactions=True):
+		for variable in model.listOfVariables.values():
+			if variable.isDerivative():
+
+				# First we found the corresponding variable in the new list
+				t_var = self.__model.listOfVariables[str(variable.symbol.getInternalMathFormula())]
+				t_definition = variable.getODE(including_fast_reactions)
+
+				if t_definition is not None:
+					t_ode = ODE(self.__model)
+					t_ode.new(t_var, variable.getODE(including_fast_reactions))
+					list.append(self, t_ode)
 	#
 	# def developODEs(self):
 	#

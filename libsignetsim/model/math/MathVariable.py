@@ -52,7 +52,7 @@ class MathVariable(object):
 		self.isInitialized = False
 		self.isDerivativeInitialized = False
 		self.constant = None
-
+		self.boundaryCondition = False
 		self.is_in_dae = None
 
 
@@ -84,7 +84,9 @@ class MathVariable(object):
 		self.isDerivativeInitialized = obj.isDerivativeInitialized
 		self.constant = obj.constant
 		self.is_in_dae = obj.is_in_dae
-
+		self.boundaryCondition = obj.boundaryCondition
+		self.ind = obj.ind
+		self.type = obj.type
 
 	def readSbml(self, sbml_variable, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		self.readSbmlVariable(sbml_variable, sbml_level, sbml_version)
@@ -181,7 +183,7 @@ class MathVariable(object):
 		else:
 			return MathFormula.ZERO
 
-	def getODE_v2(self, including_fast_reactions=True, forcedConcentration=False):
+	def getODE(self, including_fast_reactions=True, forcedConcentration=False):
 
 		if self.isRateRuled():
 			return self.isRuledBy().getDefinition(forcedConcentration)

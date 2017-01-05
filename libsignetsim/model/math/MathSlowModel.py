@@ -22,335 +22,419 @@
 
 """
 
-from libsignetsim.model.math.MathModel import MathModel
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.MathFormula import MathFormula
+from sympy import solve, zeros, srepr, Sum
+from libsignetsim.model.math.sympy_shortcuts import (
+	SympyInteger, SympyAdd, SympyEqual, SympySymbol, SympyRational,
+	SympyStrictGreaterThan)
+from libsignetsim.model.math.container.ListOfODEs import ListOfODEs
+from libsignetsim.model.math.container.ListOfCFEs import ListOfCFEs
+from libsignetsim.model.math.container.ListOfDAEs import ListOfDAEs
+from libsignetsim.model.math.DAE import DAE
+from libsignetsim.model.math.CFE import CFE
+from libsignetsim.model.math.ODE import ODE
+from libsignetsim.model.ListOfVariables import ListOfVariables
+from libsignetsim.model.math.MathVariable import MathVariable
+from libsignetsim.model.ModelException import ModelException
 
-
-class MathSlowModel(MathModel):
+class MathSlowModel(object):
 	""" Sbml model class """
 
 	def __init__ (self, parent_model=None):
 		""" Constructor of model class """
 
-		MathModel.__init__(self)
+		# MathModel.__init__(self)
 		self.parentModel = parent_model
+		self.listOfODEs = ListOfODEs(self)
+		self.listOfCFEs = ListOfCFEs(self)
+		self.listOfDAEs = ListOfDAEs(self)
+		self.listOfVariables = ListOfVariables(self)
 
+		self.sbmlLevel = self.parentModel.sbmlLevel
+		self.sbmlVersion = self.parentModel.sbmlVersion
+		self.solvedInitialConditions = {}
 
-	def buildSlowSubstem(self):
+		self.nbOdes = None
+		self.nbAssignments = None
+		self.nbConstants = None
+		self.nbAlgebraics = None
+
+		self.variablesOdes = None
+		self.variablesAssignment = None
+		self.variablesConstant = None
+		self.variablesAlgebraic = None
 
 		self.fastLaws = []
 		self.fastLaws_vars = []
 		self.fastStoichiometryMatrix = None
 		self.fastConservationLaws = []
+		self.hasDAEs = self.parentModel.hasDAEs
 
+		self.slow_variables = []
+		self.fast_variables = []
+		self.mixed_variables = []
+
+
+	def copyVariables(self):
+		""" Copies the listOfVariables and the solvedInitialConditions """
+
+		# First we copy the variables list
+		for variable in self.parentModel.listOfVariables.values():
+			new_var = MathVariable(self)
+			new_var.copy(variable)
+			new_var_id = str(new_var.symbol.getInternalMathFormula())
+			self.listOfVariables.update({new_var_id:new_var})
+
+		# Then we copy the solved initial conditions
+		for variable, value in self.parentModel.solvedInitialConditions.items():
+			t_var = self.listOfVariables[str(variable.symbol.getInternalMathFormula())]
+			self.solvedInitialConditions.update({t_var: value})
+
+
+		self.nbOdes = self.parentModel.nbOdes
+		self.nbAssignments = self.parentModel.nbAssignments
+		self.nbConstants = self.parentModel.nbConstants
+		self.nbAlgebraics = self.parentModel.nbAlgebraics
+
+		self.variablesOdes = []
+		for i, var_ode in enumerate(self.parentModel.variablesOdes):
+			t_var = self.listOfVariables[str(var_ode.symbol.getInternalMathFormula())]
+			self.variablesOdes.append(t_var)
+
+		self.variablesAssignment = []
+		for var_ass in self.parentModel.variablesAssignment:
+			t_var = self.listOfVariables[str(var_ass.symbol.getInternalMathFormula())]
+			self.variablesAssignment.append(t_var)
+
+		self.variablesConstant = []
+		for var_cst in self.parentModel.variablesConstant:
+			t_var = self.listOfVariables[str(var_cst.symbol.getInternalMathFormula())]
+			self.variablesConstant.append(t_var)
+
+		self.variablesAlgebraic = []
+		for var_alg in self.parentModel.variablesAlgebraic:
+			t_var = self.listOfVariables[str(var_alg.symbol.getInternalMathFormula())]
+			self.variablesAlgebraic.append(t_var)
+
+		for cfe in self.parentModel.listOfCFEs:
+			t_var = self.listOfVariables[str(cfe.getVariable().symbol.getInternalMathFormula())]
+			t_cfe = CFE(self)
+			t_cfe.new(t_var, cfe.getDefinition())
+			self.listOfCFEs.append(t_cfe)
+
+	def findFastReactions(self):
+		""" Finds the fast reactions and build the fast stoichiometry matrix """
 
 		for reaction in self.parentModel.listOfReactions.values():
 			if reaction.fast:
-				self.fastLaws.append(reaction.kineticLaw.getFinalMathFormula())
+				self.fastLaws.append(reaction.kineticLaw.getDefinition().getDeveloppedInternalMathFormula())
 
 				for reactant in reaction.listOfReactants.values():
-					self.fastLaws_vars.append(reactant.getSpecies().symbol.getFinalMathFormula())
+					self.fastLaws_vars.append(reactant.getSpecies().symbol.getDeveloppedInternalMathFormula())
 
 				for product in reaction.listOfProducts.values():
-					self.fastLaws_vars.append(product.getSpecies().symbol.getFinalMathFormula())
+					self.fastLaws_vars.append(product.getSpecies().symbol.getDeveloppedInternalMathFormula())
 
 				t_sto_matrix = reaction.getStoichiometryMatrix_v2()
-
+				# print "Result from getStoichiometryMatrix_v2"
+				# print t_sto_matrix
 				for t_stoi_reaction in t_sto_matrix:
-					t_reaction = zeros(1,len(self.listOfSpecies))
+					t_reaction = zeros(1,len(self.parentModel.listOfSpecies))
 					for j, t_formula in enumerate(t_stoi_reaction):
-
 						t_reaction[j] = t_formula.getDeveloppedInternalMathFormula()
+						# print t_reaction
+					self.fastStoichiometryMatrix = t_reaction
+		#
+		# if len(self.fastLaws) > 0:
+		#
+		# 	print " > Found fast reaction : "
+		# 	for fast_law in self.fastLaws:
+		# 		print " >> " + str(fast_law)
+		#
+		# 	print " > Stoichiometry matrix :"
+		# 	print self.fastStoichiometryMatrix
+		# 	print " > Stoichiometry matrix's nullspace :"
+		# 	print self.fastStoichiometryMatrix.nullspace()
 
-					if self.fastStoichiometryMatrix is None:
-						self.fastStoichiometryMatrix = t_reaction
-					else:
-						self.fastStoichiometryMatrix = self.fastStoichiometryMatrix.col_join(t_reaction)
+	def findFastConservationLaws(self):
+		""" Finds the conservation laws from the fast reactions """
+
+		for i, t_res in enumerate(self.fastStoichiometryMatrix.nullspace()):
+
+			# print "Finding conservation law #%d\n" % i
+			# print t_res
+			t_law = MathFormula.ZERO
+			t_value = MathFormula.ZERO
+			t_vars = []
+
+			for ii, tt_res in enumerate(t_res):
+
+				t_species = self.parentModel.listOfSpecies.values()[ii]
+
+				# Getting symbol
+				tt_symbol = t_species.symbol.getInternalMathFormula()
+				if t_species.isConcentration():
+					tt_symbol /= t_species.getCompartment().symbol.getInternalMathFormula()
 
 
+				# Getting value
+				if t_species.hasInitialAssignment():
+					tt_value = t_species.hasInitialAssignmentBy().getExpressionMath().getInternalMathFormula()
+
+					for tt_species in self.parentModel.listOfSpecies.values():
+						ttt_symbol = tt_species.symbol.getInternalMathFormula()
+						ttt_value = tt_species.value.getInternalMathFormula()
+						if ttt_symbol in tt_value.atoms(SympySymbol) and ttt_value is not None:
+							tt_value = tt_value.subs(ttt_symbol, ttt_value)
+
+					if t_species.isConcentration():
+						tt_value /= t_species.getCompartment().symbol.getInternalMathFormula()
+
+					if SympySymbol("_time_") in tt_value.atoms():
+						tt_value = tt_value.subs(SympySymbol("_time_"), 0)
+
+				elif t_species.value.getInternalMathFormula() is not None:
+					tt_value =  t_species.getMathValue().getInternalMathFormula()
+					if t_species.isConcentration():
+						tt_value /= t_species.getCompartment().symbol.getInternalMathFormula()
+
+
+				# Building law and total value
+				if tt_res == SympyInteger(1):
+					t_law += tt_symbol
+					t_value += tt_value
+
+				elif tt_res == SympyInteger(-1):
+					t_law -= tt_symbol
+					t_value -= tt_value
+
+				else:
+					t_law += tt_res * tt_symbol
+					t_value += tt_res * tt_value
+
+			if t_law.func == SympyAdd:
+				# print " >> New fast conservation law : %s" % str(SympyEqual(t_law, t_value))
+				self.fastConservationLaws.append(SympyEqual(t_law, t_value))
+
+
+	def fixInitialConditions(self):
+
+		""" The fast reactions might introduce new initial values. checking,
+			and fixing them if needed """
+
+		t_fast_cons_laws = [law for law in self.fastConservationLaws]
+		t_fast_vars = [var for var in self.fastLaws_vars]
+
+		containsBoundaryConditions = False
+		for var in self.mixed_variables:
+			t_var = self.listOfVariables[str(var)]
+			if t_var.boundaryCondition:
+				containsBoundaryConditions = True
+				# print "> Some mixed variables have boundaryCondition !"
+				break
+
+		if not containsBoundaryConditions:
+
+			f_vars = [dae for dae in self.fastLaws_vars]
+			f_system = [SympyEqual(law, MathFormula.ZERO) for law in self.fastLaws]
+			f_system += self.fastConservationLaws
+
+			if len(f_system) > 0:
+
+				(f_system, f_vars) = self.loadKnownInitialValues_v2(f_system, f_vars, exclude_list=f_vars)
+				solved_variables = self.solveSystem(f_system, f_vars)
+
+				# print "Solved initial conditions : %s" % str(solved_variables)
+
+				for solved_variable, solved_value in solved_variables.items():
+					t_var = self.listOfVariables[str(solved_variable)]
+					t_value = MathFormula(self)
+					t_value.setInternalMathFormula(solved_value)
+
+					self.solvedInitialConditions.update({t_var:t_value})
+
+		else:
+			f_vars = [dae for dae in self.fastLaws_vars]
+			f_system = [SympyEqual(law, MathFormula.ZERO) for law in self.fastLaws]
+
+			if len(f_system) > 0:
+
+				(f_system, f_vars) = self.loadKnownInitialValues_v2(f_system, f_vars, exclude_list=f_vars)
+				solved_variables = self.solveSystem(f_system, self.fast_variables)
+
+				for solved_variable, solved_value in solved_variables.items():
+					t_var = self.listOfVariables[str(solved_variable)]
+					t_value = MathFormula(self)
+					t_value.setInternalMathFormula(solved_value)
+
+					self.solvedInitialConditions.update({t_var:t_value})
+
+
+	def build(self):
+
+		self.copyVariables()
+		self.findFastReactions()
 
 		if len(self.fastLaws) > 0:
+			self.findFastConservationLaws()
+			# self.listOfODEs.buildFromModel(model=self.parentModel,
+			# 								including_fast_reactions=False)
+
+			self.slow_variables = []
+			for variable in self.parentModel.listOfVariables.values():
+				if variable.isDerivative():
+
+					# First we found the corresponding variable in the new list
+					t_var = self.parentModel.listOfVariables[str(variable.symbol.getInternalMathFormula())]
+					t_definition = variable.getODE(including_fast_reactions=False)
+
+					if t_definition is not None:
+						self.slow_variables.append(t_var.symbol.getInternalMathFormula())
+
+
+			self.fast_variables = list(set(self.fastLaws_vars) - set(self.slow_variables))
+			self.mixed_variables = list(set(self.fastLaws_vars).intersection(set(self.slow_variables)))
+
+			# print "\n > Mixed variables : %s" % str(self.mixed_variables)
+			# print " > Fast variables : %s" % str(self.fast_variables)
+
+			self.fixInitialConditions()
+
+			t_odes = zeros(1,len(self.parentModel.listOfODEs))
+			t_odes_vars = zeros(1,len(self.parentModel.listOfODEs))
+			for i, ode in enumerate(self.parentModel.listOfODEs):
+
+				t_odes[i] = ode.getDefinition().getDeveloppedInternalMathFormula()
+				if ode.getVariable().symbol.getInternalMathFormula() in self.fast_variables:
+
+					t_odes_vars[i] = MathFormula.ZERO
+				else:
+					t_odes_vars[i] = ode.getVariable().symbol.getInternalMathFormula()
+
+
+			matrix_species = zeros(1,self.parentModel.nbOdes)
+			list_species = []
+			for i, var in enumerate(self.parentModel.variablesOdes):
+				if var.isDerivative():
+					matrix_species[i] = var.symbol.getInternalMathFormula()
+					list_species.append(var.symbol.getInternalMathFormula())
+			# print " > matrix species :"
+			# print matrix_species
+			nullspace_normalized = []
+			nullspace = self.fastStoichiometryMatrix.nullspace()
+			for t_cons_law in nullspace:
+				t_sum = SympyInteger(0)
+				for element in t_cons_law:
+					t_sum += element
+
+				if SympyStrictGreaterThan(t_sum, SympyInteger(1)):
+					# print t_cons_law
+					t_system = [SympyEqual((matrix_species*t_cons_law)[0,0], SympyInteger(1))]
+					t_system += self.fastLaws
+					t_vars = self.fast_variables + self.mixed_variables
+					# print '-'*25
+					# print t_system
+					# print t_vars
+
+					(t_system, t_vars) = self.loadKnownInitialValues_v2(t_system, t_vars, exclude_list=t_vars)
+					# print '-'*25
+					# print t_system
+					# print t_vars
+
+					res = solve(t_system,t_vars)
+					t_cons_law_normalized = t_cons_law
+					# print "RES"
+					# print res
+					# print t_cons_law_normalized
+					for var, value in res.items():
+						# print "index of %s : %d" % (var, list_species.index(var))
+						t_cons_law_normalized[list_species.index(var)] = value
+					# print t_cons_law_normalized
+					nullspace_normalized.append(t_cons_law_normalized)
+				else:
+					nullspace_normalized.append(t_cons_law)
+
+
+			nullspace = nullspace_normalized
+
+
+
+			# print nullspace
+			# print "\n > Slow+Fast ODES"
+			# for t_ode in t_odes:
+			#  	print t_ode
+
+			pseudo_odes = {}
+			for i, pseudo_var in enumerate(nullspace):
+				t_pseudo_ode = (t_odes*pseudo_var)[0,0]
+				t_pseudo_variable = (t_odes_vars*pseudo_var)[0,0].atoms(SympySymbol)
+				if len(t_pseudo_variable) == 1:
+					pseudo_odes.update({list(t_pseudo_variable)[0]: t_pseudo_ode })
+
+			# print "\n > Slow ODES"
+			# for t_ode in pseudo_odes.values():
+			#  	print t_ode
+			system = [law for law in self.fastLaws]
+			variables = [var for var in self.fast_variables]
+
+			new_cfes = self.solveSystem(system, variables)
 
-			for i, t_res in enumerate(self.fastStoichiometryMatrix.nullspace()):
+			for pseudo_var, pseudo_ode in pseudo_odes.items():
 
-				t_law = MathFormula.ZERO
-				t_value = MathFormula.ZERO
-				t_vars = []
+				t_var = self.listOfVariables[str(pseudo_var)]
+				t_definition = MathFormula(self)
+				t_definition.setInternalMathFormula(pseudo_ode)
+				t_ode = ODE(self)
+				t_ode.new(t_var, t_definition)
+				self.listOfODEs.append(t_ode)
 
-				for ii, tt_res in enumerate(t_res):
 
-					t_species = self.parentModel.listOfSpecies.values()[ii]
+			for cfe_var, cfe_def in new_cfes.items():
+				t_var = self.listOfVariables[str(cfe_var)]
+				t_def = MathFormula(self)
+				t_def.setInternalMathFormula(cfe_def)
+				t_cfe = CFE(self)
+				t_cfe.new(t_var, t_def)
+				self.listOfCFEs.append(t_cfe)
 
-					# Getting symbol
-					tt_symbol = t_species.symbol.getFinalMathFormula()
-					if t_species.isConcentration():
-						tt_symbol /= t_species.getCompartment().symbol.getFinalMathFormula()
 
 
-					# Getting value
-					if t_species.hasInitialAssignment():
-						tt_value = t_species.hasInitialAssignmentBy().getExpressionMath().getFinalMathFormula()
+		# self.listOfCFEs.printCFEs()
+		self.listOfCFEs.developCFEs()
 
-						for tt_species in self.parentModel.listOfSpecies.values():
-							ttt_symbol = tt_species.symbol.getFinalMathFormula()
-							ttt_value = tt_species.value.getFinalMathFormula()
-							if ttt_symbol in tt_value.atoms(SympySymbol) and ttt_value is not None:
-								tt_value = tt_value.subs(ttt_symbol, ttt_value)
+		for fast_var in self.fast_variables:
+			t_var = self.listOfVariables[str(fast_var)]
+			self.listOfVariables.changeVariableType(t_var, MathVariable.VAR_ASS)
 
-						if t_species.isConcentration():
-							tt_value /= t_species.getCompartment().symbol.getFinalMathFormula()
-
-						if SympySymbol("_time_") in tt_value.atoms():
-							tt_value = tt_value.subs(SympySymbol("_time_"), 0)
-
-					elif t_species.value.getFinalMathFormula() is not None:
-						tt_value =  t_species.getMathValue().getFinalMathFormula()
-						if t_species.isConcentration():
-							tt_value /= t_species.getCompartment().symbol.getFinalMathFormula()
-
-
-					# Building law and total value
-					if tt_res == SympyInteger(1):
-						t_law += tt_symbol
-						t_value += tt_value
-
-					elif tt_res == SympyInteger(-1):
-						t_law -= tt_symbol
-						t_value -= tt_value
-
-					else:
-						t_law += tt_res * tt_symbol
-						t_value += tt_res * tt_value
-
-				if t_law.func == SympyAdd:
-					# print "New fast conservation law : %s" % str(SympyEqual(t_law, t_value))
-					self.fastConservationLaws.append(SympyEqual(t_law, t_value))
-
-
-			self.buildODEs(including_fast_reactions=False)
-
-			t_ode_vars = [ode_var.getFinalMathFormula() for ode_var in self.ODE_vars]
-			# print t_ode_vars
-			# print self.fastLaws_vars
-			variables_fast_only = list(set(self.fastLaws_vars) - set(t_ode_vars))
-			variables_mixtes = list(set(self.fastLaws_vars).intersection(set(t_ode_vars)))
-
-			# print "Mixed variables : %s" % str(variables_mixtes)
-			# print "Fast variables : %s" % str(variables_fast_only)
-
-			for fast_law in self.fastLaws:
-				t_dae = MathFormula(self.parentModel)
-				t_dae.setFinalMathFormula(fast_law)
-				self.DAEs.append(t_dae)
-
-			for dae_var in variables_fast_only:
-				t_dae_var = MathFormula(self.parentModel, MathFormula.MATH_VARIABLE)
-				t_dae_var.setFinalMathFormula(dae_var)
-				self.DAE_vars.append(t_dae_var)
-				self.DAE_symbols.append(t_dae_var)
-
-				t_var = self.parentModel.listOfVariables[str(t_dae_var.getInternalMathFormula())]
-				self.parentModel.listOfVariables.changeVariableType(t_var, MathVariable.VAR_DAE)
-
-			self.DAE_vars = list(set(self.DAE_vars))
-			self.DAE_symbols = list(set(self.DAE_symbols))
-
-			t_fast_cons_laws = [law for law in self.fastConservationLaws]
-			t_fast_vars = [var for var in self.fastLaws_vars]
-			# print "Fast conservation law, checking initial conditions"
-			# print t_fast_cons_laws
-			# print t_fast_vars
-			# (ss,vv)= self.loadKnownInitialValues(t_fast_cons_laws, t_fast_vars, force=True)
-			# if len(ss) > 0:
-
-			containsBoundaryConditions = False
-			for var in variables_mixtes:
-				t_var = self.parentModel.listOfVariables[str(var.func)]
-				# print "mixed : " + t_var.getSbmlId()
-				if t_var.isSpecies() and t_var.boundaryCondition:
-					containsBoundaryConditions = True
-					break
-
-			# print containsBoundaryConditions
-			if not containsBoundaryConditions:
-
-				f_vars = [dae for dae in self.fastLaws_vars]
-				f_system = [SympyEqual(dae.getFinalMathFormula(), MathFormula.ZERO) for i, dae in enumerate(self.parentModel.DAEs)]
-				f_system += self.fastConservationLaws
-
-
-				if len(f_system) > 0:
-					(f_system, f_vars) = self.loadKnownInitialValues(f_system, f_vars, exclude_list=f_vars, force=True)
-					solved_variables = self.solveSystem(f_system, f_vars)
-
-					self.saveFoundInitialValues(solved_variables)
-
-			else:
-				f_vars = [dae for dae in self.fastLaws_vars]
-				f_system = [SympyEqual(dae.getFinalMathFormula(), MathFormula.ZERO) for i, dae in enumerate(self.parentModel.DAEs)]
-				# f_system += self.fastConservationLaws
-
-
-				if len(f_system) > 0:
-					(f_system, f_vars) = self.loadKnownInitialValues(f_system, f_vars, exclude_list=variables_fast_only, force=True)
-					solved_variables = self.solveSystem(f_system, variables_fast_only)
-
-					self.saveFoundInitialValues(solved_variables)
-
-
-
-			print "\n> Fist we solve the value of the mixed variables in the fast system"
-
-			system = [SympyEqual(diff(law,MathFormula.t), SympyInteger(0)) for law in self.fastLaws]
-			variables = [diff(var,MathFormula.t) for var in self.fastLaws_vars]
-			# unknowns = [diff(var, MathFormula.t) for var in variables_fast_only]
-
-
-
-			# Then we remove the fast variables from the conservation laws
-			t_der_cons = []
-			t_der_cons_vars = []
-			for i, law in enumerate(self.parentModel.LHSs_v2):
-
-				containsFastSubsystem = True
-
-				for var in self.parentModel.DAE_vars:
-					if not (var.getFinalMathFormula() in law.getFinalMathFormula().atoms(SympyFunction)):
-						containsFastSubsystem = False
-
-				if containsFastSubsystem:
-
-					t_der_cons_law = SympyEqual(
-						diff(law.getFinalMathFormula(), MathFormula.t),
-						MathFormula.ZERO)
-
-					t_der_cons.append(t_der_cons_law)
-
-
-			f_der_mixed = [diff(var, MathFormula.t) for var in variables_mixtes]
-
-			system += t_der_cons
-			variables += f_der_mixed
-			variables = list(set(variables))
-			der_vars = [ode.getFinalMathFormula() for ode in self.ODE_der_vars]
-			dae_vars = [ode for ode in self.fastLaws_vars]
-
-			# print system
-			# print variables
-			# (system, f_vars) = self.loadKnownInitialValues(system, variables, exclude_list=(der_vars+dae_vars))
-			# print system
-			# print variables
-
-			fixed_fast_systen = False
-
-			if len(system) > 0:
-				solved_variables = self.solveSystem(system, variables)
-
-				# print solved_variables
-				der_vars = [ode.getFinalMathFormula() for ode in self.parentModel.ODE_der_vars]
-				der_mixtes = [diff(var, MathFormula.t) for var in variables_mixtes]
-
-				subs = {}
-				for i, var in enumerate(self.parentModel.ODEs):
-					# if self.ODE_der_vars[i].getFinalMathFormula() not in der_mixtes:
-						subs.update({self.parentModel.ODE_der_vars[i].getFinalMathFormula():var.getFinalMathFormula()})
-
-				# print subs
-
-				for variable, formula in solved_variables.items():
-
-					t_formula = MathFormula(self.parentModel)
-					t_formula.setFinalMathFormula(simplify(formula.subs(subs)))
-
-					t_variable = MathFormula(self.parentModel)
-					t_variable.setFinalMathFormula(variable)
-
-					if variable in der_vars:
-						t_index = der_vars.index(variable)
-						t_var = self.parentModel.listOfVariables[str(self.ODE_vars[t_index].getInternalMathFormula())]
-
-						if not (t_var.isSpecies() and t_var.boundaryCondition):
-							self.parentModel.ODEs[t_index] = t_formula
-
-			# else:
-			#     fixed_fast_systen = True
-			#     solved_variables = {}
-			#     for var in unknowns:
-			#         solved_variables.update({var: SympyInteger(0)})
-
-
-
-	def loadKnownInitialValues(self, f_system, f_vars, exclude_list=[], force=False):
+	def loadKnownInitialValues_v2(self, f_system, f_vars, exclude_list=[]):
 
 		valued_system = f_system
 		remaining_vars = f_vars
 
 		# Substituing known values
 		# We should probably rewrite that and make one big subs call
-		for i_variable, variable in enumerate(self.listOfVariables.values()):
-
-			t_symbol = variable.symbol.getFinalMathFormula()
-			t_symbol_derivative = diff(t_symbol, MathFormula.t)
-			t_symbol_meanwhile = SympySymbol("_etpendantcetempsla_")
-			t_value = None
-
-			if not variable.isReaction() and variable.hasInitialAssignment():
-				t_value = variable.hasInitialAssignmentBy().definition.getFinalMathFormula()
-
-			elif not variable.isReaction() and variable.isAssignmentRuled():
-				t_value = variable.isRuledBy().getDefinition().getFinalMathFormula()
-
-			elif not variable.isReaction() and variable.isInitialized and t_symbol not in exclude_list:
-				t_value = variable.value.getFinalMathFormula()
-
-			elif force and t_symbol not in exclude_list:
-				t_value = SympyInteger(1)
+		subs = {}
+		for i_variable, variable in enumerate(self.solvedInitialConditions.keys()):
 
 
-			if t_value is not None:
+			t_symbol = variable.symbol.getInternalMathFormula()
 
-				t_valued_system = []
-				for equ in valued_system:
+			if variable.symbol.getInternalMathFormula() not in exclude_list:
+				subs.update({t_symbol: self.solvedInitialConditions[variable].getInternalMathFormula()})
 
-					if not isinstance(equ, bool):
-						t_equ = equ.subs({t_symbol_derivative: t_symbol_meanwhile, t_symbol: t_value, t_symbol_meanwhile: t_symbol_derivative})
+			res_system = []
+			for equ in f_system:
+				res_system.append(equ.subs(subs))
 
-						if t_equ != True:
-							t_valued_system.append(t_equ)
-
-					else:
-						t_valued_system.append(equ)
-
-				valued_system = t_valued_system
-
-				if remaining_vars != [] and t_symbol in remaining_vars:
-					remaining_vars.remove(t_symbol)
-
-		return (valued_system, remaining_vars)
-
-
-	def saveFoundInitialValues(self, solved_initial_conditions):
-
-		for var, value in solved_initial_conditions.items():
-			# print var
-			for variable in self.parentModel.listOfVariables.values():
-				# print "-" + str(variable.symbol.getFinalMathFormula())
-				if var == variable.symbol.getFinalMathFormula():
-					# print "initialization = %g" % value
-					variable.value.setFinalMathFormula(value)
-					variable.isInitialized = True
-
-				elif var == variable.symbol.getInternalMathFormulaDerivative():
-					variable.derivative_value.setFinalMathFormula(value)
-					variable.isDerivativeInitialized = True
+		return (res_system, f_vars)
 
 
 	def solveSystem(self, system, variables):
 
 		if Settings.verbose >= 1:
 
-			print "\n\n> Calling solver with DAEs only : "
+			print "\n\n> Calling solver : "
 			print ">> System : "
 			for equ in system:
 				print ">>> " + str(equ)
@@ -381,80 +465,3 @@ class MathSlowModel(MathModel):
 					solved_initial_conditions.update({var:value})
 
 		return solved_initial_conditions
-
-
-	def checkInitialValues(self):
-
-
-		t_daes = [SympyEqual(dae.getFinalMathFormula(), SympyInteger(0)) for dae in self.parentModel.DAEs]
-		f_system = t_daes
-		f_vars = [t_symbol.getFinalMathFormula() for t_symbol in self.parentModel.DAE_symbols]
-		f_vars = list(set(f_vars))
-		# print self.DAE_symbols
-		# print f_system
-		# print f_vars
-
-		(f_system, f_vars) = self.loadKnownInitialValues(f_system, f_vars, force=True)
-
-		# print f_system
-		# print f_vars
-
-		if False in f_system:
-			f_system = t_daes
-			f_vars = [t_symbol.getFinalMathFormula() for t_symbol in self.parentModel.DAE_symbols]
-			f_vars = list(set(f_vars))
-
-			# print f_system
-			# print f_vars
-			dae_vars = [var.symbol.getInternalMathFormula() for var in self.parentModel.listOfVariables.values() if var.isAlgebraic()]
-			# print dae_vars
-			(f_system, f_vars) = self.loadKnownInitialValues(f_system, f_vars, dae_vars)
-
-			# print f_system
-			# print f_vars
-			solved_initial_conditions = self.solveSystem(f_system, f_vars)
-			self.saveFoundInitialValues(solved_initial_conditions)
-
-
-	def buildReducedSystem(self, vars_to_keep=[]):
-
-		reduced_odes = []
-		reduced_odes_vars = []
-		reduced_odes_der_vars = []
-		reduced_odes_symbols = []
-
-		self.findReducibleVariables(vars_to_keep=vars_to_keep)
-
-		# print self.reducibleVariables
-		t_reducible_vars = [var for var in self.parentModel.reducibleVariables.keys()]
-		t_reducible_values = [var for var in self.parentModel.reducibleVariables.values()]
-
-		if len(self.parentModel.reducibleVariables) > 0:
-
-			for i, ode_var in enumerate(self.parentModel.ODE_vars):
-				if ode_var.getInternalMathFormula() in t_reducible_vars:
-
-					t_cfe = t_reducible_values[t_reducible_vars.index(ode_var.getInternalMathFormula())]
-					t_formula = MathFormula(self.parentModel)
-					t_formula.setInternalMathFormula(t_cfe)
-					self.parentModel.CFEs.append(t_formula)
-
-					self.parentModel.CFE_vars.append(ode_var)
-					self.parentModel.CFE_types.append(MathCFEs.SOLVED)
-
-					#Now changing the variable type
-					t_var = self.parentModel.listOfVariables[str(ode_var.getInternalMathFormula())]
-					self.parentModel.listOfVariables.changeVariableType(t_var, Variable.VAR_ASS)
-
-				else:
-					reduced_odes.append(self.parentModel.ODEs[i])
-					reduced_odes_vars.append(ode_var)
-					reduced_odes_der_vars.append(self.parentModel.ODE_der_vars[i])
-					reduced_odes_symbols.append(self.parentModel.ODE_symbols[i])
-
-			self.parentModel.ODEs = reduced_odes
-			self.parentModel.ODE_vars = reduced_odes_vars
-			self.parentModel.ODE_der_vars = reduced_odes_der_vars
-			self.parentModel.ODE_symbols = reduced_odes_symbols
-
-			self.developCFEs()

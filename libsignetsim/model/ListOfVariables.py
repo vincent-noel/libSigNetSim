@@ -44,7 +44,7 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 	def keys(self):
 		""" Override keys() to sort by id """
 		return sorted(dict.keys(self),
-					  key=lambda sbmlObj: dict.__getitem__(self, sbmlObj).getSbmlId())
+					  key=lambda sbmlObj: str(dict.__getitem__(self, sbmlObj).symbol.getInternalMathFormula()))
 
 	def items(self):
 		""" Override items() to sort by id """
@@ -80,11 +80,11 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 			dict.__delitem__(self, old_sbml_id)
 			dict.update(self, {new_sbml_id: t_var})
 
-
-	def subsToFlatten(self):
-
-		res = {}
-		for var in dict.values(self):
-			res.update({var.getSbmlId():var.getTopLevelSbmlId()})
-
-		return res
+	#
+	# def subsToFlatten(self):
+	#
+	# 	res = {}
+	# 	for var in dict.values(self):
+	# 		res.update({var.getSbmlId():var.getTopLevelSbmlId()})
+	#
+	# 	return res

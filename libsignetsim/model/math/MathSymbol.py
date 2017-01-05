@@ -51,25 +51,6 @@ class MathSymbol(MathFormula):
 		MathFormula.__init__(self, model, MathFormula.MATH_VARIABLE, isFromReaction=is_from_reaction)
 
 
-	# def getInternalMathFormula(self, forcedConcentration=False, developped=True):
-	#
-	# 	t_formula = MathFormula.getInternalMathFormula(self)
-	# 	# print sympy.srepr(t_formula)
-	#
-	# 	# if isinstance(t_formula, SympyMul):
-	# 	# 	raise ModelException(ModelException.SBML_ERROR, "WTF MUL")
-	#
-	# 	# if t_formula is not None and forcedConcentration:
-	# 	# 	t_formula = SympySymbol("_speciesForcedConcentration_%s_" % str(t_formula))
-	#
-	# 	# print t_formula
-	#
-	# 	# if t_formula is not None and developped:
-	# 	# 	t_formula = self.translateForDeveloppedInternal(t_formula, symbols=True)
-	#
-	# 	return t_formula
-
-
 	def setInternalVariable(self, internal_variable):
 		MathFormula.setInternalMathFormula(self, internal_variable)
 
@@ -110,3 +91,6 @@ class MathSymbol(MathFormula):
 
 	def getCMathFormula(self):
 		return self.writeCCode(MathFormula.getInternalMathFormula(self))
+
+	def getPrettyPrintMathFormula(self):
+		return str(MathFormula.getInternalMathFormula(self))

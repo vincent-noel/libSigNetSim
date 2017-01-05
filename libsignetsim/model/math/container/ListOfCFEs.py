@@ -140,6 +140,6 @@ class ListOfCFEs(list):
 	def printCFEs(self):
 
 		print "-----------------------------"
-		for t_cfe in enumerate(self):
+		for t_cfe in self:
 			print ">> %s = %s" % (str(t_cfe.getVariable().symbol.getDeveloppedInternalMathFormula()),
 								str(t_cfe.getDefinition().getDeveloppedInternalMathFormula()))

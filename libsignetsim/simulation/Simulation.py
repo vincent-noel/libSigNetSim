@@ -107,13 +107,6 @@ class Simulation(CWriterSimulation):
 
 
 
-	# def loadSbmlModel(self, filename):
-	#
-	#     document = SbmlDocument()
-	#     document.readSbml(filename)
-	#     self.listOfModels.append(document.model)
-
-
 	def loadSbmlModel_v2(self, filename, modelDefinition=False):
 
 		document = SbmlDocument()
@@ -309,20 +302,12 @@ class Simulation(CWriterSimulation):
 
 		variables = resultsFile.readline().strip().split(',')
 		variables = [variable.strip() for variable in variables]
-		# for variable in self.listOfModels[0].listOfVariables.keys():
+
 		for variable in variables:
 			if variable != 'time':
 				trajs.update({variable:[]})
 
-		# print variables
-
-
-
-
 		for line in resultsFile.readlines():
-
-
-
 
 			data = line.split()
 			t.append(float(data[0]))
@@ -332,27 +317,19 @@ class Simulation(CWriterSimulation):
 					trajs[variable].append(float(data[i_variable]))
 
 
-			# for key, variable in self.listOfModels[0].listOfVariables.iteritems():
-			# 	t_sample = float(data[1+variable.getPos()])
-			# 	trajs[key].append(t_sample)
-
 		resultsFile.close()
-		# print t
-		# print self.listOfModels[0].listOfVariables.keys()
+
+
 		# The simulations only deals with amounts, but some species are
 		# Concentrations. So we need to transform them back
 		for key, variable in self.listOfModels[0].listOfVariables.iteritems():
 			if variable.isConcentration():
-				# if (variable.isRateRuled() and variable.isSpecies() and variable.getCompartment().isRateRuled()):
-				# 	raise SimulationException(SimulationException.SIM_ERROR, "poil")
-				# print "I'm a concentration !! %s" % variable.getSbmlId()
 				t_traj = trajs[key]
-				# print t_traj
+
 				t_comp_traj = trajs[variable.getCompartment().getSbmlId()]
 				res_traj = []
 
 				for i, point in enumerate(t_traj):
-					# print t_comp_traj[i]
 					res_traj.append(point/t_comp_traj[i])
 				trajs.update({key:res_traj})
 

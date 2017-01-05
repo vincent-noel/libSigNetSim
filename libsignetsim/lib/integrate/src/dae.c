@@ -231,11 +231,11 @@ IntegrationResult * simulateModelIDA(ModelDefinition * model,
 
 
     // Firing Initial Assignments
-    if (model->nb_init_assignments > 0) {
-        model->integration_functions->initAssPtr(t, user_data->derivative_variables, (void *) user_data);
-        flag = IDAReInit(ida_mem, t, user_data->derivative_variables, user_data->derivative_derivatives);
-        if (check_flag(&flag, "IDAReInit", 1, errLog)) return NULL;
-    }
+    // if (model->nb_init_assignments > 0) {
+    //     model->integration_functions->initAssPtr(t, user_data->derivative_variables, (void *) user_data);
+    //     flag = IDAReInit(ida_mem, t, user_data->derivative_variables, user_data->derivative_derivatives);
+    //     if (check_flag(&flag, "IDAReInit", 1, errLog)) return NULL;
+    // }
 
     if (model->nb_events > 0)
     {

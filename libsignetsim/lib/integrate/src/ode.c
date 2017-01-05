@@ -230,11 +230,11 @@ IntegrationResult * simulateModelCVODE(ModelDefinition * model,
 	t = RCONST(result->list_samples[0]);
 
 	// Firing Initial Assignments
-	if (model->nb_init_assignments > 0) {
-		model->integration_functions->initAssPtr(t, user_data->derivative_variables, (void *) user_data);
-		flag = CVodeReInit(cvode_mem, t, user_data->derivative_variables);
-		if (check_flag(&flag, "CVodeReInit", 1, errLog)) return NULL;
-	}
+	// if (model->nb_init_assignments > 0) {
+	// 	model->integration_functions->initAssPtr(t, user_data->derivative_variables, (void *) user_data);
+	// 	flag = CVodeReInit(cvode_mem, t, user_data->derivative_variables);
+	// 	if (check_flag(&flag, "CVodeReInit", 1, errLog)) return NULL;
+	// }
 
 	if ((user_data->nb_events + user_data->nb_timed_treatments) > 0)
 	{
@@ -412,11 +412,11 @@ SteadyStatesIntegrationResult * simulateModelCVODE_SteadyStates(ModelDefinition 
 	t = RCONST(0);
 
 	// Firing Initial Assignments
-	if (model->nb_init_assignments > 0) {
-		model->integration_functions->initAssPtr(t, user_data->derivative_variables, (void *) user_data);
-		flag = CVodeReInit(cvode_mem, t, user_data->derivative_variables);
-		if (check_flag(&flag, "CVodeReInit", 1, errLog)) return NULL;
-	}
+	// if (model->nb_init_assignments > 0) {
+	// 	model->integration_functions->initAssPtr(t, user_data->derivative_variables, (void *) user_data);
+	// 	flag = CVodeReInit(cvode_mem, t, user_data->derivative_variables);
+	// 	if (check_flag(&flag, "CVodeReInit", 1, errLog)) return NULL;
+	// }
 
 	if ((user_data->nb_events + user_data->nb_timed_treatments) > 0)
 	{

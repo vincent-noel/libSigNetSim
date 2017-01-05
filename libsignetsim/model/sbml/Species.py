@@ -52,7 +52,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		HasUnits.__init__(self, model)
 
 		self.__compartment = None
-		self.boundaryCondition = False
+		# self.boundaryCondition = False
 		self.hasOnlySubstanceUnits = False
 		self.isDeclaredConcentration = True
 		self.concentrationUnit = None
@@ -263,34 +263,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		return False
 
 
-	# def getODE(self, including_fast_reactions=False, math_type=MathFormula.MATH_INTERNAL, forcedConcentration=False, symbols=False):
-	#
-	# 	if self.constant == True:
-	# 		return MathFormula.ZERO
-	#
-	# 	elif self.isRateRuled():
-	# 		return self.isRuledBy().getDefinition(forcedConcentration).getMathFormula(math_type)
-	#
-	# 	elif self.isInReactions(including_fast_reactions):
-	#
-	# 		ode = MathFormula.ZERO
-	#
-	# 		if not self.boundaryCondition:
-	# 			for reaction in self.__model.listOfReactions.values():
-	# 				if not reaction.fast or including_fast_reactions:
-	# 					ode += reaction.getODE(self, math_type, forcedConcentration, symbols)
-	#
-	# 		if self.conversionFactor is not None:
-	# 			ode *= self.conversionFactor.getMathFormula(math_type)
-	#
-	# 		elif self.__model.conversionFactor is not None:
-	# 			ode *= self.__model.conversionFactor.getMathFormula(math_type)
-	#
-	# 		return ode
-
-
-
-	def getODE_v2(self, including_fast_reactions=True, forcedConcentration=False, symbols=False):
+	def getODE(self, including_fast_reactions=True, forcedConcentration=False, symbols=False):
 
 		t_formula = MathFormula(self.__model)
 
@@ -300,12 +273,10 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 		elif self.isRateRuled():
 			t_rule = self.isRuledBy().getDefinition(forcedConcentration).getInternalMathFormula()
-			# if not self.hasOnlySubstanceUnits and self.getCompartment().isRateRuled():
-			# 	t_formula.setInternalMathFormula(t_rule/self.getCompartment().symbol.getInternalMathFormula())
 
 			if self.getCompartment().isRateRuled() and not t_rule == MathFormula.ZERO:
 				""" Then things get complicated. We need to add a term :
-				 	amount_species * rate_comp / comp
+					 amount_species * rate_comp / comp
 				"""
 				t_formula_corrector = MathFormula(self.__model)
 				t_amount_species = self.symbol.getInternalMathFormula()
@@ -324,7 +295,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			if not self.boundaryCondition:
 				for reaction in self.__model.listOfReactions.values():
 					if not reaction.fast or including_fast_reactions:
-						ode += reaction.getODE_v2(self, forcedConcentration, symbols).getInternalMathFormula()
+						ode += reaction.getODE(self, forcedConcentration, symbols).getInternalMathFormula()
 
 			if self.conversionFactor is not None:
 				ode *= self.conversionFactor.getInternalMathFormula()
@@ -413,6 +384,3 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			t_sbml_id = prefix+compartment.getSbmlId()
 
 		self.__compartment = self.__model.listOfCompartments.getBySbmlId(t_sbml_id).objId
-
-		# self.__compartment = self.__model.listOfCompartments.getBySbmlId(prefix+compartment.getSbmlId()).objId
-		# self.__compartment = compartment.objId + shift

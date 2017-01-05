@@ -337,7 +337,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 			product.renameSbmlId(old_sbml_id, new_sbml_id)
 
 
-	def getODE_v2(self, species, forcedConcentration=False, symbols=False):
+	def getODE(self, species, forcedConcentration=False, symbols=False):
 
 		ode = MathFormula.ZERO
 
@@ -468,6 +468,67 @@ class Reaction(Variable, SbmlObject, HasUnits):
 						t_index = self.model.listOfSpecies.values().index(product.getSpecies())
 						t_formula.setInternalMathFormula(
 							(-product.stoichiometry.getDeveloppedInternalMathFormula()
+							 + back[t_index].getDeveloppedInternalMathFormula()))
+						back[t_index] = t_formula
+
+			return [front, back]
+
+
+	def getStoichiometryMatrix_v3(self):
+
+		front = [MathFormula(self.model, MathFormula.MATH_ZERO) for _ in self.model.listOfSpecies.keys()]
+
+		if self.listOfReactants:
+			for reactant in self.listOfReactants.values():
+				if not reactant.getSpecies().boundaryCondition:
+					t_formula = MathFormula(self.model)
+					t_index = self.model.listOfSpecies.values().index(reactant.getSpecies())
+					t_formula.setInternalMathFormula(
+							((-reactant.stoichiometry.getDeveloppedInternalMathFormula()
+								* self.kineticLaw.getDefinition().getDeveloppedInternalMathFormula())
+							 + front[t_index].getDeveloppedInternalMathFormula()))
+
+					front[t_index] = t_formula
+
+
+		if self.listOfProducts:
+			for product in self.listOfProducts.values():
+				if not product.getSpecies().boundaryCondition:
+					t_formula = MathFormula(self.model)
+					t_index = self.model.listOfSpecies.values().index(product.getSpecies())
+					t_formula.setInternalMathFormula(
+							((product.stoichiometry.getDeveloppedInternalMathFormula()
+								* self.kineticLaw.getDefinition().getDeveloppedInternalMathFormula())
+							 + front[t_index].getDeveloppedInternalMathFormula()))
+					front[t_index] = t_formula
+
+		if not self.reversible:
+			return [front]
+
+		else:
+			back = [MathFormula(self.model, MathFormula.MATH_ZERO) for _ in self.model.listOfSpecies.keys()]
+
+			if self.listOfReactants:
+				for reactant in self.listOfReactants.values():
+					if not reactant.getSpecies().boundaryCondition:
+						t_formula = MathFormula(self.model)
+						t_index = self.model.listOfSpecies.values().index(reactant.getSpecies())
+						t_formula.setInternalMathFormula(
+							((reactant.stoichiometry.getDeveloppedInternalMathFormula()
+								* self.kineticLaw.getDefinition().getDeveloppedInternalMathFormula())
+							 + back[t_index].getDeveloppedInternalMathFormula()))
+
+						back[t_index] = t_formula
+
+
+			if self.listOfProducts:
+				for product in self.listOfProducts.values():
+					if not product.getSpecies().boundaryCondition:
+						t_formula = MathFormula(self.model)
+						t_index = self.model.listOfSpecies.values().index(product.getSpecies())
+						t_formula.setInternalMathFormula(
+							((-product.stoichiometry.getDeveloppedInternalMathFormula()
+								* self.kineticLaw.getDefinition().getDeveloppedInternalMathFormula())
 							 + back[t_index].getDeveloppedInternalMathFormula()))
 						back[t_index] = t_formula
 

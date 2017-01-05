@@ -46,7 +46,7 @@ from libsignetsim.model.math.MathVariable import MathVariable
 from libsignetsim.model.math.MathConservationLaws import MathConservationLaws
 from libsignetsim.model.math.MathJacobianMatrix import MathJacobianMatrix
 from libsignetsim.model.math.MathStoichiometryMatrix import MathStoichiometryMatrix
-from libsignetsim.model.ListOfVariables import ListOfVariables
+# from libsignetsim.model.ListOfVariables import ListOfVariables
 from libsignetsim.model.Variable import Variable
 from sympy import simplify, diff, solve, zeros, solveset, linsolve, srepr
 from time import time
@@ -55,6 +55,7 @@ from libsignetsim.model.ModelException import ModelException
 from libsignetsim.model.math.container.ListOfODEs import ListOfODEs
 from libsignetsim.model.math.container.ListOfCFEs import ListOfCFEs
 from libsignetsim.model.math.container.ListOfDAEs import ListOfDAEs
+from libsignetsim.model.math.MathSlowModel import MathSlowModel
 
 
 class MathModel(CModelWriter):
@@ -70,12 +71,13 @@ class MathModel(CModelWriter):
 		self.listOfDAEs = ListOfDAEs(self)
 		self.solvedInitialConditions = None
 		self.hasDAEs = False
+		self.slowModel = None
 
 		# MathConservationLaws.__init__(self)
 		# MathJacobianMatrix.__init__(self)
 		# MathStoichiometryMatrix.__init__(self)
 
-		self.listOfFinalVariables = ListOfVariables(self)
+		# self.listOfFinalVariables = ListOfVariables(self)
 
 		self.nbOdes = None
 		self.nbAssignments = None
@@ -97,6 +99,17 @@ class MathModel(CModelWriter):
 	def setUpToDate(self, value):
 		self.__upToDate = value
 
+
+	def getMathModel(self):
+
+		if self.slowModel is not None:
+			return self.slowModel
+
+		else:
+			return self
+
+
+
 	def buildModel(self, vars_to_keep=[], dont_reduce=False, tmin=0):
 
 		t0 = time()
@@ -109,6 +122,9 @@ class MathModel(CModelWriter):
 		if len(self.listOfDAEs) > 0:
 			self.listOfDAEs.solveInitialConditions(tmin)
 
+		if self.listOfReactions.hasFastReaction():
+			self.slowModel = MathSlowModel(self)
+			self.slowModel.build()
 
 
 
@@ -146,11 +162,11 @@ class MathModel(CModelWriter):
 #        self.buildJacobianMatrix()
 		# self.printSystem()
 
-		compRateRuled = False
-
-		for species in self.listOfSpecies.values():
-			if species.isRateRuled() and species.getCompartment().isRateRuled():
-				compRateRuled = True
+		# compRateRuled = False
+		#
+		# for species in self.listOfSpecies.values():
+		# 	if species.isRateRuled() and species.getCompartment().isRateRuled():
+		# 		compRateRuled = True
 
 		# for comp in self.listOfCompartments.values():
 		# 	if comp.isRateRuled():
