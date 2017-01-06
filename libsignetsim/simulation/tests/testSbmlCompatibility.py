@@ -34,7 +34,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 	# TODO_CASES = [870, 871, 872, 873, 874, 875, 986, 987, 988, 1051, 1052, 1053]
 	TODO_CASES = []
 
-	INCOMPATIBLE_CASES = [873, 962, 987, 988, 1053]#962, Not compatible with ubuntu:precise, others not solved yet
+	INCOMPATIBLE_CASES = [962, 987, 988]#962, Not compatible with ubuntu:precise, others not solved yet
 	INCOMPATIBLE_TAGS = ['CSymbolDelay']
 
 	COMPATIBLE_PACKAGES = ['comp']

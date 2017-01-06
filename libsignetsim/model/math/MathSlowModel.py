@@ -24,7 +24,7 @@
 
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.MathFormula import MathFormula
-from sympy import solve, zeros, srepr, Sum
+from sympy import solve, zeros, srepr
 from libsignetsim.model.math.sympy_shortcuts import (
 	SympyInteger, SympyAdd, SympyEqual, SympySymbol, SympyRational,
 	SympyStrictGreaterThan)
@@ -234,6 +234,12 @@ class MathSlowModel(object):
 				# print "> Some mixed variables have boundaryCondition !"
 				break
 
+		subs = {}
+		for var, value in self.solvedInitialConditions.items():
+			# if len(value.getInternalMathFormula().atoms(SympySymbol)) > 0:
+
+			subs.update({var.symbol.getInternalMathFormula(): value.getInternalMathFormula()})
+
 		if not containsBoundaryConditions:
 
 			f_vars = [dae for dae in self.fastLaws_vars]
@@ -250,7 +256,7 @@ class MathSlowModel(object):
 				for solved_variable, solved_value in solved_variables.items():
 					t_var = self.listOfVariables[str(solved_variable)]
 					t_value = MathFormula(self)
-					t_value.setInternalMathFormula(solved_value)
+					t_value.setInternalMathFormula(solved_value.subs(subs))
 
 					self.solvedInitialConditions.update({t_var:t_value})
 
@@ -266,7 +272,7 @@ class MathSlowModel(object):
 				for solved_variable, solved_value in solved_variables.items():
 					t_var = self.listOfVariables[str(solved_variable)]
 					t_value = MathFormula(self)
-					t_value.setInternalMathFormula(solved_value)
+					t_value.setInternalMathFormula(solved_value.subs(subs))
 
 					self.solvedInitialConditions.update({t_var:t_value})
 
@@ -406,6 +412,14 @@ class MathSlowModel(object):
 		for fast_var in self.fast_variables:
 			t_var = self.listOfVariables[str(fast_var)]
 			self.listOfVariables.changeVariableType(t_var, MathVariable.VAR_ASS)
+
+
+		# for key, value in self.solvedInitialConditions.items():
+		# 	print "%s : %s" % (
+		# 		str(key.symbol.getDeveloppedInternalMathFormula()),
+		# 		str(value.getDeveloppedInternalMathFormula())
+		# 	)
+
 
 	def loadKnownInitialValues_v2(self, f_system, f_vars, exclude_list=[]):
 
