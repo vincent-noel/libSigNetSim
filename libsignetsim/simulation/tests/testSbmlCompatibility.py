@@ -32,8 +32,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 	""" Tests SBML semantic test cases """
 
 
-	TODO_CASES = range(1000, 1219)#870, 871, 872, 873, 874, 875, 950, 986, 987, 988, 1051, 1052, 1053]
-	# TODO_CASES = [185]
+	TODO_CASES = []
 
 	INCOMPATIBLE_CASES = [962, 987, 988]#962, Not compatible with ubuntu:precise, others not solved yet
 	INCOMPATIBLE_TAGS = ['CSymbolDelay']
@@ -59,7 +58,8 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 		self.testSuitePath = Settings.tempDirectory
 		Settings.sbmlTestCasesPath = "/tmp/"
-
+		if not os.path.exists(os.path.join(self.testSuitePath, "test-suite-results")):
+			os.mkdir(os.path.join(self.testSuitePath, "test-suite-results"))
 		if not os.path.exists(os.path.join(self.testSuitePath, "cases")):
 
 			present_dir = os.getcwd()

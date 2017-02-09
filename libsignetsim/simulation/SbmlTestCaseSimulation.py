@@ -88,7 +88,7 @@ class SbmlTestCaseSimulation(TimeseriesSimulation):
 			t_document.writeSbml(t_filename)
 
 			self.model = self.loadSbmlModel_v2(t_filename)
-			
+
 		else:
 			# print "opening %s" % self.getModelFilename()
 			self.model = self.loadSbmlModel_v2(self.getModelFilename())
@@ -125,7 +125,7 @@ class SbmlTestCaseSimulation(TimeseriesSimulation):
 
 
 	def getTemporaryModelFilename(self):
-		return join(Settings.sbmlTestResultsPath, "test-suite-results/%s-sbml-l%sv%s.xml" % (self.caseId, self.sbmlLevel, self.sbmlVersion))
+		return join(Settings.sbmlTestResultsPath, "%s-sbml-l%sv%s.xml" % (self.caseId, self.sbmlLevel, self.sbmlVersion))
 
 
 	def loadSBMLTestSuiteSettings(self):
