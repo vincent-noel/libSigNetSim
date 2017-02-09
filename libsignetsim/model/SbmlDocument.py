@@ -33,12 +33,12 @@ from libsignetsim.model.ModelInstance import ModelInstance
 from libsignetsim.model.ModelException import ModelException, MissingModelException, MissingSubmodelException
 from libsignetsim.settings.Settings import Settings
 
-from os.path import isfile, dirname, join
+from os.path import isfile, isabs, dirname, join, basename
 from libsbml import SBMLReader, SBMLDocument, writeSBMLToFile,\
 					XMLFileUnreadable, XMLFileOperationError, \
 					LIBSBML_CAT_UNITS_CONSISTENCY, LIBSBML_SEV_INFO, \
 					LIBSBML_SEV_WARNING, \
-					SBMLExtensionRegistry
+					SBMLExtensionRegistry, readSBMLFromString
 from time import time
 
 class SbmlDocument(object):
@@ -52,10 +52,17 @@ class SbmlDocument(object):
 		self.modelInstance = None
 		self.sbmlLevel = Settings.defaultSbmlLevel
 		self.sbmlVersion = Settings.defaultSbmlVersion
-		self.documentPath = path
+
+		self.documentPath = None
+		self.documentFilename = None
+		self.documentDependenciesPaths = None
+		self.documentDependencies = None
+
 		self.isCompatible = None
+
 		if model is None:
 			self.model = Model(parent_doc=self, is_main_model=True)
+
 		else:
 			self.model = model
 			self.sbmlLevel = model.sbmlLevel
@@ -64,7 +71,6 @@ class SbmlDocument(object):
 
 		self.listOfModelDefinitions = ListOfModelDefinitions(self.model)
 		self.listOfExternalModelDefinitions = ListOfExternalModelDefinitions(self.model)
-
 
 
 	def getSubmodel(self, submodel_id):
@@ -92,23 +98,26 @@ class SbmlDocument(object):
 
 
 	def readSbml(self, sbml_filename):
+		# print "> Opening SBML file : %s" % sbml_filename
+
+		t0 = time()
 
 		if self.documentPath is None and dirname(sbml_filename) != "":
 			self.documentPath = dirname(sbml_filename)
 
+		self.documentFilename = basename(sbml_filename)
+		# print self.documentPath
+		# print self.documentFilename
+
 		t_filename = sbml_filename
 		if dirname(sbml_filename) == "" and self.documentPath is not None:
-			# print self.documentPath
-			# print sbml_filename
 			t_filename = join(self.documentPath, sbml_filename)
 
 
 		if not isfile(t_filename):
-			# print t_filename
-			# print "Cannot find file %s !" % t_filename
 			raise MissingModelException(t_filename)
 
-		if Settings.verbose == 1:
+		if Settings.verbose >= 2:
 			print "> Opening SBML file : %s" % t_filename
 
 		sbmlReader = SBMLReader()
@@ -146,17 +155,47 @@ class SbmlDocument(object):
 
 		if self.useCompPackage:
 
-
 			sbmlCompPlugin = sbmlDoc.getPlugin("comp")
+
+			self.loadExternalDocumentDependencies(sbmlDoc)
+
+			# print "Doc %s dependencies" % self.documentFilename
+			# print self.documentDependenciesPaths
+			# print self.documentDependencies
 			try:
 				self.listOfModelDefinitions.readSbml(sbmlCompPlugin.getListOfModelDefinitions(), self.sbmlLevel, self.sbmlVersion)
 				self.listOfExternalModelDefinitions.readSbml(sbmlCompPlugin.getListOfExternalModelDefinitions(), self.sbmlLevel, self.sbmlVersion)
+
 			except MissingModelException as e:
 				raise MissingSubmodelException(e.filename)
 
-	def writeSbml(self, sbml_filename):
+		if Settings.verbose >= 1:
+			print "\nReading document %s from directory %s in %.2gs" % (self.documentFilename, self.documentPath, time()-t0)
+			print "> Dependencies : %s (%d)" % (self.documentDependenciesPaths, len(self.listOfExternalModelDefinitions))
 
+
+
+	def writeSbml(self, sbml_filename=None, path=None):
+
+
+
+		t0 = time()
+
+
+		if sbml_filename is not None:
+			if isabs(sbml_filename):
+
+				self.documentPath = dirname(sbml_filename)
+			self.documentFilename = basename(sbml_filename)
+
+		elif path is not None:
+			self.documentPath = path
+
+		# print "\nWriting doc %s in folder %s" % (self.documentFilename, self.documentPath)
+		# print "> Dependencies : %s (%d)" % (self.getExternalDocumentsDependencies(), len(self.listOfExternalModelDefinitions))
+		# print self
 		sbmlDoc = SBMLDocument(self.sbmlLevel,self.sbmlVersion)
+
 
 		# Adding xhtml namespace to write notes
 		# sbmlDoc.getNamespaces().add("http://www.w3.org/1999/xhtml", "xhtml")
@@ -170,6 +209,7 @@ class SbmlDocument(object):
 		self.model.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
 
 		if self.sbmlLevel == 3 and self.useCompPackage:
+			self.saveExternalDocumentDependencies(self.documentPath)
 			self.listOfModelDefinitions.writeSbml(sbmlDoc.getPlugin("comp"), self.sbmlLevel, self.sbmlVersion)
 			self.listOfExternalModelDefinitions.writeSbml(sbmlDoc.getPlugin("comp"), self.sbmlLevel, self.sbmlVersion)
 
@@ -178,25 +218,80 @@ class SbmlDocument(object):
 		if Settings.showSbmlErrors:
 			sbmlDoc.validateSBML()
 			for error in range(0, sbmlDoc.getNumErrors()):
+
 				if sbmlDoc.getError(error).getSeverity() not in [LIBSBML_SEV_INFO, LIBSBML_SEV_WARNING]:
 					print ">>> SBML Error %d : %s" % (error, sbmlDoc.getError(error).getMessage())
 
-
-					# raise ModelException(ModelException.SBML_ERROR, " Error while writing")
 				else:
 					print ">>> SBML Warning %d : %s" % (error, sbmlDoc.getError(error).getMessage())
 
 
 		# Writing the final file
-		result = writeSBMLToFile(sbmlDoc, sbml_filename)
+		# print self.documentPath
+		# print self.documentFilename
+		result = writeSBMLToFile(sbmlDoc, join(self.documentPath, self.documentFilename))
 		if result == 1:
 			return True
 		else:
 			raise ModelException(ModelException.SBML_ERROR,
-									"Failed to write %s" % sbml_filename)
+									"Failed to write %s" % join(self.documentPath, self.documentFilename))
 
 			return False
 
+		if Settings.verbose >= 1:
+			print "Writing document %s into directory %s in %.2gs" % (self.documentFilename, self.documentPath, time()-t0)
+
+	def readSbmlFromString(self, string):
+
+
+		sbmlReader = SBMLReader()
+		if sbmlReader == None:
+			raise ModelException(ModelException.SBML_ERROR,
+									"Error instanciating the SBMLReader !")
+
+		sbmlDoc = sbmlReader.readSBMLFromString(string)
+
+		self.isCompatible = self.checkCompatible(sbmlDoc)
+
+		if sbmlDoc.getNumErrors() > 0:
+			if sbmlDoc.getError(0).getErrorId() == XMLFileUnreadable:
+				raise ModelException(ModelException.SBML_ERROR,
+										"Unreadable SBML file !")
+
+			elif sbmlDoc.getError(0).getErrorId() == XMLFileOperationError:
+				raise ModelException(ModelException.SBML_ERROR,
+										"Error opening SBML file !")
+
+			else:
+				# Handle other error cases here.
+				if Settings.showSbmlErrors:# and Settings.verbose:
+					for error in range(0, sbmlDoc.getNumErrors()):
+						print ">>> SBML Error %d : %s" % (error, sbmlDoc.getError(error).getMessage())
+
+
+		self.sbmlLevel = sbmlDoc.getLevel()
+		self.sbmlVersion = sbmlDoc.getVersion()
+
+		if self.sbmlLevel == 3 and sbmlDoc.isSetPackageRequired("comp"):
+			self.useCompPackage = True
+
+		self.model.readSbml(sbmlDoc.getModel(), self.sbmlLevel, self.sbmlVersion)
+
+		if self.useCompPackage:
+
+			self.loadExternalDocumentDependencies()
+			sbmlCompPlugin = sbmlDoc.getPlugin("comp")
+			try:
+				self.listOfModelDefinitions.readSbml(sbmlCompPlugin.getListOfModelDefinitions(), self.sbmlLevel, self.sbmlVersion)
+				self.listOfExternalModelDefinitions.readSbml(sbmlCompPlugin.getListOfExternalModelDefinitions(), self.sbmlLevel, self.sbmlVersion)
+			except MissingModelException as e:
+				raise MissingSubmodelException(e.filename)
+
+
+		# 			f = open(join(Settings.tempDirectory, "t_model.sbml"), "w")
+		# f.write(string)
+		# f.close()
+		# self.readSbml(join(Settings.tempDirectory, "t_model.sbml"))
 
 	def getModelInstance(self):
 		if self.useCompPackage:
@@ -236,3 +331,42 @@ class SbmlDocument(object):
 			self.sbmlVersion = 5
 		elif level == 3:
 			self.sbmlVersion = 1
+
+	def getExternalDocumentDependencies(self, sbml_doc=None):
+
+		if self.useCompPackage:
+
+			self.documentDependenciesPaths = []
+
+			if sbml_doc is None:
+				for external_doc in self.listOfExternalModelDefinitions.values():
+					self.documentDependenciesPaths.append(external_doc.getSource())
+			else:
+				for external_doc in sbml_doc.getPlugin("comp").getListOfExternalModelDefinitions():
+					if external_doc.isSetSource():
+						self.documentDependenciesPaths.append(external_doc.getSource())
+
+			self.documentDependenciesPaths = list(set(self.documentDependenciesPaths))
+
+
+	def loadExternalDocumentDependencies(self, sbml_doc=None):
+
+		if self.useCompPackage:
+			if self.documentDependenciesPaths is None:
+				self.getExternalDocumentDependencies(sbml_doc)
+
+			self.documentDependencies = []
+			for path in self.documentDependenciesPaths:
+				t_document = SbmlDocument()
+				t_document.readSbml(join(self.documentPath, path))
+				self.documentDependencies.append(t_document)
+
+
+	def saveExternalDocumentDependencies(self, path=None):
+
+		if self.useCompPackage:
+			for document in self.documentDependencies:
+				if path is None:
+					document.writeSbml()
+				else:
+					document.writeSbml(path=path)

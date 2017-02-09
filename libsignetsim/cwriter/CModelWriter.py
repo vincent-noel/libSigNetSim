@@ -43,7 +43,7 @@ class CModelWriter(object):
 
 		# self.writeInitialAssignments(f_h, f_c, i_model)
 
-		if self.hasDAEs:
+		if self.getMathModel().hasDAEs:
 			self.writeIdaSimulationFunction(f_h, f_c, i_model)
 		else:
 			self.writeCVodeSimulationFunction(f_h, f_c, i_model)
@@ -92,8 +92,12 @@ class CModelWriter(object):
 							variable_name, i_var, t_value.getCMathFormula(), variable_ode.symbol.getPrettyPrintMathFormula()))
 
 			if self.getMathModel().hasDAEs:
-				f_c.write("  %s.der_der_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_DER_DER};\n" % (
-								variable_name, i_var, variable_ode.getDerivativeCValue(), variable_ode.symbol.getPrettyPrintMathFormula()))
+				# print variable_ode.getSbmlId()
+				# print variable_ode.getDerivativeCValue()
+				# f_c.write("  %s.der_der_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_DER_DER};\n" % (
+				# 				variable_name, i_var, variable_ode.getDerivativeCValue(), variable_ode.symbol.getPrettyPrintMathFormula()))
+				f_c.write("  %s.der_der_variables[%d] = (ModelVariable) {RCONST(0.0), \"%s\", VAR_DER_DER};\n" % (
+								variable_name, i_var, variable_ode.symbol.getPrettyPrintMathFormula()))
 
 		for i_var, variable_ass in enumerate(self.getMathModel().variablesAssignment):
 			# if variable_ass.isReaction():
@@ -125,8 +129,10 @@ class CModelWriter(object):
 
 
 			if self.getMathModel().hasDAEs:
-				f_c.write("  %s.alg_der_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_ALG_DER};\n" % (
-								variable_name, i_var, variable_alg.getDerivativeCValue(), variable_alg.symbol.getPrettyPrintMathFormula()))
+				# f_c.write("  %s.alg_der_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_ALG_DER};\n" % (
+				# 				variable_name, i_var, variable_alg.getDerivativeCValue(), variable_alg.symbol.getPrettyPrintMathFormula()))
+				f_c.write("  %s.alg_der_variables[%d] = (ModelVariable) {RCONST(0.0), \"%s\", VAR_ALG_DER};\n" % (
+								variable_name, i_var, variable_alg.symbol.getPrettyPrintMathFormula()))
 
 
 
@@ -189,7 +195,7 @@ class CModelWriter(object):
 		f_c.write("  %s.integration_options->max_conv_fails = %g;\n" % (variable_name, Settings.defaultCVODEMaxConvFails))
 		f_c.write("  %s.integration_options->max_err_test_fails = %g;\n" % (variable_name, Settings.defaultCVODEMaxErrFails))
 		# f_c.write("  rt_set_precision(RCONST(1e-16));\n")
-		f_c.write("  rt_set_precision(RCONST(%g));\n" % abs_tol)
+		f_c.write("  rt_set_precision(RCONST(%g), RCONST(%g));\n" % (abs_tol, rel_tol))
 		f_c.write("}\n\n")
 
 	def writeSimulationFinalization(self, f_h, f_c, model_id):
@@ -346,7 +352,7 @@ class CModelWriter(object):
 
 		variable_name="model_%d" % model_id
 
-		if self.hasDAEs:
+		if self.getMathModel().hasDAEs:
 			f_h.write("int roots_events_%d(realtype t, N_Vector y, N_Vector yp, realtype *gout,void *user_data);\n" % model_id)
 			f_c.write("int roots_events_%d(realtype t, N_Vector y, N_Vector yp, realtype *gout,void *user_data)\n{\n" % model_id)
 		else:

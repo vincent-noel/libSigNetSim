@@ -39,21 +39,31 @@
 // realtype RT_NAN = RCONST(NAN);
 // realtype RT_INF = RCONST(INFINITY);
 
-realtype precision = RCONST(1e-15);
+realtype abs_tol = RCONST(1e-15);
+realtype rel_tol = RCONST(1e-15);
 
-void rt_set_precision(realtype prec)
+realtype rt_get_precision(realtype x)
 {
-	precision = prec;
+	return abs_tol+x*rel_tol;
+}
+
+void rt_set_precision(realtype abs_tol, realtype rel_tol)
+{
+	abs_tol = abs_tol;
+	rel_tol = rel_tol;
 
 }
+
+
+
 int rt_eq(realtype x, realtype y)
 {
-	return (rt_abs(x-y) <= precision);
+	return (rt_abs(x-y) <= rt_get_precision(x));
 }
 
 int rt_neq(realtype x, realtype y)
 {
-	return (rt_abs(x-y) > precision);
+	return (rt_abs(x-y) > rt_get_precision(x));
 }
 
 int rt_lt(realtype x, realtype y)

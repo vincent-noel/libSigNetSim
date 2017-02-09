@@ -51,6 +51,8 @@ from libsbml import SBMLReader, SBMLDocument, formulaToString,\
 					LIBSBML_CAT_UNITS_CONSISTENCY, LIBSBML_SEV_INFO, \
 					LIBSBML_SEV_WARNING, SBMLExtensionRegistry
 
+from time import time
+
 class SbmlModel(HasId, SbmlObject):
 	""" Sbml model class """
 
@@ -121,14 +123,16 @@ class SbmlModel(HasId, SbmlObject):
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion, parent_doc=None):
 
+		t0 = time()
+
 		HasId.readSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
 		SbmlObject.readSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
 
 		self.sbmlLevel = sbml_level
 		self.sbmlVersion = sbml_version
-		if Settings.verbose:
-			print "Reading Sbml Model : %s" % self.getSbmlId()
-			print "SBML Level %d Version %d" % (self.sbmlLevel, self.sbmlVersion)
+		# if Settings.verbose >= 1:
+		# 	print "> SBML Level %d Version %d" % (self.sbmlLevel, self.sbmlVersion)
+		# 	print "> Reading Sbml Model : %s (%s)" % (self.getSbmlId(), self.parentDoc.documentFilename)
 
 
 		self.listOfFunctionDefinitions.readSbml(sbmlModel.getListOfFunctionDefinitions(), self.sbmlLevel, self.sbmlVersion)
@@ -179,13 +183,18 @@ class SbmlModel(HasId, SbmlObject):
 
 
 
+		# if Settings.verbose >= 1:
+		# 	print "> SBML Model %s read in %.2gs" % (self.getSbmlId(), time()-t0)
+		# 	print ">> Parent document appears to be %s, %s" % (self.parentDoc.documentPath, self.parentDoc.documentFilename)
+
 
 	def writeSbml(self, sbmlModel,
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
 
 		# sbmlModel = sbmlDoc.createModel()
-
+		# if Settings.verbose >= 1:
+		# 	print "> Writing model %s, file = %s" % (self.getSbmlId(), self.parentDoc.documentFilename)
 
 		if self.sbmlLevel == 3 and self.parentDoc.isCompEnabled():
 			sbmlModel.enablePackage("http://www.sbml.org/sbml/level3/version1/comp/version1", "comp", True)

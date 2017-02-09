@@ -63,6 +63,7 @@ class Rule(SbmlObject):
 
 	def writeSbml(self, sbml_rule, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
+		# print self.getMetaId()
 		SbmlObject.writeSbml(self, sbml_rule, sbml_level, sbml_version)
 
 	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], conversions={}):

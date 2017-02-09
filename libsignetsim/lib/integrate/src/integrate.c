@@ -126,7 +126,7 @@ IntegrationResult * InitializeIntegrationResult(ModelDefinition * model, double 
 	  integration_result->list_samples = list_samples;
   }
 
-  integration_result->return_code = -1;
+  integration_result->return_code = 1;
   integration_result->t = malloc(sizeof(double)*integration_result->nb_samples);
   integration_result->y = malloc(sizeof(double*)*integration_result->nb_dimensions);
   for (i=0; i < integration_result->nb_dimensions; i++)
@@ -144,9 +144,6 @@ IntegrationResult * InitializeIntegrationResult(ModelDefinition * model, double 
 		  integration_result->names[i] = model->assignment_variables[i-model->nb_derivative_variables-model->nb_algebraic_variables].name;
 	  else if  (i < model->nb_derivative_variables + model->nb_algebraic_variables + model->nb_assignment_variables+model->nb_constant_variables)
 		  integration_result->names[i] = model->constant_variables[i-model->nb_derivative_variables-model->nb_algebraic_variables-model->nb_assignment_variables].name;
-
-
-
   }
 
   return integration_result;
@@ -178,7 +175,7 @@ SteadyStatesIntegrationResult * InitializeSteadyStatesIntegrationResult(ModelDef
   integration_result->nb_assignment_variables = model->nb_assignment_variables;
   integration_result->nb_derivative_variables = model->nb_derivative_variables + model->nb_algebraic_variables;
 
-  integration_result->return_code = -1;
+  integration_result->return_code = 1;
   integration_result->y = malloc(sizeof(double)*integration_result->nb_dimensions);
 
   return integration_result;

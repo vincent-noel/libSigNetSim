@@ -1,4 +1,4 @@
-1207#!/usr/bin/env python
+#!/usr/bin/env python
 """ testSbmlCompatibility.py
 
 
@@ -27,12 +27,13 @@ from libsignetsim.model.Model import Model
 from libsignetsim.simulation.SbmlTestCaseSimulation import SbmlTestCaseSimulation
 from libsignetsim.model.SbmlDocument import SbmlDocument
 from libsignetsim.settings.Settings import Settings
-
+from multiprocessing import cpu_count
 class TestSbmlCompatibility(unittest.TestCase):
 	""" Tests SBML semantic test cases """
 
-	# TODO_CASES = [870, 871, 872, 873, 874, 875, 986, 987, 988, 1051, 1052, 1053]
-	TODO_CASES = []
+
+	TODO_CASES = range(1000, 1219)#870, 871, 872, 873, 874, 875, 950, 986, 987, 988, 1051, 1052, 1053]
+	# TODO_CASES = [185]
 
 	INCOMPATIBLE_CASES = [962, 987, 988]#962, Not compatible with ubuntu:precise, others not solved yet
 	INCOMPATIBLE_TAGS = ['CSymbolDelay']
@@ -49,6 +50,10 @@ class TestSbmlCompatibility(unittest.TestCase):
 		self.testCasesPath = None
 		self.testCasesTags = {}
 		self.testCasesVersions = {}
+		self.nbCores = None
+		self.keepFiles = False
+		self.testExport = True
+		Settings.verbose = 0
 
 	def testSbmlCompatibility(self):
 
@@ -63,6 +68,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 		self.loadTestCasesInfo()
 		self.assertEqual(self.runTestCases(), True)
+
 
 	def loadTestCasesInfo(self, path=None):
 		""" Loads cases info from the .cases-tags-map """
@@ -105,6 +111,9 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 	def runTestCases(self):
 
+		self.nbCores = cpu_count()
+
+
 		nb_success = 0
 		nb_cases = 0
 		for case_id, case_tags in self.testCasesTags.items():
@@ -127,6 +136,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 			print "\n> %d success out of %d tests (%.0f%%)" % (nb_success, nb_cases, nb_success*100/nb_cases)
 		return nb_cases == nb_success
 
+
 	def runCase(self, case):
 
 		nb_cases = 0
@@ -134,6 +144,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 		case_path = os.path.join(self.testCasesPath, "%05d" % case)
 		print "> Running case %05d (%s)" % (case, str(self.testCasesVersions[case]))
+		results = [None]*len(self.testCasesVersions[case])
 
 		for versions in self.testCasesVersions[case]:
 
@@ -149,19 +160,48 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 				nb_cases += 1
 
-				# try:
+        # for optimization in range(0, self.nbOptimizations):
+		#
+            # t = threading.Thread(target=self.runUniqueOptimization, args=(nb_procs, timeout, maxiter, optimization,))
+        #     t.setDaemon(True)
+        #     t.start()
+        #     time.sleep(1)
+		#
+        #     #We block the process if there is no more cores available
+        #     #One core is for the main Thread, two for each optimization
+        #     # threads_used = threading.activeCount()-1
+        #     # cores_used = threads_used * nb_procs
+        #     # cores_load = psutil.cpu_percent(interval=2)/100
+        #     while (threading.activeCount()-1)/(1 + nb_procs) >= 27:#nb_procs > (multiprocessing.cpu_count())*(0.9-cores_load):
+		#
+        #         time.sleep(1)
+        #         # threads_used = threading.activeCount()-1
+        #         # cores_used = threads_used * nb_procs
+        #         # cores_load = psutil.cpu_percent(interval=2)/100
+		#
+        #     #     print "> %d optimizatons running on %d cores (%d total cores, load = %g, free_cores = %d)" % (threads_used, cores_used, multiprocessing.cpu_count(), cores_load, math.floor((1-cores_load)*multiprocessing.cpu_count()))
+        #     #
+        #     # print "> Lauching new thread ! (%d cores used out of %d)" % (cores_used, multiprocessing.cpu_count()-1)
+        # while threading.activeCount() > 1:
+        #     pass
+				try:
+					if Settings.verbose >= 1:
+						print ""
+					test = SbmlTestCaseSimulation(case, str(level), str(version), test_export=self.testExport, keep_files=self.keepFiles)
+					res_exec = test.run()
 
-				test = SbmlTestCaseSimulation(case, str(level), str(version), keep_files=False)
-				res_exec = test.run()
+					if res_exec:
+						nb_success += 1
+						# print ">> l%dv%d : OK (%.2gs)" % (level, version, time.time()-start)
 
-				if res_exec:
-					nb_success += 1
-					# print ">> l%dv%d : OK (%.2gs)" % (level, version, time.time()-start)
+					else:
+						print ">> l%dv%d : ERROR (%.2gs)" % (level, version, time.time()-start)
 
-				else:
-					print ">> l%dv%d : ERROR (%.2gs)" % (level, version, time.time()-start)
-
-				# except:
-				# 	print ">> case %d, %dv%d : ERROR" % (int(case), level, version)
+				except Exception as e:
+					print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
 
 		return (nb_success, nb_cases)
+
+	def runIndividualCase(self, case, level, version, results, index):
+		test = SbmlTestCaseSimulation(case, str(level), str(version), keep_files=self.keepFiles)
+		results[index] = test.run()

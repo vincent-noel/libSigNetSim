@@ -26,7 +26,8 @@
 from libsignetsim.model.sbml.SbmlModel import SbmlModel
 from libsignetsim.model.math.MathModel import MathModel
 from libsignetsim.model.ListOfVariables import ListOfVariables
-
+from libsignetsim.settings.Settings import Settings
+from time import time
 
 class Model(SbmlModel, MathModel):
 	""" Sbml model class """
@@ -43,12 +44,15 @@ class Model(SbmlModel, MathModel):
 		MathModel.__init__(self, obj_id)
 		self.listOfVariables = ListOfVariables(self)
 		# self.listOfInstanceVariables = ListOfVariables(self)
-
 	def build(self, vars_to_keep=[], dont_reduce=False, tmin=0):
 
+		t0 = time()
 		# self.listOfInstanceVariables.buildInstance()
 		self.listOfVariables.classifyVariables()
 		MathModel.buildModel(self, vars_to_keep=vars_to_keep, dont_reduce=dont_reduce, tmin=tmin)
+
+		if Settings.verbose >= 1:
+			print "> Model built in %.2gs" % (time()-t0)
 
 	def cleanBeforePickle(self):
 		self.listOfVariables.cleanFinal()

@@ -30,6 +30,8 @@ from libsignetsim.model.sbml.container.ListOfReplacedElements import ListOfRepla
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.sbml.SpeciesReference import SpeciesReference
+from libsignetsim.settings.Settings import Settings
+
 
 class ModelInstance(Model):
 	""" Sbml model class """
@@ -44,7 +46,8 @@ class ModelInstance(Model):
 		self.__submodelInstances = {}
 		self.sbmlLevel = model.sbmlLevel
 		self.sbmlVersion = model.sbmlVersion
-		# print "\n\n> Instanciating model %s" % model.getSbmlId()
+		if Settings.verbose >= 2:
+			print "\n\n> Instanciating model %s, parent doc is %s" % (model.getSbmlId(), document.documentFilename)
 
 		for submodel in self.__mainModel.listOfSubmodels.values():
 			self.__submodelInstances.update({submodel.getSbmlId():submodel.getModelInstance()})
@@ -56,9 +59,10 @@ class ModelInstance(Model):
 		conv_factors = {}
 		for sbmlobject in self.__mainModel.listOfSbmlObjects.values():
 
-
+			# print "Looking for replaced elements in the main model (%s)" % self.__mainModel.getSbmlId()
 			if isinstance(sbmlobject, SbmlObject) and sbmlobject.hasReplacedElements():
 				for replaced_element in sbmlobject.getListOfReplacedElements().values():
+
 
 					replaced_object_id = replaced_element.getReplacedElementMetaId(model_instances=self.__submodelInstances)
 					submodel_instance = self.__submodelInstances[replaced_element.getSubmodelRef()]
@@ -194,12 +198,10 @@ class ModelInstance(Model):
 			# print self.listOfSpecies.sbmlIds()
 
 
-		# print "\n > Model's variables : "
-		# print self.listOfVariables.keys()
+		if Settings.verbose >= 2:
+			print "\n > Model's variables : "
+			print self.listOfVariables.keys()
 
-		# print "\n > Model's species : "
-		# print self.listOfSpecies.sbmlIds()
-
-
-
-		# print "\n > Returning instance %s\n" % model.getSbmlId()
+			# print "\n > Model's species : "
+			# print self.listOfSpecies.sbmlIds()
+			print "\n > Returning instance %s\n" % model.getSbmlId()

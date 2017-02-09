@@ -23,8 +23,6 @@
 
 from libsignetsim.model.sbml.HasId import HasId
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
-
-# from libsignetsim.model.Model import Model
 from libsignetsim.settings.Settings import Settings
 
 class ExternalModelDefinition(HasId, SbmlObject):
@@ -57,16 +55,14 @@ class ExternalModelDefinition(HasId, SbmlObject):
 		if sbml_model_definition.isSetSource():
 			self.__source = sbml_model_definition.getSource()
 
+		t_id_dep = self.__model.parentDoc.documentDependenciesPaths.index(self.__source)
+		t_document = self.__model.parentDoc.documentDependencies[t_id_dep]
 
-		from libsignetsim.model.SbmlExternalDocument import SbmlExternalDocument
-		t_document = SbmlExternalDocument(path=self.__model.parentDoc.documentPath)
-		t_document.readSbml(self.__source)
 
 		if self.__modelRef is not None:
 			self.modelDefinition = t_document.getSubmodel(self.__modelRef).modelDefinition
 		else:
 			self.modelDefinition = t_document.model
-
 
 
 	def writeSbml(self, sbml_model_definition,
@@ -82,6 +78,8 @@ class ExternalModelDefinition(HasId, SbmlObject):
 			sbml_model_definition.setSource(self.__source)
 
 		SbmlObject.writeSbml(self, sbml_model_definition, sbml_level, sbml_version)
+
+
 
 	def getSource(self):
 		return self.__source

@@ -28,7 +28,7 @@ from math import isinf, isnan
 from sympy import srepr
 from libsignetsim.model.math.sympy_shortcuts import *
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.ModelException import ModelException
+from libsignetsim.model.ModelException import ModelException, TagNotImplementedModelException
 
 
 class SbmlMathReader(object):
@@ -169,7 +169,11 @@ class SbmlMathReader(object):
 					"Unknown variable : %s" % variable)
 
 
-	def translateForInternal(self, tree, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion, simplified=False, develop=True):
+	def translateForInternal(self, tree,
+								sbml_level=Settings.defaultSbmlLevel,
+								sbml_version=Settings.defaultSbmlVersion,
+								simplified=False, develop=True):
+
 		""" Translate an SBML Tree in a Sympy Tree """
 
 
@@ -189,6 +193,9 @@ class SbmlMathReader(object):
 			elif isnan(tree):
 				return SympyNan
 
+
+			# print "Float : %s" % str(tree)
+			# print srepr(SympyFloat(tree))
 			return SympyFloat(tree)
 
 		elif isinstance(tree, str):
@@ -415,8 +422,7 @@ class SbmlMathReader(object):
 								SympyInteger(-1), evaluate=False)
 				# AST_FUNCTION_DELAY
 			elif tree.getType() == libsbml.AST_FUNCTION_DELAY:
-				return SympyFunction("_delay_")(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
-												self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop))
+				raise TagNotImplementedModelException("CSymbolDelay")
 
 				# AST_FUNCTION_EXP
 			elif tree.getType() == libsbml.AST_FUNCTION_EXP:
@@ -443,6 +449,7 @@ class SbmlMathReader(object):
 
 				# AST_FUNCTION_PIECEWISE
 			elif tree.getType() == libsbml.AST_FUNCTION_PIECEWISE:
+
 				# print libsbml.formulaToL3String(tree)
 				i_arg = 0
 				i_cond = 0

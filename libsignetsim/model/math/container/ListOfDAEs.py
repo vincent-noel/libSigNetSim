@@ -153,3 +153,9 @@ class ListOfDAEs(list):
 			t_value = MathFormula(self.__model)
 			t_value.setInternalMathFormula(t_cfe.getDefinition().getDeveloppedInternalMathFormula().subs(subs))
 			self.__model.solvedInitialConditions.update({t_cfe.getVariable():t_value})
+
+	def prettyPrint(self):
+
+		print "-----------------------------"
+		for t_dae in self:
+			print ">> %s = 0" % str(t_dae.getDefinition().getDeveloppedInternalMathFormula())

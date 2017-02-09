@@ -40,7 +40,7 @@
 #define RT_NAN RCONST(NAN)
 #define RT_INF RCONST(INFINITY)
 
-void rt_set_precision(realtype prec);
+void rt_set_precision(realtype abs_tol, realtype rel_tol);
 
 int rt_eq(realtype x, realtype y);
 int rt_neq(realtype x, realtype y);

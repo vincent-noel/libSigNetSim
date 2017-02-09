@@ -37,6 +37,24 @@ class ModelException(Exception):
 		def __str__(self):
 			return "%d : %s" % (self.value, self.message)
 
+class TagNotImplementedModelException(Exception):
+
+
+	def __init__(self, tag):
+		self.tag = tag
+
+	def __str__(self):
+		return "The sbml tag %s is not implemented in libSigNetSim" % self.tag
+
+class PackageNotImplementedModelException(Exception):
+
+
+	def __init__(self, package):
+		self.package = package
+
+	def __str__(self):
+		return "The sbml package %s is not implemented in libSigNetSim" % self.package
+
 class MissingModelException(Exception):
 
 	def __init__(self, filename):

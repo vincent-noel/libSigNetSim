@@ -479,17 +479,6 @@ class SbmlMathWriter(object):
 		# AST_FUNCTION_PIECEWISE
 		elif tree.func == SympyPiecewise:
 
-			# print "> Piecewise case. Not done yet"
-			# #                 AST_FUNCTION_PIECEWISE
-			#     elif tree.getType() == libsbml.AST_FUNCTION_PIECEWISE:
-			#         t_cond = self.translateForInternal(tree.getChild(1))
-			#         t_if_true = self.translateForInternal(tree.getChild(0))
-			#         if tree.getNumChildren() > 2:
-			#             t_if_false = self.translateForInternal(tree.getChild(2))
-			#         else:
-			#             t_if_false = SympyInteger(0)
-			#
-			#         return SympyPiecewise((t_if_true, t_cond), (t_if_false, True))
 			t_ast = libsbml.ASTNode()
 			t_ast.setType(libsbml.AST_FUNCTION_PIECEWISE)
 
@@ -508,6 +497,20 @@ class SbmlMathWriter(object):
 					t_ast.addChild(self.translateForSbml(t_cond, sbml_level, sbml_version))
 
 			return t_ast
+
+		elif tree.func == SympyITE:
+
+			t_ast = libsbml.ASTNode()
+			t_ast.setType(libsbml.AST_FUNCTION_PIECEWISE)
+
+			t_cond = tree.args[0]
+			t_val = tree.args[1]
+			t_val_else = tree.args[2]
+			t_ast.addChild(self.translateForSbml(t_val, sbml_level, sbml_version))
+			t_ast.addChild(self.translateForSbml(t_cond, sbml_level, sbml_version))
+			t_ast.addChild(self.translateForSbml(t_val_else, sbml_level, sbml_version))
+			return t_ast
+
 		#TODO
 		# AST_FUNCTION_POWER
 		elif tree.func == SympyPow:

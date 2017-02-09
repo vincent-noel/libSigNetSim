@@ -128,6 +128,8 @@ class ReplacedElement(HasRef):
 					return "%s__%s" % (t_ref, t_object.getMetaId())
 
 				else:
+					# print tt_model.getSbmlId()
+					# print tt_model.listOfVariables.values()
 					t_object = tt_model.listOfVariables[self.getIdRef()]
 
 			elif self.hasPortRef():

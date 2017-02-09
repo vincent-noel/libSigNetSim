@@ -38,26 +38,29 @@ class ListOfODEs(list):
 
 		for variable in self.__model.listOfVariables.values():
 			if variable.isDerivative():
-
+				# print "\n\n> New var: \n"
 				t_ode = ODE(self.__model)
+				t_raw_ode = variable.getODE(including_fast_reactions)
 				t_ode.new(variable,
-							variable.getODE(including_fast_reactions))
+							t_raw_ode)
 
 				list.append(self, t_ode)
 
+				# print t_raw_ode.getDeveloppedInternalMathFormula()
 
-	def buildFromModel(self, model, including_fast_reactions=True):
-		for variable in model.listOfVariables.values():
-			if variable.isDerivative():
-
-				# First we found the corresponding variable in the new list
-				t_var = self.__model.listOfVariables[str(variable.symbol.getInternalMathFormula())]
-				t_definition = variable.getODE(including_fast_reactions)
-
-				if t_definition is not None:
-					t_ode = ODE(self.__model)
-					t_ode.new(t_var, variable.getODE(including_fast_reactions))
-					list.append(self, t_ode)
+		# self.prettyPrint()
+	# def buildFromModel(self, model, including_fast_reactions=True):
+	# 	for variable in model.listOfVariables.values():
+	# 		if variable.isDerivative():
+	#
+	# 			# First we found the corresponding variable in the new list
+	# 			t_var = self.__model.listOfVariables[str(variable.symbol.getInternalMathFormula())]
+	# 			t_definition = variable.getODE(including_fast_reactions)
+	#
+	# 			if t_definition is not None:
+	# 				t_ode = ODE(self.__model)
+	# 				t_ode.new(t_var, variable.getODE(including_fast_reactions))
+	# 				list.append(self, t_ode)
 	#
 	# def developODEs(self):
 	#
@@ -85,9 +88,9 @@ class ListOfODEs(list):
 	# 		self.ODEs[i_ode].setInternalMathFormula(tt_ode)
 	# 		# self.ODEs[i_ode].setInternalMathFormula(simplify(tt_ode))
 
-	def printODEs(self):
+	def prettyPrint(self):
 
 		print "-----------------------------"
-		for t_ode in enumerate(self):
-			print ">> %s = %s" % (str(t_cfe.getVariable().symbol.getDerivative().getDeveloppedInternalMathFormula()),
-								str(t_cfe.getDefinition().getDeveloppedInternalMathFormula()))
+		for t_ode in self:
+			print ">> %s = %s" % (str(t_ode.getVariable().symbol.getDerivative().getDeveloppedInternalMathFormula()),
+								str(t_ode.getDefinition().getDeveloppedInternalMathFormula()))

@@ -99,9 +99,9 @@ class SimpleSbmlObject(object):
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
 
-		#
-		# if sbml_level >= 2 and self.__metaId is not None:
-		#     sbml_object.setMetaId(str(self.__metaId))
+
+		if sbml_level >= 2 and self.__metaId is not None:
+		    sbml_object.setMetaId(str(self.__metaId))
 
 		if self.__notes is not None and self.__notes != "":
 			sbml_object.setNotes(self.buildNotes(self.__notes))

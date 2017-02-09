@@ -247,34 +247,60 @@ class MathSlowModel(object):
 			f_system += self.fastConservationLaws
 
 			if len(f_system) > 0:
+				# print f_system
 
-				(f_system, f_vars) = self.loadKnownInitialValues_v2(f_system, f_vars, exclude_list=f_vars)
-				solved_variables = self.solveSystem(f_system, f_vars)
+				(f_system_subs, f_vars_subs) = self.loadKnownInitialValues_v2(f_system, f_vars)
 
-				# print "Solved initial conditions : %s" % str(solved_variables)
+				all_true = True
+				for equ in f_system_subs:
+					if equ != True:
+						all_true = False
 
-				for solved_variable, solved_value in solved_variables.items():
-					t_var = self.listOfVariables[str(solved_variable)]
-					t_value = MathFormula(self)
-					t_value.setInternalMathFormula(solved_value.subs(subs))
+				if not all_true:
 
-					self.solvedInitialConditions.update({t_var:t_value})
+					(f_system, f_vars) = self.loadKnownInitialValues_v2(f_system, f_vars, exclude_list=f_vars)
 
+					# print f_system
+
+					solved_variables = self.solveSystem(f_system, f_vars)
+
+					# print "Solved initial conditions : %s" % str(solved_variables)
+
+					for solved_variable, solved_value in solved_variables.items():
+						t_var = self.listOfVariables[str(solved_variable)]
+						t_value = MathFormula(self)
+						t_value.setInternalMathFormula(solved_value.subs(subs))
+
+						self.solvedInitialConditions.update({t_var:t_value})
+				# else:
+				# 	print "All true !"
 		else:
 			f_vars = [dae for dae in self.fastLaws_vars]
 			f_system = [SympyEqual(law, MathFormula.ZERO) for law in self.fastLaws]
 
 			if len(f_system) > 0:
 
-				(f_system, f_vars) = self.loadKnownInitialValues_v2(f_system, f_vars, exclude_list=f_vars)
-				solved_variables = self.solveSystem(f_system, self.fast_variables)
+				(f_system_subs, f_vars_subs) = self.loadKnownInitialValues_v2(f_system, f_vars)
 
-				for solved_variable, solved_value in solved_variables.items():
-					t_var = self.listOfVariables[str(solved_variable)]
-					t_value = MathFormula(self)
-					t_value.setInternalMathFormula(solved_value.subs(subs))
+				all_true = True
+				for equ in f_system_subs:
+					if equ != True:
+						all_true = False
 
-					self.solvedInitialConditions.update({t_var:t_value})
+				if not all_true:
+
+
+					(f_system, f_vars) = self.loadKnownInitialValues_v2(f_system, f_vars, exclude_list=f_vars)
+
+
+					solved_variables = self.solveSystem(f_system, self.fast_variables)
+
+					for solved_variable, solved_value in solved_variables.items():
+						t_var = self.listOfVariables[str(solved_variable)]
+						t_value = MathFormula(self)
+						t_value.setInternalMathFormula(solved_value.subs(subs))
+
+						self.solvedInitialConditions.update({t_var:t_value})
 
 
 	def build(self):
@@ -329,6 +355,11 @@ class MathSlowModel(object):
 			# print matrix_species
 			nullspace_normalized = []
 			nullspace = self.fastStoichiometryMatrix.nullspace()
+			# print "> stoichiometry :"
+			# print self.fastStoichiometryMatrix
+
+			# print "> nullspace :"
+			# print nullspace
 			for t_cons_law in nullspace:
 				t_sum = SympyInteger(0)
 				for element in t_cons_law:
@@ -381,11 +412,13 @@ class MathSlowModel(object):
 			# print "\n > Slow ODES"
 			# for t_ode in pseudo_odes.values():
 			#  	print t_ode
-			system = [law for law in self.fastLaws]
-			variables = [var for var in self.fast_variables]
 
-			new_cfes = self.solveSystem(system, variables)
 
+			# system = [law for law in self.fastLaws]
+			# variables = [var for var in self.fast_variables]
+			#
+			# new_cfes = self.solveSystem(system, variables)
+			#
 			for pseudo_var, pseudo_ode in pseudo_odes.items():
 
 				t_var = self.listOfVariables[str(pseudo_var)]
@@ -394,32 +427,38 @@ class MathSlowModel(object):
 				t_ode = ODE(self)
 				t_ode.new(t_var, t_definition)
 				self.listOfODEs.append(t_ode)
+			#
+			#
+			# for cfe_var, cfe_def in new_cfes.items():
+			# 	t_var = self.listOfVariables[str(cfe_var)]
+			# 	t_def = MathFormula(self)
+			# 	t_def.setInternalMathFormula(cfe_def)
+			# 	t_cfe = CFE(self)
+			# 	t_cfe.new(t_var, t_def)
+			# 	self.listOfCFEs.append(t_cfe)
 
 
-			for cfe_var, cfe_def in new_cfes.items():
-				t_var = self.listOfVariables[str(cfe_var)]
-				t_def = MathFormula(self)
-				t_def.setInternalMathFormula(cfe_def)
-				t_cfe = CFE(self)
-				t_cfe.new(t_var, t_def)
-				self.listOfCFEs.append(t_cfe)
+			# system = [law for law in self.fastLaws]
+			# variables = [var for var in self.fast_variables]
+			#
+			# new_cfes = self.solveSystem(system, variables)
 
+			for law in self.fastLaws:
 
+				# t_var = self.listOfVariables[str(pseudo_var)]
+				t_definition = MathFormula(self)
+				t_definition.setInternalMathFormula(law)
+				t_dae = DAE(self)
+				t_dae.new(t_definition)
+				self.listOfDAEs.append(t_dae)
 
-		# self.listOfCFEs.printCFEs()
-		self.listOfCFEs.developCFEs()
+			self.hasDAEs = True
+			for fast_var in self.fast_variables:
+				t_var = self.listOfVariables[str(fast_var)]
+				self.listOfVariables.changeVariableType(t_var, MathVariable.VAR_DAE)
 
-		for fast_var in self.fast_variables:
-			t_var = self.listOfVariables[str(fast_var)]
-			self.listOfVariables.changeVariableType(t_var, MathVariable.VAR_ASS)
-
-
-		# for key, value in self.solvedInitialConditions.items():
-		# 	print "%s : %s" % (
-		# 		str(key.symbol.getDeveloppedInternalMathFormula()),
-		# 		str(value.getDeveloppedInternalMathFormula())
-		# 	)
-
+			if Settings.verbose >= 2:
+				self.listOfODEs.prettyPrint()
 
 	def loadKnownInitialValues_v2(self, f_system, f_vars, exclude_list=[]):
 
@@ -437,8 +476,13 @@ class MathSlowModel(object):
 			if variable.symbol.getInternalMathFormula() not in exclude_list:
 				subs.update({t_symbol: self.solvedInitialConditions[variable].getInternalMathFormula()})
 
+			# print "subs :"
+			# print subs
 			res_system = []
 			for equ in f_system:
+				# print "equ"
+				# print equ
+				# print equ.subs(subs, evaluate=False)
 				res_system.append(equ.subs(subs))
 
 		return (res_system, f_vars)
@@ -446,7 +490,7 @@ class MathSlowModel(object):
 
 	def solveSystem(self, system, variables):
 
-		if Settings.verbose >= 1:
+		if Settings.verbose >= 2:
 
 			print "\n\n> Calling solver : "
 			print ">> System : "
@@ -458,7 +502,7 @@ class MathSlowModel(object):
 
 		res = solve(system,variables)
 
-		if Settings.verbose >= 1:
+		if Settings.verbose >= 2:
 			print ">> Result : %s\n\n" % str(res)
 
 		solved_initial_conditions = {}

@@ -125,22 +125,14 @@ class SubModel(HasId):#, SbmlObject):
 		return self.__modelRef
 
 	def getModelObject(self):
-		# print "Looking for %s" % self.__modelRef
+
 		if self.__modelRef == self.__model.getSbmlId():
 			return self.__model
 		else:
-			# print "not the main one"
 			t_doc = self.__model.parentDoc
-			# print t_doc.listOfModelDefinitions.sbmlIds()
-			# print t_doc.listOfExternalModelDefinitions.sbmlIds()
 			if self.__modelRef in t_doc.listOfModelDefinitions.sbmlIds():
-				# print "Found in the external definition"
 				return t_doc.listOfModelDefinitions.getBySbmlId(self.__modelRef).modelDefinition
 			elif self.__modelRef in t_doc.listOfExternalModelDefinitions.sbmlIds():
-				# print "Found in the external definition"
-				# print t_doc.listOfExternalModelDefinitions.getBySbmlId(self.__modelRef)
-				# print t_doc.listOfExternalModelDefinitions.getBySbmlId(self.__modelRef).modelDefinition
-				# print t_doc.listOfExternalModelDefinitions.getBySbmlId(self.__modelRef).modelDefinition.getSbmlId()
 				return t_doc.listOfExternalModelDefinitions.getBySbmlId(self.__modelRef).modelDefinition
 
 

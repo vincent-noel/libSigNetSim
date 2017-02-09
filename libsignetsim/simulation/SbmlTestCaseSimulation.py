@@ -50,7 +50,7 @@ class SbmlTestCaseSimulation(TimeseriesSimulation):
 
 		self.loadSBMLTestSuiteSettings()
 		self.loadTestCaseModel()
-
+		self.testExport= True
 		TimeseriesSimulation.__init__(self,
 										list_of_models=[self.model],
 										time_min=self.timeMin,
@@ -88,6 +88,7 @@ class SbmlTestCaseSimulation(TimeseriesSimulation):
 			t_document.writeSbml(t_filename)
 
 			self.model = self.loadSbmlModel_v2(t_filename)
+			
 		else:
 			# print "opening %s" % self.getModelFilename()
 			self.model = self.loadSbmlModel_v2(self.getModelFilename())
@@ -124,7 +125,7 @@ class SbmlTestCaseSimulation(TimeseriesSimulation):
 
 
 	def getTemporaryModelFilename(self):
-		return join(Settings.sbmlTestResultsPath, "test-suite-results/%s.xml" % self.caseId)
+		return join(Settings.sbmlTestResultsPath, "test-suite-results/%s-sbml-l%sv%s.xml" % (self.caseId, self.sbmlLevel, self.sbmlVersion))
 
 
 	def loadSBMLTestSuiteSettings(self):
@@ -259,7 +260,6 @@ class SbmlTestCaseSimulation(TimeseriesSimulation):
 						if abs(traj_times[i_timepoint] - t_expected_value) > (self.testAbsTol + self.testRelTol*abs(t_expected_value)):
 							result = False
 							timeError = True
-							# print "TIME !!!!!!!!!!!!!!!!!!"
 					else:
 						print "cannot find variable %s" % var
 
@@ -267,26 +267,9 @@ class SbmlTestCaseSimulation(TimeseriesSimulation):
 				print "precision error"
 			if timeError:
 				print "time error"
-				# print variables
-				# print trajs.keys()
-				# print self.listOfModels[0].listOfVariables.keys()
-				# print traj_times
-				# print [timepoint[variables.index('time')] for timepoint in timepoints]
-				# for i_var, var in enumerate(variables):
-				# 	if var != 'time':
-				# 		t_var = self.listOfModels[0].listOfVariables[var]
-				# 		print ""
-				# 		print trajs[t_var.getSbmlId()]
-				# 		print [timepoint[variables.index(var)] for timepoint in timepoints]
-
 
 		else:
-			# print "Something wrong with rawData"
 			result = False
-
-
-
-
 
 		return result
 

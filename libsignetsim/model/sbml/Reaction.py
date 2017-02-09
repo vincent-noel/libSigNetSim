@@ -121,7 +121,6 @@ class Reaction(Variable, SbmlObject, HasUnits):
 		else:
 			self.setUnits(self.model.extentUnits)
 
-
 		SbmlObject.readSbml(self, reaction, sbml_level, sbml_version)
 
 		if reaction.getListOfReactants():
@@ -340,14 +339,19 @@ class Reaction(Variable, SbmlObject, HasUnits):
 	def getODE(self, species, forcedConcentration=False, symbols=False):
 
 		ode = MathFormula.ZERO
-
+		# print '-'*25
+		# print "> Generating the ODE :"
+		# print self.kineticLaw.getDefinition(forcedConcentration).getInternalMathFormula()
+		# print self.kineticLaw.getDefinition(forcedConcentration).getDeveloppedInternalMathFormula()
+		# print '-'*25
 		if self.listOfReactants:
+
 			for reactant in self.listOfReactants.values():
 
 				t_ode = MathFormula.ZERO
 
 				if reactant.getSpecies() == species:
-
+					# print "%s is a reactant whose stoichiometry is %s" % (reactant.getSpecies().getNameOrSbmlId(), reactant.stoichiometry.getInternalMathFormula())
 					if not symbols:
 						t_ode -= self.kineticLaw.getDefinition(forcedConcentration).getInternalMathFormula()
 					else:
@@ -364,6 +368,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 				t_ode = MathFormula.ZERO
 
 				if product.getSpecies() == species:
+					# print "%s is a species whose stoichiometry is %s" % (product.getSpecies().getNameOrSbmlId(), product.stoichiometry.getInternalMathFormula())
 
 					if not symbols:
 						t_ode += self.kineticLaw.getDefinition(forcedConcentration).getInternalMathFormula()
@@ -377,6 +382,12 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 		t_formula = MathFormula(self.model)
 		t_formula.setInternalMathFormula(ode)
+
+		# if self.objId == 1:
+		# 	print "> Result for reaction %d:" % self.objId
+		# 	print t_formula.getInternalMathFormula()
+		# 	print t_formula.getDeveloppedInternalMathFormula()
+		# 	print '-'*25
 
 		return t_formula
 

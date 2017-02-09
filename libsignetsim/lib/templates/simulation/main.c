@@ -120,34 +120,7 @@ int simulate_model(int model_id, char * folder)
               printf("run #%d on proc %d (%d/%d)\n", i_run, my_proc, indice_condition, nb_conditions);
 
                 ExperimentalCondition * t_condition = list_conditions[indice_condition];
-                // IntegrationResult * result;
-                //
-                // if (steady_states == 0)
-                //   result = simulateModel(t_model, t_condition, NULL);//, 0);
-                //
-                // else
-                //   result = simulateModelSteadyStates(t_model, t_condition, NULL);//, 0);
-                // // IntegrationResult * result = simulateModel(t_model, t_condition, NULL);//, 0);
-                // if (result->return_code == 0)
-                // {
-                //   char out_name[200];
-                //
-                //   if (folder != NULL)
-                //     sprintf(out_name, "%s/results/results_%d_%d", folder,
-                //               inds_experiments[indice_condition],
-                //               inds_conditions[indice_condition]);
-                //
-                //   else
-                //     sprintf(out_name, "results/results_%d_%d",
-                //               inds_experiments[indice_condition],
-                //               inds_conditions[indice_condition]);
-                //
-                //   WriteTrajectories(result, out_name);
-                // }
-                // return_code += result->return_code;
-                //
-                // FinalizeIntegrationResult(result);
-
+            
                 if (steady_states == 0)
                 {
 

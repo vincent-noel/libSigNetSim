@@ -178,7 +178,7 @@ class Simulation(CWriterSimulation):
 			or getsize(self.getTempDirectory() + "err_comp") > 0):
 
 
-			if Settings.verbose:
+			if Settings.verbose >= 1:
 				print "-"*40 + "\n"
 				print "> Error during file compilation :"
 				f_err_comp = open(self.getTempDirectory() + "err_comp", 'r')
@@ -230,7 +230,7 @@ class Simulation(CWriterSimulation):
 								res_sim,
 								getsize(self.getTempDirectory() + "err_sim")))
 
-			if Settings.verbose:
+			if Settings.verbose >= 1:
 				print "> Error during file simulation (%d, %d)" % (
 						res_sim,
 						getsize(self.getTempDirectory() + "err_sim"))
@@ -243,7 +243,7 @@ class Simulation(CWriterSimulation):
 			return self.SIM_SUCCESS
 
 		else:
-			if Settings.verbose:
+			if Settings.verbose >= 2:
 				print "-"*40 + "\n"
 				print "> Execution returned : \n"
 				f_out_sim = open(self.getTempDirectory() + "out_sim", 'r')
@@ -262,13 +262,13 @@ class Simulation(CWriterSimulation):
 
 		mid = clock()
 
-		if Settings.verbose >= 1:
+		if Settings.verbose >= 2:
 			print ">> Compilation executed in %.2fs" % (mid-start)
 
 		self.__execute__(nb_procs=nb_procs, steady_states=steady_states)
 		end = clock()
 
-		if Settings.verbose >= 1:
+		if Settings.verbose >= 2:
 			print ">> Simulation executed in %.2fs" % (end-mid)
 
 

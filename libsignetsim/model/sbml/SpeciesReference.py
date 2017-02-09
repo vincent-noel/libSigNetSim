@@ -31,8 +31,8 @@ from libsignetsim.model.Variable import Variable
 from libsignetsim.model.math.sympy_shortcuts import *
 from libsignetsim.settings.Settings import Settings
 
-from libsbml import AST_REAL, AST_INTEGER, AST_RATIONAL
-from sympy import Symbol
+from libsbml import AST_REAL, AST_INTEGER, AST_RATIONAL, formulaToString
+from sympy import Symbol, sympify, srepr, simplify, expand, factor, nsimplify
 
 class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 						RuledVariable, EventAssignedVariable):
@@ -162,30 +162,44 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 
 
 		elif not sbml_speciesReference.isModifier():
-			t_stoichiometry = self.stoichiometry.getSbmlMathFormula(sbml_level, sbml_version)
+			if sbml_level == 1:
+				t_stoichiometry = nsimplify(self.stoichiometry.getInternalMathFormula())
+				if t_stoichiometry.is_Rational and t_stoichiometry.q != 1:
 
-			if t_stoichiometry.getType() == AST_REAL:
-				if t_stoichiometry.getReal() != 1.0 or sbml_level == 3:
-					sbml_speciesReference.setStoichiometry(t_stoichiometry.getReal())
+					sbml_speciesReference.setStoichiometry(int(t_stoichiometry.p))
+					sbml_speciesReference.setDenominator(int(t_stoichiometry.q))
 
-			elif t_stoichiometry.getType() == AST_INTEGER:
-				if t_stoichiometry.getInteger() != 1 or sbml_level == 3:
-					sbml_speciesReference.setStoichiometry(t_stoichiometry.getInteger())
-
-			elif t_stoichiometry.getType() == AST_RATIONAL:
-				sbml_speciesReference.setStoichiometry(t_stoichiometry.getNumerator())
-				sbml_speciesReference.setDenominator(t_stoichiometry.getDenominator())
+				elif t_stoichiometry != MathFormula.ONE:
+					# print srepr(t_stoichiometry)
+					# t_stoichiometry = self.stoichiometry.getSbmlMathFormula(sbml_level, sbml_version)
+					sbml_speciesReference.setStoichiometry(int(t_stoichiometry))
 
 			else:
-				if sbml_level == 3:
-					if str(self.stoichiometry.getInternalMathFormula()) in self.__model.listOfVariables.keys():
-						sbml_speciesReference.setId(t_stoichiometry.getName())
 
-					else:
-						sbml_speciesReference.setStoichiometry(t_stoichiometry)
+				t_stoichiometry = self.stoichiometry.getSbmlMathFormula(sbml_level, sbml_version)
+
+				if t_stoichiometry.getType() == AST_REAL:
+					if t_stoichiometry.getReal() != 1.0 or sbml_level == 3:
+						sbml_speciesReference.setStoichiometry(t_stoichiometry.getReal())
+
+				elif t_stoichiometry.getType() == AST_INTEGER:
+					if t_stoichiometry.getInteger() != 1 or sbml_level == 3:
+						sbml_speciesReference.setStoichiometry(t_stoichiometry.getInteger())
+
+				elif t_stoichiometry.getType() == AST_RATIONAL:
+					sbml_speciesReference.setStoichiometry(t_stoichiometry.getNumerator())
+					sbml_speciesReference.setDenominator(t_stoichiometry.getDenominator())
+
 				else:
-					sbml_stoichiometry_math = sbml_speciesReference.createStoichiometryMath()
-					sbml_stoichiometry_math.setMath(t_stoichiometry)
+					if sbml_level == 3:
+						if str(self.stoichiometry.getInternalMathFormula()) in self.__model.listOfVariables.keys():
+							sbml_speciesReference.setId(t_stoichiometry.getName())
+
+						else:
+							sbml_speciesReference.setStoichiometry(t_stoichiometry)
+					else:
+						sbml_stoichiometry_math = sbml_speciesReference.createStoichiometryMath()
+						sbml_stoichiometry_math.setMath(t_stoichiometry)
 
 			if sbml_level >= 3:
 				sbml_speciesReference.setConstant(self.constant)
