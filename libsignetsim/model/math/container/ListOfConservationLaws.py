@@ -24,7 +24,7 @@
 
 
 from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.ModelException import ModelException
+from libsignetsim.model.ModelException import MathException
 from libsignetsim.model.math.sympy_shortcuts import  (
 	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
 	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
@@ -329,7 +329,7 @@ class ListOfConservationLaws(list):
 		for i, law in enumerate(self.LHSs):
 			t_law = law.getInternalMathFormula()
 			if not self.isSumOfPositiveTerms(t_law):
-				raise ModelException(ModelException.SBML_ERROR, "Negative terms !")
+				raise MathException("Negative terms !")
 				tofix_laws.append(t_law)
 				tofix_values.append(self.RHSs[i].getInternalMathFormula())
 			else:

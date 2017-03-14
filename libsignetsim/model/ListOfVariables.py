@@ -60,11 +60,15 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 		""" Return a set of ids of the sbml objects """
 		return [obj.getSbmlId() for obj in self.values()]
 
+	def symbols(self):
+		""" Return a set of ids of the sbml objects """
+		return [obj.symbol.getInternalMathFormula() for obj in self.values()]
+
 
 
 
 	def addVariable(self, variable, string=None):
-		
+
 		t_sbmlId = ListOfSbmlVariables.newSbmlId(self, variable, string)
 		dict.update(self, {t_sbmlId: variable})
 		return t_sbmlId
@@ -80,6 +84,12 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 			dict.__delitem__(self, old_sbml_id)
 			dict.update(self, {new_sbml_id: t_var})
 
+
+	def getBySymbol(self, symbol):
+
+		for var in dict.values(self):
+			if var.symbol.getInternalMathFormula() == symbol:
+				return var
 	#
 	# def subsToFlatten(self):
 	#

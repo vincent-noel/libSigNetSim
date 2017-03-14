@@ -6,3 +6,5 @@ python-libsbml
 scipy
 sympy
 python-libsedml
+bioservices
+pandas

@@ -26,7 +26,7 @@
 from libsignetsim.model.math.MathVariable import MathVariable
 from libsignetsim.model.sbml.SbmlVariable import SbmlVariable
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.ModelException import ModelException
+from libsignetsim.model.ModelException import SbmlException
 
 class Variable(SbmlVariable, MathVariable):
 
@@ -44,6 +44,9 @@ class Variable(SbmlVariable, MathVariable):
 	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversion_factor=None):
 		SbmlVariable.copy(self, obj, prefix, shift, subs, deletions, replacements)
 		MathVariable.copy(self, obj, prefix, shift, subs, deletions, replacements, conversion_factor)
+		# print "> Adding variable %s : %s" % (prefix + obj.getSbmlId(), self.symbol.getInternalMathFormula())
+
+
 
 	def readSbml(self, sbml_variable,
 					sbml_level=Settings.defaultSbmlLevel,
@@ -71,9 +74,7 @@ class Variable(SbmlVariable, MathVariable):
 				SbmlVariable.setSbmlId(self, t_sbml_id, prefix, model_wide)
 				MathVariable.setSbmlId(self, t_sbml_id, prefix)
 			else:
-				raise ModelException(
-						ModelException.SBML_ERROR,
-						"Identifier %s already exist" % sbml_id)
+				raise SbmlException("Identifier %s already exist" % sbml_id)
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		""" Function to rename a sbml id which could be countained

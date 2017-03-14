@@ -63,6 +63,7 @@ class SbmlVariable(HasId):
 
 		else:
 			t_sbml_id = prefix + obj.getSbmlId()
+			# print "> Adding variable %s : %s" % (t_sbml_id, self.symbol.getInternalMathFormula())
 			self.__model.listOfVariables.addVariable(self, t_sbml_id)
 		self.sbmlType = obj.sbmlType
 

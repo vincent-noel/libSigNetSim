@@ -25,6 +25,8 @@
 
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.MathFormula import MathFormula
+from time import time
+
 
 class CModelWriter(object):
 	""" Sbml model class """
@@ -37,7 +39,7 @@ class CModelWriter(object):
 
 	def writeCCode(self, f_h, f_c, i_model, timeMin, timeEch, timeMax, absTol, relTol):
 
-
+		start = time()
 		self.writeSimulationInitialization(f_h, f_c, i_model, timeMin, timeEch, timeMax, absTol, relTol)
 		self.writeSimulationFinalization(f_h, f_c, i_model)
 
@@ -46,7 +48,9 @@ class CModelWriter(object):
 		if self.getMathModel().hasDAEs:
 			self.writeIdaSimulationFunction(f_h, f_c, i_model)
 		else:
+			start_odes = time()
 			self.writeCVodeSimulationFunction(f_h, f_c, i_model)
+			# print "ODE Writing : %.2gs" % (time()-start_odes)
 
 		self.writeSimulationComputeRules(f_h, f_c, i_model)
 		self.writeEventsTriggersFunction(f_h, f_c, i_model)
@@ -54,6 +58,8 @@ class CModelWriter(object):
 		self.writeEventsAssignmentFunction(f_h, f_c, i_model)
 		self.writeEventsPriorityFunction(f_h, f_c, i_model)
 
+		if Settings.verbose >= 1:
+			print "Pure Writing : %.2gs" % (time()-start)
 	def writeSimulationInitialization(self, f_h, f_c, model_id, time_min, time_ech, time_max, abs_tol, rel_tol):
 		""" Writes the model initialization function in C files """
 
@@ -331,12 +337,13 @@ class CModelWriter(object):
 
 		f_h.write("int compute_rules_%d(realtype t, N_Vector y, void * user_data);\n" % model_id)
 		f_c.write("int compute_rules_%d(realtype t, N_Vector y, void * user_data)\n{\n" % model_id)
+
 		if len(self.getMathModel().listOfCFEs) > 0:
 			f_c.write("  IntegrationData * data = (IntegrationData *) user_data;\n")
 			f_c.write("  N_Vector cst = data->constant_variables;\n")
 			f_c.write("  N_Vector ass = data->assignment_variables;\n")
 
-			for i_cfe, t_cfe in enumerate(self.getMathModel().listOfCFEs.developpedCFEs):
+			for i_cfe, t_cfe in enumerate(self.getMathModel().listOfCFEs):
 
 				t_var = t_cfe.getVariable()
 				f_c.write("  Ith(ass, %s) = %s;\n" % (

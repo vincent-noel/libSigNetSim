@@ -57,3 +57,15 @@ class CFE(object):
 
 	def isReaction(self):
 		return self.__type == self.REACTION
+
+	def setDefinition(self, definition):
+		self.__definition = definition
+
+	def setDefinitionMath(self, math):
+		self.__definition.setInternalMathFormula(math)
+
+	def getSubs(self):
+		return {self.__variable.symbol.getInternalMathFormula():self.__definition.getInternalMathFormula()}
+	def __str__(self):
+		return "%s = %s" % (str(self.getVariable().symbol.getDeveloppedInternalMathFormula()),
+							str(self.getDefinition().getDeveloppedInternalMathFormula()))

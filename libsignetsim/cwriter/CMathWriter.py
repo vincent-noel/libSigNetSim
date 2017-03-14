@@ -39,7 +39,7 @@ from libsignetsim.model.math.sympy_shortcuts import  (
 	SympyMax, SympyMin, SympyITE)
 
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.ModelException import ModelException
+from libsignetsim.model.ModelException import MathException
 
 class CMathWriter(object):
 	""" Class for handling math formulaes """
@@ -473,5 +473,5 @@ class CMathWriter(object):
 			return self.translateForC(tree.args[0])
 		else:
 			print str(tree)
-			raise ModelException(ModelException.MATH_ERROR, "")
+			raise MathException("C Math Writer : Unknown Sympy Symbol %s" % str(tree))
 			return str(tree)

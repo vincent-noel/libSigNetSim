@@ -82,6 +82,7 @@ class ListOfMathVariables(object):
 
 	def classifyVariables(self):
 
+		# print ">> Starting to classify variables"
 		i_variables_constant = 0
 		i_variables_assignment = 0
 		i_variables_odes = 0
@@ -141,7 +142,7 @@ class ListOfMathVariables(object):
 		self.__model.variablesAlgebraic = variables_algebraic
 
 		self.__model.setUpToDate(True)
-
+		# print ">> Done classifying variables"
 
 	def changeVariableType(self, variable, new_type):
 

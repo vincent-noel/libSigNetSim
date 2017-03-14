@@ -28,7 +28,8 @@ from math import isinf, isnan
 from sympy import srepr
 from libsignetsim.model.math.sympy_shortcuts import *
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.ModelException import ModelException, TagNotImplementedModelException
+from libsignetsim.model.ModelException import (SbmlException,
+												TagNotImplementedModelException)
 
 
 class SbmlMathReader(object):
@@ -158,15 +159,13 @@ class SbmlMathReader(object):
 					return t_variable.symbol.getInternalMathFormula()
 
 			else:
-				raise ModelException(ModelException.SBML_ERROR,
-						"Unknown type of variable : %s" % variable)
+				raise SbmlException("SbmlMathReader : Unknown type of variable : %s" % variable)
 
 		elif variable == "_time_":
 			return SympySymbol("_time_")
 
 		else:
-			raise ModelException(ModelException.SBML_ERROR,
-					"Unknown variable : %s" % variable)
+			raise SbmlException("SbmlMathReader : Unknown variable : %s" % variable)
 
 
 	def translateForInternal(self, tree,
@@ -228,8 +227,7 @@ class SbmlMathReader(object):
 				return SympyE
 
 			else:
-				raise ModelException(ModelException.SBML_ERROR,
-											"Number error")
+				raise SbmlException("SbmlMathReader : Unknown type of number")
 
 
 		elif tree.isConstant():
@@ -251,8 +249,7 @@ class SbmlMathReader(object):
 				return SympySymbol("_avogadro_")
 
 			else:
-				raise ModelException(ModelException.SBML_ERROR,
-							"Unknown constant")
+				raise SbmlException("SbmlMathReader : Unknown constant")
 
 		elif tree.isOperator():
 
@@ -290,7 +287,12 @@ class SbmlMathReader(object):
 					return SympyInteger(0)
 
 				else:
-					return SympySymbol("ERR_MINUS_TERNARY")
+					t_tree = SympyAdd(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
+										SympyMul(SympyInteger(-1), self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False), evaluate=False)
+					for i_arg in range(2,tree.getNumChildren()):
+						t_tree = SympyAdd(t_tree, SympyMul(SympyInteger(-1), self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop), evaluate=False), evaluate=False)
+
+					return t_tree
 
 
 			elif tree.getType() == libsbml.AST_TIMES:
@@ -645,7 +647,7 @@ class SbmlMathReader(object):
 
 
 			else:
-				raise ModelException(ModelException.SBML_ERROR, "Unknown relational operator")
+				raise SbmlException("SbmlMathReader : Unknown relational operator")
 				return SympySymbol("ERR_RELATIONAL")
 
 
@@ -676,7 +678,7 @@ class SbmlMathReader(object):
 				return SympyNot(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop), evaluate=False)
 
 			else:
-				raise ModelException(ModelException.SBML_ERROR, "Unknown logical operator")
+				raise SbmlException("SbmlMathReader : Unknown logical operator")
 				return "unknown logical operator"
 
 
@@ -695,6 +697,6 @@ class SbmlMathReader(object):
 			else:
 				t_string = libsbml.formulaToL3String(tree)
 
-			raise ModelException(ModelException.SBML_ERROR, "Unknown mathematical term : %s" % t_string)
+			raise SbmlMathReader("SbmlMathReader : Unknown mathematical term : %s" % t_string)
 
 			return SympySymbol("ERR_UNKNOWN_TYPE")

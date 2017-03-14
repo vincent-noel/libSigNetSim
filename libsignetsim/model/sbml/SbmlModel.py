@@ -38,7 +38,7 @@ from libsignetsim.model.sbml.container.ListOfSbmlObjects import ListOfSbmlObject
 from libsignetsim.model.sbml.container.ListOfSubmodels import ListOfSubmodels
 from libsignetsim.model.sbml.container.ListOfPorts import ListOfPorts
 
-from libsignetsim.model.ModelException import ModelException
+# from libsignetsim.model.ModelException import ModelException
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
@@ -130,10 +130,6 @@ class SbmlModel(HasId, SbmlObject):
 
 		self.sbmlLevel = sbml_level
 		self.sbmlVersion = sbml_version
-		# if Settings.verbose >= 1:
-		# 	print "> SBML Level %d Version %d" % (self.sbmlLevel, self.sbmlVersion)
-		# 	print "> Reading Sbml Model : %s (%s)" % (self.getSbmlId(), self.parentDoc.documentFilename)
-
 
 		self.listOfFunctionDefinitions.readSbml(sbmlModel.getListOfFunctionDefinitions(), self.sbmlLevel, self.sbmlVersion)
 		self.listOfUnitDefinitions.readSbml(sbmlModel.getListOfUnitDefinitions(), self.sbmlLevel, self.sbmlVersion)
@@ -181,20 +177,15 @@ class SbmlModel(HasId, SbmlObject):
 			self.listOfSubmodels.readSbml(sbmlModel.getPlugin("comp").getListOfSubmodels(), self.sbmlLevel, self.sbmlVersion)
 			self.listOfPorts.readSbml(sbmlModel.getPlugin("comp").getListOfPorts(), self.sbmlLevel, self.sbmlVersion)
 
-
-
-		# if Settings.verbose >= 1:
-		# 	print "> SBML Model %s read in %.2gs" % (self.getSbmlId(), time()-t0)
-		# 	print ">> Parent document appears to be %s, %s" % (self.parentDoc.documentPath, self.parentDoc.documentFilename)
+		if Settings.verbose >= 1:
+			print "> SBML Model %s read in %.2gs" % (self.getSbmlId(), time()-t0)
 
 
 	def writeSbml(self, sbmlModel,
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
 
-		# sbmlModel = sbmlDoc.createModel()
-		# if Settings.verbose >= 1:
-		# 	print "> Writing model %s, file = %s" % (self.getSbmlId(), self.parentDoc.documentFilename)
+		t0 = time()
 
 		if self.sbmlLevel == 3 and self.parentDoc.isCompEnabled():
 			sbmlModel.enablePackage("http://www.sbml.org/sbml/level3/version1/comp/version1", "comp", True)
@@ -225,10 +216,11 @@ class SbmlModel(HasId, SbmlObject):
 
 
 		if self.sbmlLevel == 3 and self.parentDoc.isCompEnabled():
-			# sbmlModel.enablePackage("comp", "comp", True)
 			self.listOfSubmodels.writeSbml(sbmlModel.getPlugin("comp"), self.sbmlLevel, self.sbmlVersion)
 			self.listOfPorts.writeSbml(sbmlModel.getPlugin("comp"), self.sbmlLevel, self.sbmlVersion)
 
+		if Settings.verbose >= 1:
+			print "> SBML Model %s written in %.2gs" % (self.getSbmlId(), time()-t0)
 
 
 	def getTimeUnits(self):

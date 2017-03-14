@@ -25,7 +25,7 @@
 
 from libsignetsim.model.math.sympy_shortcuts import *
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.ModelException import ModelException
+from libsignetsim.model.ModelException import MathException
 
 import libsbml
 from sympy import srepr
@@ -688,5 +688,5 @@ class SbmlMathWriter(object):
 
 		else:
 			# print str(tree)
-			raise ModelException(ModelException.MATH_ERROR, "%s" % str(tree))
+			raise MathException("Sbml Math Writer : Unknown Sympy Symbol %s" % str(tree))
 			return str(tree)

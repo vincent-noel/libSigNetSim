@@ -42,7 +42,7 @@ from libsignetsim.model.math.SbmlMathReader import SbmlMathReader
 from libsignetsim.cwriter.CMathWriter import CMathWriter
 from libsignetsim.model.math.SbmlMathWriter import SbmlMathWriter
 from libsignetsim.model.math.MathDevelopper import MathDevelopper
-from libsignetsim.model.ModelException import ModelException
+from libsignetsim.model.ModelException import SbmlException
 
 from libsbml import parseL3Formula
 from sympy import simplify
@@ -202,8 +202,7 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 
 		sbml_formula = parseL3Formula(str(string))
 		if sbml_formula is None:
-			raise ModelException(ModelException.SBML_ERROR,
-					"Unable to parse math formula")
+			raise SbmlException("MathFormula : Unable to parse math formula")
 
 		self.readSbml(sbml_formula, self.sbmlLevel, self.sbmlVersion)
 		t_subs_mask = {}

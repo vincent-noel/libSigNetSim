@@ -24,7 +24,7 @@
 
 import unittest, os, time
 from libsignetsim.model.Model import Model
-from libsignetsim.simulation.SbmlTestCaseSimulation import SbmlTestCaseSimulation
+from libsignetsim.simulation.tests.SbmlTestCaseSimulation import SbmlTestCaseSimulation
 from libsignetsim.model.SbmlDocument import SbmlDocument
 from libsignetsim.settings.Settings import Settings
 from multiprocessing import cpu_count
@@ -33,6 +33,8 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 
 	TODO_CASES = []
+	TODO_VERSIONS = []
+	TODO_TAGS = ['AlgebraicRule']
 
 	INCOMPATIBLE_CASES = [962, 987, 988]#962, Not compatible with ubuntu:precise, others not solved yet
 	INCOMPATIBLE_TAGS = ['CSymbolDelay']
@@ -50,7 +52,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 		self.testCasesTags = {}
 		self.testCasesVersions = {}
 		self.nbCores = None
-		self.keepFiles = False
+		self.keepFiles = True
 		self.testExport = True
 		Settings.verbose = 0
 
@@ -119,7 +121,12 @@ class TestSbmlCompatibility(unittest.TestCase):
 		for case_id, case_tags in self.testCasesTags.items():
 
 			compatible = True
+			todoTag = False
+
 			for tag in case_tags:
+				if tag.strip() in self.TODO_TAGS:
+					todoTag = True
+
 				if tag.strip() in self.INCOMPATIBLE_TAGS:
 					compatible = False
 
@@ -127,7 +134,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 					and tag.strip().split(':')[0] not in self.COMPATIBLE_PACKAGES):
 					compatible = False
 
-			if compatible and case_id not in self.INCOMPATIBLE_CASES and (self.TODO_CASES == [] or case_id in self.TODO_CASES):# in [390]:#[663, 664, 762, 569, 570, 575]:
+			if compatible and case_id not in self.INCOMPATIBLE_CASES and (self.TODO_CASES == [] or case_id in self.TODO_CASES) and (self.TODO_TAGS == [] or todoTag):# in [390]:#[663, 664, 762, 569, 570, 575]:
 				(t_success, t_cases) = self.runCase(case_id)
 				nb_success += t_success
 				nb_cases += t_cases
@@ -146,45 +153,23 @@ class TestSbmlCompatibility(unittest.TestCase):
 		print "> Running case %05d (%s)" % (case, str(self.testCasesVersions[case]))
 		results = [None]*len(self.testCasesVersions[case])
 
+
 		for versions in self.testCasesVersions[case]:
+			if self.TODO_VERSIONS == [] or versions in self.TODO_VERSIONS:
+				start = time.time()
+				level_version = versions.split('.')
+				level = int(level_version[0])
+				version = int(level_version[1])
 
-			start = time.time()
-			level_version = versions.split('.')
-			level = int(level_version[0])
-			version = int(level_version[1])
+				sbml_doc = os.path.join(case_path, "%05d-sbml-l%dv%d.xml" % (
+													case, level, version))
 
-			sbml_doc = os.path.join(case_path, "%05d-sbml-l%dv%d.xml" % (
-												case, level, version))
+				if os.path.exists(sbml_doc):
 
-			if os.path.exists(sbml_doc):
+					nb_cases += 1
 
-				nb_cases += 1
 
-        # for optimization in range(0, self.nbOptimizations):
-		#
-            # t = threading.Thread(target=self.runUniqueOptimization, args=(nb_procs, timeout, maxiter, optimization,))
-        #     t.setDaemon(True)
-        #     t.start()
-        #     time.sleep(1)
-		#
-        #     #We block the process if there is no more cores available
-        #     #One core is for the main Thread, two for each optimization
-        #     # threads_used = threading.activeCount()-1
-        #     # cores_used = threads_used * nb_procs
-        #     # cores_load = psutil.cpu_percent(interval=2)/100
-        #     while (threading.activeCount()-1)/(1 + nb_procs) >= 27:#nb_procs > (multiprocessing.cpu_count())*(0.9-cores_load):
-		#
-        #         time.sleep(1)
-        #         # threads_used = threading.activeCount()-1
-        #         # cores_used = threads_used * nb_procs
-        #         # cores_load = psutil.cpu_percent(interval=2)/100
-		#
-        #     #     print "> %d optimizatons running on %d cores (%d total cores, load = %g, free_cores = %d)" % (threads_used, cores_used, multiprocessing.cpu_count(), cores_load, math.floor((1-cores_load)*multiprocessing.cpu_count()))
-        #     #
-        #     # print "> Lauching new thread ! (%d cores used out of %d)" % (cores_used, multiprocessing.cpu_count()-1)
-        # while threading.activeCount() > 1:
-        #     pass
-				try:
+					# try:
 					if Settings.verbose >= 1:
 						print ""
 					test = SbmlTestCaseSimulation(case, str(level), str(version), test_export=self.testExport, keep_files=self.keepFiles)
@@ -197,8 +182,8 @@ class TestSbmlCompatibility(unittest.TestCase):
 					else:
 						print ">> l%dv%d : ERROR (%.2gs)" % (level, version, time.time()-start)
 
-				except Exception as e:
-					print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
+					# except Exception as e:
+					# 	print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
 
 		return (nb_success, nb_cases)
 

@@ -28,7 +28,7 @@ from libsignetsim.model.sbml.container.HasIds import HasIds
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
 from libsignetsim.model.sbml.Species import Species
-from libsignetsim.model.ModelException import ModelException
+from libsignetsim.model.ModelException import CannotDeleteException
 from libsignetsim.settings.Settings import Settings
 
 
@@ -122,9 +122,9 @@ class ListOfSpecies(ListOf, HasIds, SbmlObject):
 		""" Remove an object from the list """
 
 		if species.isInReactions():
-			raise ModelException(ModelException.SBML_ERROR, "Species is used in reactions")
+			raise CannotDeleteException("Species is used in reactions")
 		elif species.isInRules():
-			raise ModelException(ModelException.SBML_ERROR, "Species in used in rules")
+			raise CannotDeleteException("Species in used in rules")
 
 		self.__model.listOfVariables.removeVariable(species)
 		# self.__model.listOfSbmlIds.removeSbmlId(species)

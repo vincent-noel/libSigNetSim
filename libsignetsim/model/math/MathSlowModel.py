@@ -36,7 +36,7 @@ from libsignetsim.model.math.CFE import CFE
 from libsignetsim.model.math.ODE import ODE
 from libsignetsim.model.ListOfVariables import ListOfVariables
 from libsignetsim.model.math.MathVariable import MathVariable
-from libsignetsim.model.ModelException import ModelException
+# from libsignetsim.model.ModelException import ModelException
 
 class MathSlowModel(object):
 	""" Sbml model class """

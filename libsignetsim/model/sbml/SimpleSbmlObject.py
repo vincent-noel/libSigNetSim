@@ -26,7 +26,7 @@
 from libsignetsim.settings.Settings import Settings
 from libsbml import SyntaxChecker
 from libsbml import XMLNode
-from libsignetsim.model.ModelException import ModelException
+from libsignetsim.model.ModelException import CannotCreateException
 
 class SimpleSbmlObject(object):
 
@@ -35,19 +35,6 @@ class SimpleSbmlObject(object):
 		self.__model = model
 		self.__metaId = None#self.newMetaId()
 		self.__notes = None
-		# That was working while uncommented.
-		# But we shouldn't have a different treatment for definitions and instance,
-		# especially when we get a weird behavior
-
-		# if self != model and not self.__model.isModelInstance:
-		#     self.__model.listOfSbmlObjects.addSbmlObject(self)
-
-
-
-
-
-		# if not self.__model.isModelInstance and not self.__model.isMainModel:
-		#     self.__model.parentDoc.model.listOfSbmlObjects.addSbmlObject(self)
 
 
 	def new(self, notes=None):
@@ -56,36 +43,23 @@ class SimpleSbmlObject(object):
 		self.__model.listOfSbmlObjects.addSbmlObject(self)
 		self.__notes = notes
 
+
 	def copy(self, obj, prefix="", shift=0):
 
-		# print "starting to copy to the instance"
-		# if obj.getMetaId() is None:
-		#     print "unknown meta id"
-		#     print obj
 		self.setMetaId(obj.getMetaId(), prefix)
-		# print type(self)
-		# print self.getMetaId()
-		# print ""
 		self.__model.listOfSbmlObjects.addSbmlObject(self, prefix)
 		self.__notes = obj.getNotes()
-
 
 
 	def readSbml(self, sbml_object,
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
-		# print "starting to read SBML"
+
 		if sbml_level >= 2:
 			if sbml_object.isSetMetaId():
 				self.setMetaId(sbml_object.getMetaId())
 
 		self.__model.listOfSbmlObjects.addSbmlObject(self)
-		# print type(self)
-		# print self.getMetaId()
-		# print ""
-
-
-				# self.__model.listOfSbmlObjects.updateMetaId(self, )
 
 		if sbml_object.isSetNotes():
 			t_notes = sbml_object.getNotes().getChild(0)
@@ -130,10 +104,10 @@ class SimpleSbmlObject(object):
 
 					self.__metaId = t_meta_id
 				else:
-					raise ModelException(ModelException.SBML_ERROR, "MetaId already exists !!")
+					raise CannotCreateException("MetaId already exists !!")
 
 			else:
-				raise ModelException(ModelException.SBML_ERROR, "MetaId is not valid !!")
+				raise CannotCreateException("MetaId is not valid !!")
 
 
 	def getMetaId(self):

@@ -110,7 +110,7 @@ class Simulation(CWriterSimulation):
 	def loadSbmlModel_v2(self, filename, modelDefinition=False):
 
 		document = SbmlDocument()
-		document.readSbml(filename)
+		document.readSBMLFromFile(filename)
 		if modelDefinition:
 			return document.model
 		else:
@@ -257,18 +257,18 @@ class Simulation(CWriterSimulation):
 
 	def runSimulation(self, progress_signal=None, steady_states=False, nb_procs=4):
 
-		start = clock()
+		start = time()
 		self.__compile__(nb_procs=nb_procs)
 
-		mid = clock()
+		mid = time()
 
-		if Settings.verbose >= 2:
+		if Settings.verbose >= 1:
 			print ">> Compilation executed in %.2fs" % (mid-start)
 
 		self.__execute__(nb_procs=nb_procs, steady_states=steady_states)
-		end = clock()
+		end = time()
 
-		if Settings.verbose >= 2:
+		if Settings.verbose >= 1:
 			print ">> Simulation executed in %.2fs" % (end-mid)
 
 

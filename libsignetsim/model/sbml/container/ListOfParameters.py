@@ -26,7 +26,7 @@
 from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.model.sbml.container.HasIds import HasIds
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
-
+from libsignetsim.model.ModelException import CannotDeleteException
 from libsignetsim.model.sbml.Parameter import Parameter
 from libsignetsim.settings.Settings import Settings
 
@@ -115,7 +115,7 @@ class ListOfParameters(ListOf, HasIds, SbmlObject):
 		""" Remove an object from the list """
 
 		if parameter.isInRules():
-			raise ModelException(ModelException.SBML_ERROR, "Parameter in used in rules")
+			raise CannotDeleteException("Parameter in used in rules")
 
 		self.__model.listOfVariables.removeVariable(parameter)
 		# self.model.listOfSbmlIds.removeSbmlId(parameter)

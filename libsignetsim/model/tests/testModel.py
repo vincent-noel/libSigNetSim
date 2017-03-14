@@ -32,7 +32,7 @@ class TestModel(unittest.TestCase):
 		modelFilename = "libsignetsim/tests/input/EGFR_IGF1R_v1.sbml"
 
 		doc = SbmlDocument()
-		doc.readSbml(modelFilename)
+		doc.readSBMLFromFile(modelFilename)
 
 		self.assertEqual(len(doc.model.listOfReactions), 22)
 		self.assertEqual(len(doc.model.listOfSpecies), 21)
@@ -42,7 +42,7 @@ class TestModel(unittest.TestCase):
 		modelFilename = "libsignetsim/tests/input/Chen_2004.sbml"
 
 		doc = SbmlDocument()
-		doc.readSbml(modelFilename)
+		doc.readSBMLFromFile(modelFilename)
 
 		self.assertEqual(len(doc.model.listOfReactions), 94)
 		self.assertEqual(len(doc.model.listOfSpecies), 54)
@@ -52,7 +52,7 @@ class TestModel(unittest.TestCase):
 		modelFilename = "libsignetsim/tests/input/Ras--MAPK_v2.sbml"
 
 		doc = SbmlDocument()
-		doc.readSbml(modelFilename)
+		doc.readSBMLFromFile(modelFilename)
 
 		self.assertEqual(len(doc.model.listOfReactions), 23)
 		self.assertEqual(len(doc.model.listOfSpecies), 40)

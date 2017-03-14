@@ -21,21 +21,44 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
+class LibSigNetSimException(Exception):
 
-
-class ModelException(Exception):
-
-	FILE_ERROR  =   0
-	SBML_ERROR  =   1
-	MATH_ERROR  =   2
-
-	def __init__(self, value, message):
-
-		self.value = value
+	def __init__(self, message):
 		self.message = message
 
-		def __str__(self):
-			return "%d : %s" % (self.value, self.message)
+	def __str__(self):
+		return self.message
+
+class CannotCreateException(LibSigNetSimException):
+
+	pass
+
+class CannotDeleteException(LibSigNetSimException):
+
+	pass
+
+class SbmlException(LibSigNetSimException):
+
+	pass
+
+class MathException(LibSigNetSimException):
+
+	pass
+
+class FileException(LibSigNetSimException):
+
+	pass
+
+#
+# class ModelException(Exception):
+#
+# 	def __init__(self, value, message):
+#
+# 		self.value = value
+# 		self.message = message
+#
+# 	def __str__(self):
+# 		return "%d : %s" % (self.value, self.message)
 
 class TagNotImplementedModelException(Exception):
 

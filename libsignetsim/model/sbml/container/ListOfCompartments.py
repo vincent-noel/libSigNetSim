@@ -27,7 +27,7 @@ from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.model.sbml.container.HasIds import HasIds
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.sbml.Compartment import Compartment
-from libsignetsim.model.ModelException import ModelException
+from libsignetsim.model.ModelException import CannotDeleteException
 from libsignetsim.settings.Settings import Settings
 
 class ListOfCompartments(ListOf, HasIds, SbmlObject):
@@ -108,7 +108,7 @@ class ListOfCompartments(ListOf, HasIds, SbmlObject):
 		t_nb_species = comp.getNbSpecies()
 		if t_nb_species > 0:
 			message = "Compartment contains %d species" % t_nb_species
-			raise ModelException(ModelException.SBML_ERROR, message)
+			raise CannotDeleteException(message)
 
 		self.__model.listOfVariables.removeVariable(comp)
 		ListOf.remove(self, comp)

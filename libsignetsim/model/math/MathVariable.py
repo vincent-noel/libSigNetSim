@@ -64,7 +64,9 @@ class MathVariable(object):
 
 	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversion_factor=None):
 
-		self.symbol.setInternalVariable(obj.symbol.getInternalMathFormula().subs(subs))
+		# Removing for now, because we had a bug of multiple substitutions. Replacing it by the exact same method as the sbml id
+		# self.symbol.setInternalVariable(obj.symbol.getInternalMathFormula().subs(subs))
+		self.symbol.setInternalVariable(SympySymbol(prefix + obj.getSbmlId()))
 
 		if obj.value is not None and obj.value.getInternalMathFormula() is not None:
 			if conversion_factor is None:

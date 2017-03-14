@@ -43,7 +43,7 @@ from libsignetsim.model.math.sympy_shortcuts import  (
 	SympyStrictGreaterThan, SympyStrictLessThan,
 	SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
 	SympyMax, SympyMin)
-
+from sympy import srepr
 class EventTrigger(MathFormula):
 	""" Events definition """
 
@@ -236,7 +236,7 @@ class EventTrigger(MathFormula):
 			elif tree.func == SympyUnequal:
 				return [3]
 			else:
-				raise ModelException(ModelException.MATH_ERROR, "Unknown logical operator")
+				raise MathException("Event Trigger : Unknown logical operator %s" % srepr(tree.func))
 
 	def getOperator(self):
 		return MathFormula.getInternalMathFormula(self).func

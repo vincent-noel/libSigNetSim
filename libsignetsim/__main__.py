@@ -22,8 +22,8 @@
 
 """
 
-from libsignetsim.simulation.SbmlTestCaseSimulation import SbmlTestCaseSimulation
-from libsignetsim.model.ModelException import ModelException
+from libsignetsim.simulation.tests.SbmlTestCaseSimulation import SbmlTestCaseSimulation
+from libsignetsim.model.ModelException import LibSigNetSimException
 from libsignetsim.simulation.SimulationException import SimulationException
 
 from libsignetsim.settings.Settings import Settings
@@ -75,7 +75,7 @@ class __main__():
 
 				simulation.runTestSuiteWraper()
 
-			except ModelException as e:
+			except LibSigNetSimException as e:
 				print "Caught %s" % str(type(e))
 				print "> %s" % e.message
 				traceback.print_exc()
@@ -96,7 +96,7 @@ class __main__():
 								test_export=True)
 				simulation.runTestSuiteWraper()
 
-			except ModelException as e:
+			except LibSigNetSimException as e:
 				print "Caught %s" % str(type(e))
 				print "> %s" % e.message
 				traceback.print_exc()

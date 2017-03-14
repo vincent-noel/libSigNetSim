@@ -40,8 +40,6 @@ from libsignetsim.model.math.sympy_shortcuts import  (
 	SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
 	SympyMax, SympyMin)
 
-from libsignetsim.model.ModelException import ModelException
-import sympy
 
 class MathSymbol(MathFormula):
 

@@ -34,5 +34,5 @@ class TestlibSigNetSim(unittest.TestCase):
 	# def testModelOpen(self):
 	#
 	# 	doc = SbmlDocument()
-	# 	doc.readSbml("libsignetsim/tests/input/Ras--MAPK_v2.sbml")
+	# 	doc.readSBMLFromFile("libsignetsim/tests/input/Ras--MAPK_v2.sbml")
 	# 	self.assertEqual(doc.getModelInstance().getName(), 'Ras--MAPK_v2')

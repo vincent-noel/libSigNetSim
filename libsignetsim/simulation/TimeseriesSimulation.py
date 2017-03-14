@@ -28,7 +28,7 @@ from libsignetsim.settings.Settings import Settings
 from matplotlib.pyplot import show
 from numpy import amin, amax
 from os.path import join, isfile
-from time import clock
+from time import time
 
 class TimeseriesSimulation(Simulation):
 
@@ -105,22 +105,22 @@ class TimeseriesSimulation(Simulation):
 
 	def run(self):
 
-		start = clock()
+		start = time()
 		self.writeSimulationFiles()
-		mid = clock()
+		# mid = time()
 
-		if Settings.verbose:
-			print "> Files written in %.2fs" % (mid-start)
+		# if Settings.verbose >= 1:
+		# 	print "> Files written in %.2fs" % (mid-start)
 		res = self.runSimulation()
 		if res == self.SIM_SUCCESS:
 			self.loadSimulationResults()
 			if not self.keepFiles:
 				self.cleanTempDirectory()
 
-		stop = clock()
-
-		if Settings.verbose:
-			print "> Simulation executed in %.2fs" % (stop-start)
+		# stop = time()
+		#
+		# if Settings.verbose:
+		# 	print "> Simulation executed in %.2fs" % (stop-start)
 
 		return res
 

@@ -29,6 +29,7 @@ from libsignetsim.cwriter.CWriterData import CWriterData
 from os.path import join, exists
 from os import mkdir
 from shutil import copytree, copyfile
+from time import time
 
 class CWriterSimulation(CWriterModels, CWriterData):
 
@@ -90,5 +91,10 @@ class CWriterSimulation(CWriterModels, CWriterData):
 
 		for modelInd, model in enumerate(self.listOfModels):
 			model.build(dont_reduce=True, tmin=self.timeMin)
+
+		start = time()
 		self.writeModelFiles()
 		self.writeDataFiles()
+
+		if Settings.verbose >= 1:
+				print "> Files written in %.2fs" % (time()-start)

@@ -26,7 +26,7 @@
 from libsignetsim.cwriter.CModelWriter import CModelWriter
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.math.sympy_shortcuts import  (
+from libsignetsim.model.math.sympy_shortcuts import (
 	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
 	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
 	SympyInf, SympyNan, SympyAdd, SympyMul, SympyPow,
@@ -42,6 +42,7 @@ from libsignetsim.model.math.sympy_shortcuts import  (
 	SympyMax, SympyMin)
 
 
+from libsignetsim.model.ModelException import MathException
 from libsignetsim.model.math.MathVariable import MathVariable
 from libsignetsim.model.math.MathConservationLaws import MathConservationLaws
 from libsignetsim.model.math.MathJacobianMatrix import MathJacobianMatrix
@@ -51,7 +52,7 @@ from libsignetsim.model.Variable import Variable
 from sympy import simplify, diff, solve, zeros, solveset, linsolve, srepr
 from time import time
 
-from libsignetsim.model.ModelException import ModelException
+# from libsignetsim.model.ModelException import ModelException
 from libsignetsim.model.math.container.ListOfODEs import ListOfODEs
 from libsignetsim.model.math.container.ListOfCFEs import ListOfCFEs
 from libsignetsim.model.math.container.ListOfDAEs import ListOfDAEs
@@ -113,18 +114,24 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 
 	def buildModel(self, vars_to_keep=[], dont_reduce=False, tmin=0):
 
+		# print "Building CFEs"
 		self.listOfCFEs.build()
+		# print "Building ODEs"
 		self.listOfODEs.build()
+		# print "Building DAEss"
 		self.listOfDAEs.build()
 
-		self.solveInitialConditions(tmin)
+		# self.solveInitialConditions(tmin)
+		self.solveSimpleInitialConditions_v2(tmin)
 
 		if len(self.listOfDAEs) > 0:
-			self.listOfDAEs.solveInitialConditions(tmin)
+			self.listOfDAEs.solveInitialConditions_v2(tmin)
 
 		if self.listOfReactions.hasFastReaction():
 			self.slowModel = MathSlowModel(self)
 			self.slowModel.build()
+
+		# print len(self.getMathModel().listOfCFEs)
 
 		# print self.listOfVariables.keys()
 		# print [var.value.getInternalMathFormula() for var in self.listOfVariables.values()]
@@ -172,17 +179,6 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 #        self.buildJacobianMatrix()
 		# self.printSystem()
 
-		# compRateRuled = False
-		#
-		# for species in self.listOfSpecies.values():
-		# 	if species.isRateRuled() and species.getCompartment().isRateRuled():
-		# 		compRateRuled = True
-
-		# for comp in self.listOfCompartments.values():
-		# 	if comp.isRateRuled():
-
-		# if compRateRuled:
-		# 	raise ModelException(ModelException.SBML_ERROR, "Comp is rate ruled !")
 
 
 
@@ -198,6 +194,232 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 		print "-----------------------------"
 
 
+	def solveSimpleInitialConditions_v2(self, tmin):
+		""" Initial conditions are a mess between values, initial assignments,
+			and assignment rules. We actually need to solve them to make sure
+			all dependencies are respected
+
+			Unfortunately, this can be quite costly for large system
+			So we'll try to just solve the minimum for C simulations
+
+			"""
+
+		DEBUG = False
+		t0 = time()
+
+		init_cond = {}
+		if tmin == 0:
+			init_cond = {SympySymbol("_time_"): SympyInteger(tmin)}
+		else:
+			init_cond = {SympySymbol("_time_"): SympyFloat(tmin)}
+
+		for init_ass in self.listOfInitialAssignments.values():
+			t_var = init_ass.getVariable().symbol.getInternalMathFormula()
+			t_value = init_ass.getDefinition().getDeveloppedInternalMathFormula()
+			init_cond.update({t_var:t_value})
+
+		if DEBUG:
+			print init_cond
+
+		for rule in self.listOfRules.values():
+			if rule.isAssignment():
+				t_var = rule.getVariable().symbol.getInternalMathFormula()
+
+				if t_var not in init_cond.keys():
+					t_value = rule.getDefinition().getDeveloppedInternalMathFormula()
+					init_cond.update({t_var:t_value})
+
+		if DEBUG:
+			print init_cond
+
+		for var in self.listOfVariables.values():
+			t_var = var.symbol.getInternalMathFormula()
+
+			if t_var not in init_cond.keys():
+				t_value = var.value.getDeveloppedInternalMathFormula()
+				if t_value is not None:
+					init_cond.update({t_var:t_value})
+
+		if DEBUG:
+			print init_cond
+
+
+		crossDependencies = True
+		passes = 1
+		while crossDependencies:
+			if DEBUG:
+				print "PASS : %d" % passes
+			crossDependencies = False
+			for t_var in init_cond.keys():
+				t_def = init_cond[t_var]
+				if len(t_def.atoms(SympySymbol).intersection(set(init_cond.keys()))) > 0:
+					crossDependencies = True
+					if DEBUG:
+						print "\n> " + str(t_var) + " : " + str(t_def)
+						# raise MathException("Dependencies")
+					for match in t_def.atoms(SympySymbol).intersection(set(init_cond.keys())):
+						if match == t_var:
+							raise MathException("Initial values : self dependency is bad")
+						if DEBUG:
+							print ">> " + str(match) + " : " + str(init_cond[match])
+						t_def = t_def.subs({match:init_cond[match]})
+						init_cond.update({t_var:t_def})
+						# t_cfe.setDefinitionMath(t_cfe.getDefinition().getInternalMathFormula().subs(self.getBySymbol(match).getSubs()))
+						# t_subs = {tt_cfe.getVariable().symbol.getInternalMathFormula():tt_cfe.getV
+					if DEBUG:
+						if len(t_def.atoms(SympySymbol).intersection(set(init_cond.keys()))) == 0:
+							print "> " + str(t_var) + " : " + str(t_def) + " [OK]"
+						else:
+							print "> " + str(t_var) + " : " + str(t_def) + " [ERR]"
+			passes += 1
+			if passes >= 100:
+				raise MathException("Initial values : Probable circular dependencies")
+
+			if DEBUG:
+				print ""
+
+		if DEBUG:
+			print init_cond.keys()
+			print self.listOfVariables.symbols()
+			print self.listOfVariables.keys()
+
+
+		self.solvedInitialConditions = {}
+		for var, value in init_cond.items():
+			t_var = self.listOfVariables.getBySymbol(var)
+			if t_var is not None:
+				t_value = MathFormula(self)
+				t_value.setInternalMathFormula(value)
+				self.solvedInitialConditions.update({t_var:t_value})
+
+		for var in self.listOfVariables.values():
+			if not var in self.solvedInitialConditions.keys() and not var.isAlgebraic():
+				# raise MathException("Lacks an initial condition : %s" % var.getSbmlId())
+				print "Lacks an initial condition : %s" % var.getSbmlId()
+
+
+
+		if Settings.verbose >= 1:
+			print "> Finished calculating initial conditions (%.2gs)" % (time()-t0)
+
+
+
+	def solveSimpleInitialConditions(self, tmin):
+		""" Initial conditions are a mess between values, initial assignments,
+			and assignment rules. We actually need to solve them to make sure
+			all dependencies are respected
+
+			Unfortunately, this can be quite costly for large system
+			So we'll try to just solve the minimum for C simulations
+
+			"""
+
+		DEBUG_LOG = False
+		t0 = time()
+
+		subs_t0 = {}
+		if tmin == 0:
+			subs_t0 = {SympySymbol("_time_"): SympyInteger(tmin)}
+		else:
+			subs_t0 = {SympySymbol("_time_"): SympyFloat(tmin)}
+
+
+		# Here we build a subs dictionnary for the special case which are the constant compartments
+		compartments = {}
+		for compartment in self.listOfCompartments.values():
+			t_symbol = compartment.symbol.getInternalMathFormula()
+			if compartment.hasInitialAssignment():
+				t_initass = compartment.hasInitialAssignmentBy()
+				compartments.update({t_symbol:t_initass.getDefinition().getInternalMathFormula()})
+
+			elif compartment.isAssignment():
+				t_cfe = self.listOfCFEs.getByVariable(compartment)
+				compartments.update({t_symbol:t_cfe.getDefinition().getInternalMathFormula()})
+
+			elif compartment.isConstant() and compartment.value.getInternalMathFormula() is not None:
+				compartments.update({t_symbol:compartment.value.getInternalMathFormula().subs(subs_t0)})
+
+
+		constants = {}
+		for var in self.listOfVariables.values():
+			if (var.isConstant() or var.isDerivative()) and not var.hasInitialAssignment():
+				if var.isSpecies() and var.isConcentration():
+					constants.update({var.symbol.getInternalMathFormula(): var.value.getDeveloppedInternalMathFormula().subs(subs_t0).subs(compartments)})
+				else:
+					constants.update({var.symbol.getInternalMathFormula(): var.value.getDeveloppedInternalMathFormula().subs(subs_t0)})
+
+		if DEBUG_LOG:
+			print constants
+
+
+		initially_assigned = {}
+		for var in self.listOfVariables.values():
+			t_value = None
+			if (not var.isReaction() and var.hasInitialAssignment()):
+				t_value = var.hasInitialAssignmentBy().getDefinition().getDeveloppedInternalMathFormula()
+				initially_assigned.update({var.symbol.getInternalMathFormula(): t_value.subs(subs_t0).subs(compartments).subs(constants)})
+
+			elif (not var.isReaction() and var.isAssignment()):
+				t_value = self.listOfCFEs.getByVariable(var).getDefinition().getDeveloppedInternalMathFormula()
+				initially_assigned.update({var.symbol.getInternalMathFormula(): t_value.subs(subs_t0).subs(compartments).subs(constants)})
+		if DEBUG_LOG:
+			print initially_assigned
+
+		self.solvedInitialConditions = {}
+
+		for var in self.listOfVariables.values():
+			t_symbol = var.symbol.getInternalMathFormula()
+
+			if t_symbol in constants.keys():
+				t_formula = MathFormula(self)
+				t_formula.setInternalMathFormula(constants[t_symbol].subs(constants))
+				self.solvedInitialConditions.update({var:t_formula})
+
+			elif t_symbol in initially_assigned.keys():
+				t_formula = MathFormula(self)
+				t_formula.setInternalMathFormula(initially_assigned[t_symbol].subs(constants).subs(initially_assigned))
+				self.solvedInitialConditions.update({var:t_formula})
+
+			else:
+				t_formula = MathFormula(self)
+				t_formula.setInternalMathFormula(SympyInteger(0))
+				self.solvedInitialConditions.update({var:t_formula})
+
+
+		if DEBUG_LOG:
+			for key, value in self.solvedInitialConditions.items():
+				print "%s : %s" % (
+					key.getSbmlId(),
+					str(value.getInternalMathFormula())
+				)
+
+		system = []
+		system_vars = []
+
+		for key, value in self.solvedInitialConditions.items():
+			if len(value.getInternalMathFormula().atoms(SympySymbol)) > 0:
+				system_vars.append(key.symbol.getInternalMathFormula())
+
+			if key.symbol.getInternalMathFormula() == SympySymbol("MPF") or key.symbol.getInternalMathFormula() == SympySymbol("SPF"):
+				system.append(SympyEqual(key.symbol.getInternalMathFormula(), value.getInternalMathFormula().doit()))
+
+		if DEBUG_LOG:
+			print "> System to solve :"
+			for equ in system:
+				print ">> %s == %s" % (srepr(equ.args[0]), srepr(equ.args[1]))
+			print ">> %s" % system_vars
+			start_solve = time()
+
+		res = solve(system, system_vars)
+
+		if DEBUG_LOG:
+			print "> Pure solving : %.2gs" % (time()-start_solve)
+			print "-"*25
+			print ">> %s" % res
+		if Settings.verbose >= 1:
+			print "> Finished calculating initial conditions (%.2gs)" % (time()-t0)
+
+
 	def solveInitialConditions(self, tmin):
 		""" Initial conditions are a mess between values, initial assignments,
 			and assignment rules. We actually need to solve them to make sure
@@ -208,6 +430,8 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 			variables whose initial value depends on other variables
 
 			"""
+
+		DEBUG_LOG = False
 
 		t0 = time()
 		self.solvedInitialConditions = {}
@@ -229,11 +453,23 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 			subs = {SympySymbol("_time_"): SympyFloat(tmin)}
 
 
+		# Here we build a subs dictionnary for the special case which are the constant compartments
+		subs_comp = {}
+		for compartment in self.listOfCompartments.values():
+			if compartment.isConstant():
+				subs_comp.update({compartment.symbol.getInternalMathFormula():compartment.value.getInternalMathFormula()})
+
+
 		#First of all, let's look at the constant cases :
 		for t_var in self.listOfVariables.values():
-			if not (t_var.isReaction() or t_var.isRuled() or t_var.hasInitialAssignment() or t_var.isAlgebraic()):
+			if not (t_var.isReaction() or t_var.isAssignmentRuled() or t_var.hasInitialAssignment() or t_var.isAlgebraic()):
+			# Here we can be more restrictive, since only assigments rules matter for IC. Rate rules shouldn't
+			# if not (t_var.isReaction() or t_var.isRuled() or t_var.hasInitialAssignment() or t_var.isAlgebraic()):
 				if t_var.value.getInternalMathFormula() is not None:
 					t_def = t_var.value.getDeveloppedInternalMathFormula().subs(subs)
+
+					if t_var.isConcentration():
+						t_def = t_def.subs(subs_comp)
 
 					if len(t_def.atoms(SympySymbol)) == 0:
 						variables.remove(t_var)
@@ -242,9 +478,14 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 						self.solvedInitialConditions.update({t_var: t_formula})
 						# subs.update({t_var.symbol.getInternalMathFormula():t_def})
 
-		nb_simples = len(self.listOfVariables.keys())-len(variables)
-		# print "\n> %d variables out of %d were simple cases" % (nb_simples, len(self.listOfVariables))
 
+					# else:
+					# 	print "There is something wrong with %s (value is %s, pre subs is %s)" % (t_var.symbol.getInternalMathFormula(), t_def, t_var.value.getDeveloppedInternalMathFormula())
+
+		nb_simples = len(self.listOfVariables.keys())-len(variables)
+		# if DEBUG_LOG:
+		# 	print "\n> %d variables out of %d were simple cases" % (nb_simples, len(self.listOfVariables))
+		# 	print [var.symbol.getInternalMathFormula() for var in list(set(self.listOfVariables.values()).difference(set(variables)))]
 
 
 
@@ -259,7 +500,8 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 						t_def.doit()
 					)
 					if len(t_def.atoms(SympySymbol)) > 0:
-						# print "Adding %s (From CFE)" % t_equ
+						# if DEBUG_LOG:
+						# 	print "Adding %s (From unsolvable CFE : %s)" % (t_equ, t_def)
 						system.append(t_equ)
 						system_vars.append(t_cfe.getVariable().symbol.getInternalMathFormula())
 					else:
@@ -271,13 +513,15 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 
 
 		nb_found_bycfe = len(self.listOfVariables)-len(variables)-nb_simples
-		# print "\n> %d initial values found after reading CFEs (%d left)" % (nb_found_bycfe, len(self.listOfVariables) - len(self.solvedInitialConditions))
-		# print [var.getSbmlId() for var in self.solvedInitialConditions.keys()]
-		# print "\n>> System vars : "
-		# print system_vars
 
-		# print "\n> Subs pre initial assignments"
-		# print subs
+		# if DEBUG_LOG:
+		# 	print "\n> %d initial values found after reading CFEs (%d left)" % (nb_found_bycfe, len(self.listOfVariables) - len(self.solvedInitialConditions))
+		# 	print [var.getSbmlId() for var in self.solvedInitialConditions.keys()]
+		# 	print "\n>> System vars : "
+		# 	print system_vars
+		#
+		# 	print "\n> Subs pre initial assignments"
+		# 	print subs
 
 		for t_init in self.listOfInitialAssignments.values():
 			if t_init.getVariable() in variables:
@@ -306,8 +550,23 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 					self.solvedInitialConditions.update({t_init.getVariable(): t_formula})
 					# subs.update({t_init.getVariable().symbol.getInternalMathFormula():t_def})
 
-		# print "\n> Solved initial conditions after reading initial assignments"
-		# print [var.getSbmlId() for var in self.solvedInitialConditions.keys()]
+		# if DEBUG_LOG:
+		# 	print "\n> Solved initial conditions after reading initial assignments"
+		# 	print [var.getSbmlId() for var in self.solvedInitialConditions.keys()]
+
+
+		for t_var in self.listOfVariables.values():
+			if t_var.isReaction():
+				t_formula = MathFormula(self)
+				t_formula.setInternalMathFormula(SympyInteger(0))
+				self.solvedInitialConditions.update({t_var: t_formula})
+
+
+		for var in self.listOfVariables.values():
+			if var not in self.solvedInitialConditions.keys():
+
+				print var.symbol.getInternalMathFormula()
+				print type(var)
 
 
 		for t_var in self.listOfVariables.values():
@@ -337,8 +596,9 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 					# 	self.solvedInitialConditions.update({t_var: t_formula})
 
 
-		# print "\n> Solved initial conditions after constructing the system"
-		# print [var.getSbmlId() for var in self.solvedInitialConditions.keys()]
+		if DEBUG_LOG:
+			print "\n> Solved initial conditions after constructing the system"
+			print [var.getSbmlId() for var in self.solvedInitialConditions.keys()]
 		subs = {}
 		# if tmin == 0:
 		# 	subs = {SympySymbol("_time_"): SympyInteger(tmin)}
@@ -351,7 +611,6 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 				subs.update({var.symbol.getInternalMathFormula(): value.getInternalMathFormula()})
 
 
-		# print "\npoil before sub"
 		t_system = []
 		for equ in system:
 			if len(equ.atoms(SympySymbol)) > 0:
@@ -435,7 +694,7 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 		# retursn
 		# print "possible subs"
 		# print subs
-		if Settings.verbose >= 2:
+		if DEBUG_LOG:
 			print "> Precomputed initial values"
 			print [var.getSbmlId() for var in self.solvedInitialConditions.keys()]
 			print [var.getSbmlId() for var in self.listOfVariables.values()]
@@ -448,9 +707,12 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 			print ">> %s" % system
 			print ">> %s" % system_vars
 		# return
-		res = solve(system, system_vars)
 
-		if Settings.verbose >= 2:
+		start_solve = time()
+		res = solve(system, system_vars)
+		if Settings.verbose >= 1:
+			print "> Pure solving : %.2gs" % (time()-start_solve)
+		if DEBUG_LOG:
 			print "-"*25
 			print ">> %s" % res
 
@@ -535,7 +797,7 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 
 
 
-		if Settings.verbose >= 2:
+		if Settings.verbose >= 1:
 			print "> Finished calculating initial conditions (%.2gs)" % (time()-t0)
 
 
