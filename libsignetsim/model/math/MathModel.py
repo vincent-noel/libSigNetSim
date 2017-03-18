@@ -22,7 +22,7 @@
 
 """
 
-
+from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 from libsignetsim.cwriter.CModelWriter import CModelWriter
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.MathFormula import MathFormula
@@ -205,6 +205,7 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 			"""
 
 		DEBUG = False
+
 		t0 = time()
 
 		init_cond = {}
@@ -239,6 +240,8 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 				t_value = var.value.getDeveloppedInternalMathFormula()
 				if t_value is not None:
 					init_cond.update({t_var:t_value})
+				elif not var.isAlgebraic():
+					init_cond.update({t_var:SympyFloat(0.0)})
 
 		if DEBUG:
 			print init_cond
@@ -262,7 +265,9 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 							raise MathException("Initial values : self dependency is bad")
 						if DEBUG:
 							print ">> " + str(match) + " : " + str(init_cond[match])
-						t_def = t_def.subs({match:init_cond[match]})
+
+						# t_formula = selfMathFormula()
+						t_def = unevaluatedSubs(t_def, {match:init_cond[match]})
 						init_cond.update({t_var:t_def})
 						# t_cfe.setDefinitionMath(t_cfe.getDefinition().getInternalMathFormula().subs(self.getBySymbol(match).getSubs()))
 						# t_subs = {tt_cfe.getVariable().symbol.getInternalMathFormula():tt_cfe.getV
@@ -283,20 +288,32 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 			print self.listOfVariables.symbols()
 			print self.listOfVariables.keys()
 
+		# Trying to put zero as default for variables without values (aka biomodels 113)
+		# But we should also replace that value in the initial conds, so prbalbly we should set it to zero
+		# at the very beginning.
+		# TODO this week end !
+		# for var in self.listOfVariables.values():
+		# 	if not var.symbol.getInternalMathFormula() in init_cond.keys() and not var.isAlgebraic():
+		# 		# raise MathException("Lacks an initial condition : %s" % var.getSbmlId())
+		# 		print "Lacks an initial condition : %s. Set it to zero" % var.getSbmlId()
+		# 		init_cond.update({var.symbol.getInternalMathFormula():SympyFloat(0.0)})
 
 		self.solvedInitialConditions = {}
 		for var, value in init_cond.items():
 			t_var = self.listOfVariables.getBySymbol(var)
 			if t_var is not None:
 				t_value = MathFormula(self)
-				t_value.setInternalMathFormula(value)
+				t_value.setInternalMathFormula(value.doit())
 				self.solvedInitialConditions.update({t_var:t_value})
+
 
 		for var in self.listOfVariables.values():
 			if not var in self.solvedInitialConditions.keys() and not var.isAlgebraic():
 				# raise MathException("Lacks an initial condition : %s" % var.getSbmlId())
 				print "Lacks an initial condition : %s" % var.getSbmlId()
-
+				# t_formula = MathFormula(self)
+				# t_formula.setInternalMathFormula(SympyFloat(0.0))
+				# self.solvedInitialConditions.update({var:t_formula})
 
 
 		if Settings.verbose >= 1:

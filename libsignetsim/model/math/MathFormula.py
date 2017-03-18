@@ -47,6 +47,7 @@ from libsignetsim.model.ModelException import SbmlException
 from libsbml import parseL3Formula
 from sympy import simplify
 
+from MathDevelopper import unevaluatedSubs
 
 class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 	""" Class for handling math formulaes """
@@ -168,14 +169,10 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 			return self.translateForFinalInternal(MathFormula.getMathFormula(self, self.MATH_DEVINTERNAL), forcedConcentration)
 
 		elif math_type == self.MATH_C:
-			# t_formula = simplify(MathFormula.getMathFormula(self, self.MATH_DEVINTERNAL))
 			if MathFormula.getInternalMathFormula(self) is None:
 				return "RCONST(0.0)"
 			else:
 				t_formula = MathFormula.getMathFormula(self, self.MATH_DEVINTERNAL)
-				# print "Math formula"
-				# print t_formula
-				# print self.writeCCode(t_formula)
 				return self.writeCCode(t_formula)
 
 		else:
@@ -229,8 +226,7 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 	def getMathFormulaDerivative(self, variable, mathType):
 		if (mathType == self.MATH_DEVINTERNAL or mathType == self.MATH_INTERNAL):
 			return self.generateDeveloppedInternalDerivative(self.getDeveloppedInternalMathFormula(), variable)
-		# elif math_type == self.MATH_FINALINTERNAL:
-		#     return self.
+
 		elif mathType == self.MATH_C:
 			t_derivative = self.generateDeveloppedInternalDerivative(self.getDeveloppedInternalMathFormula(), variable)
 			return self.writeCCode(t_derivative)
@@ -243,6 +239,11 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 
 	def subs(self, substitutions):
 		self.internalTree = self.internalTree.subs(substitutions)
+
+	def simpleSubsDevelopped(self, substitutions):
+		# print ">> simple subs : " + str(self.getDeveloppedInternalMathFormula())
+		return unevaluatedSubs(self.getDeveloppedInternalMathFormula(), substitutions)
+
 
 	def isOne(self):
 

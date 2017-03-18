@@ -28,6 +28,8 @@ from libsignetsim.simulation.tests.SbmlTestCaseSimulation import SbmlTestCaseSim
 from libsignetsim.model.SbmlDocument import SbmlDocument
 from libsignetsim.settings.Settings import Settings
 from multiprocessing import cpu_count
+
+
 class TestSbmlCompatibility(unittest.TestCase):
 	""" Tests SBML semantic test cases """
 
@@ -55,6 +57,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 		self.keepFiles = True
 		self.testExport = True
 		Settings.verbose = 0
+
 
 	def testSbmlCompatibility(self):
 

@@ -39,13 +39,57 @@ from libsignetsim.model.math.sympy_shortcuts import  (
 	SympyMax, SympyMin, SympyExprCondPair, SympyFactorial, SympyITE)
 from re import match
 from sympy import srepr
+
+
+def unevaluatedSubs(expr, substitutions, *args, **kwargs):
+	"""Crawl the expression tree, and apply func to every node."""
+	val = simpleSubs(expr, substitutions, *args, **kwargs)
+	if val is not None:
+		return val
+	new_args = (unevaluatedSubs(arg, substitutions, *args, **kwargs) for arg in expr.args)
+
+	res = None
+
+	if expr.func in [SympyExprCondPair, SympyITE]:
+		return expr.func(*new_args)
+	else:
+		return expr.func(*new_args, evaluate=False)
+
+	# try:
+	# 	res = expr.func(*new_args, evaluate=False)
+	#
+	# except:
+	# 	print str(expr)
+	# return res
+
+
+def printer(expr, *args, **kwargs):
+	"""Print out every node"""
+	print(expr)
+	if not expr.args:
+		return expr
+
+
+def simpleSubs(expr, substitutions, *args, **kwargs):
+	"""Perform expression substitution, ignoring derivatives."""
+	if expr in substitutions:
+		return substitutions[expr]
+	elif not expr.args:# or expr.is_Derivative:
+		return expr
+
+
 class MathDevelopper(object):
 	""" Class for handling math formulaes """
+
+
+
+	# unevaluatedSubs = lambda expr, substitutions: crawl(expr, simpleSubs, substitutions)
 
 	def __init__(self, model):
 		""" Constructor """
 
 		self.__model = model
+		# self.custom_subs = lambda expr, substitutions: self.simpleWalk(expr, self.printer, substitutions)
 
 
 	def translateVariableForDeveloppedInternal(self, variable):
@@ -129,7 +173,23 @@ class MathDevelopper(object):
 		return tree
 
 
+
+
+	def simpleWalk(self, expr, func, *args, **kwargs):
+
+		"""Crawl the expression tree, and apply func to every node."""
+		val = func(expr, *args, **kwargs)
+
+		print val
+
+		if val is not None:
+			return val
+		new_args = (self.simpleWalk(arg, func, *args, **kwargs) for arg in expr.args)
+		return expr.func(*new_args)
+
+
 	def translateForFinalInternal(self, formula, forcedConcentration=False):
+
 		if self.__model.isUpToDate():
 			return formula.subs(self.__model.listOfVariables.getInternalToFinal(forcedConcentration))
 

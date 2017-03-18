@@ -140,16 +140,12 @@ class CModelWriter(object):
 				f_c.write("  %s.alg_der_variables[%d] = (ModelVariable) {RCONST(0.0), \"%s\", VAR_ALG_DER};\n" % (
 								variable_name, i_var, variable_alg.symbol.getPrettyPrintMathFormula()))
 
-
-
-
-
 		f_c.write("  %s.nb_init_assignments = 0;\n" % (variable_name))
 
 		f_c.write("  %s.nb_events = %d;\n" % (variable_name, len(self.listOfEvents.keys())))
 		f_c.write("  %s.nb_roots = %d;\n" % (variable_name, self.listOfEvents.nbRoots()))
 		if self.listOfEvents.nbRoots() > 0:
-			f_c.write("  %s.roots_operators = calloc(%d, sizeof(int));\n" % (variable_name, self.listOfEvents.nbRoots()))
+			f_c.write("  %s.roots_operators = calloc(%d, sizeof(int));\n" % (variable_name, len(self.listOfEvents.getRootsOperators())))
 			for i, roots_operators in enumerate(self.listOfEvents.getRootsOperators()):
 				f_c.write("  %s.roots_operators[%d] = %d;\n" % (variable_name, i, roots_operators))
 
@@ -157,7 +153,6 @@ class CModelWriter(object):
 			f_c.write("  %s.events_init = calloc(%s.nb_events, sizeof(int));\n" % (variable_name, variable_name))
 			for i, event in enumerate(self.listOfEvents.values()):
 				f_c.write("  %s.events_init[%d] = %d;\n" % (variable_name, i, event.trigger.initialValue))
-
 
 			f_c.write("  %s.memory_size_per_event = calloc(%s.nb_events, sizeof(int));\n" % (variable_name, variable_name))
 			for event in self.listOfEvents.values():

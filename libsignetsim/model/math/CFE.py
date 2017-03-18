@@ -24,7 +24,7 @@
 
 
 from libsignetsim.model.math.MathFormula import MathFormula
-
+from sympy import simplify, srepr
 
 class CFE(object):
 	""" CFE class """
@@ -44,7 +44,11 @@ class CFE(object):
 	def new(self, variable, definition):
 
 		self.__variable = variable
+
+		# print "Simplifying %s..." % str(definition.getDeveloppedInternalMathFormula())
+		# self.__definition = simplify(definition.getInternalMathFormula())
 		self.__definition = definition
+
 
 	def getVariable(self):
 		return self.__variable
@@ -65,7 +69,11 @@ class CFE(object):
 		self.__definition.setInternalMathFormula(math)
 
 	def getSubs(self):
-		return {self.__variable.symbol.getInternalMathFormula():self.__definition.getInternalMathFormula()}
+		# print ">>>before simplify : %s" % self.__definition.getInternalMathFormula()
+		# print "\n\n>>>after simplify : %s" % simplify(self.__definition.getInternalMathFormula())
+		#
+		# return {self.__variable.symbol.getInternalMathFormula():simplify(self.__definition.getInternalMathFormula())}
+		return {self.__variable.symbol.getInternalMathFormula():self.__definition.getDeveloppedInternalMathFormula()}
 	def __str__(self):
 		return "%s = %s" % (str(self.getVariable().symbol.getDeveloppedInternalMathFormula()),
 							str(self.getDefinition().getDeveloppedInternalMathFormula()))

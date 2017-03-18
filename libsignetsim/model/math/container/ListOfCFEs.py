@@ -27,7 +27,7 @@ from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.sympy_shortcuts import SympyPiecewise, SympyITE, SympyInf, SympyNan, SympyEqual, SympySymbol, SympyPow
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.ModelException import MathException
-from sympy import solve, sympify, srepr
+from sympy import solve, sympify, srepr, simplify
 from time import time
 
 class ListOfCFEs(list):
@@ -68,6 +68,9 @@ class ListOfCFEs(list):
 	def developCFEs(self):
 
 		DEBUG = False
+
+		if DEBUG:
+			self.prettyPrint()
 		t0 = time()
 		self.developpedCFEs = []
 		continueDevelop = True
@@ -87,6 +90,7 @@ class ListOfCFEs(list):
 				for t_cfe in self:
 					t_def = t_cfe.getDefinition().getInternalMathFormula()
 					if len(t_def.atoms(SympySymbol).intersection(set(cfe_vars))) > 0:
+						# t_cfe.setDefinition(simplify(t_cfe.getDefinition().getInternalMathFormula()))
 						crossDependencies = True
 						if DEBUG:
 							print "\n> " + str(t_cfe)
@@ -95,7 +99,9 @@ class ListOfCFEs(list):
 								raise MathException("Developping CFEs : self dependency is bad")
 							if DEBUG:
 								print ">> " + str(self.getBySymbol(match))
-							t_cfe.setDefinitionMath(t_cfe.getDefinition().getInternalMathFormula().subs(self.getBySymbol(match).getSubs()))
+								# print ">>> " + srepr(self.getBySymbol(match).getSubs())
+							# t_cfe.setDefinitionMath(t_cfe.getDefinition().getInternalMathFormula().subs(self.getBySymbol(match).getSubs()))
+							t_cfe.setDefinitionMath(t_cfe.getDefinition().simpleSubsDevelopped(self.getBySymbol(match).getSubs()))
 							# t_subs = {tt_cfe.getVariable().symbol.getInternalMathFormula():tt_cfe.getV
 						if DEBUG:
 							if len(t_cfe.getDefinition().getInternalMathFormula().atoms(SympySymbol).intersection(set(cfe_vars))) == 0:
