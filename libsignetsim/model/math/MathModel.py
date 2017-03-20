@@ -316,8 +316,8 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 				# self.solvedInitialConditions.update({var:t_formula})
 
 
-		if Settings.verbose >= 1:
-			print "> Finished calculating initial conditions (%.2gs)" % (time()-t0)
+		# if Settings.verbose >= 1:
+		# 	print "> Finished calculating initial conditions (%.2gs)" % (time()-t0)
 
 
 

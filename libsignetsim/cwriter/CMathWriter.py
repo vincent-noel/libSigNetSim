@@ -23,7 +23,7 @@
 """
 
 from sympy import simplify, srepr
-from libsignetsim.model.math.sympy_shortcuts import  (
+from libsignetsim.model.math.sympy_shortcuts import (
 	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
 	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
 	SympyInf, SympyNan, SympyAdd, SympyMul, SympyPow,
@@ -133,7 +133,6 @@ class CMathWriter(object):
 			# print "No clue what this variable is : %s" % t_var.getSbmlId()
 			c_var = "err"
 
-
 		# print "Variable %s : %s,%s" % (t_var.getSbmlId(), c_var, t_pos)
 		return "Ith(%s,%s)" % (c_var, t_pos)
 
@@ -145,6 +144,7 @@ class CMathWriter(object):
 			return "RCONST(%d.0)" % tree
 
 		elif isinstance(tree, float):
+			# print srepr(tree)
 			t_string = "%.15g" % tree
 			if "." not in t_string and "e" not in t_string:
 				t_string += ".0"
@@ -164,6 +164,8 @@ class CMathWriter(object):
 			return "RCONST(%d.0)" % int(tree)
 
 		elif tree.func == SympyFloat:
+			# print srepr(tree)
+
 			t_string = "%.15g" % float(tree)
 			if "." not in t_string and "e" not in t_string:
 				t_string += ".0"

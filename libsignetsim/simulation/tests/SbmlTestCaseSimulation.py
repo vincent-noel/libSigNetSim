@@ -56,8 +56,8 @@ class SbmlTestCaseSimulation(TimeseriesSimulation):
 										time_min=self.timeMin,
 										time_max=self.timeMax,
 										time_ech=self.timeEch,
-										abs_tol=min(self.testAbsTol/1000, 1e-8),
-										rel_tol=min(self.testRelTol/1000, 1e-6),
+										abs_tol=1e-12,#min(self.testAbsTol/1000, 1e-8),
+										rel_tol=1e-6,#min(self.testRelTol/1000, 1e-6),
 										keep_files=keep_files)
 
 

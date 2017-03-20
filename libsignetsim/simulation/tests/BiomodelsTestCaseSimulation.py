@@ -33,7 +33,7 @@ import numpy
 
 class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 
-	CASES_PATH = "/home/labestiol/Work/code/libSigNetSim/libsignetsim/simulation/tests/biomodels"
+	CASES_PATH = "/home/labestiol/Work/code/libSigNetSim/libsignetsim/simulation/tests/biomodels_copasi"
 
 	def __init__ (self, model_id, test_export=False, keep_files=True):
 
@@ -60,8 +60,8 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 										time_min=self.timeMin,
 										time_max=self.timeMax,
 										time_ech=self.timeEch,
-										abs_tol=1e-10,
-										rel_tol=1e-8,
+										abs_tol=1e-12,
+										rel_tol=1e-6,
 										keep_files=keep_files)
 
 	#
@@ -121,6 +121,8 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 
 		data = numpy.genfromtxt(self.getResultsFilename(), skip_header=1)
 
+		# print self.sbmlIdToPlotAmount
+		# print self.sbmlIdToPlotConcentrations
 		self.expectedData = (data[:,0], data[:,1:data.shape[0]-1])
 
 	def getModelFilename(self):
@@ -138,6 +140,7 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 
 	def checkResults(self):
 
+		DEBUG = True
 		# expected_results = open(self.getResultsFilename())
 		# result = True
 		#
@@ -211,6 +214,7 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 							# print len(trajs[t_var.getSbmlId()])
 							# print len(timepoints)
 
+							# print t_var.symbol.getPrettyPrintMathFormula()
 							t_value = trajs[t_var.symbol.getPrettyPrintMathFormula()][t]
 
 	#
@@ -231,9 +235,12 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 	# #            |C_ij - U_ij| <= (T_a + T_r * |C_ij|)
 	#
 						if abs(t_value-t_expected_value) > (self.testAbsTol + self.testRelTol*abs(t_expected_value)):
+							# if DEBUG:
+							# 	print "%s : %.10g, %.10g (%.0f%%, %.2g)" % (var, t_value, t_expected_value, abs(t_value-t_expected_value)/t_expected_value*100, t)
+							# 	print trajs['kf_0']
+							# 	print etrajs[:,i_var]
 							return -2
 							# showAlert = True
-							# print "%.10g, %.10g (%.0f%%, %.2g)" % (t_value, t_expected_value, abs(t_value-t_expected_value)/t_expected_value*100, t)
 
 	# 				elif var == 'time':
 	# 					if abs(traj_times[i_timepoint] - t_expected_value) > (self.testAbsTol + self.testRelTol*abs(t_expected_value)):

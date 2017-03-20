@@ -234,8 +234,8 @@ class ListOfCFEs(list):
 			# else:
 			# 	self.developpedCFEs = self
 		t1 = time()
-		if Settings.verbose >= 1:
-			print "> Finished developping closed forms (%.2gs)" % (t1-t0)
+		# if Settings.verbose >= 1:
+		# 	print "> Finished developping closed forms (%.2gs)" % (t1-t0)
 
 	def prettyPrint(self):
 

@@ -52,7 +52,7 @@ class Model(SbmlModel, MathModel):
 		MathModel.buildModel(self, vars_to_keep=vars_to_keep, dont_reduce=dont_reduce, tmin=tmin)
 
 		if Settings.verbose >= 1:
-			print "> Model built in %.2gs" % (time()-t0)
+			print ">> Model built in %.2gs" % (time()-t0)
 
 	def cleanBeforePickle(self):
 		self.listOfVariables.cleanFinal()

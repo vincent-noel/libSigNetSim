@@ -97,4 +97,4 @@ class CWriterSimulation(CWriterModels, CWriterData):
 		self.writeDataFiles()
 
 		if Settings.verbose >= 1:
-				print "> Files written in %.2fs" % (time()-start)
+				print ">> Files written in %.2fs" % (time()-start)

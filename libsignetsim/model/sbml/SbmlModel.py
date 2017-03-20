@@ -178,7 +178,7 @@ class SbmlModel(HasId, SbmlObject):
 			self.listOfPorts.readSbml(sbmlModel.getPlugin("comp").getListOfPorts(), self.sbmlLevel, self.sbmlVersion)
 
 		if Settings.verbose >= 1:
-			print "> SBML Model %s read in %.2gs" % (self.getSbmlId(), time()-t0)
+			print ">> SBML Model %s read in %.2gs" % (self.getSbmlId(), time()-t0)
 
 
 	def writeSbml(self, sbmlModel,

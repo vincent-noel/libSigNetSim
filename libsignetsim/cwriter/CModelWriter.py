@@ -58,8 +58,8 @@ class CModelWriter(object):
 		self.writeEventsAssignmentFunction(f_h, f_c, i_model)
 		self.writeEventsPriorityFunction(f_h, f_c, i_model)
 
-		if Settings.verbose >= 1:
-			print "Pure Writing : %.2gs" % (time()-start)
+		# if Settings.verbose >= 1:
+		# 	print "Pure Writing : %.2gs" % (time()-start)
 	def writeSimulationInitialization(self, f_h, f_c, model_id, time_min, time_ech, time_max, abs_tol, rel_tol):
 		""" Writes the model initialization function in C files """
 

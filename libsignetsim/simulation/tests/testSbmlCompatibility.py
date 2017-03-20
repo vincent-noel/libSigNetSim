@@ -66,7 +66,6 @@ class TestSbmlCompatibility(unittest.TestCase):
 		if not os.path.exists(os.path.join(self.testSuitePath, "test-suite-results")):
 			os.mkdir(os.path.join(self.testSuitePath, "test-suite-results"))
 		if not os.path.exists(os.path.join(self.testSuitePath, "cases")):
-
 			present_dir = os.getcwd()
 			cmd = "cd %s; wget %s -O temp.zip; unzip -nq temp.zip; rm temp.zip; cd %s" % (Settings.tempDirectory, self.SEMANTIC_CASES_LINK, present_dir)
 			os.system(cmd)
