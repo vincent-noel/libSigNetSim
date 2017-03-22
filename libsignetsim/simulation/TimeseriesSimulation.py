@@ -26,7 +26,7 @@ from libsignetsim.simulation.Simulation import Simulation
 from libsignetsim.simulation.SigNetSimFigure import SigNetSimFigure
 from libsignetsim.settings.Settings import Settings
 from matplotlib.pyplot import show
-from numpy import amin, amax
+from numpy import amin, amax, linspace, logspace
 from os.path import join, isfile
 from time import time
 
@@ -51,19 +51,28 @@ class TimeseriesSimulation(Simulation):
 					nb_samples=Settings.simulationNbSamples,
 					keep_files=Settings.simulationKeepFiles):
 
+		self.listOfSamples = None
+		self.buildListSamples(time_min, time_max, log_scale, time_ech, nb_samples)
+
 		Simulation.__init__(self,
 							list_of_models=list_of_models,
+							list_samples=self.listOfSamples,
 							experiment=experiment,
-							time_min=time_min,
-							time_max=time_max,
 							abs_tol=abs_tol,
 							rel_tol=rel_tol,
-							log_scale=log_scale,
-							time_ech=time_ech,
-							nb_samples=nb_samples,
 							keep_files=keep_files)
 
 		self.keepFiles = keep_files
+
+	def buildListSamples(self, time_min, time_max, log_scale, time_ech, nb_samples):
+
+		if time_ech is not None:
+			nb_samples = int(round((time_max-time_min)/time_ech))+1
+
+		if log_scale:
+			self.listOfSamples = logspace(time_min, time_max, nb_samples)
+		else:
+			self.listOfSamples = linspace(time_min, time_max, nb_samples)
 
 	def loadSimulationResults_v2(self):
 

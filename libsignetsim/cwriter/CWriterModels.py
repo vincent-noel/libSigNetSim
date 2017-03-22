@@ -27,32 +27,23 @@ from libsignetsim.settings.Settings import Settings
 
 class CWriterModels(object):
 
-	def __init__ (self, list_of_models=[],
-					time_min=Settings.simulationTimeMin,
-					time_max=Settings.simulationTimeMax,
-					abs_tol=Settings.defaultAbsTol,
-					rel_tol=Settings.defaultRelTol,
-					log_scale=Settings.simulationLogScale,
-				  	time_ech=Settings.simulationTimeEch,
-				  	nb_samples=Settings.simulationNbSamples,
+	def __init__ (self, list_of_models,
+					list_samples,
+					abs_tol,
+					rel_tol,
 					subdir=None):
 
 		self.listOfModels = list_of_models
 
 		# Simulation variables
-		self.timeMin = time_min
-		self.timeMax = time_max
-		self.timeEch = time_ech
+		self.listSamples = list_samples
 		self.absTol = abs_tol
 		self.relTol = rel_tol
-		self.logScale = log_scale
-		self.nbSamples = nb_samples
 		self.subdir = subdir
-
 
 	def writeModelsHeaders(self, f_h, f_c):
 
-		#Writing headers for the c file
+		# Writing headers for the c file
 		f_c.write("/*****************************************************************\n")
 		f_c.write(" *                                                               *\n")
 		f_c.write(" *   model.c                                                     *\n")
@@ -82,7 +73,6 @@ class CWriterModels(object):
 		f_c.write("#define Ith(v,i)    NV_Ith_S(v,i-1)       /* Ith numbers components 1..NEQ */\n")
 		f_c.write("#define IJth(A,i,j) DENSE_ELEM(A,i-1,j-1) /* IJth numbers rows,cols 1..NEQ */\n\n")
 
-
 		# Writing headers for the h file
 		f_h.write("/*****************************************************************\n")
 		f_h.write(" *                                                               *\n")
@@ -107,15 +97,11 @@ class CWriterModels(object):
 		f_h.write("#include \"integrate/models.h\"\n")
 		f_h.write("#include \"integrate/integrate.h\"\n")
 
-		# f_h.write("#include \"../C_shared/integrate_dae.h\"\n")
-
-
 	def writeModelsInitialization(self, f_h, f_c):
 
 		f_c.write("list_of_models models;\n\n")
-		for modelInd, model in enumerate(self.listOfModels):
 
-			# model.build()
+		for modelInd, model in enumerate(self.listOfModels):
 			f_c.write("ModelDefinition     model_%d;\n\n" % modelInd)
 
 		f_c.write("list_of_models * getListOfModels()\n")
@@ -157,22 +143,17 @@ class CWriterModels(object):
 		f_c.write("}\n\n")
 
 
-	def writeModelFiles(self, progressSignal=None):
+	def writeModelFiles(self):
 
 		f_c = open(self.getTempDirectory() + Settings.C_generatedDirectory_v2 + "model.c", 'w')
 		f_h = open(self.getTempDirectory() + Settings.C_generatedDirectory_v2 + "model.h", 'w')
-
-
-
-		# for modelInd, model in enumerate(self.listOfModels):
-		#     model.build(vars_to_keep=vars_to_keep)
 
 		self.writeModelsHeaders(f_h, f_c)
 		self.writeModelsInitialization(f_h, f_c)
 		self.writeModelsFinalization(f_h, f_c)
 
 		for i_model, model in enumerate(self.listOfModels):
-			model.writeCCode(f_h, f_c, i_model, self.timeMin, self.timeMax, self.absTol, self.relTol, self.logScale, self.timeEch, self.nbSamples)
+			model.writeCCode(f_h, f_c, i_model, self.listSamples, self.absTol, self.relTol)
 
 		f_c.close()
 		f_h.close()

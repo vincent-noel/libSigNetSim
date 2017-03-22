@@ -33,9 +33,14 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 	def __init__ (self, workingModel, listOfExperiments=None, mapping=None, parameters_to_fit=None):
 
 		self.listOfExperiments = listOfExperiments
-		(time_max, time_ech) = self.findSimulationSettings()
 
-		CWriterModels.__init__(self, [workingModel], 0, time_max, time_ech, subdir="src")
+		self.timeMin = None
+		self.timeMax = None
+		self.listOfSamples = None
+
+		self.findSimulationSettings()
+
+		CWriterModels.__init__(self, [workingModel], self.listOfSamples, Settings.defaultAbsTol, Settings.defaultRelTol, subdir="src")
 		CWriterData.__init__(self, listOfExperiments, mapping, workingModel=workingModel, subdir="src")
 		CWriterOptimization.__init__(self, workingModel, parameters_to_fit)
 
@@ -43,30 +48,14 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 
 	def findSimulationSettings(self):
 
-		#Find out max time
-		time_max = 0
+		# We need to start it at zero, even if the first observation is laters
+		times = [0.0]
 		for experiment in self.listOfExperiments:
-			if time_max < experiment.getMaxTime():
-				time_max = experiment.getMaxTime()
+			times += experiment.getTimes()
 
-		#Find out necessary sampling
-		time_ech = 10000.0
-		cant_do_better = False
-
-		while not cant_do_better:
-			#We decrease the sampling
-			time_ech = time_ech/10
-
-			#While all values are not true
-			cant_do_better = True
-			for experiment in self.listOfExperiments:
-				for t_point in experiment.getTimes():
-					if float(t_point) > 0:
-						#If the ratio between the sample time and the sampling time is superior to 1
-						cant_do_better &= int(float(t_point)/time_ech) >= 1
-
-		return (time_max, time_ech)
-
+		self.listOfSamples = list(set(times))
+		self.timeMin = min(self.listOfSamples)
+		self.timeMax = max(self.listOfSamples)
 
 	def writeOptimizationFiles(self, nb_procs):
 

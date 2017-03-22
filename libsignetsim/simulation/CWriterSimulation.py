@@ -33,26 +33,22 @@ from time import time
 
 class CWriterSimulation(CWriterModels, CWriterData):
 
-	def __init__ (self, list_of_models=[],
+	def __init__ (self, list_of_models,
+						list_samples,
 						experiment=None,
-						time_min=Settings.simulationTimeMin,
-						time_max=Settings.simulationTimeMax,
 						abs_tol=Settings.defaultAbsTol,
-						rel_tol=Settings.defaultRelTol,
-						log_scale=Settings.simulationLogScale,
-						time_ech=Settings.simulationTimeEch,
-						nb_samples=Settings.simulationNbSamples):
+						rel_tol=Settings.defaultRelTol):
 
-		CWriterModels.__init__(self, list_of_models, time_min, time_max, abs_tol, rel_tol, log_scale, time_ech, nb_samples)
+		CWriterModels.__init__(self, list_of_models, list_samples, abs_tol, rel_tol)
 
 		if experiment is not None:
 			CWriterData.__init__(self, {0:experiment}, workingModel=list_of_models[0])
 		else:
 			CWriterData.__init__(self, experiment, workingModel=list_of_models[0])
 
+		self.listSamples = list_samples
 		self.experiment = experiment
 		self.listOfModels = list_of_models
-		self.timeMin = time_min
 
 
 	def writeSimulationFiles(self):
@@ -74,24 +70,13 @@ class CWriterSimulation(CWriterModels, CWriterData):
 		copyfile(join(Settings.basePath, "lib/templates/simulation/Makefile"), join(self.getTempDirectory(), "Makefile") )
 		copyfile(join(Settings.basePath, "lib/templates/simulation/main.c"), join(self.getTempDirectory(), "src/main.c") )
 
-		# if not exists(join(self.getTempDirectory(), Settings.C_simulationDirectory)):
-		#     copytree(Settings.C_simulationSrcDirectory,
-		#                 join(self.getTempDirectory(), Settings.C_simulationDirectory))
-		#
-		# if not exists(join(self.getTempDirectory(), Settings.C_sharedDirectory)):
-		#     copytree(Settings.C_sharedSrcDirectory,
-		#                 join(self.getTempDirectory(), Settings.C_sharedDirectory))
-		#
-		# if not exists(self.getTempDirectory() + Settings.C_generatedDirectory):
-		#     mkdir(self.getTempDirectory() + Settings.C_generatedDirectory)
-
-		t_vars_to_keep = []
-		if self.experiment is not None:
-			t_vars_to_keep = self.experiment.getTreatedVariables()
+		# t_vars_to_keep = []
+		# if self.experiment is not None:
+		# 	t_vars_to_keep = self.experiment.getTreatedVariables()
 
 
 		for modelInd, model in enumerate(self.listOfModels):
-			model.build(dont_reduce=True, tmin=self.timeMin)
+			model.build(dont_reduce=True, tmin=min(self.listSamples))
 
 		start = time()
 		self.writeModelFiles()

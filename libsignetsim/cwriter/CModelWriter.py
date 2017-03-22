@@ -24,7 +24,6 @@
 
 
 from libsignetsim.settings.Settings import Settings
-from numpy import linspace, logspace
 
 class CModelWriter(object):
 	""" Sbml model class """
@@ -34,9 +33,9 @@ class CModelWriter(object):
 
 		self.objId = obj_id
 
-	def writeCCode(self, f_h, f_c, i_model, time_min, time_max, abs_tol, rel_tol, log_scale, time_ech, nb_samples):
+	def writeCCode(self, f_h, f_c, i_model, list_samples, abs_tol, rel_tol):
 
-		self.writeSimulationInitialization(f_h, f_c, i_model, time_min, time_max, abs_tol, rel_tol, log_scale, time_ech, nb_samples)
+		self.writeSimulationInitialization(f_h, f_c, i_model, list_samples, abs_tol, rel_tol)
 		self.writeSimulationFinalization(f_h, f_c, i_model)
 
 		if self.getMathModel().hasDAEs:
@@ -50,7 +49,7 @@ class CModelWriter(object):
 		self.writeEventsAssignmentFunction(f_h, f_c, i_model)
 		self.writeEventsPriorityFunction(f_h, f_c, i_model)
 
-	def writeSimulationInitialization(self, f_h, f_c, model_id, time_min, time_max, abs_tol, rel_tol, log_scale, time_ech, nb_samples):
+	def writeSimulationInitialization(self, f_h, f_c, model_id, list_samples, abs_tol, rel_tol):
 		""" Writes the model initialization function in C files """
 
 		variable_name = "model_%d" % model_id
@@ -134,40 +133,21 @@ class CModelWriter(object):
 			for event in self.listOfEvents.values():
 				f_c.write("  %s.events_has_priority[%d] = %d;\n" % (variable_name, event.objId, event.priority is not None))
 
-		if time_ech is not None:
-			nb_samples = int(round((time_max-time_min)/time_ech))+1
-
-		list_samples = None
-
-		if log_scale:
-			list_samples = logspace(time_min, time_max, nb_samples)
-		else:
-			list_samples = linspace(time_min, time_max, nb_samples)
 		list_samples_str = "%.16g" % list_samples[0]
 
-		for i in range(1,nb_samples):
+		for i in range(1,len(list_samples)):
 			list_samples_str += ", %.16g" % list_samples[i]
 
 
 		f_c.write("  %s.integration_settings = malloc(sizeof(IntegrationSettings));\n" % variable_name)
-
-		f_c.write("  %s.integration_settings->t_min = %g;\n" % (variable_name, time_min))
-		f_c.write("  %s.integration_settings->t_max = %g;\n" % (variable_name, time_max))
-		# f_c.write("  %s.integration_settings->t_sampling = %g;\n" % (variable_name, time_ech))
-		# f_c.write(
-		# 	"  %s.integration_settings->nb_samples = (int) round((%s.integration_settings->t_max-%s.integration_settings->t_min)/%s.integration_settings->t_sampling)+1;\n" % (
-		# 	variable_name, variable_name, variable_name, variable_name))
-		# f_c.write("  printf(""nb_samples = %%d\\n"");\n")
-		f_c.write("  %s.integration_settings->nb_samples = %d;\n" % (variable_name, nb_samples))
+		f_c.write("  %s.integration_settings->t_min = %g;\n" % (variable_name, min(list_samples)))
+		f_c.write("  %s.integration_settings->t_max = %g;\n" % (variable_name, max(list_samples)))
+		f_c.write("  %s.integration_settings->nb_samples = %d;\n" % (variable_name, len(list_samples)))
 		f_c.write("  %s.integration_settings->abs_tol = %g;\n" % (variable_name, abs_tol))
 		f_c.write("  %s.integration_settings->rel_tol = %g;\n" % (variable_name, rel_tol))
-
-		f_c.write("  static double t_list_samples[%d] = {%s};\n" % (nb_samples, list_samples_str))
-		# f_c.write("  %s.integration_settings->list_samples = ((double[%d]){%s});\n" % (variable_name, nb_samples, list_samples_str))
-		# f_c.write("  %s.integration_settings->list_samples = NULL;\n" % (variable_name))
+		f_c.write("  static double t_list_samples[%d] = {%s};\n" % (len(list_samples), list_samples_str))
 		f_c.write("  %s.integration_settings->list_samples = t_list_samples;\n" % (variable_name))
 
-		# f_c.write("  %s.integration_settings = (IntegrationSettings) {%g, %g, %g, %d, %g, %g, (double[%d]){%s}};\n" % (variable_name, time_min, time_max, time_ech, nb_samples, abs_tol, rel_tol, nb_samples, list_samples_str))
 		f_c.write("  %s.integration_functions = malloc(sizeof(IntegrationFunctions));\n" % variable_name)
 
 		if self.getMathModel().hasDAEs:
@@ -177,7 +157,7 @@ class CModelWriter(object):
 		else:
 			f_c.write("  %s.integration_functions->isDAE = 0;\n" % variable_name)
 			f_c.write("  %s.integration_functions->funcPtr = &func_cvode_%d;\n" % (variable_name, model_id))
-			# f_c.write("  %s.integration_functions->jacPtr = &jac_cvode_%d;\n" % (variable_name, model_id))
+
 		f_c.write("  %s.integration_functions->assPtr = &compute_rules_%d;\n" % (variable_name, model_id))
 		f_c.write("  %s.integration_functions->hasJacobian = 0;\n" % variable_name)
 
@@ -193,7 +173,6 @@ class CModelWriter(object):
 		f_c.write("  %s.integration_options->max_num_steps = %g;\n" % (variable_name, Settings.defaultCVODEmaxNumSteps))
 		f_c.write("  %s.integration_options->max_conv_fails = %g;\n" % (variable_name, Settings.defaultCVODEMaxConvFails))
 		f_c.write("  %s.integration_options->max_err_test_fails = %g;\n" % (variable_name, Settings.defaultCVODEMaxErrFails))
-		# f_c.write("  rt_set_precision(RCONST(1e-16));\n")
 		f_c.write("  rt_set_precision(RCONST(%g), RCONST(%g));\n" % (abs_tol, rel_tol))
 		f_c.write("\n}\n\n")
 

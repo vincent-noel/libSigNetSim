@@ -96,9 +96,9 @@ class TestOptimization(unittest.TestCase):
 		score = fit.runOptimization(2, None, None)
 		parameters = fit.readOptimizationOutput()
 
-		self.assertEqual(score, 0.082)
-		self.assertEqual(parameters[m.listOfParameters.getBySbmlId('vmax')], 18198.88690055613)
-		self.assertEqual(parameters[m.listOfParameters.getBySbmlId('km')], 742789.479924893)
+		self.assertEqual(score, 0.001)
+		self.assertAlmostEqual(parameters[m.listOfParameters.getBySbmlId('vmax')], 0.2110009)
+		self.assertAlmostEqual(parameters[m.listOfParameters.getBySbmlId('km')], 1.2330615)
 
 
 
@@ -166,6 +166,6 @@ class TestOptimization(unittest.TestCase):
 		score = fit.runOptimization(2, None, None)
 		parameters = fit.readOptimizationOutput()
 
-		self.assertEqual(score, 0.082)
-		self.assertEqual(parameters[r.listOfLocalParameters.getBySbmlId('vmax')], 18198.88690055613)
-		self.assertEqual(parameters[r.listOfLocalParameters.getBySbmlId('km')], 742789.479924893)
+		self.assertEqual(score, 0.001)
+		self.assertAlmostEqual(parameters[r.listOfLocalParameters.getBySbmlId('vmax')], 0.2110009)
+		self.assertAlmostEqual(parameters[r.listOfLocalParameters.getBySbmlId('km')], 1.2330615)

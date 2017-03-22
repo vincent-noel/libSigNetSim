@@ -33,12 +33,11 @@ from multiprocessing import cpu_count
 class TestSbmlCompatibility(unittest.TestCase):
 	""" Tests SBML semantic test cases """
 
-
 	TODO_CASES = []
 	TODO_VERSIONS = []
-	TODO_TAGS = []#['EventIsNotPersistent', 'EventIsPersistent', 'EventNoDelay', 'EventPriority', 'EventT0Firing', 'EventUsesAssignmentTimeValues', 'EventUsesTriggerTimeValues', 'EventWithDelay']
+	TODO_TAGS = []
 
-	INCOMPATIBLE_CASES = [962, 987, 988]#962, Not compatible with ubuntu:precise, others not solved yet
+	INCOMPATIBLE_CASES = [962, 987, 988]
 	INCOMPATIBLE_TAGS = ['CSymbolDelay']
 
 	COMPATIBLE_PACKAGES = ['comp']
@@ -58,7 +57,6 @@ class TestSbmlCompatibility(unittest.TestCase):
 		self.testExport = True
 		Settings.verbose = 0
 
-
 	def testSbmlCompatibility(self):
 
 		self.testSuitePath = Settings.tempDirectory
@@ -72,7 +70,6 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 		self.loadTestCasesInfo()
 		self.assertEqual(self.runTestCases(), True)
-
 
 	def loadTestCasesInfo(self, path=None):
 		""" Loads cases info from the .cases-tags-map """

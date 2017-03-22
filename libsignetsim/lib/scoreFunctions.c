@@ -63,7 +63,7 @@ IntegrationResult *** initializeIntegrationResults(ModelDefinition * model, Expe
 		 ExperimentalCondition * t_condition = &(experiments[experiment_ind].conditions[condition_ind]);
 
 		  if (t_condition->nb_observed_values > 0)
-			all_results[experiment_ind][condition_ind] = InitializeIntegrationResult(model, NULL, 0);
+			all_results[experiment_ind][condition_ind] = InitializeIntegrationResult(model);
 
 	   }
    }
@@ -182,6 +182,93 @@ int compare_doubles(const void* a, const void* b)
 // }
 //
 
+//double ComputeScoreDataVsModel_old(IntegrationResult * result, ExperimentalObservation * observations, int nb_observations)
+//{
+//	//int debug=0;
+//	double score = 0;
+//	int i;
+//	int penalty = 0;
+//	for (i=0; i < (result->nb_derivative_variables + result->nb_assignment_variables); i++)
+//	{
+//		int t;
+//		for (t=0; t < result->nb_samples; t++)
+//		{
+//		  if (result->y[i][t] < -1e-8)
+//		  penalty += 10;
+//		  // return -1;
+//		}
+//
+//	}
+//
+//	for (i=0; i < nb_observations; i++)
+//	{
+//		double score_observed_value = 0;
+//		int ind = 0;
+//
+//		int t_ech_data = (int) round(observations[i].t/result->sampling_frequency);
+//		// int t_ech_data = 0;
+//		// while (observations[i].t != result->t[t_ech_data])
+//		//   t_ech_data++;
+//
+//
+//
+//		double model_ech, data_ech, ratio_ech,ratio_normalise_ech;
+//
+//
+//		if (observations[i].variable_type == 0)
+//			ind = observations[i].variable_ind;
+//		else if (observations[i].variable_type == 1)
+//			ind = result->nb_derivative_variables + observations[i].variable_ind;
+//		else if (observations[i].variable_type == 2)
+//			ind = result->nb_derivative_variables + result->nb_assignment_variables + observations[i].variable_ind;
+//		else printf("> Unknown type of variable !\n");
+//
+//		model_ech = result->y[ind][t_ech_data];
+//		data_ech = observations[i].value;
+//
+//		ratio_ech = data_ech-model_ech;
+//
+//		// model : 2.4e+02, data : 12, score : 0.95
+//
+//		if (data_ech < model_ech)
+//			if (data_ech != 0)
+//				ratio_normalise_ech = ratio_ech/data_ech;
+//			else
+//				ratio_normalise_ech = ratio_ech/MIN_PRECISION;
+//		else
+//		  if (model_ech != 0)
+//			  ratio_normalise_ech = ratio_ech/model_ech;
+//		  else
+//			  ratio_normalise_ech = ratio_ech/MIN_PRECISION;
+//
+//		double t_ech = result->t[1]-result->t[0];
+//
+//		if (observations[i].isSteadyState == 0) {
+//		  score_observed_value = fabs(ratio_normalise_ech);
+//		  // printf("model : %.2g, data : %.2g, score : %.2g\n", model_ech, data_ech, score_observed_value);
+//		} else if (observations[i].isSteadyState == 1) {
+//
+//		  int t_min_steady_state = (int) round(observations[i].min_steady_state/result->sampling_frequency);
+//		  int t_max_steady_state = (int) round(observations[i].max_steady_state/result->sampling_frequency);
+//
+//		  if (isAtSteadyState(result->y[ind], t_min_steady_state, t_ech) == 0
+//			  && isAtSteadyState(result->y[ind], t_max_steady_state, t_ech) == 1) {
+//
+//			  score_observed_value = fabs(ratio_normalise_ech);
+//
+//		  } else score_observed_value = MAX_SCORE;
+//		} else score_observed_value = MAX_SCORE;
+//
+//		score += score_observed_value;
+//	}
+//	score /= nb_observations;
+//
+//	return score+penalty;
+//
+//}
+
+
+
 double ComputeScoreDataVsModel(IntegrationResult * result, ExperimentalObservation * observations, int nb_observations)
 {
 	//int debug=0;
@@ -202,19 +289,14 @@ double ComputeScoreDataVsModel(IntegrationResult * result, ExperimentalObservati
 
 	for (i=0; i < nb_observations; i++)
 	{
-		double score_observed_value = 0;
-		int ind = 0;
-
-		int t_ech_data = (int) round(observations[i].t/result->sampling_frequency);
-		// int t_ech_data = 0;
-		// while (observations[i].t != result->t[t_ech_data])
-		//   t_ech_data++;
-
-
+		int t_ech_data = 0;
+		while (t_ech_data < result->nb_samples && observations[i].t != result->list_samples[t_ech_data])
+		    t_ech_data++;
 
 		double model_ech, data_ech, ratio_ech,ratio_normalise_ech;
+		double score_observed_value = 0;
 
-
+		int ind = 0;
 		if (observations[i].variable_type == 0)
 			ind = observations[i].variable_ind;
 		else if (observations[i].variable_type == 1)
@@ -241,12 +323,12 @@ double ComputeScoreDataVsModel(IntegrationResult * result, ExperimentalObservati
 		  else
 			  ratio_normalise_ech = ratio_ech/MIN_PRECISION;
 
-		double t_ech = result->t[1]-result->t[0];
+//		double t_ech = result->t[1]-result->t[0];
 
 		if (observations[i].isSteadyState == 0) {
 		  score_observed_value = fabs(ratio_normalise_ech);
 		  // printf("model : %.2g, data : %.2g, score : %.2g\n", model_ech, data_ech, score_observed_value);
-		} else if (observations[i].isSteadyState == 1) {
+		} /*else if (observations[i].isSteadyState == 1) {
 
 		  int t_min_steady_state = (int) round(observations[i].min_steady_state/result->sampling_frequency);
 		  int t_max_steady_state = (int) round(observations[i].max_steady_state/result->sampling_frequency);
@@ -257,7 +339,8 @@ double ComputeScoreDataVsModel(IntegrationResult * result, ExperimentalObservati
 			  score_observed_value = fabs(ratio_normalise_ech);
 
 		  } else score_observed_value = MAX_SCORE;
-		} else score_observed_value = MAX_SCORE;
+		} */
+		else score_observed_value = MAX_SCORE;
 
 		score += score_observed_value;
 	}
@@ -266,8 +349,6 @@ double ComputeScoreDataVsModel(IntegrationResult * result, ExperimentalObservati
 	return score+penalty;
 
 }
-
-
 
 
 

@@ -47,39 +47,23 @@ class Simulation(CWriterSimulation):
 
 
 	def __init__ (self,
-					list_of_models=[],
-					# list_of_initial_values=None,
+					list_of_models,
+					list_samples,
 					experiment=None,
-					time_min=Settings.simulationTimeMin,
-					time_max=Settings.simulationTimeMax,
 					abs_tol=Settings.defaultAbsTol,
 					rel_tol=Settings.defaultRelTol,
-					log_scale=Settings.simulationLogScale,
-					time_ech=Settings.simulationTimeEch,
-					nb_samples=Settings.simulationNbSamples,
 					keep_files=Settings.simulationKeepFiles):
 
 		self.keepFiles = keep_files
 		self.sessionId = None
 		self.simulationId = ''.join(choice(ascii_uppercase + ascii_lowercase + digits) for _ in range(12))
 
-
-
-
-		# def new_model_filename():
-		# 	rand_string = ''.join(choice(ascii_uppercase + ascii_lowercase + digits) for _ in range(6))
-
-
 		CWriterSimulation.__init__(self, list_of_models=list_of_models,
-						# list_of_initial_values=list_of_initial_values,
+						list_samples=list_samples,
 						experiment=experiment,
-						time_min=time_min,
-						time_max=time_max,
 						abs_tol=abs_tol,
-						rel_tol=rel_tol,
-						log_scale=log_scale,
-						time_ech=time_ech,
-						nb_samples=nb_samples)
+						rel_tol=rel_tol)
+
 		self.listOfModels = list_of_models
 
 		self.__simulationDone = self.SIM_TODO
@@ -89,7 +73,7 @@ class Simulation(CWriterSimulation):
 		self.rawData = None
 
 		self.nbConditions = 0
-		# for experiment in self.listOfExperiments:
+
 		if experiment is not None:
 			self.nbConditions = len(experiment.listOfConditions)
 
