@@ -45,17 +45,18 @@ class SteadyStatesSimulation(Simulation):
     def __init__ (self, list_of_models=[], species_input=None, list_of_initial_values=[], time_min=0, time_max=1000):
 
 
+
+
         self.listOfInitialValues = list_of_initial_values
+        self.experiment = None
         self.generateExperiment(species_input, list_of_initial_values)
 
         Simulation.__init__(self,
-                            experiment=self.experiment,
                             list_of_models=list_of_models,
-                            # list_of_initial_values=list_of_initial_values,
-                            timeMin=0,
-                            timeMax=time_max*1.1
+                            list_samples=[time_min, time_max*1.1],
+                            experiment=self.experiment,
         )
-        # self.listOfInitialValues = list_of_initial_values
+
 
 
     def generateExperiment(self, species_input, list_of_initial_values):
