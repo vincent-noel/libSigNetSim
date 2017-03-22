@@ -42,7 +42,7 @@ class CWriterSimulation(CWriterModels, CWriterData):
 		CWriterModels.__init__(self, list_of_models, list_samples, abs_tol, rel_tol)
 
 		if experiment is not None:
-			CWriterData.__init__(self, {0:experiment}, workingModel=list_of_models[0])
+			CWriterData.__init__(self, [experiment], workingModel=list_of_models[0])
 		else:
 			CWriterData.__init__(self, experiment, workingModel=list_of_models[0])
 

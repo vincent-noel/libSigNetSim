@@ -76,6 +76,8 @@ class TestTimeseriesBiomodels(unittest.TestCase):
 
 	def testTimeseriesBiomodels(self):
 
+		result = True
+
 		Settings.verbose=0
 		db = bioservices.BioModels()
 		curatedModelsIds = db.getAllCuratedModelsId()
@@ -91,39 +93,50 @@ class TestTimeseriesBiomodels(unittest.TestCase):
 				if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
 					print ""
 
-				try:
-					t0 = time.time()
-					case = BiomodelsTestCaseSimulation(modelId, time_ech=self.TIME_ECH, time_max=self.TIME_MAX,
-													   abs_tol=self.ABS_TOL, rel_tol=self.REL_TOL,
-													   test_export=self.TEST_EXPORT, keep_files=self.KEEP_FILES)
-					res = case.run()
+				# try:
+				t0 = time.time()
+				case = BiomodelsTestCaseSimulation(modelId, time_ech=self.TIME_ECH, time_max=self.TIME_MAX,
+												   abs_tol=self.ABS_TOL, rel_tol=self.REL_TOL,
+												   test_export=self.TEST_EXPORT, keep_files=self.KEEP_FILES)
+				res = case.run()
 
-					if res >= 0:
-						print "> %s : [OK] (%.2gs)" % (modelId, time.time()-t0)
+				if res >= 0:
+					print "> %s : [OK] (%.2gs)" % (modelId, time.time()-t0)
 
-					elif res == -1:
-						print "> %s : [ERR, Simulation failed] (%.2gs)" % (modelId, time.time()-t0)
+				elif res == -1:
+					print "> %s : [ERR, Simulation failed] (%.2gs)" % (modelId, time.time()-t0)
+					result = False
 
-					elif res == -2:
-						print "> %s : [ERR, Incorrect values] (%.2gs)" % (modelId, time.time()-t0)
+				elif res == -2:
+					print "> %s : [ERR, Incorrect values] (%.2gs)" % (modelId, time.time()-t0)
+					result = False
 
-					elif res == -2:
-						print "> %s : [ERR, Incorrect times] (%.2gs)" % (modelId, time.time()-t0)
+				elif res == -2:
+					print "> %s : [ERR, Incorrect times] (%.2gs)" % (modelId, time.time()-t0)
+					result = False
 
-				except MathException as e:
-					print "> %s : [ERR, Math] (%s) (%.2gs)" % (modelId, e, time.time()-t0)
-
-				except SbmlException as e:
-					print "> %s : [ERR, SBML] (%s) (%.2gs)" % (modelId, e, time.time()-t0)
-
-				except TagNotImplementedModelException as e:
-					print "> %s : [ERR, TAG INCOMPATIBLE] (%s)" % (modelId, e)
-
-				except PackageNotImplementedModelException as e:
-					print "> %s : [ERR, PACKAGE INCOMPATIBLE] (%s)" % (modelId, e)
-
-				except Exception as e:
-					print "> %s : [ERR] (%s) (%.2gs)" % (modelId, e, time.time()-t0)
+				# except MathException as e:
+				# 	print "> %s : [ERR, Math] (%s) (%.2gs)" % (modelId, e, time.time()-t0)
+				# 	result = False
+				#
+				# except SbmlException as e:
+				# 	print "> %s : [ERR, SBML] (%s) (%.2gs)" % (modelId, e, time.time()-t0)
+				# 	result = False
+				#
+				# except TagNotImplementedModelException as e:
+				# 	print "> %s : [ERR, TAG INCOMPATIBLE] (%s)" % (modelId, e)
+				# 	result = False
+				#
+				# except PackageNotImplementedModelException as e:
+				# 	print "> %s : [ERR, PACKAGE INCOMPATIBLE] (%s)" % (modelId, e)
+				# 	result = False
+				#
+				# except Exception as e:
+				# 	print "> %s : [ERR] (%s) (%.2gs)" % (modelId, e, time.time()-t0)
+				# 	result = False
 
 			else:
 				print "> %s : [Not Compatible]" % modelId
+
+
+		self.assertEqual(result, True)

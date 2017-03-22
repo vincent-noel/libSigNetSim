@@ -58,7 +58,8 @@ class Simulation(CWriterSimulation):
 		self.sessionId = None
 		self.simulationId = ''.join(choice(ascii_uppercase + ascii_lowercase + digits) for _ in range(12))
 
-		CWriterSimulation.__init__(self, list_of_models=list_of_models,
+		CWriterSimulation.__init__(self,
+						list_of_models=list_of_models,
 						list_samples=list_samples,
 						experiment=experiment,
 						abs_tol=abs_tol,

@@ -34,18 +34,13 @@ from libsignetsim.data.Experiment import Experiment as Experiment
 
 class SteadyStatesSimulation(Simulation):
 
-
     SIM_SUCCESS         =   0
     SIM_FAILURE         =   -1
 
     SIM_DONE            =   10
     SIM_TODO            =   11
 
-
-    def __init__ (self, list_of_models=[], species_input=None, list_of_initial_values=[], time_min=0, time_max=1000):
-
-
-
+    def __init__ (self, list_of_models=[], species_input=None, list_of_initial_values=[], time_max=1000.0):
 
         self.listOfInitialValues = list_of_initial_values
         self.experiment = None
@@ -53,17 +48,14 @@ class SteadyStatesSimulation(Simulation):
 
         Simulation.__init__(self,
                             list_of_models=list_of_models,
-                            list_samples=[time_min, time_max*1.1],
+                            list_samples=[0.0, time_max*1.1],
                             experiment=self.experiment,
         )
 
-
-
     def generateExperiment(self, species_input, list_of_initial_values):
 
-
         self.experiment = Experiment()
-
+        self.experiment.name = "SteadyState"
         for initial_value in list_of_initial_values:
 
             t_condition = ExperimentalCondition()
@@ -130,11 +122,11 @@ class SteadyStatesSimulation(Simulation):
 
                     for variable in t_model.listOfVariables.values():
 
-                        val_vars.update({variable.getSbmlId() : data[variable.getPos()]})
+                        val_vars.update({variable.getSbmlId() : float(data[variable.getPos()])})
                         # traj_vars[sbmlId].append(float(data[1+variable.getPos()]))
 
                 resultsFile.close()
 
                 self.listOfData_v2.append(val_vars)
 
-        print self.listOfData_v2
+        # print self.listOfData_v2

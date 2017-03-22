@@ -33,7 +33,7 @@ import numpy
 
 class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 
-	CASES_PATH = "/home/labestiol/Work/code/libSigNetSim/libsignetsim/simulation/tests/biomodels_copasi"
+	CASES_PATH = "libsignetsim/simulation/tests/biomodels_copasi"
 
 	def __init__ (self, model_id, time_ech=0.01, time_max=10, abs_tol=1e-12, rel_tol=1e-6, test_export=False, keep_files=True):
 

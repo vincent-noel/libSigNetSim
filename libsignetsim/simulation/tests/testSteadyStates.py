@@ -24,41 +24,51 @@
 
 
 import unittest
-
+from libsignetsim.model.Model import Model
+from libsignetsim.simulation.SteadyStatesSimulation import SteadyStatesSimulation
 
 class TestSteadyStates(unittest.TestCase):
 	""" Tests high level functions """
 
-	#
-	# def testSimulateMichaelisMenten(self):
-	#
-	# 	reference_data = 12.0
-	# 	m = Model()
-	# 	m.setName("Enzymatic Reaction")
-	#
-	# 	e = m.listOfSpecies.new("E")
-	# 	s = m.listOfSpecies.new("S")
-	# 	p = m.listOfSpecies.new("P")
-	#
-	# 	vmax = m.listOfParameters.new("vmax")
-	# 	km = m.listOfParameters.new("km")
-	#
-	# 	r = m.listOfReactions.new("Enzymatic reaction")
-	# 	r.listOfReactants.add(s)
-	# 	r.listOfModifiers.add(e)
-	# 	r.listOfProducts.add(p)
-	# 	r.kineticLaw.setPrettyPrintMathFormula("vmax*E*S/(km+S)")
-	#
-	# 	e.setValue(10)
-	# 	s.setValue(12)
-	# 	p.setValue(0)
-	# 	vmax.setValue(0.211)
-	# 	km.setValue(1.233)
-	#
-	# 	sim = TimeseriesSimulation([m], time_min=0, time_ech=1, time_max=20)
-	# 	sim.run()
-	# 	_,y = sim.getRawData()[0]
-	# 	model_data = y['P']
-	#
-	# 	for i, t_data in enumerate(reference_data):
-	# 		self.assertAlmostEqual(t_data, model_data[i], delta=1e-6)
+
+	def testSimulateMichaelisMenten(self):
+
+		m = Model()
+		m.setName("Enzymatic Reaction")
+
+		e = m.listOfSpecies.new("E")
+		s = m.listOfSpecies.new("S")
+		p = m.listOfSpecies.new("P")
+
+		vmax = m.listOfParameters.new("vmax")
+		km = m.listOfParameters.new("km")
+
+		r = m.listOfReactions.new("Enzymatic reaction")
+		r.listOfReactants.add(s)
+		r.listOfModifiers.add(e)
+		r.listOfProducts.add(p)
+		r.kineticLaw.setPrettyPrintMathFormula("vmax*E*S/(km+S)")
+
+		e.setValue(10)
+		s.setValue(12)
+		p.setValue(0)
+		vmax.setValue(0.211)
+		km.setValue(1.233)
+
+		input_data = [1.2, 12.0, 120.0, 1200.0]
+		input_species = s
+
+		reference_data = [1.2, 12.0, 120.0, 1200.0]
+
+		sim = SteadyStatesSimulation(
+			list_of_models=[m],
+			species_input=input_species,
+			list_of_initial_values=input_data,
+			time_max=100.0
+		)
+		sim.run()
+
+		results = sim.listOfData_v2
+
+		for i, t_data in enumerate(reference_data):
+			self.assertAlmostEqual(t_data, results[i][p.getSbmlId()])
