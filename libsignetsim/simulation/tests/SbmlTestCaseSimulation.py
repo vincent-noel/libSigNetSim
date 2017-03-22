@@ -40,8 +40,8 @@ class SbmlTestCaseSimulation(TimeseriesSimulation):
 		self.testExport = test_export
 		self.model = None
 		self.timeMin = None
-		self.timeEch = None
 		self.timeMax = None
+		self.nbSamples = None
 		self.testAbsTol = 1e-8
 		self.testRelTol = 1e-6
 		self.sbmlIdToPlot = []
@@ -55,9 +55,9 @@ class SbmlTestCaseSimulation(TimeseriesSimulation):
 										list_of_models=[self.model],
 										time_min=self.timeMin,
 										time_max=self.timeMax,
-										time_ech=self.timeEch,
-										abs_tol=1e-12,#min(self.testAbsTol/1000, 1e-8),
-										rel_tol=1e-6,#min(self.testRelTol/1000, 1e-6),
+										abs_tol=1e-12,
+										rel_tol=1e-6,
+										nb_samples=self.nbSamples,
 										keep_files=keep_files)
 
 
@@ -144,7 +144,7 @@ class SbmlTestCaseSimulation(TimeseriesSimulation):
 
 			if line.startswith("steps:"):
 				res_split = line.split(":", 2)
-				self.timeEch = (self.timeMax - self.timeMin)/int(res_split[1].strip())
+				self.nbSamples = int(res_split[1].strip())+1
 
 			if line.startswith("variables:"):
 				res_split = line.split(":", 2)
@@ -223,15 +223,11 @@ class SbmlTestCaseSimulation(TimeseriesSimulation):
 
 							# Here we ask for an amout but it's declared a concentration
 							elif t_var.symbol.getPrettyPrintMathFormula() in self.sbmlIdToPlotAmount and not t_var.hasOnlySubstanceUnits:
-								# print "Yeah we need to plot the amount (%s)= %.5g" % (t_var.getSbmlId(),(trajs[t_var.getSbmlId()][i_t]*trajs[t_compartment.getSbmlId()][i_t]) )
 								t_value = trajs[t_var.symbol.getPrettyPrintMathFormula()][i_timepoint]*trajs[t_compartment.symbol.getPrettyPrintMathFormula()][i_timepoint]
 
 							else:
 								t_value = trajs[t_var.symbol.getPrettyPrintMathFormula()][i_timepoint]
 						else:
-							# print len(trajs[t_var.getSbmlId()])
-							# print len(timepoints)
-
 							t_value = trajs[t_var.symbol.getPrettyPrintMathFormula()][i_timepoint]
 
 

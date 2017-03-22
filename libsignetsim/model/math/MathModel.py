@@ -433,7 +433,7 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 			print "> Pure solving : %.2gs" % (time()-start_solve)
 			print "-"*25
 			print ">> %s" % res
-		if Settings.verbose >= 1:
+		if Settings.verboseTiming >= 2:
 			print "> Finished calculating initial conditions (%.2gs)" % (time()-t0)
 
 
@@ -727,7 +727,7 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 
 		start_solve = time()
 		res = solve(system, system_vars)
-		if Settings.verbose >= 1:
+		if Settings.verboseTiming >= 2:
 			print "> Pure solving : %.2gs" % (time()-start_solve)
 		if DEBUG_LOG:
 			print "-"*25
@@ -814,7 +814,7 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 
 
 
-		if Settings.verbose >= 1:
+		if Settings.verboseTiming >= 2:
 			print "> Finished calculating initial conditions (%.2gs)" % (time()-t0)
 
 

@@ -318,8 +318,8 @@ class SbmlDocument(object):
 
 			return False
 
-		if Settings.verbose >= 1:
-			print "Writing document %s into directory %s in %.2gs" % (self.documentFilename, self.documentPath, time()-t0)
+		# if Settings.verboseTiming >= 1:
+		# 	print "Writing document %s into directory %s in %.2gs" % (self.documentFilename, self.documentPath, time()-t0)
 
 	def getModelInstance(self):
 		if self.useCompPackage:
@@ -327,7 +327,7 @@ class SbmlDocument(object):
 			t_instance = ModelInstance(self.model, self)
 			t1 = time()
 
-			if Settings.verbose >= 1:
+			if Settings.verboseTiming >= 1:
 				print "> Instance produced in %.2gs" % (t1-t0)
 
 			return t_instance

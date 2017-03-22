@@ -259,7 +259,7 @@ class ListOfConservationLaws(list):
 		self.buildConservationLaws()
 		t1 = time()
 
-		if Settings.verbose:
+		if Settings.verboseTiming >= 2:
 			print "  > Raw conservation laws built (%.2gs)" % (t1-t0)
 
 		# t_laws = [law.getInternalMathFormula() for law in self.LHSs]
@@ -286,7 +286,7 @@ class ListOfConservationLaws(list):
 
 
 		t2 = time()
-		if Settings.verbose:
+		if Settings.verboseTiming >= 2:
 			print "  > Real conservation laws built (%.2gs)" % (t2-t1)
 
 

@@ -93,7 +93,7 @@ void setIntegrationErrorsLogFilename(char * filename) {
   log_integration_errors_filename = filename;
 }
 
-IntegrationResult * InitializeIntegrationResult(ModelDefinition * model, double * list_samples, int nb_samples)
+IntegrationResult * InitializeIntegrationResult(ModelDefinition * model)
 {
   int i;
   IntegrationResult * integration_result = malloc(sizeof(IntegrationResult));
@@ -105,26 +105,36 @@ IntegrationResult * InitializeIntegrationResult(ModelDefinition * model, double 
   integration_result->nb_assignment_variables = model->nb_assignment_variables;
   integration_result->nb_derivative_variables = model->nb_derivative_variables + model->nb_algebraic_variables;
 
-  if (list_samples == NULL)
-  {
-		//   printf("Preparing the list_samples\n");
-	  integration_result->nb_samples = model->integration_settings->nb_samples;
-	  integration_result->sampling_frequency = model->integration_settings->t_sampling;
-	  integration_result->list_samples = malloc(sizeof(double)*(model->integration_settings->nb_samples+1));
-	  for (i=0; i <= model->integration_settings->nb_samples; i++)
-	  {
-		  if (i==0){
-			integration_result->list_samples[i] = model->integration_settings->t_min;}
-		  else{ //printf("%g\n", (integration_result->list_samples[i-1] + model->integration_settings->t_sampling));
-			integration_result->list_samples[i] = (integration_result->list_samples[i-1]
-									+ model->integration_settings->t_sampling);}
-	  }
-  }
-  else
-  {
-	  integration_result->nb_samples = nb_samples;
-	  integration_result->list_samples = list_samples;
-  }
+//  if (model->integration_settings->list_samples == NULL)
+//  {
+//
+//	  integration_result->nb_samples = model->integration_settings->nb_samples;
+//	  integration_result->sampling_frequency = model->integration_settings->t_sampling;
+//	  integration_result->list_samples = malloc(sizeof(double)*(model->integration_settings->nb_samples+1));
+//	  for (i=0; i < model->integration_settings->nb_samples; i++)
+//	  {
+//		  if (i==0){
+//			integration_result->list_samples[i] = model->integration_settings->t_min;}
+//		  else
+//		  { //printf("%g\n", (integration_result->list_samples[i-1] + model->integration_settings->t_sampling));
+//			integration_result->list_samples[i] = (integration_result->list_samples[i-1]
+//									+ model->integration_settings->t_sampling);
+////            printf("initialization sample %d : %g\n", i, integration_result->list_samples[i]);
+//
+//		  }
+//	  }
+//  }
+//  else
+//  {
+	integration_result->nb_samples = model->integration_settings->nb_samples;
+	integration_result->list_samples = malloc(sizeof(double)*(model->integration_settings->nb_samples));
+
+	for (i=0; i < model->integration_settings->nb_samples; i++)
+	{
+//		printf("initialization sample %d : %g\n", i, model->integration_settings->list_samples[i]);
+		integration_result->list_samples[i] = model->integration_settings->list_samples[i];
+	}
+//  }
 
   integration_result->return_code = 1;
   integration_result->t = malloc(sizeof(double)*integration_result->nb_samples);
@@ -160,6 +170,8 @@ void FinalizeIntegrationResult(IntegrationResult * integration_result)
 
   free(integration_result->y);
   free(integration_result->list_samples);
+  free(integration_result->names);
+
   free(integration_result);
 
 }
@@ -250,7 +262,7 @@ IntegrationResult * simulateModel(ModelDefinition * model,
 	}
 
 	if (result == NULL)
-	  result = InitializeIntegrationResult(model, NULL, 0);
+	  result = InitializeIntegrationResult(model);
 
 	// Integration
 	if (model->integration_functions->isDAE == 1)
@@ -383,7 +395,6 @@ realtype * addTimedEvent(realtype t, int assignment, int memory_size, void * use
 						  sizeof(realtype)*(data->nb_roots + data->nb_timed_events + data->nb_timed_treatments));
 	roots_values[data->nb_roots + data->nb_timed_events-1] = 0;
 	data->roots_values = roots_values;
-
 
 	int nb_total_events = data->nb_events + data->nb_timed_events;
 

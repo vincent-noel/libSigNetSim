@@ -147,10 +147,11 @@ typedef struct IntegrationSettings
 {
 	double                t_min;
 	double                t_max;
-	double                t_sampling;
+//	double                t_sampling;
 	int                   nb_samples;
 	double                abs_tol;
 	double                rel_tol;
+	double *              list_samples;
 
 } IntegrationSettings;
 

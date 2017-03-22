@@ -47,7 +47,8 @@ void initRoots(IntegrationData * user_data, realtype * t_roots)
     {
         if (user_data->roots_operators[i] == 0)
         {
-            if (t_roots[i] >= RCONST(0.0))
+//            if (t_roots[i] >= RCONST(0.0))
+            if (rt_geq(t_roots[i], RCONST(0.0)))
               user_data->roots_triggers[i] = 1;
             else
               user_data->roots_triggers[i] = -1;
@@ -55,7 +56,8 @@ void initRoots(IntegrationData * user_data, realtype * t_roots)
 
         else if (user_data->roots_operators[i] == 1)
         {
-            if (t_roots[i] > RCONST(0.0))
+//            if (t_roots[i] > RCONST(0.0))
+            if (rt_gt(t_roots[i], RCONST(0.0)))
               user_data->roots_triggers[i] = 1;
             else
               user_data->roots_triggers[i] = -1;
@@ -63,7 +65,8 @@ void initRoots(IntegrationData * user_data, realtype * t_roots)
 
         else if (user_data->roots_operators[i] == 2)
         {
-            if (t_roots[i] == RCONST(0.0))
+//            if (t_roots[i] == RCONST(0.0))
+            if (rt_eq(t_roots[i], RCONST(0.0)))
               user_data->roots_triggers[i] = 1;
             else
               user_data->roots_triggers[i] = -1;
@@ -71,7 +74,8 @@ void initRoots(IntegrationData * user_data, realtype * t_roots)
 
         else if (user_data->roots_operators[i] == 3)
         {
-            if (t_roots[i] != RCONST(0.0))
+//            if (t_roots[i] != RCONST(0.0))
+            if (rt_neq(t_roots[i], RCONST(0.0)))
               user_data->roots_triggers[i] = 1;
             else
               user_data->roots_triggers[i] = -1;
@@ -82,6 +86,7 @@ void initRoots(IntegrationData * user_data, realtype * t_roots)
 
 void updateRoots(IntegrationData * data, realtype * t_roots)
 {
+//    printf("We actually pass through update roots\n");
     int i;
     for (i=0; i < data->nb_roots; i++)
     {
@@ -89,41 +94,49 @@ void updateRoots(IntegrationData * data, realtype * t_roots)
         if (data->roots_operators[i] == 0)
         {
             // If the root was previously deactivated and the root pass strictly negative
-            if (data->roots_triggers[i] == 1 && t_roots[i] < 0 && data->roots_values[i] >= 0)
+//            if (data->roots_triggers[i] == 1 && t_roots[i] < 0 && data->roots_values[i] >= 0)
+            if (data->roots_triggers[i] == 1 && rt_lt(t_roots[i], RCONST(0.0)) && rt_geq(data->roots_values[i], RCONST(0.0)))
                 data->roots_triggers[i] = -1;
 
             // If the root was previously activated and the root pass positive
-            else if (data->roots_triggers[i] == -1 && t_roots[i] >= 0 && data->roots_values[i] <= 0)
+//            else if (data->roots_triggers[i] == -1 && t_roots[i] >= 0 && data->roots_values[i] <= 0)
+            else if (data->roots_triggers[i] == -1 && rt_geq(t_roots[i], RCONST(0.0)) && rt_leq(data->roots_values[i], RCONST(0.0)))
               data->roots_triggers[i] = 1;
         }
         // If the operator is >
         else if (data->roots_operators[i] == 1)
         {
             // If the root was previously deactivated and the root pass negative
-            if (data->roots_triggers[i] == 1 && t_roots[i] <= 0 && data->roots_values[i] >= 0)
+//            if (data->roots_triggers[i] == 1 && t_roots[i] <= 0 && data->roots_values[i] >= 0)
+            if (data->roots_triggers[i] == 1 && rt_leq(t_roots[i], RCONST(0.0)) && rt_geq(data->roots_values[i], RCONST(0.0)))
               data->roots_triggers[i] = -1;
 
             // If the root was previously activated and the root pass strictly positive
-            else if (data->roots_triggers[i] == -1 && t_roots[i] > 0 && data->roots_values[i] <= 0)
+//            else if (data->roots_triggers[i] == -1 && t_roots[i] > 0 && data->roots_values[i] <= 0)
+            else if (data->roots_triggers[i] == -1 && rt_gt(t_roots[i], RCONST(0.0)) && rt_leq(data->roots_values[i], RCONST(0.0)))
               data->roots_triggers[i] = 1;
         }
         // If the operator is ==
         else if (data->roots_operators[i] == 2)
         {
-           if (data->roots_triggers[i] == 1 && t_roots[i] != 0 && data->roots_values[i] == 0)
+//           if (data->roots_triggers[i] == 1 && t_roots[i] != 0 && data->roots_values[i] == 0)
+           if (data->roots_triggers[i] == 1 && rt_neq(t_roots[i], RCONST(0.0)) && rt_eq(data->roots_values[i], RCONST(0.0)))
              data->roots_triggers[i] = -1;
 
-           else if (data->roots_triggers[i] == -1 && t_roots[i] == 0 && data->roots_values[i] != 0)
+//           else if (data->roots_triggers[i] == -1 && t_roots[i] == 0 && data->roots_values[i] != 0)
+           else if (data->roots_triggers[i] == -1 && rt_eq(t_roots[i], RCONST(0.0)) && rt_neq(data->roots_values[i], RCONST(0.0)))
              data->roots_triggers[i] = 1;
         }
 
         // If the operator is !=
         else if (data->roots_operators[i] == 3)
         {
-          if (data->roots_triggers[i] == 1 && t_roots[i] == 0 && data->roots_values[i] != 0)
+//          if (data->roots_triggers[i] == 1 && t_roots[i] == 0 && data->roots_values[i] != 0)
+          if (data->roots_triggers[i] == 1 && rt_eq(t_roots[i], RCONST(0.0)) && rt_neq(data->roots_values[i], RCONST(0.0)))
              data->roots_triggers[i] = -1;
 
-           else if (data->roots_triggers[i] == -1 && t_roots[i] != 0 && data->roots_values[i] == 0)
+//           else if (data->roots_triggers[i] == -1 && t_roots[i] != 0 && data->roots_values[i] == 0)
+           else if (data->roots_triggers[i] == -1 && rt_neq(t_roots[i], RCONST(0.0)) && rt_eq(data->roots_values[i], RCONST(0.0)))
              data->roots_triggers[i] = 1;
         }
     }
@@ -340,7 +353,7 @@ void executeTimedTreatments(IntegrationData * data)
       //  printf(" root timed treatment %d = %g\n", i, data->roots_values[ind+i]);
 
         TimedTreatments * t_timed_treatments = data->timed_treatments[i];
-        if (rt_eq(data->roots_values[ind+i], 0))
+        if (rt_eq(data->roots_values[ind+i], RCONST(0.0)))
         {
     //        data->roots_values[ind+i] = 0;
 

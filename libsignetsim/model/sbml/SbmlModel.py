@@ -177,7 +177,7 @@ class SbmlModel(HasId, SbmlObject):
 			self.listOfSubmodels.readSbml(sbmlModel.getPlugin("comp").getListOfSubmodels(), self.sbmlLevel, self.sbmlVersion)
 			self.listOfPorts.readSbml(sbmlModel.getPlugin("comp").getListOfPorts(), self.sbmlLevel, self.sbmlVersion)
 
-		if Settings.verbose >= 1:
+		if Settings.verboseTiming >= 1:
 			print ">> SBML Model %s read in %.2gs" % (self.getSbmlId(), time()-t0)
 
 
@@ -219,7 +219,7 @@ class SbmlModel(HasId, SbmlObject):
 			self.listOfSubmodels.writeSbml(sbmlModel.getPlugin("comp"), self.sbmlLevel, self.sbmlVersion)
 			self.listOfPorts.writeSbml(sbmlModel.getPlugin("comp"), self.sbmlLevel, self.sbmlVersion)
 
-		if Settings.verbose >= 1:
+		if Settings.verboseTiming >= 2:
 			print "> SBML Model %s written in %.2gs" % (self.getSbmlId(), time()-t0)
 
 

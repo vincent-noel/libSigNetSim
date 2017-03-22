@@ -227,7 +227,7 @@ IntegrationResult * simulateModelCVODE(ModelDefinition * model,
 	void * cvode_mem = InitializeCVODE(model, user_data, condition, errLog);
 
 	iout = 0;
-	t = RCONST(result->list_samples[0]);
+	t = RCONST(result->list_samples[iout]);
 
 	// Firing Initial Assignments
 	// if (model->nb_init_assignments > 0) {
@@ -310,21 +310,49 @@ IntegrationResult * simulateModelCVODE(ModelDefinition * model,
 			if (flag == CV_ROOT_RETURN)
 			{
 				// One event has been detected.
-				//printf("> Event at t=%.16g\n", t);
+				printf("> Event at t=%.16g\n", t);
 
 				// Updating roots
 				int * new_roots = calloc((getNbRoots(user_data) + getNbTimedTreatments(user_data)), sizeof(int));
 
 				CVodeGetRootInfo(cvode_mem, new_roots);
 
-				int i;
+				int i, strict;
 				for (i=0; i < getNbRoots(user_data); i++)
 					if (new_roots[i] != 0)
+					{
 						user_data->roots_triggers[i] = new_roots[i];
+						if (user_data->roots_operators[i] == 1 || user_data->roots_operators[i] == 3)
+						    strict = 1;
+						else
+						    strict = 0;
+					}
 
 				free(new_roots);
 
-				executeEventsCVODE(user_data, t);
+
+
+
+				if (t == tout)
+				{
+
+					model->integration_functions->assPtr(t, user_data->derivative_variables, (void *) user_data);
+					iout++;
+
+					if (strict == 0)
+					{
+                        executeEventsCVODE(user_data, t);
+					    writeResultSample(model, result, user_data, t, iout);
+					}
+					else
+					{
+					    writeResultSample(model, result, user_data, t, iout);
+					    executeEventsCVODE(user_data, t);
+					}
+				}
+				else executeEventsCVODE(user_data, t);
+
+
 
 				//And we reinit the solver to accept this change of value
 				flag = CVodeReInit(cvode_mem, t, user_data->derivative_variables);
@@ -342,14 +370,6 @@ IntegrationResult * simulateModelCVODE(ModelDefinition * model,
 				if (check_flag(&flag, "CVodeRootInit", 1, errLog))
 					return NULL;
 
-				if (t == tout)
-				{
-					model->integration_functions->assPtr(t, user_data->derivative_variables, (void *) user_data);
-					iout++;
-					// tout += RCONST(model->integration_settings->t_sampling);
-					writeResultSample(model, result, user_data, t, iout);
-					tout = RCONST(result->list_samples[iout+1]);
-				}
 			}
 
 			else if (flag == CV_SUCCESS)
@@ -358,7 +378,7 @@ IntegrationResult * simulateModelCVODE(ModelDefinition * model,
 				// tout += RCONST(model->integration_settings->t_sampling);
 				iout++;
 				writeResultSample(model, result, user_data, t, iout);
-				tout = RCONST(result->list_samples[iout+1]);
+//				tout = RCONST(result->list_samples[iout+1]);
 			}
 
 			else
@@ -371,18 +391,22 @@ IntegrationResult * simulateModelCVODE(ModelDefinition * model,
 		else
 		{
 			model->integration_functions->assPtr(tout, user_data->derivative_variables, (void *) user_data);
+			t = RCONST(result->list_samples[iout+1]);
+
 			iout++;
 			// printf("%g (%d)\n", tout, iout);
 			// int iii;
 			// for (iii=0; iii < result->nb_samples; iii++)
 			// printf ("%g, ", result->list_samples[iii]);
 			// printf("\n");
-			writeResultSample(model, result, user_data, tout, iout);
+			writeResultSample(model, result, user_data, t, iout);
 			// tout += RCONST(model->integration_settings->t_sampling);
-			tout = RCONST(result->list_samples[iout+1]);
 		}
-
 		if (iout == (result->nb_samples-1)) break;
+		else tout = RCONST(result->list_samples[iout+1]);
+//		 printf("%d : %g (%d) (t : %g -> %g)\n", iout, result->list_samples[iout], result->nb_samples, t, tout);
+
+
 	}
 
 	FinalizeIntegrationData(model, user_data);

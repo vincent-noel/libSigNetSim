@@ -58,12 +58,14 @@ class Settings(object):
 	defaultSbmlLevel = 3
 	defaultSbmlVersion = 1
 
-	defaultAbsTol = 1e-8
+	defaultAbsTol = 1e-12
 	defaultRelTol = 1e-6
 
 	simulationTimeMin = 0
 	simulationTimeMax = 4000
-	simulationTimeEch = 0.1
+	simulationLogScale = False
+	simulationTimeEch = None
+	simulationNbSamples = 101
 	simulationKeepFiles = False
 
 	plotTimeMin = 0
@@ -83,7 +85,8 @@ class Settings(object):
 	optimizationDefaultCompartmentLowerBound = 1e-8
 	optimizationDefaultCompartmentUpperBound = 1e+8
 
-	verbose = 1
+	verbose = 0
+	verboseTiming = 0
 	showSbmlErrors = False
 	sbmlTestCasesPath = join(expanduser('~'),".test-suite/")
 	sbmlTestResultsPath = join('/tmp',"test-suite-results/")

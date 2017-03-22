@@ -35,15 +35,15 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 
 	CASES_PATH = "/home/labestiol/Work/code/libSigNetSim/libsignetsim/simulation/tests/biomodels_copasi"
 
-	def __init__ (self, model_id, test_export=False, keep_files=True):
+	def __init__ (self, model_id, time_ech=0.01, time_max=10, abs_tol=1e-12, rel_tol=1e-6, test_export=False, keep_files=True):
 
 		self.model_id = str(model_id)
 		self.testExport = test_export
 		self.timeMin = 0
-		self.timeEch = 1
-		self.timeMax = 100
-		self.testAbsTol = 1e-4
-		self.testRelTol = 1e-2
+		self.timeEch = time_ech
+		self.timeMax = time_max
+		self.testAbsTol = 1e-2
+		self.testRelTol = 1e-4
 		self.sbmlIdToPlot = []
 		self.sbmlIdToPlotAmount = []
 		self.sbmlIdToPlotConcentrations = []
@@ -60,8 +60,8 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 										time_min=self.timeMin,
 										time_max=self.timeMax,
 										time_ech=self.timeEch,
-										abs_tol=1e-12,
-										rel_tol=1e-6,
+										abs_tol=abs_tol,
+										rel_tol=rel_tol,
 										keep_files=keep_files)
 
 	#
@@ -121,8 +121,6 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 
 		data = numpy.genfromtxt(self.getResultsFilename(), skip_header=1)
 
-		# print self.sbmlIdToPlotAmount
-		# print self.sbmlIdToPlotConcentrations
 		self.expectedData = (data[:,0], data[:,1:data.shape[0]-1])
 
 	def getModelFilename(self):
@@ -140,26 +138,7 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 
 	def checkResults(self):
 
-		DEBUG = True
-		# expected_results = open(self.getResultsFilename())
-		# result = True
-		#
-		# variables = []
-		# timepoints = []
-		# for i, line in enumerate(expected_results.readlines()):
-		#
-		# 	if i == 0:
-		# 		t_variables = line.strip().split(',')
-		# 		if t_variables[len(t_variables)-1] == '':
-		# 			t_variables = t_variables[:-1]
-		# 		variables = [t_variable.strip() for t_variable in t_variables]
-		# 	else:
-		# 		t_timepoints = line.strip().split(',')
-		# 		if t_timepoints[len(t_timepoints)-1] == '':
-		# 			t_timepoints = t_timepoints[:-1]
-		# 		timepoints.append([float(t_timepoint) for t_timepoint in t_timepoints])
-		#
-		# expected_results.close()
+		DEBUG = False
 
 		if self.expectedData is not None and self.simulatedData is not None:
 
@@ -168,19 +147,8 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 
 			for i, t in enumerate(traj_times):
 				if etraj_times[i] != t:
-					return False
+					return -3
 
-
-			# print etrajs[0,:]
-			result = True
-	# 		showAlert = False
-	# 		timeError = False
-
-			# print trajs['BLL']
-
-			# print etrajs[:,0]
-			#
-			# return True
 
 			for t in range(etrajs.shape[0]):
 
@@ -189,12 +157,9 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 					t_expected_value = float(etrajs[t,i_var])
 					var = self.sbmlIdToPlot[i_var]
 
-					# print t_expected_value
-					# print var
-					# print ""
 					if var in self.listOfModels[0].listOfVariables.keys():
 						t_var = self.listOfModels[0].listOfVariables[var]
-	#
+
 						t_value = None
 						if t_var.isSpecies():
 
@@ -205,54 +170,22 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 
 							# Here we ask for an amout but it's declared a concentration
 							elif t_var.symbol.getPrettyPrintMathFormula() in self.sbmlIdToPlotAmount and not t_var.hasOnlySubstanceUnits:
-								# print "Yeah we need to plot the amount (%s)= %.5g" % (t_var.getSbmlId(),(trajs[t_var.getSbmlId()][i_t]*trajs[t_compartment.getSbmlId()][i_t]) )
 								t_value = trajs[t_var.symbol.getPrettyPrintMathFormula()][t]*trajs[t_compartment.symbol.getPrettyPrintMathFormula()][t]
 
 							else:
 								t_value = trajs[t_var.symbol.getPrettyPrintMathFormula()][t]
 						else:
-							# print len(trajs[t_var.getSbmlId()])
-							# print len(timepoints)
-
-							# print t_var.symbol.getPrettyPrintMathFormula()
 							t_value = trajs[t_var.symbol.getPrettyPrintMathFormula()][t]
 
-	#
-	# # T_a stand for the absolute tolerance for a test case,
-	#
-	# # T_r stand for the relative tolerance for a test case,
-	#
-	# # C_ij stand for the expected correct value for row i, column j, of
-	# # the result data set for the test case
-	#
-	# # U_ij stand for the corresponding value produced by a given
-	# # software simulation system run by the user
-	#
-	# # These absolute and relative tolerances are used in the following way:
-	# # a data point U_ij is considered to be within tolerances if and only if
-	# # the following expression is true:
-	#
-	# #            |C_ij - U_ij| <= (T_a + T_r * |C_ij|)
-	#
-						if abs(t_value-t_expected_value) > (self.testAbsTol + self.testRelTol*abs(t_expected_value)):
-							# if DEBUG:
-							# 	print "%s : %.10g, %.10g (%.0f%%, %.2g)" % (var, t_value, t_expected_value, abs(t_value-t_expected_value)/t_expected_value*100, t)
-							# 	print trajs['kf_0']
-							# 	print etrajs[:,i_var]
-							return -2
-							# showAlert = True
 
-	# 				elif var == 'time':
-	# 					if abs(traj_times[i_timepoint] - t_expected_value) > (self.testAbsTol + self.testRelTol*abs(t_expected_value)):
-	# 						result = False
-	# 						timeError = True
+						if abs(t_value-t_expected_value) > (self.testAbsTol + self.testRelTol*abs(t_expected_value)):
+							if DEBUG:
+								print "%s : %.10g, %.10g (%.0f%%, %.2g)" % (var, t_value, t_expected_value, abs(t_value-t_expected_value)/t_expected_value*100, t)
+
+							return -2
 					else:
 						print "cannot find variable %s" % var
 
-			# if showAlert:
-			# 	print "precision error"
-			# if timeError:
-			# 	print "time error"
 			return 0
 		else:
 			return -1

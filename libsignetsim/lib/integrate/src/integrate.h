@@ -47,9 +47,7 @@ SteadyStatesIntegrationResult * simulateModelSteadyStates(ModelDefinition * mode
                                   SteadyStatesIntegrationResult * result);
 // Free IntegrationResult object
 IntegrationResult * InitializeIntegrationResult(
-                                  ModelDefinition * model,
-                                  double * list_samples,
-                                  int nb_samples);
+                                  ModelDefinition * model);
 void FinalizeIntegrationResult(IntegrationResult * integration_result);
 
 SteadyStatesIntegrationResult * InitializeSteadyStatesIntegrationResult(

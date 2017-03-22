@@ -218,7 +218,8 @@ IntegrationResult * simulateModelIDA(ModelDefinition * model,
 {
     realtype t, tout;
     void * ida_mem;
-    int flag, iout, nout, i;
+//    int flag, iout, nout, i;
+    int flag, iout, i;
 
     // IntegrationResult * result = InitializeIntegrationResult(model, NULL, 0);
 
@@ -226,8 +227,9 @@ IntegrationResult * simulateModelIDA(ModelDefinition * model,
 
     ida_mem = InitializeIDA(model, user_data, condition, errLog);
 
-    t = (realtype) model->integration_settings->t_min;
     iout = 0;
+    t = RCONST(result->list_samples[iout]);
+//    t = (realtype) model->integration_settings->t_min;
 
 
     // Firing Initial Assignments
@@ -291,9 +293,8 @@ IntegrationResult * simulateModelIDA(ModelDefinition * model,
 
     }
 
-
-    nout = model->integration_settings->nb_samples - 1;
-    tout = RCONST(model->integration_settings->t_min + model->integration_settings->t_sampling);
+//    nout = model->integration_settings->nb_samples - 1;
+    tout = RCONST(result->list_samples[iout+1]);
     model->integration_functions->assPtr(t,user_data->derivative_variables, (void *) user_data);
     writeResultSample(model, result, user_data, t, iout);
 
@@ -358,7 +359,7 @@ IntegrationResult * simulateModelIDA(ModelDefinition * model,
                 {
                     model->integration_functions->assPtr(tout, user_data->derivative_variables, (void *) user_data);
                     iout++;
-                    tout += RCONST(model->integration_settings->t_sampling);
+//                    tout += RCONST(model->integration_settings->t_sampling);
                     writeResultSample(model, result, user_data, t, iout);
                 }
 
@@ -384,7 +385,7 @@ IntegrationResult * simulateModelIDA(ModelDefinition * model,
             {
                 model->integration_functions->assPtr(tout, user_data->derivative_variables, (void *) user_data);
                 iout++;
-                tout += RCONST(model->integration_settings->t_sampling);
+//                tout += RCONST(model->integration_settings->t_sampling);
                 writeResultSample(model, result, user_data, t, iout);
             }
 
@@ -399,11 +400,12 @@ IntegrationResult * simulateModelIDA(ModelDefinition * model,
         {
             model->integration_functions->assPtr(tout, user_data->derivative_variables, (void *) user_data);
             iout++;
-            tout += RCONST(model->integration_settings->t_sampling);
+//            tout += RCONST(model->integration_settings->t_sampling);
             writeResultSample(model, result, user_data, tout, iout);
         }
-
-        if (iout == nout) break;
+		if (iout == (result->nb_samples-1)) break;
+		else tout = RCONST(result->list_samples[iout+1]);
+//        if (iout == nout) break;
     }
 
     FinalizeIntegrationData(model, user_data);

@@ -145,7 +145,7 @@ class CMathWriter(object):
 
 		elif isinstance(tree, float):
 			# print srepr(tree)
-			t_string = "%.15g" % tree
+			t_string = "%.16g" % tree
 			if "." not in t_string and "e" not in t_string:
 				t_string += ".0"
 			return "RCONST(%s)" % t_string
@@ -166,7 +166,7 @@ class CMathWriter(object):
 		elif tree.func == SympyFloat:
 			# print srepr(tree)
 
-			t_string = "%.15g" % float(tree)
+			t_string = "%.16g" % float(tree)
 			if "." not in t_string and "e" not in t_string:
 				t_string += ".0"
 			return "RCONST(%s)" % t_string

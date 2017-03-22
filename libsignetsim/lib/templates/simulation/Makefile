@@ -30,10 +30,10 @@ all: sim-serial sim-parallel
 	rm -f *.o
 
 sim-serial: $(OBJ) $(SOBJ)
-	gcc $(OBJ) $(SOBJ) $(LIBS) -o sim-serial
+	gcc $(SOBJ) $(OBJ) $(LIBS) -o sim-serial
 
 sim-parallel: $(OBJ) $(POBJ)
-	mpicc $(OBJ) $(POBJ) $(LIBS) -o sim-parallel
+	mpicc $(POBJ) $(OBJ) $(LIBS) -o sim-parallel
 
 
 # Generated

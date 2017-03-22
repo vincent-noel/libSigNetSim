@@ -36,7 +36,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 	TODO_CASES = []
 	TODO_VERSIONS = []
-	TODO_TAGS = []
+	TODO_TAGS = []#['EventIsNotPersistent', 'EventIsPersistent', 'EventNoDelay', 'EventPriority', 'EventT0Firing', 'EventUsesAssignmentTimeValues', 'EventUsesTriggerTimeValues', 'EventWithDelay']
 
 	INCOMPATIBLE_CASES = [962, 987, 988]#962, Not compatible with ubuntu:precise, others not solved yet
 	INCOMPATIBLE_TAGS = ['CSymbolDelay']
@@ -172,7 +172,7 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 
 					# try:
-					if Settings.verbose >= 1:
+					if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
 						print ""
 					test = SbmlTestCaseSimulation(case, str(level), str(version), test_export=self.testExport, keep_files=self.keepFiles)
 					res_exec = test.run()

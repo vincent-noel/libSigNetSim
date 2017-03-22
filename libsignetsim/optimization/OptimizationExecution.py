@@ -164,7 +164,7 @@ class OptimizationExecution(object):
 		file_final_score.close()
 
 
-		if Settings.verbose == 1:
+		if Settings.verbose >= 1:
 			print "> Optimization executed. Final score : %.5g" % final_score
 		return final_score
 
@@ -188,9 +188,9 @@ class OptimizationExecution(object):
 				self.elapsedTime = self.stopTime - self.startTime
 				self.finalScore = self.readFinalScore()
 				return self.finalScore
-			elif Settings.verbose:
+			elif Settings.verbose >= 1:
 				print "> Execution failed !"
-		elif Settings.verbose:
+		elif Settings.verbose >= 1:
 			print "> Compilation failed !"
 
 		self.stopTime = int(time())

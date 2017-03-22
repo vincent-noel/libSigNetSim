@@ -48,16 +48,18 @@ class Simulation(CWriterSimulation):
 
 	def __init__ (self,
 					list_of_models=[],
-					list_of_initial_values=None,
+					# list_of_initial_values=None,
 					experiment=None,
-					timeMin=Settings.simulationTimeMin,
-					timeMax=Settings.simulationTimeMax,
-					ech=Settings.simulationTimeEch,
+					time_min=Settings.simulationTimeMin,
+					time_max=Settings.simulationTimeMax,
 					abs_tol=Settings.defaultAbsTol,
 					rel_tol=Settings.defaultRelTol,
+					log_scale=Settings.simulationLogScale,
+					time_ech=Settings.simulationTimeEch,
+					nb_samples=Settings.simulationNbSamples,
 					keep_files=Settings.simulationKeepFiles):
 
-		self.keepFiles = keep_files#Settings.simulationKeepFiles
+		self.keepFiles = keep_files
 		self.sessionId = None
 		self.simulationId = ''.join(choice(ascii_uppercase + ascii_lowercase + digits) for _ in range(12))
 
@@ -69,12 +71,15 @@ class Simulation(CWriterSimulation):
 
 
 		CWriterSimulation.__init__(self, list_of_models=list_of_models,
-						list_of_initial_values=list_of_initial_values,
+						# list_of_initial_values=list_of_initial_values,
 						experiment=experiment,
-						timeMin=timeMin,
-						timeMax=timeMax,
-						ech=ech,
-						abs_tol=abs_tol, rel_tol=rel_tol)
+						time_min=time_min,
+						time_max=time_max,
+						abs_tol=abs_tol,
+						rel_tol=rel_tol,
+						log_scale=log_scale,
+						time_ech=time_ech,
+						nb_samples=nb_samples)
 		self.listOfModels = list_of_models
 
 		self.__simulationDone = self.SIM_TODO
@@ -262,13 +267,13 @@ class Simulation(CWriterSimulation):
 
 		mid = time()
 
-		if Settings.verbose >= 1:
+		if Settings.verboseTiming >= 1:
 			print ">> Compilation executed in %.2fs" % (mid-start)
 
 		self.__execute__(nb_procs=nb_procs, steady_states=steady_states)
 		end = time()
 
-		if Settings.verbose >= 1:
+		if Settings.verboseTiming >= 1:
 			print ">> Simulation executed in %.2fs" % (end-mid)
 
 

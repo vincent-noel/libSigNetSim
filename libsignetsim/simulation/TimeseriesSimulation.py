@@ -40,20 +40,29 @@ class TimeseriesSimulation(Simulation):
 					+ ["#FF8E00",   "#B32851",   "#F4C800",  "#7F180D"]
 					+ ["#93AA00",   "#593315",   "#F13A13",   "#232C16"])
 
-	def __init__ (self, list_of_models=[], experiment=None,
-					time_min=0, time_max=1000, time_ech=0.1,
-					abs_tol=1e-8, rel_tol=1e-6,
+	def __init__ (self, list_of_models=[],
+				  	experiment=None,
+					time_min=Settings.simulationTimeMin,
+					time_max=Settings.simulationTimeMax,
+					abs_tol=Settings.defaultAbsTol,
+					rel_tol=Settings.defaultRelTol,
+					log_scale=Settings.simulationLogScale,
+					time_ech=Settings.simulationTimeEch,
+					nb_samples=Settings.simulationNbSamples,
 					keep_files=Settings.simulationKeepFiles):
 
 		Simulation.__init__(self,
 							list_of_models=list_of_models,
 							experiment=experiment,
-							timeMin=time_min,
-							timeMax=time_max,
-							ech=time_ech,
+							time_min=time_min,
+							time_max=time_max,
 							abs_tol=abs_tol,
 							rel_tol=rel_tol,
+							log_scale=log_scale,
+							time_ech=time_ech,
+							nb_samples=nb_samples,
 							keep_files=keep_files)
+
 		self.keepFiles = keep_files
 
 	def loadSimulationResults_v2(self):

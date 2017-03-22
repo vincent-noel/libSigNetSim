@@ -30,40 +30,41 @@
  *   along with SigNetSim.  If not, see <http://www.gnu.org/licenses/>.       *
  *                                                                            *
  ******************************************************************************/
+
+#define MAX(a,b) (((a)>(b))?(a):(b))
+#define MIN(a,b) (((a)<(b))?(a):(b))
+
 #include <stdio.h>
 #include "realtype_math.h"
 
-// realtype RT_PI = RCONST(M_PI);
-// realtype RT_E = RCONST(M_E);
-// realtype RT_NA = RCONST(6.02214179E+23);
-// realtype RT_NAN = RCONST(NAN);
-// realtype RT_INF = RCONST(INFINITY);
+realtype abs_tol = RCONST(DBL_EPSILON);
+realtype rel_tol = RCONST(DBL_EPSILON);
 
-realtype abs_tol = RCONST(1e-15);
-realtype rel_tol = RCONST(1e-15);
-
-realtype rt_get_precision(realtype x)
-{
-	return abs_tol+x*rel_tol;
-}
+//realtype rt_get_precision(realtype x)
+// {
+// 	 return abs_tol+x*rel_tol;
+// }
 
 void rt_set_precision(realtype abs_tol, realtype rel_tol)
 {
 	abs_tol = abs_tol;
 	rel_tol = rel_tol;
-
 }
 
 
 
 int rt_eq(realtype x, realtype y)
 {
-	return (rt_abs(x-y) <= rt_get_precision(x));
+	return (rt_abs(x-y) <= MAX(abs_tol, rel_tol*MAX(rt_abs(x), rt_abs(y))));
+//	return (rt_abs(x-y) <= rt_get_precision(x));
+//	return (rt_abs(x-y) <= DBL_EPSILON);
 }
 
 int rt_neq(realtype x, realtype y)
 {
-	return (rt_abs(x-y) > rt_get_precision(x));
+	return (rt_abs(x-y) > MAX(abs_tol, rel_tol*MAX(rt_abs(x), rt_abs(y))));
+//	return (rt_abs(x-y) > rt_get_precision(x));
+//	return (rt_abs(x-y) > DBL_EPSILON);
 }
 
 int rt_lt(realtype x, realtype y)

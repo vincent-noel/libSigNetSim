@@ -34,15 +34,16 @@ from time import time
 class CWriterSimulation(CWriterModels, CWriterData):
 
 	def __init__ (self, list_of_models=[],
-						list_of_initial_values=None,
 						experiment=None,
-						timeMin=Settings.simulationTimeMin,
-						timeMax=Settings.simulationTimeMax,
-						ech=Settings.simulationTimeEch,
-						abs_tol=1e-8,
-						rel_tol=1e-6):
+						time_min=Settings.simulationTimeMin,
+						time_max=Settings.simulationTimeMax,
+						abs_tol=Settings.defaultAbsTol,
+						rel_tol=Settings.defaultRelTol,
+						log_scale=Settings.simulationLogScale,
+						time_ech=Settings.simulationTimeEch,
+						nb_samples=Settings.simulationNbSamples):
 
-		CWriterModels.__init__(self, list_of_models, timeMin, timeMax, ech, abs_tol, rel_tol)
+		CWriterModels.__init__(self, list_of_models, time_min, time_max, abs_tol, rel_tol, log_scale, time_ech, nb_samples)
 
 		if experiment is not None:
 			CWriterData.__init__(self, {0:experiment}, workingModel=list_of_models[0])
@@ -51,7 +52,7 @@ class CWriterSimulation(CWriterModels, CWriterData):
 
 		self.experiment = experiment
 		self.listOfModels = list_of_models
-		self.timeMin = timeMin
+		self.timeMin = time_min
 
 
 	def writeSimulationFiles(self):
@@ -96,5 +97,5 @@ class CWriterSimulation(CWriterModels, CWriterData):
 		self.writeModelFiles()
 		self.writeDataFiles()
 
-		if Settings.verbose >= 1:
+		if Settings.verboseTiming >= 1:
 				print ">> Files written in %.2fs" % (time()-start)

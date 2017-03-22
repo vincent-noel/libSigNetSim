@@ -90,7 +90,7 @@ class SteadyStatesSimulation(Simulation):
         self.writeSimulationFiles()
         mid = clock()
 
-        if Settings.verbose:
+        if Settings.verboseTiming >= 1:
 
             print "> Files written in %.2fs" % (mid-start)
         res = self.runSimulation(nb_procs=3, steady_states=True)
@@ -101,7 +101,7 @@ class SteadyStatesSimulation(Simulation):
 
         stop = clock()
 
-        if Settings.verbose:
+        if Settings.verboseTiming >= 1:
             print "> Simulation executed in %.2fs" % (stop-start)
 
     def loadSimulationResults_v2(self):
