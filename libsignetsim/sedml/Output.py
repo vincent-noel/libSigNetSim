@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-""" __init__.py
+""" Output.py
 
 
-	Initialization of the module libsignetsim.simulation.tests
+	This file ...
 
 
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
@@ -22,3 +22,21 @@
 
 """
 
+from libsignetsim.sedml.SedBase import SedBase
+from libsignetsim.sedml.HasId import HasId
+from libsignetsim.settings.Settings import Settings
+
+
+class Output(SedBase, HasId):
+
+	def __init__(self, document):
+
+		SedBase.__init__(self, document)
+		HasId.__init__(self, document)
+
+		self.__document = document
+
+	def readSedml(self, output, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.readSedml(self, output, level, version)
+		HasId.readSedml(self, output, level, version)

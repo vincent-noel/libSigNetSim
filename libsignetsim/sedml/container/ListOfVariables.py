@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-""" __init__.py
+""" ListOfVariables.py
 
 
-	Initialization of the module libsignetsim.simulation.tests
+	This file ...
 
 
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
@@ -22,3 +22,25 @@
 
 """
 
+from libsignetsim.sedml.SedBase import SedBase
+from libsignetsim.sedml.Variable import Variable
+from libsignetsim.settings.Settings import Settings
+
+
+class ListOfVariables(SedBase):
+
+	def __init__(self, document):
+
+		SedBase.__init__(self, document)
+
+		self.__document = document
+		self.listOfVariables = []
+
+	def readSedml(self, list_of_variables, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.readSedml(self, list_of_variables, level, version)
+
+		for t_var in list_of_variables:
+			var = Variable(self.__document)
+			var.readSedml(t_var, level, version)
+			self.listOfVariables.append(var)

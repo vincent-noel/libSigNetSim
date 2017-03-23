@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-""" __init__.py
+""" ListOfCurves.py
 
 
-	Initialization of the module libsignetsim.simulation.tests
+	This file ...
 
 
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
@@ -21,4 +21,25 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
+from libsignetsim.sedml.SedBase import SedBase
+from libsignetsim.sedml.Curve import Curve
+from libsignetsim.settings.Settings import Settings
 
+class ListOfCurves(SedBase):
+
+	def __init__(self, document):
+
+		SedBase.__init__(self, document)
+
+		self.__document = document
+		self.listOfCurves = []
+
+
+	def readSedml(self, list_of_curves, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.readSedml(self, list_of_curves, level, version)
+
+		for t_curve in list_of_curves:
+			curve = Curve(self.__document)
+			curve.readSedml(t_curve, level, version)
+			self.listOfCurves.append(curve)

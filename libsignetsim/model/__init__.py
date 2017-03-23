@@ -90,6 +90,6 @@
 # from ListOfMathVariables import ListOfMathVariables
 # from ListOfSbmlVariables import ListOfSbmlVariables
 # from ListOfVariables import ListOfVariables
-from Model import Model
+# from Model import Model
 # from ModelException import ModelException
 # from Variable import Variable

@@ -21,13 +21,9 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
-class LibSigNetSimException(Exception):
 
-	def __init__(self, message):
-		self.message = message
+from libsignetsim.LibSigNetSimException import LibSigNetSimException
 
-	def __str__(self):
-		return self.message
 
 class CannotCreateException(LibSigNetSimException):
 

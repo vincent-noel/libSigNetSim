@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-""" __init__.py
+""" Model.py
 
 
-	Initialization of the module libsignetsim.simulation.tests
+	This file ...
 
 
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
@@ -21,4 +21,25 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
+from libsignetsim.sedml.SedBase import SedBase
+from libsignetsim.sedml.HasId import HasId
+from libsignetsim.settings.Settings import Settings
 
+class Model(SedBase, HasId):
+
+	def __init__(self, document):
+
+		SedBase.__init__(self, document)
+		HasId.__init__(self, document)
+
+		self.__document = document
+		self.__language = None
+		self.__source = None
+
+	def readSedml(self, model, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.readSedml(self, model, level, version)
+		HasId.readSedml(self, model, level, version)
+
+		self.__language = model.getLanguage()
+		self.__source = model.getSource()

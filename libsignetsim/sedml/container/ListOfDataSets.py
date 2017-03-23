@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-""" __init__.py
+""" ListOfDataSets.py
 
 
-	Initialization of the module libsignetsim.simulation.tests
+	This file ...
 
 
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
@@ -21,4 +21,25 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
+from libsignetsim.sedml.SedBase import SedBase
+from libsignetsim.sedml.DataSet import DataSet
+from libsignetsim.settings.Settings import Settings
 
+class ListOfDataSets(SedBase):
+
+	def __init__(self, document):
+
+		SedBase.__init__(self, document)
+
+		self.__document = document
+		self.listOfDataSets = []
+
+
+	def readSedml(self, list_of_data_sets, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.readSedml(self, list_of_data_sets, level, version)
+
+		for t_data_set in list_of_data_sets:
+			data_set = DataSet(self.__document)
+			data_set.readSedml(t_data_set, level, version)
+			self.listOfDataSets.append(data_set)

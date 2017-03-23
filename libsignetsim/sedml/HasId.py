@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-""" __init__.py
+""" HasId.py
 
 
-	Initialization of the module libsignetsim.simulation.tests
+	This file ...
 
 
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
@@ -21,4 +21,26 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
+from libsignetsim.settings.Settings import Settings
 
+class HasId(object):
+
+	def __init__(self, document):
+
+		self.__document = document
+		self.__id = None
+		self.__name = None
+
+	def readSedml(self, has_id_object, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		if has_id_object.isSetId():
+			self.__id = has_id_object.getId()
+
+		if has_id_object.isSetName():
+			self.__name = has_id_object.getName()
+
+	def getId(self):
+		return self.__id
+
+	def getName(self):
+		return self.__name

@@ -2,7 +2,7 @@
 """ __init__.py
 
 
-	Initialization of the module libsignetsim.simulation.tests
+	Initialization of the tests of the module SED-ML
 
 
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
@@ -21,4 +21,3 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
-

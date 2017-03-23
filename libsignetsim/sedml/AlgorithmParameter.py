@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-""" __init__.py
+""" AlgorithmParameter.py
 
 
-	Initialization of the module libsignetsim.simulation.tests
+	This file ...
 
 
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
@@ -21,4 +21,25 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
+from libsignetsim.sedml.SedBase import SedBase
+from libsignetsim.settings.Settings import Settings
 
+class AlgorithmParameter(SedBase):
+
+	def __init__(self, document):
+
+		SedBase.__init__(self, document)
+
+		self.__document = document
+		self.__kisaoID = None
+		self.__value = None
+
+	def readSedml(self, algo_param, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.readSedml(self, algo_param, level, version)
+
+		if algo_param.isSetKisaoID():
+			self.__kisaoId = algo_param.getKisaoID()
+
+		if algo_param.isSetValue():
+			self.__value = algo_param.getValue()

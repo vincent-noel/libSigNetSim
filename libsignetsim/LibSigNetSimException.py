@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-""" __init__.py
+""" LibSigNetSimException.py
 
 
-	Initialization of the module libsignetsim.simulation.tests
+	This file ...
 
 
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
@@ -22,3 +22,10 @@
 
 """
 
+class LibSigNetSimException(Exception):
+
+	def __init__(self, message):
+		self.message = message
+
+	def __str__(self):
+		return self.message

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-""" __init__.py
+""" SedBase.py
 
 
-	Initialization of the module libsignetsim.simulation.tests
+	This file ...
 
 
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
@@ -21,4 +21,30 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
+from libsignetsim.settings.Settings import Settings
 
+class SedBase(object):
+
+	def __init__(self, document):
+
+		self.__document = document
+		self.__metaId = None
+		self.__notes = None
+		self.__annotations = None
+
+	def readSedml(self, sed_base_object, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		if sed_base_object.isSetMetaId():
+			self.__metaId = sed_base_object.getMetaId()
+
+		if sed_base_object.isSetNotes():
+			self.__notes = sed_base_object.getNotes()
+
+		if sed_base_object.isSetAnnotation():
+			self.__annotation = sed_base_object.getAnnotation()
+
+	def getMetaId(self):
+		return self.__metaId
+
+	def getNotes(self):
+		return self.__notes

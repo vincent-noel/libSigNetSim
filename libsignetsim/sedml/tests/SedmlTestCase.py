@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-""" __init__.py
+""" SedTestCase.py
 
 
-	Initialization of the module libsignetsim.simulation.tests
+	This file ...
 
 
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
@@ -21,4 +21,31 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
+
+from libsignetsim.sedml.SedmlDocument import SedmlDocument
+from libsignetsim.settings.Settings import Settings
+
+from os.path import join
+
+class SedTestCase(object):
+
+	def __init__ (self, case_id, sbml_level, sbml_version):
+
+		self.caseId = "%05d" % case_id
+		self.sbmlLevel = sbml_level
+		self.sbmlVersion = sbml_version
+
+		self.document = None
+		self.loadTestCaseModel()
+
+	def loadTestCaseModel(self):
+
+		self.document = SedmlDocument()
+		self.document.readSedml(self.getFilename())
+
+	def getFilename(self):
+
+		return join(Settings.sbmlTestCasesPath, "cases/semantic/%s/%s-sbml-l%sv%s-sedml.xml" % (
+				self.caseId, self.caseId, self.sbmlLevel, self.sbmlVersion)
+		)
 

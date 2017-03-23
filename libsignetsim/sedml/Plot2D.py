@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-""" __init__.py
+""" Output.py
 
 
-	Initialization of the module libsignetsim.simulation.tests
+	This file ...
 
 
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
@@ -22,3 +22,21 @@
 
 """
 
+from libsignetsim.sedml.Output import Output
+from libsignetsim.sedml.container.ListOfCurves import ListOfCurves
+from libsignetsim.settings.Settings import Settings
+
+
+class Plot2D(Output):
+
+	def __init__(self, document):
+
+		Output.__init__(self, document)
+
+		self.__document = document
+		self.listOfCurves = ListOfCurves(self.__document)
+
+	def readSedml(self, plot, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		Output.readSedml(self, plot, level, version)
+		self.listOfCurves.readSedml(plot.getListOfCurves(), level, version)

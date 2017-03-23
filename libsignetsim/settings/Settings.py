@@ -58,6 +58,10 @@ class Settings(object):
 	defaultSbmlLevel = 3
 	defaultSbmlVersion = 1
 
+	# SED-ML settings
+	defaultSedmlLevel = 1
+	defaultSedmlVersion = 2
+
 	defaultAbsTol = 1e-12
 	defaultRelTol = 1e-6
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-""" __init__.py
+""" SedmlException.py
 
 
-	Initialization of the module libsignetsim.simulation.tests
+	This file ...
 
 
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
@@ -22,3 +22,11 @@
 
 """
 
+from libsignetsim.LibSigNetSimException import LibSigNetSimException
+
+
+class SedmlException(LibSigNetSimException):
+	pass
+
+class SedmlMathException(SedmlException):
+	pass

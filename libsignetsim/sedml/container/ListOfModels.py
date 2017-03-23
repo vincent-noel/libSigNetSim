@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-""" __init__.py
+""" ListOfModels.py
 
 
-	Initialization of the module libsignetsim.simulation.tests
+	This file ...
 
 
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
@@ -22,3 +22,25 @@
 
 """
 
+from libsignetsim.sedml.SedBase import SedBase
+from libsignetsim.sedml.Model import Model
+from libsignetsim.settings.Settings import Settings
+
+
+class ListOfModels(SedBase):
+
+	def __init__(self, document):
+
+		SedBase.__init__(self, document)
+
+		self.__document = document
+		self.listOfModels = []
+
+	def readSedml(self, list_of_models, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.readSedml(self, list_of_models, level, version)
+
+		for t_model in list_of_models:
+			model = Model(self.__document)
+			model.readSedml(t_model, level, version)
+			self.listOfModels.append(model)
