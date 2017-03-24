@@ -11,3 +11,4 @@ install:
 
 script:
   - python -m unittest discover libsignetsim -v
+  - python -m unittest libsignetsim.sedml.tests.TestSedmlCompatibility
