@@ -22,18 +22,19 @@
 
 """
 
-
-import unittest
-
 from libsignetsim.model.Model import Model
-from libsignetsim.optimization.ModelVsTimeseriesOptimization import ModelVsTimeseriesOptimization
 
 from libsignetsim.data.Experiment import Experiment as Experiment
 from libsignetsim.data.ExperimentalCondition import ExperimentalCondition
 from libsignetsim.data.ListOfExperimentalData import ListOfExperimentalData
 from libsignetsim.data.ExperimentalData import ExperimentalData
 
-class TestOptimization(unittest.TestCase):
+from libsignetsim.optimization.ModelVsTimeseriesOptimization import ModelVsTimeseriesOptimization
+
+from unittest import TestCase
+
+
+class TestOptimization(TestCase):
 	""" Tests high level functions """
 
 

@@ -23,18 +23,15 @@
 """
 
 from libsignetsim.sedml.math.SedmlMathReader import SedmlMathReader
-# from libsignetsim.sedml.math.SedmlMathWriter import SedmlMathWriter
+from libsignetsim.sedml.math.SedmlMathWriter import SedmlMathWriter
 from libsignetsim.settings.Settings import Settings
-
 from libsignetsim.model.math.sympy_shortcuts import (SympySymbol, SympyInteger)
 
-# from MathDevelopper import unevaluatedSubs
-from libsedml import parseFormula
-# from libsbml import parseL3Formula
-from sympy import simplify
+from libsedml import parseFormula, formulaToString, ASTNode
+from sympy import srepr
 
 
-class MathFormula(SedmlMathReader):#, SedmlMathWriter):
+class MathFormula(SedmlMathReader, SedmlMathWriter):
 	""" Class for handling math formulaes """
 
 	MATH_SBML = 0
@@ -42,10 +39,8 @@ class MathFormula(SedmlMathReader):#, SedmlMathWriter):
 	MATH_PRETTYPRINT = 2
 	MATH_VALUE = 3
 
-
 	ZERO                = SympyInteger(0)
 	ONE                 = SympyInteger(1)
-
 	t                   = SympySymbol("t")
 
 	def __init__(self, document):
@@ -53,7 +48,7 @@ class MathFormula(SedmlMathReader):#, SedmlMathWriter):
 
 		self.__document = document
 		SedmlMathReader.__init__(self, document)
-		# SedmlMathWriter.__init__(self, document)
+		SedmlMathWriter.__init__(self, document)
 
 		self.level = None
 		self.version = None
@@ -66,17 +61,37 @@ class MathFormula(SedmlMathReader):#, SedmlMathWriter):
 		self.version = version
 		self.internalTree = SedmlMathReader.translateForInternal(self, formula)
 
+		if Settings.verbose >= 2:
+			print "\n> readSedml : "
+			print ">> input : %s" % self.printSbml(formula)
+			print ">> output simplified : %s" % str(self.internalTree)
+			print ">> output : %s" % srepr(self.internalTree)
+
 	def writeSedml(self, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 		""" Export math formula to sbml """
 
-		# formula = SedmlMathWriter.translateForSbml(self, self.internalTree, level, version)
-		formula = parseFormula(str(self.internalTree))
-		# if Settings.verbose >= 2:
-		# 	print "\n> writeSbml"
-		# 	print ">> input : %s" % srepr(self.getInternalMathFormula())
-		# 	print ">> output : %s" % self.printSbml(formula, level, version)
+		formula = SedmlMathWriter.translateForSbml(self, self.internalTree, level, version)
+
+		if Settings.verbose >= 2:
+			print "\n> writeSedml"
+			print ">> input : %s" % srepr(elf.internalTree)
+			print ">> input simplified : %s" % str(self.internalTree)
+			print ">> output : %s" % self.printSbml(formula, level, version)
 
 		return formula
+
+
+
+	def printSbml(self, formula, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		if isinstance(formula, str):
+			return formula
+		elif isinstance(formula, ASTNode):
+			return formulaToString(formula)
+		else:
+			return str(formula)
+
+
 	#
 	# def getSbmlMathFormula(self, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 	# 	return MathFormula.getMathFormula(self, MathFormula.MATH_SBML, sbml_level, sbml_version)

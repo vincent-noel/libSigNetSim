@@ -92,8 +92,10 @@ class Settings(object):
 	verbose = 0
 	verboseTiming = 0
 	showSbmlErrors = False
+
 	sbmlTestCasesPath = join(expanduser('~'),".test-suite/")
 	sbmlTestResultsPath = join('/tmp',"test-suite-results/")
+
 	defaultCVODEmaxNumSteps = 5000
 	defaultCVODEMaxConvFails = 100
 	defaultCVODEMaxErrFails = 70

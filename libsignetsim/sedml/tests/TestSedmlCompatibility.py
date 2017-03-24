@@ -22,31 +22,35 @@
 
 """
 
-
-import unittest
-import os
 from libsignetsim.sedml.tests.SedmlTestCase import SedTestCase
 from libsignetsim.settings.Settings import Settings
 
+from unittest import TestCase
 from time import time
+from os.path import join, expanduser, exists
+from os import getcwd, mkdir, system
 
 
-class TestSedmlCompatibility(unittest.TestCase):
+class TestSedmlCompatibility(TestCase):
 	""" Tests SED-ML semantic test cases """
 
 	TODO_CASES = []
 	TODO_VERSIONS = []
+	INCOMPATIBLE_CASES = [962, 987, 988]
+	INCOMPATIBLE_TAGS = ['CSymbolDelay']
 
-	INCOMPATIBLE_CASES = []
+	COMPATIBLE_PACKAGES = ['comp']
+
 
 	SEMANTIC_CASES_LINK = "http://downloads.sourceforge.net/project/sbml/test-suite/3.2.0/case-archives/sbml-semantic-test-cases-2016-07-27.zip"
 
 	def __init__(self, *args, **kwargs):
 
-		unittest.TestCase.__init__(self, *args, **kwargs)
+		TestCase.__init__(self, *args, **kwargs)
 
-		self.testSuitePath = os.path.join(os.path.expanduser('~'),".test-suite/")
+		self.testSuitePath = join(expanduser('~'), ".test-suite/")
 		self.testCasesPath = None
+		self.testCasesTags = {}
 		self.testCasesVersions = {}
 		Settings.verbose = 0
 
@@ -54,12 +58,12 @@ class TestSedmlCompatibility(unittest.TestCase):
 
 		self.testSuitePath = Settings.tempDirectory
 		Settings.sbmlTestCasesPath = "/tmp/"
-		if not os.path.exists(os.path.join(self.testSuitePath, "test-suite-results")):
-			os.mkdir(os.path.join(self.testSuitePath, "test-suite-results"))
-		if not os.path.exists(os.path.join(self.testSuitePath, "cases")):
-			present_dir = os.getcwd()
+		if not exists(join(self.testSuitePath, "test-suite-results")):
+			mkdir(join(self.testSuitePath, "test-suite-results"))
+		if not exists(join(self.testSuitePath, "cases")):
+			present_dir = getcwd()
 			cmd = "cd %s; wget %s -O temp.zip; unzip -nq temp.zip; rm temp.zip; cd %s" % (Settings.tempDirectory, self.SEMANTIC_CASES_LINK, present_dir)
-			os.system(cmd)
+			system(cmd)
 
 		self.loadTestCasesInfo()
 		self.assertEqual(self.runTestCases(), True)
@@ -67,14 +71,14 @@ class TestSedmlCompatibility(unittest.TestCase):
 	def loadTestCasesInfo(self, path=None):
 		""" Loads cases info from the .cases-tags-map """
 
-		self.testCasesPath = os.path.join(
-								os.path.join(self.testSuitePath, "cases")
+		self.testCasesPath = join(
+								join(self.testSuitePath, "cases")
 								, "semantic")
 
-		cases_tags_map_file = os.path.join(self.testCasesPath,
+		cases_tags_map_file = join(self.testCasesPath,
 											".cases-tags-map")
 
-		if os.path.exists(cases_tags_map_file):
+		if exists(cases_tags_map_file):
 			cases_tags_map = open(cases_tags_map_file)
 			tags_list = []
 			for i, line in enumerate(cases_tags_map.readlines()):
@@ -94,11 +98,11 @@ class TestSedmlCompatibility(unittest.TestCase):
 					versions = []
 					for data in case_data[1:]:
 						if data in tags_list:
-							# tags.append(data)
-							pass
+							tags.append(data)
 						else:
 							versions.append(data)
 
+					self.testCasesTags.update({case_id: tags})
 					self.testCasesVersions.update({case_id: versions})
 			cases_tags_map.close()
 
@@ -106,9 +110,19 @@ class TestSedmlCompatibility(unittest.TestCase):
 
 		nb_success = 0
 		nb_cases = 0
-		for case_id in self.testCasesVersions.keys():
+		for case_id, case_tags in self.testCasesTags.items():
 
-			if self.TODO_CASES == [] or case_id in self.TODO_CASES:
+			compatible = True
+
+			for tag in case_tags:
+				if tag.strip() in self.INCOMPATIBLE_TAGS:
+					compatible = False
+
+				elif (':' in tag.strip()
+					  and tag.strip().split(':')[0] not in self.COMPATIBLE_PACKAGES):
+					compatible = False
+
+			if compatible and (self.TODO_CASES == [] or case_id in self.TODO_CASES):
 				(t_success, t_cases) = self.runCase(case_id)
 				nb_success += t_success
 				nb_cases += t_cases
@@ -116,7 +130,6 @@ class TestSedmlCompatibility(unittest.TestCase):
 		if nb_cases > 0:
 			print "\n> %d success out of %d tests (%.0f%%)" % (nb_success, nb_cases, nb_success*100/nb_cases)
 		return nb_cases == nb_success
-
 
 	def runCase(self, case):
 
@@ -135,16 +148,16 @@ class TestSedmlCompatibility(unittest.TestCase):
 
 				nb_cases += 1
 
-				# try:
-				if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
-					print ""
+				try:
+					if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
+						print ""
 
-				SedTestCase(case, str(level), str(version))
+					SedTestCase(case, str(level), str(version))
 
-				nb_success += 1
-				# print ">> l%dv%d : OK (%.2gs)" % (level, version, time()-start)
+					nb_success += 1
+					# print ">> l%dv%d : OK (%.2gs)" % (level, version, time()-start)
 
-				# except Exception as e:
-				# 	print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
+				except Exception as e:
+					print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
 
 		return nb_success, nb_cases

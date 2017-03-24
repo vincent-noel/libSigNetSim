@@ -24,6 +24,9 @@
 
 from libsignetsim.sedml.Simulation import Simulation
 from libsignetsim.sedml.Algorithm import Algorithm
+
+from libsignetsim.simulation.TimeseriesSimulation import TimeseriesSimulation
+
 from libsignetsim.settings.Settings import Settings
 
 
@@ -95,3 +98,12 @@ class UniformTimeCourse(Simulation):
 
 	def getAlgorithm(self):
 		return self.__algorithm
+
+	def buildSimulation(self, sbmlModel):
+
+		return TimeseriesSimulation(
+			list_of_models=[sbmlModel],
+			time_min=self.__initialTime,
+			time_max=self.__outputEndTime,
+			nb_samples=self.__numberOfPoints
+		)

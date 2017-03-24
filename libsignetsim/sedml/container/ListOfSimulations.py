@@ -25,8 +25,10 @@
 from libsignetsim.sedml.SedBase import SedBase
 from libsignetsim.sedml.UniformTimeCourse import UniformTimeCourse
 from libsignetsim.settings.Settings import Settings
+# import libsbml
 
 from libsedml import SEDML_SIMULATION_UNIFORMTIMECOURSE, SEDML_SIMULATION_ONESTEP, SEDML_SIMULATION_STEADYSTATE
+# reload(libsbml)
 
 class ListOfSimulations(SedBase):
 
@@ -56,3 +58,10 @@ class ListOfSimulations(SedBase):
 			if isinstance(t_simulation, UniformTimeCourse):
 				simulation = list_of_simulations.createUniformTimeCourse()
 				t_simulation.writeSedml(simulation, level, version)
+
+
+	def buildSimulation(self, simulation_reference, model):
+
+		for t_simulation in self.listOfSimulations:
+			if t_simulation.getId() == simulation_reference:
+				return t_simulation.buildSimulation(model)

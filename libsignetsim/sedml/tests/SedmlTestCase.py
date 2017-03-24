@@ -42,7 +42,8 @@ class SedTestCase(object):
 
 		self.document = SedmlDocument()
 		self.document.readSedmlFromFile(self.getFilename())
-		self.document.writeSedmlToFile("poil.xml")
+		self.document.run()
+		self.document.writeSedmlToFile(self.getTemporarySedmlFilename())
 
 	def getFilename(self):
 
@@ -50,3 +51,6 @@ class SedTestCase(object):
 				self.caseId, self.caseId, self.sbmlLevel, self.sbmlVersion)
 		)
 
+
+	def getTemporarySedmlFilename(self):
+		return join(Settings.sbmlTestResultsPath, "%s-sbml-l%sv%s-sedml.xml" % (self.caseId, self.sbmlLevel, self.sbmlVersion))

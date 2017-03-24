@@ -24,8 +24,9 @@
 from libsignetsim.sedml.Task import Task
 from libsignetsim.sedml.SedBase import SedBase
 from libsignetsim.settings.Settings import Settings
-
-from libsedml import SEDML_TASK, SEDML_TASK_REPEATEDTASK, SEDML_TASK_SUBTASK
+import libsbml
+from libsedml import SEDML_TASK
+reload(libsbml)
 
 class ListOfTasks(SedBase):
 
@@ -59,3 +60,11 @@ class ListOfTasks(SedBase):
 			if isinstance(t_task, Task):
 				task = list_of_tasks.createTask()
 				t_task.writeSedml(task, level, version)
+
+	def getTasks(self):
+
+		tasks = []
+		for t_task in self.listOfTasks:
+			tasks.append(t_task.getTask())
+
+		return tasks

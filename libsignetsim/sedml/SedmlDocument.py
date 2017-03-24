@@ -27,7 +27,12 @@ from libsignetsim.sedml.container.ListOfSimulations import ListOfSimulations
 from libsignetsim.sedml.container.ListOfTasks import ListOfTasks
 from libsignetsim.sedml.container.ListOfDataGenerators import ListOfDataGenerators
 from libsignetsim.sedml.container.ListOfOutputs import ListOfOutputs
+
+from libsignetsim.simulation.TimeseriesSimulation import TimeseriesSimulation
+
 from libsignetsim.sedml.SedmlException import SedmlFileNotFound
+from libsignetsim.model.ModelException import TagNotImplementedModelException
+
 from libsignetsim.settings.Settings import Settings
 
 from libsedml import readSedMLFromFile, writeSedMLToFile, SedDocument
@@ -49,6 +54,7 @@ class SedmlDocument(object):
 		self.listOfTasks = ListOfTasks(self)
 		self.listOfDataGenerators = ListOfDataGenerators(self)
 		self.listOfOutputs = ListOfOutputs(self)
+
 
 	def readSedmlFromFile(self, filename):
 
@@ -89,3 +95,17 @@ class SedmlDocument(object):
 
 		document = self.writeSedml(level, version)
 		writeSedMLToFile(document, filename)
+
+	def run(self):
+
+		# try:
+			tasks = self.listOfTasks.getTasks()
+			for task in tasks:
+				task.run()
+
+		# except TagNotImplementedModelException as e:
+		# 	print e
+		#
+		# except Exception as e:
+		# 	print "%s : %s" % (type(e), e)
+

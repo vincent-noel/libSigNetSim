@@ -23,21 +23,17 @@
 """
 
 
-import unittest
 from libsignetsim.model.Model import Model
-from libsignetsim.simulation.TimeseriesSimulation import TimeseriesSimulation
+from libsignetsim.simulation.SteadyStatesSimulation import SteadyStatesSimulation
 
-class TestTimeseries(unittest.TestCase):
+from unittest import TestCase
+
+class TestSteadyStates(TestCase):
 	""" Tests high level functions """
 
 
 	def testSimulateMichaelisMenten(self):
 
-		reference_data = [0.0, 1.897738187453314, 3.756955433409792, 5.562177924708521, 7.287504219961273,
-						  8.886453435701496, 10.27109268766486, 11.28772309320835, 11.80437071324164,
-						  11.95991226988507, 11.99256438900284, 11.99865019516933, 11.9997559549625,
-						  11.99995590896604, 11.99999203526398, 11.99999856126113, 11.99999974010935,
-						  11.99999995305381, 11.99999999151893, 11.99999999846709, 11.99999999972277]
 		m = Model()
 		m.setName("Enzymatic Reaction")
 
@@ -60,10 +56,20 @@ class TestTimeseries(unittest.TestCase):
 		vmax.setValue(0.211)
 		km.setValue(1.233)
 
-		sim = TimeseriesSimulation([m], time_min=0, time_ech=1, time_max=20)
+		input_data = [1.2, 12.0, 120.0, 1200.0]
+		input_species = s
+
+		reference_data = [1.2, 12.0, 120.0, 1200.0]
+
+		sim = SteadyStatesSimulation(
+			list_of_models=[m],
+			species_input=input_species,
+			list_of_initial_values=input_data,
+			time_max=100.0
+		)
 		sim.run()
-		_,y = sim.getRawData()[0]
-		model_data = y['P']
+
+		results = sim.listOfData_v2
 
 		for i, t_data in enumerate(reference_data):
-			self.assertAlmostEqual(t_data, model_data[i], delta=1e-6)
+			self.assertAlmostEqual(t_data, results[i][p.getSbmlId()])

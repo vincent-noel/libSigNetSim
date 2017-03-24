@@ -49,7 +49,6 @@ class DataGenerator(SedBase, HasId):
 
 		self.listOfVariables.readSedml(data_generator.getListOfVariables(), level, version)
 		self.listOfParameters.readSedml(data_generator.getListOfParameters(), level, version)
-
 		self.__math.readSedml(data_generator.getMath(), level, version)
 
 	def writeSedml(self, data_generator, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
@@ -59,7 +58,6 @@ class DataGenerator(SedBase, HasId):
 
 		self.listOfVariables.writeSedml(data_generator.getListOfVariables(), level, version)
 		self.listOfParameters.writeSedml(data_generator.getListOfParameters(), level, version)
-
 		data_generator.setMath(self.__math.writeSedml(level, version))
 
 	def getMath(self):

@@ -24,9 +24,9 @@
 from libsignetsim.sedml.SedBase import SedBase
 from libsignetsim.sedml.HasId import HasId
 from libsignetsim.sedml.SedmlException import SedmlModelLanguageNotSupported, SedmlModelNotFound
+from libsignetsim.model.SbmlDocument import SbmlDocument
 from libsignetsim.settings.Settings import Settings
 from os.path import exists, join
-
 
 class Model(SedBase, HasId):
 
@@ -38,6 +38,7 @@ class Model(SedBase, HasId):
 		self.__document = document
 		self.__language = None
 		self.__source = None
+		self.__sbmlModel = None
 
 	def readSedml(self, model, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -60,6 +61,10 @@ class Model(SedBase, HasId):
 			if not exists(join(self.__document.path, self.__source)):
 				raise SedmlModelNotFound("File %s not found" % self.__source)
 
+			else:
+				if Settings.verbose >= 1:
+					print "> Loading SBML Document %s" % self.__source
+
 	def writeSedml(self, model, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
 		SedBase.writeSedml(self, model, level, version)
@@ -70,3 +75,19 @@ class Model(SedBase, HasId):
 
 		if self.__source is not None:
 			model.setSource(self.__source)
+
+	def getSbmlModel(self):
+
+		if self.__sbmlModel is None:
+			self.__loadModel()
+
+		return self.__sbmlModel
+
+
+	def __loadModel(self):
+
+		sbml_doc = SbmlDocument()
+		sbml_doc.readSBMLFromFile(join(self.__document.path, self.__source))
+
+		self.__sbmlModel = sbml_doc.getModelInstance()
+

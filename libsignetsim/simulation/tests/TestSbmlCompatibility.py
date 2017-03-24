@@ -22,15 +22,15 @@
 """
 
 
-import unittest, os, time
-from libsignetsim.model.Model import Model
 from libsignetsim.simulation.tests.SbmlTestCaseSimulation import SbmlTestCaseSimulation
-from libsignetsim.model.SbmlDocument import SbmlDocument
 from libsignetsim.settings.Settings import Settings
-from multiprocessing import cpu_count
 
+from unittest import TestCase
+from time import time
+from os.path import join, expanduser, exists
+from os import getcwd, mkdir, system
 
-class TestSbmlCompatibility(unittest.TestCase):
+class TestSbmlCompatibility(TestCase):
 	""" Tests SBML semantic test cases """
 
 	TODO_CASES = []
@@ -46,9 +46,9 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 	def __init__(self, *args, **kwargs):
 
-		unittest.TestCase.__init__(self, *args, **kwargs)
+		TestCase.__init__(self, *args, **kwargs)
 
-		self.testSuitePath = os.path.join(os.path.expanduser('~'),".test-suite/")
+		self.testSuitePath = join(expanduser('~'),".test-suite/")
 		self.testCasesPath = None
 		self.testCasesTags = {}
 		self.testCasesVersions = {}
@@ -61,12 +61,12 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 		self.testSuitePath = Settings.tempDirectory
 		Settings.sbmlTestCasesPath = "/tmp/"
-		if not os.path.exists(os.path.join(self.testSuitePath, "test-suite-results")):
-			os.mkdir(os.path.join(self.testSuitePath, "test-suite-results"))
-		if not os.path.exists(os.path.join(self.testSuitePath, "cases")):
-			present_dir = os.getcwd()
+		if not exists(join(self.testSuitePath, "test-suite-results")):
+			mkdir(join(self.testSuitePath, "test-suite-results"))
+		if not exists(join(self.testSuitePath, "cases")):
+			present_dir = getcwd()
 			cmd = "cd %s; wget %s -O temp.zip; unzip -nq temp.zip; rm temp.zip; cd %s" % (Settings.tempDirectory, self.SEMANTIC_CASES_LINK, present_dir)
-			os.system(cmd)
+			system(cmd)
 
 		self.loadTestCasesInfo()
 		self.assertEqual(self.runTestCases(), True)
@@ -74,14 +74,14 @@ class TestSbmlCompatibility(unittest.TestCase):
 	def loadTestCasesInfo(self, path=None):
 		""" Loads cases info from the .cases-tags-map """
 
-		self.testCasesPath = os.path.join(
-								os.path.join(self.testSuitePath, "cases")
+		self.testCasesPath = join(
+								join(self.testSuitePath, "cases")
 								, "semantic")
 
-		cases_tags_map_file = os.path.join(self.testCasesPath,
+		cases_tags_map_file = join(self.testCasesPath,
 											".cases-tags-map")
 
-		if os.path.exists(cases_tags_map_file):
+		if exists(cases_tags_map_file):
 			cases_tags_map = open(cases_tags_map_file)
 			tags_list = []
 			for i, line in enumerate(cases_tags_map.readlines()):
@@ -111,8 +111,6 @@ class TestSbmlCompatibility(unittest.TestCase):
 
 
 	def runTestCases(self):
-
-		self.nbCores = cpu_count()
 
 
 		nb_success = 0
@@ -148,44 +146,43 @@ class TestSbmlCompatibility(unittest.TestCase):
 		nb_cases = 0
 		nb_success = 0
 
-		case_path = os.path.join(self.testCasesPath, "%05d" % case)
+		case_path = join(self.testCasesPath, "%05d" % case)
 		print "> Running case %05d (%s)" % (case, str(self.testCasesVersions[case]))
-		results = [None]*len(self.testCasesVersions[case])
-
 
 		for versions in self.testCasesVersions[case]:
+
 			if self.TODO_VERSIONS == [] or versions in self.TODO_VERSIONS:
-				start = time.time()
+				start = time()
 				level_version = versions.split('.')
 				level = int(level_version[0])
 				version = int(level_version[1])
 
-				sbml_doc = os.path.join(case_path, "%05d-sbml-l%dv%d.xml" % (
+				sbml_doc = join(case_path, "%05d-sbml-l%dv%d.xml" % (
 													case, level, version))
 
-				if os.path.exists(sbml_doc):
+				if exists(sbml_doc):
 
 					nb_cases += 1
 
 
-					# try:
-					if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
-						print ""
-					test = SbmlTestCaseSimulation(case, str(level), str(version), test_export=self.testExport, keep_files=self.keepFiles)
-					res_exec = test.run()
+					try:
+						if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
+							print ""
+						test = SbmlTestCaseSimulation(
+							case, str(level), str(version),
+							test_export=self.testExport,
+							keep_files=self.keepFiles
+						)
+						res_exec = test.run()
 
-					if res_exec:
-						nb_success += 1
-						# print ">> l%dv%d : OK (%.2gs)" % (level, version, time.time()-start)
+						if res_exec:
+							nb_success += 1
+							# print ">> l%dv%d : OK (%.2gs)" % (level, version, time()-start)
 
-					else:
-						print ">> l%dv%d : ERROR (%.2gs)" % (level, version, time.time()-start)
+						else:
+							print ">> l%dv%d : ERROR (%.2gs)" % (level, version, time()-start)
 
-					# except Exception as e:
-					# 	print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
+					except Exception as e:
+						print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
 
 		return (nb_success, nb_cases)
-
-	def runIndividualCase(self, case, level, version, results, index):
-		test = SbmlTestCaseSimulation(case, str(level), str(version), keep_files=self.keepFiles)
-		results[index] = test.run()

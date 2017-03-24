@@ -32,7 +32,7 @@ from os import mkdir
 
 class SbmlTestCaseSimulation(TimeseriesSimulation):
 
-	def __init__ (self, case_id, sbml_level, sbml_version, test_export=False, keep_files=True):#Settings.simulationKeepFiles):
+	def __init__ (self, case_id, sbml_level, sbml_version, test_export=False, keep_files=True):
 
 		self.caseId = "%05d" % case_id
 		self.sbmlLevel = sbml_level

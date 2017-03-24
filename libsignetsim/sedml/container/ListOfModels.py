@@ -52,3 +52,17 @@ class ListOfModels(SedBase):
 		for t_model in self.listOfModels:
 			model = list_of_models.createModel()
 			t_model.writeSedml(model, level, version)
+
+	def getSbmlModels(self):
+
+		models = []
+		for model in self.listOfModels:
+			models.append(model.getSbmlModel())
+
+		return models
+
+	def getByModelReference(self, model_reference):
+
+		for t_model in self.listOfModels:
+			if t_model.getId() == model_reference:
+				return t_model.getSbmlModel()

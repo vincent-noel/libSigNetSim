@@ -26,9 +26,10 @@ from libsignetsim.sedml.SedBase import SedBase
 from libsignetsim.sedml.Plot2D import Plot2D
 from libsignetsim.sedml.Report import Report
 from libsignetsim.settings.Settings import Settings
+# import libsbml
 
 from libsedml import SEDML_OUTPUT_PLOT2D, SEDML_OUTPUT_REPORT
-
+# reload(libsbml)
 
 class ListOfOutputs(SedBase):
 
