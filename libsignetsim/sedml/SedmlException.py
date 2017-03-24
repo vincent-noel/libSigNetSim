@@ -30,3 +30,12 @@ class SedmlException(LibSigNetSimException):
 
 class SedmlMathException(SedmlException):
 	pass
+
+class SedmlModelLanguageNotSupported(SedmlException):
+	pass
+
+class SedmlModelNotFound(SedmlException):
+	pass
+
+class SedmlFileNotFound(SedmlException):
+	pass

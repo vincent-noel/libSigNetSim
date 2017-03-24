@@ -38,3 +38,8 @@ class AbstractTask(SedBase, HasId):
 
         SedBase.readSedml(self, abstract_task, level, version)
         HasId.readSedml(self, abstract_task, level, version)
+
+    def writeSedml(self, abstract_task, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+        SedBase.writeSedml(self, abstract_task, level, version)
+        HasId.writeSedml(self, abstract_task, level, version)

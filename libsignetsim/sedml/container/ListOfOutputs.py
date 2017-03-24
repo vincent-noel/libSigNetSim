@@ -44,13 +44,26 @@ class ListOfOutputs(SedBase):
 
 		for t_output in list_of_outputs:
 
-			output = None
 			if t_output.getTypeCode() == SEDML_OUTPUT_PLOT2D:
 				output = Plot2D(self.__document)
+				output.readSedml(t_output, level, version)
+				self.listOfOutputs.append(output)
 
 			elif t_output.getTypeCode() == SEDML_OUTPUT_REPORT:
 				output = Report(self.__document)
-
-			if output is not None:
 				output.readSedml(t_output, level, version)
 				self.listOfOutputs.append(output)
+
+	def writeSedml(self, list_of_outputs, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.writeSedml(self, list_of_outputs, level, version)
+
+		for t_output in self.listOfOutputs:
+
+			if isinstance(t_output, Plot2D):
+				output = list_of_outputs.createPlot2D()
+				t_output.writeSedml(output, level, version)
+
+			elif isinstance(t_output, Report):
+				output = list_of_outputs.createReport()
+				t_output.writeSedml(output, level, version)

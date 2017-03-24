@@ -44,3 +44,11 @@ class ListOfParameters(SedBase):
 			parameter = Parameter(self.__document)
 			parameter.readSedml(t_parameter, level, version)
 			self.listOfParameters.append(parameter)
+
+	def writeSedml(self, list_of_parameters, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.writeSedml(self, list_of_parameters, level, version)
+
+		for t_parameter in self.listOfParameters:
+			parameter = list_of_parameters.createParameter()
+			t_parameter.writeSedml(parameter, level, version)

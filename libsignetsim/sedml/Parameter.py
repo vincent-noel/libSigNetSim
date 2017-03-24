@@ -44,5 +44,16 @@ class Parameter(SedBase, HasId):
 		if parameter.isSetValue():
 			self.__value = parameter.getValue()
 
+	def writeSedml(self, parameter, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.writeSedml(self, parameter, level, version)
+		HasId.writeSedml(self, parameter, level, version)
+
+		if self.__value is not None:
+			parameter.setValue(self.__value)
+
 	def getValue(self):
 		return self.__value
+
+	def setValue(self, value):
+		self.__value = value

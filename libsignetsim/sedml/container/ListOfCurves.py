@@ -43,3 +43,11 @@ class ListOfCurves(SedBase):
 			curve = Curve(self.__document)
 			curve.readSedml(t_curve, level, version)
 			self.listOfCurves.append(curve)
+
+	def writeSedml(self, list_of_curves, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.writeSedml(self, list_of_curves, level, version)
+
+		for t_curve in self.listOfCurves:
+			curve = list_of_curves.createCurve()
+			t_curve.writeSedml(curve, level, version)

@@ -43,8 +43,24 @@ class Task(AbstractTask):
         if task.isSetSimulationReference():
             self.__simulationReference = task.getSimulationReference()
 
+    def writeSedml(self, task, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+        AbstractTask.writeSedml(self, task, level, version)
+
+        if self.__modelReference is not None:
+            task.setModelReference(self.__modelReference)
+
+        if self.__simulationReference is not None:
+            task.setSimulationReference(self.__simulationReference)
+
     def getModelReference(self):
         return self.__modelReference
 
     def getSimulationReference(self):
         return self.__simulationReference
+
+    def setModelReference(self, model_reference):
+        self.__modelReference = model_reference
+
+    def setSimulationReference(self, simulation_reference):
+        self.__simulationReference = simulation_reference

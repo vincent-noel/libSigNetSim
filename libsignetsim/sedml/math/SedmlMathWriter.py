@@ -22,228 +22,182 @@
 
 """
 
-
-from libsignetsim.model.math.sympy_shortcuts import *
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.ModelException import MathException
+from libsignetsim.sedml.SedmlException import SedmlMathException
 
-import libsbml
-from sympy import srepr
-from re import match
+
+# token: cn , ci , csymbol , sep
+from libsedml import AST_NAME, AST_NAME_TIME, AST_INTEGER, AST_REAL
+from sympy_shortcuts import SympyInteger, SympyFloat, SympySymbol
+# qualifiers: degree , bvar , logbase
+
+# general : apply , piecewise , piece , otherwise , lambda
+from libsedml import AST_FUNCTION_PIECEWISE, AST_LAMBDA
+from sympy_shortcuts import SympyPiecewise, SympyITE, SympyLambda
+
+# relational operators: eq , neq , gt , lt , geq , leq
+from libsedml import (
+	AST_RELATIONAL_EQ, AST_RELATIONAL_NEQ, AST_RELATIONAL_GT, AST_RELATIONAL_LT, AST_RELATIONAL_GEQ, AST_RELATIONAL_LEQ
+)
+from sympy_shortcuts import (
+	SympyEqual, SympyUnequal, SympyStrictGreaterThan, SympyStrictLessThan, SympyGreaterThan, SympyLessThan
+)
+
+
+# arithmetic operators: plus , minus , times , divide , power , root , abs , exp , ln , log , floor , ceiling ,
+from libsedml import (
+	AST_PLUS, AST_MINUS, AST_TIMES, AST_DIVIDE, AST_POWER, AST_FUNCTION_ROOT, AST_FUNCTION_ABS, AST_FUNCTION_EXP,
+	AST_FUNCTION_LN, AST_FUNCTION_LOG, AST_FUNCTION_FLOOR, AST_FUNCTION_CEILING
+)
+from sympy_shortcuts import (SympyAdd, SympyMul, SympyPow, SympyAbs, SympyExp, SympyLog, SympyFloor, SympyCeiling)
+
+
+# factorial
+from libsedml import AST_FUNCTION_FACTORIAL
+from sympy_shortcuts import SympyFactorial
+
+# logical operators: and , or , xor , not
+from libsedml import AST_LOGICAL_AND, AST_LOGICAL_OR, AST_LOGICAL_XOR, AST_LOGICAL_NOT
+from sympy_shortcuts import SympyAnd, SympyOr, SympyXor, SympyNot
+
+# trigonometric operators: sin , cos , tan , sec , csc , cot
+from libsedml import (
+	AST_FUNCTION_SIN, AST_FUNCTION_COS, AST_FUNCTION_TAN, AST_FUNCTION_SEC, AST_FUNCTION_CSC, AST_FUNCTION_COT
+)
+from sympy_shortcuts import (SympySin, SympyCos, SympyTan, SympySec, SympyCsc, SympyCot)
+
+
+# trigonometric operators: sinh , cosh , tanh , sech , csch , coth ,
+from libsedml import (AST_FUNCTION_SINH, AST_FUNCTION_COSH, AST_FUNCTION_TANH, AST_FUNCTION_COTH)
+from sympy_shortcuts import (SympySinh, SympyCosh, SympyTanh, SympyCoth)
+
+# trigonometric operators: arcsin , arccos , arctan , arcsec , arccsc , arccot
+from libsedml import (
+	AST_FUNCTION_ARCSIN, AST_FUNCTION_ARCCOS, AST_FUNCTION_ARCTAN,
+	AST_FUNCTION_ARCSEC, AST_FUNCTION_ARCCSC, AST_FUNCTION_ARCCOT
+)
+from sympy_shortcuts import (SympyAsin, SympyAcos, SympyAtan, SympyAsec, SympyAcsc, SympyAcot)
+
+# trigonometric operators: arcsinh , arccosh , arctanh , arcsech , arccsch , arccoth
+from libsedml import (
+	AST_FUNCTION_ARCSINH, AST_FUNCTION_ARCCOSH, AST_FUNCTION_ARCTANH,
+	AST_FUNCTION_ARCSECH, AST_FUNCTION_ARCCSCH, AST_FUNCTION_ARCCOTH
+)
+from sympy_shortcuts import (SympyAsinh, SympyAcosh, SympyAtanh, SympyAcoth)
+# constants: true , false , notanumber , pi , infinity , exponentiale
+# TODO : Infinity, NaN
+from libsedml import (AST_CONSTANT_TRUE, AST_CONSTANT_FALSE, AST_CONSTANT_PI, AST_CONSTANT_E)
+from sympy_shortcuts import (
+	SympyTrue, SympyFalse, SympyPi, SympyE, SympyExp1, SympyInf, SympyNan, SympyOne, SympyNegOne, SympyHalf, SympyZero
+)
+
+from libsedml import ASTNode
 
 
 class SedmlMathWriter(object):
 	""" Class for handling math formulaes """
 
-	def __init__(self, model):
+	def __init__(self, document):
 		""" Constructor """
 
-		self.model = model
+		self.__document = document
 
-
-	def writeSbml(self, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-		""" Export math formula to sbml """
-
-
-		formula = self.translateForSbml(self.getInternalMathFormula(), sbml_level, sbml_version)
-		if Settings.verbose >= 2:
-			print "\n> writeSbml"
-			print ">> input : %s" % srepr(self.getInternalMathFormula())
-			print ">> output : %s" % self.printSbml(formula, sbml_level, sbml_version)
-
-		return formula
-
-
-
-	def printSbml(self, formula, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-
-		if isinstance(formula, str):
-			return formula
-		elif isinstance(formula, libsbml.ASTNode):
-			if sbml_level <= 2:
-				return libsbml.formulaToString(formula)
-			else:
-				return libsbml.formulaToL3String(formula)
-		else:
-			return str(formula)
-
-
-
-	def translateVariableForSbml(self, variable, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-		""" Translates a Sympy symbol in C """
-
-		#Input is a Sympy symbol, we need to convert to string
-		variable = str(variable)
-
-		if variable == "_time_":
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_NAME_TIME)
-			t_ast.setName("time")
-			return t_ast
-
-		elif variable == "_avogadro_":
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_NAME_AVOGADRO)
-			return t_ast
-
-
-		if variable.startswith("_speciesForcedConcentration_"):
-			res_match = match(r"_speciesForcedConcentration_(.*)_", variable)
-			t_sbml_id = str(res_match.groups()[0])
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_NAME)
-			t_ast.setName(self.model.listOfSpecies.getBySbmlId(t_sbml_id).getSbmlId())
-			return t_ast
-
-		elif "_speciesForcedAmount_" in variable:
-			res_match = match(r"_speciesForcedAmount_(\d+)_", variable)
-			t_id = int(res_match.groups()[0])
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_NAME)
-			t_ast.setName(self.model.listOfSpecies[t_id].getSbmlId())
-			return t_ast
-
-		elif "_local_" in variable:
-			res_match = match(r"_local_(\d+)_(.*)", variable)
-			t_rid = int(res_match.groups()[0])
-			t_sbmlid = str(res_match.groups()[1])
-			t_localparam = self.model.listOfReactions[t_rid].listOfLocalParameters.getBySbmlId(t_sbmlid)
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_NAME)
-			t_ast.setName(t_localparam.getSbmlId())
-			return t_ast
-
-		else:
-			# print "translateVariableToSbml unknown variable type ! (%s)" % variable
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_NAME)
-			t_ast.setName(variable)
-			return t_ast
-
-
-	def translateForSbml(self, tree, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+	def translateForSbml(self, tree, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 		""" Translate a sympy tree into a C string """
 
-		if isinstance(tree, int):
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_INTEGER)
-			t_ast.setValue(tree)
-			return t_ast
+		if tree.func == SympySymbol:
+			if str(tree) == '_time_':
+				t_ast = ASTNode()
+				t_ast.setType(AST_NAME_TIME)
+				t_ast.setName("time")
+				return t_ast
 
-		elif isinstance(tree, float):
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_REAL)
-			t_ast.setValue(tree)
-			return t_ast
-
-		elif isinstance(tree, str):
-			return self.translateVariableForSbml(tree, sbml_level, sbml_version)
-
-		elif tree.func == SympySymbol:
-			return self.translateVariableForSbml(str(tree), sbml_level, sbml_version)
-
-		elif isinstance(tree.func, SympyUndefinedFunction) and tree.args == (SympySymbol("t"),) and str(tree.func) in self.model.listOfVariables.keys():
-			return self.translateVariableForSbml(str(tree.func), sbml_level, sbml_version)
+			else:
+				t_ast = ASTNode()
+				t_ast.setType(AST_NAME)
+				t_ast.setName(str(tree))
+				return t_ast
 
 		elif tree.func == SympyInteger:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_INTEGER)
+			t_ast = ASTNode()
+			t_ast.setType(AST_INTEGER)
 			t_ast.setValue(int(tree))
 			return t_ast
 
 		elif tree.func == SympyFloat:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_REAL)
+			t_ast = ASTNode()
+			t_ast.setType(AST_REAL)
 			t_ast.setValue(float(tree))
 			return t_ast
 
-
-		elif tree.func == SympyRational:
-			# One of the values is a float...
-			# The python libsbml doesn't seems to be implemented in that case.
-			# Not sure if it's standard or not, but the test case exists... so
-			if float(long(tree.p)) != float(tree.p) or float(long(tree.p)) != float(tree.p):
-				print "DETECTED"
-				t_ast = libsbml.ASTNode()
-				t_ast.setType(libsbml.AST_DIVIDE)
-				t_ast.addChild(self.translateForSbml(tree.p, sbml_level, sbml_version))
-				t_ast.addChild(self.translateForSbml(tree.q, sbml_level, sbml_version))
-				return t_ast
-
-
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_RATIONAL)
-			t_ast.setValue(long(tree.p), long(tree.q))
-			return t_ast
-
 		elif tree.func == SympyNegOne:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_INTEGER)
+			t_ast = ASTNode()
+			t_ast.setType(AST_INTEGER)
 			t_ast.setValue(-1)
 			return t_ast
 
 		elif tree.func == SympyOne:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_INTEGER)
+			t_ast = ASTNode()
+			t_ast.setType(AST_INTEGER)
 			t_ast.setValue(1)
 			return t_ast
 
 		elif tree.func == SympyHalf:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_REAL)
+			t_ast = ASTNode()
+			t_ast.setType(AST_REAL)
 			t_ast.setValue(0.5)
 			return t_ast
 
 		elif tree.func == SympyZero:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_INTEGER)
+			t_ast = ASTNode()
+			t_ast.setType(AST_INTEGER)
 			t_ast.setValue(0)
 			return t_ast
 
 		elif tree == SympyPi:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_CONSTANT_PI)
+			t_ast = ASTNode()
+			t_ast.setType(AST_CONSTANT_PI)
 			return t_ast
 
 		elif tree.func == SympyE or tree.func == SympyExp1:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_CONSTANT_E)
+			t_ast = ASTNode()
+			t_ast.setType(AST_CONSTANT_E)
 			return t_ast
 
 		elif tree == SympyInf:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_REAL)
+			t_ast = ASTNode()
+			t_ast.setType(AST_REAL)
 			t_ast.setValue(float("inf"))
 			return t_ast
 
 		elif tree == -SympyInf:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_REAL)
+			t_ast = ASTNode()
+			t_ast.setType(AST_REAL)
 			t_ast.setValue(float("-inf"))
 			return t_ast
 
 		elif tree == SympyNan:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_REAL)
+			t_ast = ASTNode()
+			t_ast.setType(AST_REAL)
 			t_ast.setValue(float("nan"))
 			return t_ast
 
 		elif tree == SympyTrue or tree == True:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_CONSTANT_TRUE)
+			t_ast = ASTNode()
+			t_ast.setType(AST_CONSTANT_TRUE)
 			return t_ast
 
 		elif tree == SympyFalse or tree == False:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_CONSTANT_FALSE)
+			t_ast = ASTNode()
+			t_ast.setType(AST_CONSTANT_FALSE)
 			return t_ast
 
 		elif tree.func == SympyAdd:
 
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_PLUS)
+			t_ast = ASTNode()
+			t_ast.setType(AST_PLUS)
 			for i_arg, arg in enumerate(tree.args):
-				t_ast.addChild(self.translateForSbml(arg, sbml_level, sbml_version))
+				t_ast.addChild(self.translateForSbml(arg, level, version))
 
 			return t_ast
 
@@ -251,41 +205,40 @@ class SedmlMathWriter(object):
 
 			if len(tree.args) == 2:
 				if tree.args[0].func == SympyNegOne:
-					t_ast = libsbml.ASTNode()
-					t_ast.setType(libsbml.AST_MINUS)
-					t_ast.addChild(self.translateForSbml(tree.args[1], sbml_level, sbml_version))
+					t_ast = ASTNode()
+					t_ast.setType(AST_MINUS)
+					t_ast.addChild(self.translateForSbml(tree.args[1], level, version))
 					return t_ast
 
 				if tree.args[1].func == SympyNegOne:
-					t_ast = libsbml.ASTNode()
-					t_ast.setType(libsbml.AST_MINUS)
-					t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+					t_ast = ASTNode()
+					t_ast.setType(AST_MINUS)
+					t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 					return t_ast
 
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_TIMES)
-			# t_ast_2 = None
+			t_ast = ASTNode()
+			t_ast.setType(AST_TIMES)
 			t_tree_denominator = None
 
 			for i_arg, arg in enumerate(tree.args):
 				if arg.func == SympyPow and arg.args[1].func == SympyNegOne:
 
 					if t_tree_denominator is None:
-						t_tree_denominator = self.translateForSbml(arg.args[0], sbml_level, sbml_version)
-					elif t_tree_denominator.getType() != libsbml.AST_TIMES:
-						t_tree_denominator_new = libsbml.ASTNode()
-						t_tree_denominator_new.setType(libsbml.AST_TIMES)
+						t_tree_denominator = self.translateForSbml(arg.args[0], level, version)
+					elif t_tree_denominator.getType() != AST_TIMES:
+						t_tree_denominator_new = ASTNode()
+						t_tree_denominator_new.setType(AST_TIMES)
 						t_tree_denominator_new.addChild(t_tree_denominator)
-						t_tree_denominator_new.addChild(self.translateForSbml(arg.args[0], sbml_level, sbml_version))
+						t_tree_denominator_new.addChild(self.translateForSbml(arg.args[0], level, version))
 						t_tree_denominator = t_tree_denominator_new
 					else:
-						t_tree_denominator.addChild(self.translateForSbml(arg.args[0], sbml_level, sbml_version))
+						t_tree_denominator.addChild(self.translateForSbml(arg.args[0], level, version))
 				else:
-					t_ast.addChild(self.translateForSbml(arg, sbml_level, sbml_version))
+					t_ast.addChild(self.translateForSbml(arg, level, version))
 
 			if t_tree_denominator is not None:
-				t_ast_2 = libsbml.ASTNode()
-				t_ast_2.setType(libsbml.AST_DIVIDE)
+				t_ast_2 = ASTNode()
+				t_ast_2.setType(AST_DIVIDE)
 				t_ast_2.addChild(t_ast)
 				t_ast_2.addChild(t_tree_denominator)
 				return t_ast_2
@@ -294,134 +247,134 @@ class SedmlMathWriter(object):
 
 		# AST_FUNCTION_ABS
 		elif tree.func == SympyAbs:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_ABS)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_ABS)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_ARCCOS
 		elif tree.func == SympyAcos:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_ARCCOS)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_ARCCOS)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_ARCCOSH
 		elif tree.func == SympyAcosh:
 			if tree.args[0].func == SympyPow and tree.args[0].args[1] == SympyInteger(-1):
-				t_ast = libsbml.ASTNode()
-				t_ast.setType(libsbml.AST_FUNCTION_ARCSECH)
-				t_ast.addChild(self.translateForSbml(tree.args[0].args[0], sbml_level, sbml_version))
+				t_ast = ASTNode()
+				t_ast.setType(AST_FUNCTION_ARCSECH)
+				t_ast.addChild(self.translateForSbml(tree.args[0].args[0], level, version))
 				return t_ast
 
 			else:
-				t_ast = libsbml.ASTNode()
-				t_ast.setType(libsbml.AST_FUNCTION_ARCCOSH)
-				t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+				t_ast = ASTNode()
+				t_ast.setType(AST_FUNCTION_ARCCOSH)
+				t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 				return t_ast
 
 		# AST_FUNCTION_ARCCOT
 		elif tree.func == SympyAcot:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_ARCCOT)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_ARCCOT)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_ARCCOTH
 		elif tree.func == SympyAcoth:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_ARCCOTH)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_ARCCOTH)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_ARCSIN
 		elif tree.func == SympyAsin:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_ARCSIN)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_ARCSIN)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_ARCSINH
 		elif tree.func == SympyAsinh:
 			if tree.args[0].func == SympyPow and tree.args[0].args[1] == SympyInteger(-1):
-				t_ast = libsbml.ASTNode()
-				t_ast.setType(libsbml.AST_FUNCTION_ARCCSCH)
-				t_ast.addChild(self.translateForSbml(tree.args[0].args[0], sbml_level, sbml_version))
+				t_ast = ASTNode()
+				t_ast.setType(AST_FUNCTION_ARCCSCH)
+				t_ast.addChild(self.translateForSbml(tree.args[0].args[0], level, version))
 				return t_ast
 			else:
-				t_ast = libsbml.ASTNode()
-				t_ast.setType(libsbml.AST_FUNCTION_ARCSINH)
-				t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+				t_ast = ASTNode()
+				t_ast.setType(AST_FUNCTION_ARCSINH)
+				t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 				return t_ast
 
 		# AST_FUNCTION_ARCTAN
 		elif tree.func == SympyAtan:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_ARCTAN)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_ARCTAN)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_ARCTANH
 		elif tree.func == SympyAtanh:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_ARCTANH)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_ARCTANH)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_ARCSEC
 		elif tree.func == SympyAsec:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_ARCSEC)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_ARCSEC)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_ARCCSC
 		elif tree.func == SympyAcsc:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_ARCCSC)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_ARCCSC)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_CEILING
 		elif tree.func == SympyCeiling:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_CEILING)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_CEILING)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_COS
 		elif tree.func == SympyCos:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_COS)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_COS)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_COSH
 		elif tree.func == SympyCosh:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_COSH)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_COSH)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_COT
 		elif tree.func == SympyCot:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_COT)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_COT)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_COTH
 		elif tree.func == SympyCoth:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_COTH)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_COTH)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_CSC
 		elif tree.func == SympyCsc:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_CSC)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_CSC)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_DELAY
@@ -429,86 +382,86 @@ class SedmlMathWriter(object):
 		#
 		# AST_FUNCTION_EXP
 		elif tree.func == SympyExp:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_EXP)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_EXP)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_FACTORIAL
 		elif tree.func == SympyFactorial:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_FACTORIAL)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_FACTORIAL)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_FLOOR
 		elif tree.func == SympyFloor:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_FLOOR)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_FLOOR)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_LOG
 		#TODO
 		elif tree.func == SympyLog:
 			if len(tree.args) < 2:
-				t_ast = libsbml.ASTNode()
-				t_ast.setType(libsbml.AST_FUNCTION_LN)
-				t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+				t_ast = ASTNode()
+				t_ast.setType(AST_FUNCTION_LN)
+				t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 				return t_ast
 
 			else:
 				if tree.args[1] == SympyInteger(10):
-					t_ast = libsbml.ASTNode()
-					t_ast.setType(libsbml.AST_FUNCTION_LOG)
+					t_ast = ASTNode()
+					t_ast.setType(AST_FUNCTION_LOG)
 
-					t_ast_2 = libsbml.ASTNode()
-					t_ast_2.setType(libsbml.AST_INTEGER)
+					t_ast_2 = ASTNode()
+					t_ast_2.setType(AST_INTEGER)
 					t_ast_2.setValue(10)
 
 					t_ast.addChild(t_ast_2)
-					t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+					t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 					return t_ast
 				else:
-					t_ast = libsbml.ASTNode()
-					t_ast.setType(libsbml.AST_FUNCTION_LOG)
-					t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
-					t_ast.addChild(self.translateForSbml(tree.args[1], sbml_level, sbml_version))
+					t_ast = ASTNode()
+					t_ast.setType(AST_FUNCTION_LOG)
+					t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
+					t_ast.addChild(self.translateForSbml(tree.args[1], level, version))
 					return t_ast
 
 		# AST_FUNCTION_PIECEWISE
 		elif tree.func == SympyPiecewise:
 
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_PIECEWISE)
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_PIECEWISE)
 
 			(t_val, t_cond) = tree.args[0]
 
-			t_ast.addChild(self.translateForSbml(t_val, sbml_level, sbml_version))
-			t_ast.addChild(self.translateForSbml(t_cond, sbml_level, sbml_version))
+			t_ast.addChild(self.translateForSbml(t_val, level, version))
+			t_ast.addChild(self.translateForSbml(t_cond, level, version))
 			last_child = []
 			for piece in range(1, len(tree.args)):
 				(t_val, t_cond) = tree.args[piece]
 
 				if piece == (len(tree.args)-1):
-					t_ast.addChild(self.translateForSbml(t_val, sbml_level, sbml_version))
+					t_ast.addChild(self.translateForSbml(t_val, level, version))
 				else:
-					t_ast.addChild(self.translateForSbml(t_val, sbml_level, sbml_version))
-					t_ast.addChild(self.translateForSbml(t_cond, sbml_level, sbml_version))
+					t_ast.addChild(self.translateForSbml(t_val, level, version))
+					t_ast.addChild(self.translateForSbml(t_cond, level, version))
 
 			return t_ast
 
 		elif tree.func == SympyITE:
 
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_PIECEWISE)
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_PIECEWISE)
 
 			t_cond = tree.args[0]
 			t_val = tree.args[1]
 			t_val_else = tree.args[2]
-			t_ast.addChild(self.translateForSbml(t_val, sbml_level, sbml_version))
-			t_ast.addChild(self.translateForSbml(t_cond, sbml_level, sbml_version))
-			t_ast.addChild(self.translateForSbml(t_val_else, sbml_level, sbml_version))
+			t_ast.addChild(self.translateForSbml(t_val, level, version))
+			t_ast.addChild(self.translateForSbml(t_cond, level, version))
+			t_ast.addChild(self.translateForSbml(t_val_else, level, version))
 			return t_ast
 
 		#TODO
@@ -520,173 +473,153 @@ class SedmlMathWriter(object):
 			# Important to note that a/b is written mul(a, mul(1, pow(b,-1)))
 			# so we don't need to look for a
 			if tree.args[1].func == SympyNegOne:
-				t_ast = libsbml.ASTNode()
-				t_ast.setType(libsbml.AST_DIVIDE)
+				t_ast = ASTNode()
+				t_ast.setType(AST_DIVIDE)
 
-				t_ast_2 = libsbml.ASTNode()
-				t_ast_2.setType(libsbml.AST_INTEGER)
+				t_ast_2 = ASTNode()
+				t_ast_2.setType(AST_INTEGER)
 				t_ast_2.setValue(1)
 
 				t_ast.addChild(t_ast_2)
-				t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+				t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 				return t_ast
 
 			# Similar for SQRT(x), it's written pow(x, pow(2, -1))
-			elif tree.args[1].func == SympyPow and tree.args[1].args[0] == SympyInteger(2) and tree.args[1].args[1].func == SympyNegOne:
-				t_ast = libsbml.ASTNode()
-				t_ast.setType(libsbml.AST_FUNCTION_ROOT)
+			elif (
+					tree.args[1].func == SympyPow
+					and tree.args[1].args[0] == SympyInteger(2)
+					and tree.args[1].args[1].func == SympyNegOne
+			):
+				t_ast = ASTNode()
+				t_ast.setType(AST_FUNCTION_ROOT)
 
-				t_ast_2 = libsbml.ASTNode()
-				t_ast_2.setType(libsbml.AST_INTEGER)
+				t_ast_2 = ASTNode()
+				t_ast_2.setType(AST_INTEGER)
 				t_ast_2.setValue(2)
 
 				t_ast.addChild(t_ast_2)
-				t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+				t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 				return t_ast
 
 			# print "\n"
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_POWER)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
-			t_ast.addChild(self.translateForSbml(tree.args[1], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_POWER)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
+			t_ast.addChild(self.translateForSbml(tree.args[1], level, version))
 			return t_ast
-
-		# #TODO
-		# # AST_FUNCTION_ROOT
-		# elif tree.func == SympyRoot:
-		#     print "> Root case... Not done yet. Truth is I don't think it's used..."
-		#     # t_ast = libsbml.ASTNode()
-		#     # t_ast.setType(libsbml.AST_POWER)
-		#     return "rt_pow(" + self.translateForSbml(tree.args[0], sbml_level, sbml_version) + ",((realtype)1)/" + self.translateForSbml(tree.args[1], sbml_level, sbml_version) + ")"
 
 		# AST_FUNCTION_SEC
 		elif tree.func == SympySec:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_SEC)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_SEC)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_SIN
 		elif tree.func == SympySin:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_SIN)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_SIN)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_SINH
 		elif tree.func == SympySinh:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_SINH)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_SINH)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_TAN
 		elif tree.func == SympyTan:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_TAN)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_TAN)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		# AST_FUNCTION_TANH
 		elif tree.func == SympyTanh:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION_TANH)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_FUNCTION_TANH)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 
 		elif tree.func == SympyEqual:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_RELATIONAL_EQ)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
-			t_ast.addChild(self.translateForSbml(tree.args[1], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_RELATIONAL_EQ)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
+			t_ast.addChild(self.translateForSbml(tree.args[1], level, version))
 			return t_ast
 
 		elif tree.func == SympyUnequal:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_RELATIONAL_NEQ)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
-			t_ast.addChild(self.translateForSbml(tree.args[1], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_RELATIONAL_NEQ)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
+			t_ast.addChild(self.translateForSbml(tree.args[1], level, version))
 			return t_ast
 
 		elif tree.func == SympyGreaterThan:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_RELATIONAL_GEQ)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
-			t_ast.addChild(self.translateForSbml(tree.args[1], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_RELATIONAL_GEQ)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
+			t_ast.addChild(self.translateForSbml(tree.args[1], level, version))
 			return t_ast
 
 		elif tree.func == SympyLessThan:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_RELATIONAL_LEQ)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
-			t_ast.addChild(self.translateForSbml(tree.args[1], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_RELATIONAL_LEQ)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
+			t_ast.addChild(self.translateForSbml(tree.args[1], level, version))
 			return t_ast
 
 		elif tree.func == SympyStrictGreaterThan:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_RELATIONAL_GT)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
-			t_ast.addChild(self.translateForSbml(tree.args[1], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_RELATIONAL_GT)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
+			t_ast.addChild(self.translateForSbml(tree.args[1], level, version))
 			return t_ast
 
 		elif tree.func == SympyStrictLessThan:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_RELATIONAL_LT)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
-			t_ast.addChild(self.translateForSbml(tree.args[1], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_RELATIONAL_LT)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
+			t_ast.addChild(self.translateForSbml(tree.args[1], level, version))
 			return t_ast
 
 		elif tree.func == SympyAnd:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_LOGICAL_AND)
+			t_ast = ASTNode()
+			t_ast.setType(AST_LOGICAL_AND)
 			for i_arg in range(0, len(tree.args)):
-				t_ast.addChild(self.translateForSbml(tree.args[i_arg], sbml_level, sbml_version))
+				t_ast.addChild(self.translateForSbml(tree.args[i_arg], level, version))
 			return t_ast
 
 		elif tree.func == SympyOr:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_LOGICAL_OR)
+			t_ast = ASTNode()
+			t_ast.setType(AST_LOGICAL_OR)
 			for i_arg in range(0, len(tree.args)):
-				t_ast.addChild(self.translateForSbml(tree.args[i_arg], sbml_level, sbml_version))
+				t_ast.addChild(self.translateForSbml(tree.args[i_arg], level, version))
 			return t_ast
 
 		elif tree.func == SympyXor:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_LOGICAL_XOR)
+			t_ast = ASTNode()
+			t_ast.setType(AST_LOGICAL_XOR)
 			for i_arg in range(0, len(tree.args)):
-				t_ast.addChild(self.translateForSbml(tree.args[i_arg], sbml_level, sbml_version))
+				t_ast.addChild(self.translateForSbml(tree.args[i_arg], level, version))
 			return t_ast
 
 		elif tree.func == SympyNot:
 			# print tree
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_LOGICAL_NOT)
-			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast = ASTNode()
+			t_ast.setType(AST_LOGICAL_NOT)
+			t_ast.addChild(self.translateForSbml(tree.args[0], level, version))
 			return t_ast
 		elif tree.func == SympyLambda:
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_LAMBDA)
+			t_ast = ASTNode()
+			t_ast.setType(AST_LAMBDA)
 			t_args = list(tree.args[0])
 			for arg in t_args:
-				t_ast.addChild(self.translateForSbml(arg, sbml_level, sbml_version))
-			t_ast.addChild(self.translateForSbml(tree.args[1], sbml_level, sbml_version))
-			return t_ast
-
-		elif "_functionDefinition_" in str(tree.func):
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_FUNCTION)
-
-			res_match = match(r"_functionDefinition_(\d+)_", str(tree.func))
-			t_id = int(res_match.groups()[0])
-
-			t_ast.setName(self.model.listOfFunctionDefinitions[t_id].getSbmlId())
-			for i_arg in range(0, len(tree.args)):
-				# print tree.args[i_arg]
-				t_ast.addChild(self.translateForSbml(tree.args[i_arg], sbml_level, sbml_version))
-
+				t_ast.addChild(self.translateForSbml(arg, level, version))
+			t_ast.addChild(self.translateForSbml(tree.args[1], level, version))
 			return t_ast
 
 		else:
-			# print str(tree)
-			raise MathException("Sbml Math Writer : Unknown Sympy Symbol %s" % str(tree))
-			return str(tree)
+			raise SedmlMathException("SedmlMathWriter : Unknown Sympy Symbol %s" % str(tree))

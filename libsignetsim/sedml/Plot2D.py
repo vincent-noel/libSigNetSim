@@ -40,3 +40,8 @@ class Plot2D(Output):
 
 		Output.readSedml(self, plot, level, version)
 		self.listOfCurves.readSedml(plot.getListOfCurves(), level, version)
+
+	def writeSedml(self, plot, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		Output.writeSedml(self, plot, level, version)
+		self.listOfCurves.writeSedml(plot.getListOfCurves(), level, version)

@@ -39,8 +39,22 @@ class HasId(object):
 		if has_id_object.isSetName():
 			self.__name = has_id_object.getName()
 
+	def writeSedml(self, has_id_object, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		if self.__id is not None:
+			has_id_object.setId(self.__id)
+
+		if self.__name is not None:
+			has_id_object.setName(self.__name)
+
 	def getId(self):
 		return self.__id
 
 	def getName(self):
 		return self.__name
+
+	def setId(self, id):
+		self.__id = id
+
+	def setName(self, name):
+		self.__name = name

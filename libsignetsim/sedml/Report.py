@@ -21,24 +21,26 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
-from libsignetsim.sedml.SedBase import SedBase
-from libsignetsim.sedml.HasId import HasId
+from libsignetsim.sedml.Output import Output
 from libsignetsim.sedml.container.ListOfDataSets import ListOfDataSets
 from libsignetsim.settings.Settings import Settings
 
 
-class Report(SedBase, HasId):
+class Report(Output):
 
 	def __init__(self, document):
 
-		SedBase.__init__(self, document)
-		HasId.__init__(self, document)
+		Output.__init__(self, document)
 
 		self.__document = document
 		self.listOfDataSets = ListOfDataSets(self.__document)
 
 	def readSedml(self, report, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
-		SedBase.readSedml(self, report, level, version)
-		HasId.readSedml(self, report, level, version)
 
+		Output.readSedml(self, report, level, version)
 		self.listOfDataSets.readSedml(report.getListOfDataSets(), level, version)
+
+	def writeSedml(self, report, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		Output.writeSedml(self, report, level, version)
+		self.listOfDataSets.writeSedml(report.getListOfDataSets(), level, version)

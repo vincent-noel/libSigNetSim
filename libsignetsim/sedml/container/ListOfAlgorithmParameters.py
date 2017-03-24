@@ -44,3 +44,12 @@ class ListOfAlgorithmParameters(SedBase):
 			algo_param = AlgorithmParameter(self.__document)
 			algo_param.readSedml(t_algo_param, level, version)
 			self.listOfAlgorithmParameters.append(algo_param)
+
+	def writeSedml(self, list_of_algo_params, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.writeSedml(self, list_of_algo_params, level, version)
+
+		for t_algo_param in self.listOfAlgorithmParameters:
+			algo_param = list_of_algo_params.createAlgorithmParameter()
+			algo_param.writeSedml(t_algo_param, level, version)
+

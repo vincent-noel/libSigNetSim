@@ -41,10 +41,28 @@ class SedBase(object):
 			self.__notes = sed_base_object.getNotes()
 
 		if sed_base_object.isSetAnnotation():
-			self.__annotation = sed_base_object.getAnnotation()
+			self.__annotations = sed_base_object.getAnnotation()
+
+	def writeSedml(self, sed_base_object, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		if self.__metaId is not None:
+			sed_base_object.setMetaId(self.__metaId)
+
+		if self.__notes is not None:
+			sed_base_object.setNotes(self.__notes)
+
+		if self.__annotations is not None:
+			sed_base_object.setAnnotation(self.__annotations)
+
 
 	def getMetaId(self):
 		return self.__metaId
 
 	def getNotes(self):
 		return self.__notes
+
+	def setMetaId(self, meta_id):
+		self.__metaId = meta_id
+
+	def setNotes(self, notes):
+		self.__notes = notes

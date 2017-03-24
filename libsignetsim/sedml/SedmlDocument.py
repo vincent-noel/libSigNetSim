@@ -27,10 +27,11 @@ from libsignetsim.sedml.container.ListOfSimulations import ListOfSimulations
 from libsignetsim.sedml.container.ListOfTasks import ListOfTasks
 from libsignetsim.sedml.container.ListOfDataGenerators import ListOfDataGenerators
 from libsignetsim.sedml.container.ListOfOutputs import ListOfOutputs
+from libsignetsim.sedml.SedmlException import SedmlFileNotFound
 from libsignetsim.settings.Settings import Settings
 
-from libsedml import readSedMLFromFile
-
+from libsedml import readSedMLFromFile, writeSedMLToFile, SedDocument, ASTNode, AST_PLUS, AST_NAME, parseFormula
+from os.path import dirname, basename, exists
 
 class SedmlDocument(object):
 	""" Sedml document class """
@@ -38,24 +39,53 @@ class SedmlDocument(object):
 	def __init__ (self):
 		""" Constructor of model class """
 
+		self.path = None
+		self.filename = None
+		self.level = Settings.defaultSedmlLevel
+		self.version = Settings.defaultSedmlVersion
+
 		self.listOfModels = ListOfModels(self)
 		self.listOfSimulations = ListOfSimulations(self)
 		self.listOfTasks = ListOfTasks(self)
 		self.listOfDataGenerators = ListOfDataGenerators(self)
 		self.listOfOutputs = ListOfOutputs(self)
 
-		self.level = Settings.defaultSedmlLevel
-		self.version = Settings.defaultSedmlVersion
+	def readSedmlFromFile(self, filename):
 
-
-	def readSedml(self, filename):
+		if not exists(filename):
+			raise SedmlFileNotFound("SED-ML file %s not found" % filename)
 
 		document = readSedMLFromFile(filename)
+
+		self.path = dirname(filename)
+		self.filename = basename(filename)
+		self.readSedml(document)
+
+	def readSedml(self, document):
 
 		self.level = document.getLevel()
 		self.version = document.getVersion()
 		self.listOfModels.readSedml(document.getListOfModels(), self.level, self.version)
-		self.listOfTasks.readSedml(document.getListOfTasks(), self.level, self.version)
 		self.listOfSimulations.readSedml(document.getListOfSimulations(), self.level, self.version)
+		self.listOfTasks.readSedml(document.getListOfTasks(), self.level, self.version)
 		self.listOfDataGenerators.readSedml(document.getListOfDataGenerators(), self.level, self.version)
 		self.listOfOutputs.readSedml(document.getListOfOutputs(), self.level, self.version)
+
+	def writeSedml(self, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		document = SedDocument()
+
+		document.setLevel(self.level)
+		document.setVersion(self.version)
+
+		self.listOfModels.writeSedml(document.getListOfModels(), self.level, self.version)
+		self.listOfSimulations.writeSedml(document.getListOfSimulations(), self.level, self.version)
+		self.listOfTasks.writeSedml(document.getListOfTasks(), self.level, self.version)
+		self.listOfDataGenerators.writeSedml(document.getListOfDataGenerators(), self.level, self.version)
+		self.listOfOutputs.writeSedml(document.getListOfOutputs(), self.level, self.version)
+		return document
+
+	def writeSedmlToFile(self, filename, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		document = self.writeSedml(level, version)
+		writeSedMLToFile(document, filename)

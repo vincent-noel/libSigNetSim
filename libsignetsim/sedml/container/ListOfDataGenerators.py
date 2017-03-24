@@ -44,3 +44,11 @@ class ListOfDataGenerators(SedBase):
 			data_generator = DataGenerator(self.__document)
 			data_generator.readSedml(t_data_generator, level, version)
 			self.listOfDataGenerators.append(data_generator)
+
+	def writeSedml(self, list_of_data_generators, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.writeSedml(self, list_of_data_generators, level, version)
+
+		for t_data_generator in self.listOfDataGenerators:
+			data_generator = list_of_data_generators.createDataGenerator()
+			t_data_generator.writeSedml(data_generator, level, version)

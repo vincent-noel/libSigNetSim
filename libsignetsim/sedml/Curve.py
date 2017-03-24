@@ -56,6 +56,23 @@ class Curve(SedBase, HasId):
 		if curve.isSetLogY():
 			self.__logY = curve.getLogY()
 
+	def writeSedml(self, curve, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.writeSedml(self, curve, level, version)
+		HasId.writeSedml(self, curve, level, version)
+
+		if self.__xDataReference is not None:
+			curve.setXDataReference(self.__xDataReference)
+
+		if self.__yDataReference is not None:
+			curve.setYDataReference(self.__yDataReference)
+
+		if self.__logX is not None:
+			curve.setLogX(self.__logX)
+
+		if self.__logY is not None:
+			curve.setLogY(self.__logY)
+
 	def getXDataReference(self):
 		return self.__xDataReference
 
@@ -67,3 +84,15 @@ class Curve(SedBase, HasId):
 
 	def getLogY(self):
 		return self.__logY
+
+	def setXDataReference(self, x_data_reference):
+		self.__xDataReference = x_data_reference
+
+	def setYDataReference(self, y_data_reference):
+		self.__yDataReference = y_data_reference
+
+	def setLogX(self, log_x):
+		self.__logX = log_x
+
+	def setLogY(self, log_y):
+		self.__logY = log_y

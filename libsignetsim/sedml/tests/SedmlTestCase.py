@@ -41,7 +41,8 @@ class SedTestCase(object):
 	def loadTestCaseModel(self):
 
 		self.document = SedmlDocument()
-		self.document.readSedml(self.getFilename())
+		self.document.readSedmlFromFile(self.getFilename())
+		self.document.writeSedmlToFile("poil.xml")
 
 	def getFilename(self):
 

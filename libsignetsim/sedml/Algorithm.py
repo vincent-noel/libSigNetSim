@@ -43,3 +43,12 @@ class Algorithm(SedBase):
 			self.__kisaoID = algo.getKisaoID()
 
 		self.listOfAlgorithmParameters.readSedml(algo.getListOfAlgorithmParameters(), level, version)
+
+	def writeSedml(self, algo, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.writeSedml(self, algo, level, version)
+
+		if self.__kisaoID is not None:
+			algo.setKisaoID(self.__kisaoID)
+
+		self.listOfAlgorithmParameters.writeSedml(algo.getListOfAlgorithmParameters(), level, version)

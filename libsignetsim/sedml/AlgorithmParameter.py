@@ -39,7 +39,17 @@ class AlgorithmParameter(SedBase):
 		SedBase.readSedml(self, algo_param, level, version)
 
 		if algo_param.isSetKisaoID():
-			self.__kisaoId = algo_param.getKisaoID()
+			self.__kisaoID = algo_param.getKisaoID()
 
 		if algo_param.isSetValue():
 			self.__value = algo_param.getValue()
+
+	def writeSedml(self, algo_param, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.writeSedml(self, algo_param, level, version)
+
+		if self.__kisaoID is not None:
+			algo_param.setKisaoID(self.__kisaoID)
+
+		if self.__value is not None:
+			algo_param.setValue(self.__value)

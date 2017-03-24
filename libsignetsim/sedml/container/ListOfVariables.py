@@ -44,3 +44,11 @@ class ListOfVariables(SedBase):
 			var = Variable(self.__document)
 			var.readSedml(t_var, level, version)
 			self.listOfVariables.append(var)
+
+	def writeSedml(self, list_of_variables, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.writeSedml(self, list_of_variables, level, version)
+
+		for t_var in self.listOfVariables:
+			var = list_of_variables.createVariable()
+			t_var.writeSedml(var, level, version)

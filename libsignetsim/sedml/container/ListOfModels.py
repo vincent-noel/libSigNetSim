@@ -44,3 +44,11 @@ class ListOfModels(SedBase):
 			model = Model(self.__document)
 			model.readSedml(t_model, level, version)
 			self.listOfModels.append(model)
+
+	def writeSedml(self, list_of_models, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.writeSedml(self, list_of_models, level, version)
+
+		for t_model in self.listOfModels:
+			model = list_of_models.createModel()
+			t_model.writeSedml(model, level, version)

@@ -50,3 +50,12 @@ class ListOfTasks(SedBase):
 				task.readSedml(t_task, level, version)
 				self.listOfTasks.append(task)
 
+	def writeSedml(self, list_of_tasks, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.writeSedml(self, list_of_tasks, level, version)
+
+		for t_task in self.listOfTasks:
+
+			if isinstance(t_task, Task):
+				task = list_of_tasks.createTask()
+				t_task.writeSedml(task, level, version)

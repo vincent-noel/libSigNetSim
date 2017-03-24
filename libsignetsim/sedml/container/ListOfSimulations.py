@@ -42,10 +42,17 @@ class ListOfSimulations(SedBase):
 
 		for t_simulation in list_of_simulations:
 
-			simulation = None
 			if t_simulation.getTypeCode() == SEDML_SIMULATION_UNIFORMTIMECOURSE:
 				simulation = UniformTimeCourse(self.__document)
-
-			if simulation is not None:
 				simulation.readSedml(t_simulation, level, version)
 				self.listOfSimulations.append(simulation)
+
+	def writeSedml(self, list_of_simulations, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.writeSedml(self, list_of_simulations, level, version)
+
+		for t_simulation in self.listOfSimulations:
+
+			if isinstance(t_simulation, UniformTimeCourse):
+				simulation = list_of_simulations.createUniformTimeCourse()
+				t_simulation.writeSedml(simulation, level, version)

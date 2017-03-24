@@ -23,9 +23,6 @@
 """
 
 from libsignetsim.sedml.SedmlException import SedmlMathException
-from libsignetsim.settings.Settings import Settings
-from math import isinf, isnan
-
 
 # token: cn , ci , csymbol , sep
 from libsedml import AST_NAME, AST_NAME_TIME
@@ -34,19 +31,21 @@ from sympy_shortcuts import SympyInteger, SympyFloat, SympySymbol
 
 # general : apply , piecewise , piece , otherwise , lambda
 from libsedml import AST_FUNCTION_PIECEWISE, AST_LAMBDA
-from sympy_shortcuts import SympyPiecewise, SympyLambda
+from sympy_shortcuts import SympyPiecewise, SympyITE, SympyLambda
 
 # relational operators: eq , neq , gt , lt , geq , leq
-from libsedml import (AST_RELATIONAL_EQ, AST_RELATIONAL_NEQ, AST_RELATIONAL_GT,
-						AST_RELATIONAL_LT, AST_RELATIONAL_GEQ, AST_RELATIONAL_LEQ)
-from sympy_shortcuts import (SympyEqual, SympyUnequal, SympyStrictGreaterThan,
-								SympyStrictLessThan, SympyGreaterThan, SympyLessThan)
-
+from libsedml import (
+	AST_RELATIONAL_EQ, AST_RELATIONAL_NEQ, AST_RELATIONAL_GT, AST_RELATIONAL_LT, AST_RELATIONAL_GEQ, AST_RELATIONAL_LEQ
+)
+from sympy_shortcuts import (
+	SympyEqual, SympyUnequal, SympyStrictGreaterThan, SympyStrictLessThan, SympyGreaterThan, SympyLessThan
+)
 
 # arithmetic operators: plus , minus , times , divide , power , root , abs , exp , ln , log , floor , ceiling ,
-from libsedml import (AST_PLUS, AST_MINUS, AST_TIMES, AST_DIVIDE, AST_POWER,
-						AST_FUNCTION_ROOT, AST_FUNCTION_ABS, AST_FUNCTION_EXP,
-						AST_FUNCTION_LN, AST_FUNCTION_LOG, AST_FUNCTION_FLOOR, AST_FUNCTION_CEILING)
+from libsedml import (
+	AST_PLUS, AST_MINUS, AST_TIMES, AST_DIVIDE, AST_POWER, AST_FUNCTION_ROOT, AST_FUNCTION_ABS, AST_FUNCTION_EXP,
+	AST_FUNCTION_LN, AST_FUNCTION_LOG, AST_FUNCTION_FLOOR, AST_FUNCTION_CEILING
+)
 from sympy_shortcuts import (SympyAdd, SympyMul, SympyPow, SympyAbs, SympyExp, SympyLog, SympyFloor, SympyCeiling)
 
 
@@ -59,24 +58,31 @@ from libsedml import AST_LOGICAL_AND, AST_LOGICAL_OR, AST_LOGICAL_XOR, AST_LOGIC
 from sympy_shortcuts import SympyAnd, SympyOr, SympyXor, SympyNot
 
 # trigonometric operators: sin , cos , tan , sec , csc , cot
-from libsedml import (AST_FUNCTION_SIN, AST_FUNCTION_COS, AST_FUNCTION_TAN,
-						AST_FUNCTION_SEC, AST_FUNCTION_CSC, AST_FUNCTION_COT)
+from libsedml import (
+	AST_FUNCTION_SIN, AST_FUNCTION_COS, AST_FUNCTION_TAN, AST_FUNCTION_SEC, AST_FUNCTION_CSC, AST_FUNCTION_COT
+)
 from sympy_shortcuts import (SympySin, SympyCos, SympyTan, SympySec, SympyCsc, SympyCot)
 
 
 # trigonometric operators: sinh , cosh , tanh , sech , csch , coth ,
-from libsedml import (AST_FUNCTION_SINH, AST_FUNCTION_COSH, AST_FUNCTION_TANH,
-						AST_FUNCTION_SECH, AST_FUNCTION_CSCH, AST_FUNCTION_COTH)
+from libsedml import (
+	AST_FUNCTION_SINH, AST_FUNCTION_COSH, AST_FUNCTION_TANH, AST_FUNCTION_SECH, AST_FUNCTION_CSCH, AST_FUNCTION_COTH
+)
 from sympy_shortcuts import (SympySinh, SympyCosh, SympyTanh, SympyCoth)
 
 # trigonometric operators: arcsin , arccos , arctan , arcsec , arccsc , arccot
-from libsedml import (AST_FUNCTION_ARCSIN, AST_FUNCTION_ARCCOS, AST_FUNCTION_ARCTAN,
-						AST_FUNCTION_ARCSEC, AST_FUNCTION_ARCCSC, AST_FUNCTION_ARCCOT)
+from libsedml import (
+	AST_FUNCTION_ARCSIN, AST_FUNCTION_ARCCOS, AST_FUNCTION_ARCTAN, AST_FUNCTION_ARCSEC, AST_FUNCTION_ARCCSC,
+	AST_FUNCTION_ARCCOT
+)
+from sympy_shortcuts import (SympyAsin, SympyAcos, SympyAtan, SympyAsec, SympyAcsc, SympyAcot)
 
 # trigonometric operators: arcsinh , arccosh , arctanh , arcsech , arccsch , arccoth
-from libsedml import (AST_FUNCTION_ARCSINH, AST_FUNCTION_ARCCOSH, AST_FUNCTION_ARCTANH,
-						AST_FUNCTION_ARCSECH, AST_FUNCTION_ARCCSCH, AST_FUNCTION_ARCCOTH)
-
+from libsedml import (
+	AST_FUNCTION_ARCSINH, AST_FUNCTION_ARCCOSH, AST_FUNCTION_ARCTANH, AST_FUNCTION_ARCSECH,
+	AST_FUNCTION_ARCCSCH, AST_FUNCTION_ARCCOTH
+)
+from sympy_shortcuts import (SympyAsinh, SympyAcosh, SympyAtanh, SympyAcoth)
 # constants: true , false , notanumber , pi , infinity , exponentiale
 # TODO : Infinity, NaN
 from libsedml import (AST_CONSTANT_TRUE, AST_CONSTANT_FALSE, AST_CONSTANT_PI, AST_CONSTANT_E)
@@ -88,12 +94,10 @@ from libsedml import parseFormula
 class SedmlMathReader(object):
 	""" Class for handling math formulaes """
 
-
 	def __init__(self, document):
 		""" Constructor """
 
 		self.__document = document
-
 
 	def translateForInternal(self, tree):
 
@@ -125,7 +129,6 @@ class SedmlMathReader(object):
 			else:
 				raise SedmlMathException("SedMathReader : Unknown type of number")
 
-
 		elif tree.isConstant():
 			if tree.getType() == AST_CONSTANT_E:
 				return SympyE
@@ -149,7 +152,6 @@ class SedmlMathReader(object):
 				if tree.getNumChildren() == 0:
 					return SympyInteger(0)
 
-
 				else:
 					t_children = []
 					for i_arg in range(tree.getNumChildren()):
@@ -159,25 +161,38 @@ class SedmlMathReader(object):
 			elif tree.getType() == AST_MINUS:
 
 				if tree.getNumChildren() == 2:
-					return SympyAdd(self.translateForInternal(tree.getChild(0)),
-									SympyMul(SympyInteger(-1),
-												self.translateForInternal(tree.getChild(1)),
-												evaluate=False),
-									evaluate=False)
+					return SympyAdd(
+								self.translateForInternal(tree.getChild(0)),
+								SympyMul(
+									SympyInteger(-1),
+									self.translateForInternal(tree.getChild(1)),
+									evaluate=False),
+								evaluate=False)
 
 				elif tree.getNumChildren() == 1:
-					return SympyMul(SympyInteger(-1),
-									self.translateForInternal(tree.getChild(0)),
-									evaluate=False)
+					return SympyMul(
+								SympyInteger(-1),
+								self.translateForInternal(tree.getChild(0)),
+								evaluate=False)
 
 				elif tree.getNumChildren() == 0:
 					return SympyInteger(0)
 
 				else:
-					t_tree = SympyAdd(self.translateForInternal(tree.getChild(0)),
-										SympyMul(SympyInteger(-1), self.translateForInternal(tree.getChild(1)), evaluate=False), evaluate=False)
-					for i_arg in range(2,tree.getNumChildren()):
-						t_tree = SympyAdd(t_tree, SympyMul(SympyInteger(-1), self.translateForInternal(tree.getChild(i_arg)), evaluate=False), evaluate=False)
+					t_tree = SympyAdd(
+								self.translateForInternal(tree.getChild(0)),
+								SympyMul(
+									SympyInteger(-1),
+									self.translateForInternal(tree.getChild(1)), evaluate=False),
+								evaluate=False)
+
+					for i_arg in range(2, tree.getNumChildren()):
+						t_tree = SympyAdd(
+									t_tree,
+									SympyMul(
+										SympyInteger(-1),
+										self.translateForInternal(tree.getChild(i_arg)), evaluate=False),
+									evaluate=False)
 
 					return t_tree
 
@@ -194,23 +209,14 @@ class SedmlMathReader(object):
 					return SympyMul(*t_children, evaluate=False)
 
 			elif tree.getType() == AST_DIVIDE:
-				if tree.getChild(0).isInteger() and tree.getChild(1).isInteger():
-
-					t_tree = SympyRational(
-						SympyInteger(self.translateForInternal(tree.getChild(0))),
-						SympyInteger(self.translateForInternal(tree.getChild(1))))
-
-					return t_tree
-
-				else:
-					return SympyMul(self.translateForInternal(tree.getChild(0)),
+				return SympyMul(
+								self.translateForInternal(tree.getChild(0)),
 								SympyPow(self.translateForInternal(tree.getChild(1)), SympyInteger(-1)))
 
 			elif tree.getType() == AST_POWER:
 				t_x = self.translateForInternal(tree.getChild(0))
 				t_n = self.translateForInternal(tree.getChild(1))
 				return SympyPow(t_x, t_n, evaluate=False)
-
 
 			else:
 				raise SedmlMathException("SedmlMathReader : Unknown operator")
@@ -243,7 +249,9 @@ class SedmlMathReader(object):
 
 				# AST_FUNCTION_ARCCSCH
 			elif tree.getType() == AST_FUNCTION_ARCCSCH:
-				return SympyAsinh(SympyPow(self.translateForInternal(tree.getChild(0)), SympyInteger(-1), evaluate=False), evaluate=False)
+				return SympyAsinh(
+						SympyPow(self.translateForInternal(tree.getChild(0)), SympyInteger(-1), evaluate=False),
+						evaluate=False)
 
 				# AST_FUNCTION_ARCSEC
 			elif tree.getType() == AST_FUNCTION_ARCSEC:
@@ -251,7 +259,9 @@ class SedmlMathReader(object):
 
 				# AST_FUNCTION_ARCSECH
 			elif tree.getType() == AST_FUNCTION_ARCSECH:
-				return SympyAcosh(SympyPow(self.translateForInternal(tree.getChild(0)), SympyInteger(-1), evaluate=False), evaluate=False)
+				return SympyAcosh(
+						SympyPow(self.translateForInternal(tree.getChild(0)), SympyInteger(-1), evaluate=False),
+						evaluate=False)
 
 				# AST_FUNCTION_ARCSIN
 			elif tree.getType() == AST_FUNCTION_ARCSIN:
@@ -296,8 +306,9 @@ class SedmlMathReader(object):
 				# AST_FUNCTION_CSCH
 			elif tree.getType() == AST_FUNCTION_CSCH:
 				# return SympyCsch(self.translateForInternal(tree.getChild(0)), evaluate=False)
-				return SympyPow(SympySinh(self.translateForInternal(tree.getChild(0)), evaluate=False),
-								SympyInteger(-1), evaluate=False)
+				return SympyPow(
+						SympySinh(self.translateForInternal(tree.getChild(0)), evaluate=False),
+						SympyInteger(-1), evaluate=False)
 
 				# AST_FUNCTION_EXP
 			elif tree.getType() == AST_FUNCTION_EXP:
@@ -325,26 +336,21 @@ class SedmlMathReader(object):
 				# AST_FUNCTION_PIECEWISE
 			elif tree.getType() == AST_FUNCTION_PIECEWISE:
 
-				# print libsbml.formulaToL3String(tree)
 				i_arg = 0
-				i_cond = 0
 				t_pieces = []
 				value_piecewise = False
 				while i_arg < tree.getNumChildren():
 
 					if (i_arg+1) < tree.getNumChildren():
-						# print "here we have a full condition"
 						t_value = self.translateForInternal(tree.getChild(i_arg))
 						t_condition = self.translateForInternal(tree.getChild(i_arg+1))
 
 						if isinstance(t_value, bool):
 							value_piecewise = True
 
-						# if isinstance(t_condition, SympyPiecewise):
 						t_pieces.append((t_value, t_condition))
 						i_arg += 2
 					else:
-						# print "and there we have the else"
 						t_value = self.translateForInternal(tree.getChild(i_arg))
 						if isinstance(t_value, bool):
 							value_piecewise = True
@@ -364,8 +370,12 @@ class SedmlMathReader(object):
 
 				# AST_FUNCTION_ROOT
 			elif tree.getType() == AST_FUNCTION_ROOT:
-				return SympyPow(self.translateForInternal(tree.getChild(1)),
-								SympyPow(self.translateForInternal(tree.getChild(0)), SympyInteger(-1), evaluate=False), evaluate=False)
+				return SympyPow(
+						self.translateForInternal(tree.getChild(1)),
+						SympyPow(
+							self.translateForInternal(tree.getChild(0)),
+							SympyInteger(-1), evaluate=False),
+						evaluate=False)
 
 				# AST_FUNCTION_SEC
 			elif tree.getType() == AST_FUNCTION_SEC:
@@ -373,7 +383,9 @@ class SedmlMathReader(object):
 
 				# AST_FUNCTION_SECH
 			elif tree.getType() == AST_FUNCTION_SECH:
-				return SympyPow(SympyCosh(self.translateForInternal(tree.getChild(0)), evaluate=False), SympyInteger(-1), evaluate=False)
+				return SympyPow(
+							SympyCosh(self.translateForInternal(tree.getChild(0)), evaluate=False),
+							SympyInteger(-1), evaluate=False)
 
 				# AST_FUNCTION_SIN
 			elif tree.getType() == AST_FUNCTION_SIN:
@@ -404,7 +416,6 @@ class SedmlMathReader(object):
 
 			return SympyLambda(tuple(t_args), t_def)
 
-
 		elif tree.isRelational():
 
 			if tree.getType() == AST_RELATIONAL_EQ:
@@ -423,7 +434,6 @@ class SedmlMathReader(object):
 				else:
 					return t_res
 
-
 			elif tree.getType() == AST_RELATIONAL_NEQ:
 				t_res = SympyUnequal(
 						self.translateForInternal(tree.getChild(0)),
@@ -440,7 +450,6 @@ class SedmlMathReader(object):
 				else:
 					return t_res
 
-
 			elif tree.getType() == AST_RELATIONAL_GT:
 				t_res = SympyStrictGreaterThan(
 						self.translateForInternal(tree.getChild(0)),
@@ -456,7 +465,6 @@ class SedmlMathReader(object):
 					return SympyAnd(*t_final_res, evaluate=False)
 				else:
 					return t_res
-
 
 			elif tree.getType() == AST_RELATIONAL_LT:
 				t_res = SympyStrictLessThan(

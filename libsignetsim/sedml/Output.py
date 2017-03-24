@@ -40,3 +40,8 @@ class Output(SedBase, HasId):
 
 		SedBase.readSedml(self, output, level, version)
 		HasId.readSedml(self, output, level, version)
+
+	def writeSedml(self, output, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.writeSedml(self, output, level, version)
+		HasId.writeSedml(self, output, level, version)

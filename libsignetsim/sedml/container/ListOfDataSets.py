@@ -43,3 +43,11 @@ class ListOfDataSets(SedBase):
 			data_set = DataSet(self.__document)
 			data_set.readSedml(t_data_set, level, version)
 			self.listOfDataSets.append(data_set)
+
+	def writeSedml(self, list_of_data_sets, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.writeSedml(self, list_of_data_sets, level, version)
+
+		for t_data_set in self.listOfDataSets:
+			data_set = list_of_data_sets.createDataSet()
+			t_data_set.writeSedml(data_set, level, version)

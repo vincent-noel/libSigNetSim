@@ -40,3 +40,8 @@ class Simulation(SedBase, HasId):
 
 		SedBase.readSedml(self, simulation, level, version)
 		HasId.readSedml(self, simulation, level, version)
+
+	def writeSedml(self, simulation, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.writeSedml(self, simulation, level, version)
+		HasId.writeSedml(self, simulation, level, version)

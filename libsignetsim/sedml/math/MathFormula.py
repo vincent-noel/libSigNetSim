@@ -23,7 +23,7 @@
 """
 
 from libsignetsim.sedml.math.SedmlMathReader import SedmlMathReader
-from libsignetsim.sedml.math.SedmlMathWriter import SedmlMathWriter
+# from libsignetsim.sedml.math.SedmlMathWriter import SedmlMathWriter
 from libsignetsim.settings.Settings import Settings
 
 from libsignetsim.model.math.sympy_shortcuts import (SympySymbol, SympyInteger)
@@ -66,6 +66,17 @@ class MathFormula(SedmlMathReader):#, SedmlMathWriter):
 		self.version = version
 		self.internalTree = SedmlMathReader.translateForInternal(self, formula)
 
+	def writeSedml(self, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+		""" Export math formula to sbml """
+
+		# formula = SedmlMathWriter.translateForSbml(self, self.internalTree, level, version)
+		formula = parseFormula(str(self.internalTree))
+		# if Settings.verbose >= 2:
+		# 	print "\n> writeSbml"
+		# 	print ">> input : %s" % srepr(self.getInternalMathFormula())
+		# 	print ">> output : %s" % self.printSbml(formula, level, version)
+
+		return formula
 	#
 	# def getSbmlMathFormula(self, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 	# 	return MathFormula.getMathFormula(self, MathFormula.MATH_SBML, sbml_level, sbml_version)
@@ -76,7 +87,10 @@ class MathFormula(SedmlMathReader):#, SedmlMathWriter):
 	# 	t_math_formula = str(MathFormula.getInternalMathFormula(self))
 	# 	for species in self.__model.listOfSpecies.values():
 	# 		if species.isConcentration():
-	# 			t_math_formula = t_math_formula.replace(("_speciesForcedConcentration_%s_" % str(species.symbol.getInternalMathFormula())), species.getSbmlId())
+	# 			t_math_formula = t_math_formula.replace(
+	# 				("_speciesForcedConcentration_%s_" % str(species.symbol.getInternalMathFormula())),
+	# 				species.getSbmlId()
+	# 			)
 	#
 	# 	return t_math_formula
 	#

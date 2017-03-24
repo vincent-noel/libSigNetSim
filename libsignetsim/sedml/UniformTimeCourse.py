@@ -38,7 +38,7 @@ class UniformTimeCourse(Simulation):
 		self.__outputStartTime = None
 		self.__outputEndTime = None
 		self.__numberOfPoints = None
-		self.__algorithm = Algorithm(self.__document)
+		self.__algorithm = None
 
 
 	def readSedml(self, simulation, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
@@ -58,7 +58,28 @@ class UniformTimeCourse(Simulation):
 			self.__numberOfPoints = simulation.getNumberOfPoints()
 
 		if simulation.isSetAlgorithm():
+			self.__algorithm = Algorithm(self.__document)
 			self.__algorithm.readSedml(simulation.getAlgorithm(), level, version)
+
+	def writeSedml(self, simulation, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		Simulation.writeSedml(self, simulation, level,version)
+
+		if self.__initialTime is not None:
+			simulation.setInitialTime(self.__initialTime)
+
+		if self.__outputStartTime is not None:
+			simulation.setOutputStartTime(self.__outputStartTime)
+
+		if self.__outputEndTime is not None:
+			simulation.setOutputEndTime(self.__outputEndTime)
+
+		if self.__numberOfPoints is not None:
+			simulation.setNumberOfPoints(self.__numberOfPoints)
+
+		if self.__algorithm is not None:
+			self.__algorithm.writeSedml(simulation.createAlgorithm(), level, version)
+
 
 	def getInitialTime(self):
 		return self.__initialTime
@@ -71,3 +92,6 @@ class UniformTimeCourse(Simulation):
 
 	def getNumberOfPoints(self):
 		return self.__numberOfPoints
+
+	def getAlgorithm(self):
+		return self.__algorithm

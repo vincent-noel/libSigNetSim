@@ -23,7 +23,10 @@
 """
 from libsignetsim.sedml.SedBase import SedBase
 from libsignetsim.sedml.HasId import HasId
+from libsignetsim.sedml.SedmlException import SedmlModelLanguageNotSupported, SedmlModelNotFound
 from libsignetsim.settings.Settings import Settings
+from os.path import exists, join
+
 
 class Model(SedBase, HasId):
 
@@ -41,5 +44,29 @@ class Model(SedBase, HasId):
 		SedBase.readSedml(self, model, level, version)
 		HasId.readSedml(self, model, level, version)
 
-		self.__language = model.getLanguage()
-		self.__source = model.getSource()
+		if model.isSetLanguage():
+			self.__language = model.getLanguage()
+
+			if self.__language != "urn:sedml:language:sbml":
+
+				if len(self.__language.split(":")) == 4:
+					raise SedmlModelLanguageNotSupported("Language %s not supported" % self.__language.split(":")[3])
+				else:
+					raise SedmlModelLanguageNotSupported("Language %s not supported" % self.__language)
+
+		if model.isSetSource():
+			self.__source = model.getSource()
+
+			if not exists(join(self.__document.path, self.__source)):
+				raise SedmlModelNotFound("File %s not found" % self.__source)
+
+	def writeSedml(self, model, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.writeSedml(self, model, level, version)
+		HasId.writeSedml(self, model, level, version)
+
+		if self.__language is not None:
+			model.setLanguage(self.__language)
+
+		if self.__source is not None:
+			model.setSource(self.__source)

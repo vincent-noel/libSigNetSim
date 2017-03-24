@@ -49,8 +49,25 @@ class DataSet(SedBase, HasId):
 		if data_set.isSetLabel():
 			self.__label = data_set.getLabel()
 
+	def writeSedml(self, data_set, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.writeSedml(self, data_set, level, version)
+		HasId.writeSedml(self, data_set, level, version)
+
+		if self.__dataReference is not None:
+			data_set.setDataReference(self.__dataReference)
+
+		if self.__label is not None:
+			data_set.setLabel(self.__label)
+
 	def getDataReference(self):
 		return self.__dataReference
 
 	def getLabel(self):
 		return self.__label
+
+	def setDataReference(self, data_reference):
+		self.__dataReference = data_reference
+
+	def setLabel(self, label):
+		self.__label = label

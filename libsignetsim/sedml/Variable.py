@@ -56,6 +56,23 @@ class Variable(SedBase, HasId):
 		if variable.isSetTarget():
 			self.__target = variable.getTarget()
 
+	def writeSedml(self, variable, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		SedBase.writeSedml(self, variable, level, version)
+		HasId.writeSedml(self, variable, level, version)
+
+		if self.__taskReference is not None:
+			variable.setTaskReference(self.__taskReference)
+
+		if self.__modelReference is not None:
+			variable.setModelReference(self.__modelReference)
+
+		if self.__symbol is not None:
+			variable.setSymbol(self.__symbol)
+
+		if self.__target is not None:
+			variable.setTarget(self.__target)
+
 	def getTaskReference(self):
 		return self.__taskReference
 
