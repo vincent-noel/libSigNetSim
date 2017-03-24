@@ -1,8 +1,11 @@
 import libsedml, shutil, os
 
+
 # Getting the filenames
-original_file = libsedml.__file__[:-1]
+original_file = libsedml.__file__
 original_filepath = os.path.dirname(original_file)
+
+original_file = os.path.join(original_filepath, "__init__.py")
 backup_file = os.path.join(original_filepath, "__init__.backup")
 
 # Making a backup
