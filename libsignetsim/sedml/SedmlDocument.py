@@ -30,7 +30,7 @@ from libsignetsim.sedml.container.ListOfOutputs import ListOfOutputs
 from libsignetsim.sedml.SedmlException import SedmlFileNotFound
 from libsignetsim.settings.Settings import Settings
 
-from libsedml import readSedMLFromFile, writeSedMLToFile, SedDocument, ASTNode, AST_PLUS, AST_NAME, parseFormula
+from libsedml import readSedMLFromFile, writeSedMLToFile, SedDocument
 from os.path import dirname, basename, exists
 
 class SedmlDocument(object):
