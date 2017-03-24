@@ -52,7 +52,7 @@ class HasReplacedElements(object):
 
 			t_object = sbml_object.getPlugin("comp")
 
-			if t_object.getNumReplacedElements() > 0:
+			if t_object.getListOfReplacedElements() is not None and len(t_object.getListOfReplacedElements()) > 0:
 				self.__hasReplacedElements = True
 				self.__listOfReplacedElements = ListOfReplacedElements(self.__model, self)
 				self.__listOfReplacedElements.readSbml(
