@@ -97,17 +97,8 @@ class MathFormula(SedmlMathReader, SedmlMathWriter):
 	# 	return MathFormula.getMathFormula(self, MathFormula.MATH_SBML, sbml_level, sbml_version)
 	#
 	#
-	# def getPrettyPrintMathFormula(self):
-	#
-	# 	t_math_formula = str(MathFormula.getInternalMathFormula(self))
-	# 	for species in self.__model.listOfSpecies.values():
-	# 		if species.isConcentration():
-	# 			t_math_formula = t_math_formula.replace(
-	# 				("_speciesForcedConcentration_%s_" % str(species.symbol.getInternalMathFormula())),
-	# 				species.getSbmlId()
-	# 			)
-	#
-	# 	return t_math_formula
+	def getPrettyPrint(self):
+		return str(self.internalTree)
 	#
 	#
 	def getInternalMathFormula(self):

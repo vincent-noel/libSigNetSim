@@ -52,3 +52,12 @@ class ListOfVariables(SedBase):
 		for t_var in self.listOfVariables:
 			var = list_of_variables.createVariable()
 			t_var.writeSedml(var, level, version)
+
+	def getData(self):
+
+		data = {}
+		for variable in self.listOfVariables:
+			# print variable.getData()
+			data.update(variable.getData())
+
+		return data

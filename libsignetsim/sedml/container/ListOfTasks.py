@@ -61,10 +61,18 @@ class ListOfTasks(SedBase):
 				task = list_of_tasks.createTask()
 				t_task.writeSedml(task, level, version)
 
-	def getTasks(self):
+	def getTask(self, task_reference):
 
-		tasks = []
-		for t_task in self.listOfTasks:
-			tasks.append(t_task.getTask())
+		for task in self.listOfTasks:
+			if task.getId() == task_reference:
+				return task
 
-		return tasks
+	def buildTasks(self):
+
+		for task in self.listOfTasks:
+			task.build()
+
+	def runTasks(self):
+
+		for task in self.listOfTasks:
+			task.run()

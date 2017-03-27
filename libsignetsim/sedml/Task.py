@@ -26,48 +26,71 @@ from libsignetsim.settings.Settings import Settings
 
 class Task(AbstractTask):
 
-    def __init__(self, document):
+	def __init__(self, document):
 
-        AbstractTask.__init__(self, document)
+		AbstractTask.__init__(self, document)
 
-        self.__document = document
-        self.__modelReference = None
-        self.__simulationReference = None
+		self.__document = document
+		self.__modelReference = None
+		self.__simulationReference = None
 
-    def readSedml(self, task, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
-        AbstractTask.readSedml(self, task, level, version)
+		self.__simulationObject = None
+		self.__results = None
 
-        if task.isSetModelReference():
-            self.__modelReference = task.getModelReference()
+	def readSedml(self, task, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+		AbstractTask.readSedml(self, task, level, version)
 
-        if task.isSetSimulationReference():
-            self.__simulationReference = task.getSimulationReference()
+		if task.isSetModelReference():
+			self.__modelReference = task.getModelReference()
 
-    def writeSedml(self, task, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+		if task.isSetSimulationReference():
+			self.__simulationReference = task.getSimulationReference()
 
-        AbstractTask.writeSedml(self, task, level, version)
+	def writeSedml(self, task, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-        if self.__modelReference is not None:
-            task.setModelReference(self.__modelReference)
+		AbstractTask.writeSedml(self, task, level, version)
 
-        if self.__simulationReference is not None:
-            task.setSimulationReference(self.__simulationReference)
+		if self.__modelReference is not None:
+			task.setModelReference(self.__modelReference)
 
-    def getModelReference(self):
-        return self.__modelReference
+		if self.__simulationReference is not None:
+			task.setSimulationReference(self.__simulationReference)
 
-    def getSimulationReference(self):
-        return self.__simulationReference
+	def getModelReference(self):
+		return self.__modelReference
 
-    def setModelReference(self, model_reference):
-        self.__modelReference = model_reference
+	def getSimulationReference(self):
+		return self.__simulationReference
 
-    def setSimulationReference(self, simulation_reference):
-        self.__simulationReference = simulation_reference
+	def setModelReference(self, model_reference):
+		self.__modelReference = model_reference
 
-    def getTask(self):
+	def setSimulationReference(self, simulation_reference):
+		self.__simulationReference = simulation_reference
 
-        model = self.__document.listOfModels.getByModelReference(self.__modelReference)
-        simulation = self.__document.listOfSimulations.buildSimulation(self.__simulationReference, model)
+	def build(self):
 
-        return simulation
+		model = self.__document.listOfModels.getByModelReference(self.__modelReference)
+		self.__simulationObject = self.__document.listOfSimulations.buildSimulation(self.__simulationReference, model)
+
+
+	def run(self):
+
+		self.__simulationObject.run()
+		self.__results = self.__simulationObject.rawData[0]
+		# print self.__results
+
+	def getSimulationObject(self):
+		return self.__simulationObject
+
+	def getResults(self):
+
+		return self.__results
+
+	def getResultsByVariable(self, variable_sbmlid):
+
+		return self.__results[1][variable_sbmlid]
+
+	def getTimes(self):
+
+		return self.__results[0]

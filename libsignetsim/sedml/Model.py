@@ -83,11 +83,11 @@ class Model(SedBase, HasId):
 
 		return self.__sbmlModel
 
-
 	def __loadModel(self):
 
 		sbml_doc = SbmlDocument()
 		sbml_doc.readSBMLFromFile(join(self.__document.path, self.__source))
 
 		self.__sbmlModel = sbml_doc.getModelInstance()
+
 

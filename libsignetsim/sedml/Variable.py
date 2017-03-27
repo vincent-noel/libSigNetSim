@@ -23,7 +23,11 @@
 """
 from libsignetsim.sedml.SedBase import SedBase
 from libsignetsim.sedml.HasId import HasId
+from libsignetsim.sedml.SedmlException import SedmlUnknownURI, SedmlUnknownXPATH
 from libsignetsim.settings.Settings import Settings
+
+from libsignetsim.sedml.math.sympy_shortcuts import SympySymbol
+from re import match
 
 class Variable(SedBase, HasId):
 
@@ -84,3 +88,58 @@ class Variable(SedBase, HasId):
 
 	def getTarget(self):
 		return self.__target
+
+	def getSympySymbol(self):
+		# print self.getId()
+		# print SympySymbol(self.getId())
+		return SympySymbol(self.getId())
+
+	def getData(self):
+
+		simulation = self.__document.listOfTasks.getTask(self.__taskReference)
+
+		if self.__symbol is not None:
+
+			symbol_tokens = self.__symbol.split(':')
+
+			if len(symbol_tokens) == 4 and symbol_tokens[1] == 'sedml' and symbol_tokens[2] == 'symbol':
+
+				symbol = self.__symbol.split(':')[3]
+
+				if symbol == 'time':
+					return {self : simulation.getTimes()}
+
+				else:
+					raise SedmlUnknownURI("Unknown symbol %s" % symbol)
+
+			else:
+
+				raise SedmlUnknownURI("Unknown URI %s" % self.__symbol)
+
+		elif self.__target is not None:
+			target_tokens = self.__target.split(':')
+
+			if target_tokens[0] == "/sbml" and target_tokens[1] == "sbml/sbml":
+
+				last_token = target_tokens[len(target_tokens)-1]
+				res_match = match(r"([a-zA-Z]+)\[@([a-zA-Z]+)=\'(.*)\'\]", last_token)
+
+				if res_match is not None and len(res_match.groups()) == 3:
+					if res_match.groups()[1] == 'id':
+						sbml_id = res_match.groups()[2]
+						return {self: simulation.getResultsByVariable(sbml_id)}
+					elif res_match.groups()[1] == 'name':
+
+						sbml_model = self.__document.listOfModels.getByModelReference(simulation.getModelReference())
+						sbml_id = sbml_model.listOfVariables.getByName(res_match.groups()[2]).getSbmlId()
+						return {self: simulation.getResultsByVariable(sbml_id)}
+
+				else:
+					raise SedmlUnknownXPATH("Unknown variable in XPATH %s" % last_token)
+			else:
+				return SedmlUnknownXPATH("Unknown XPATH %s" % self.__target)
+
+
+
+
+

@@ -100,7 +100,7 @@ class ListOfCFEs(list):
 							if DEBUG:
 								print ">> " + str(self.getBySymbol(match))
 								# print ">>> " + srepr(self.getBySymbol(match).getSubs())
-							# t_cfe.setDefinitionMath(t_cfe.getDefinition().getInternalMathFormula().subs(self.getBySymbol(match).getSubs()))
+							# t_cfe.setDefinitionMath(t_cfe.getDefinition().getInternalMathFormula().subs(self.getBySymbol(match).getSubs(), evaluate=False))
 							t_cfe.setDefinitionMath(t_cfe.getDefinition().simpleSubsDevelopped(self.getBySymbol(match).getSubs()))
 							# t_subs = {tt_cfe.getVariable().symbol.getInternalMathFormula():tt_cfe.getV
 						if DEBUG:
@@ -234,8 +234,8 @@ class ListOfCFEs(list):
 			# else:
 			# 	self.developpedCFEs = self
 		t1 = time()
-		# if Settings.verbose >= 1:
-		# 	print "> Finished developping closed forms (%.2gs)" % (t1-t0)
+		if Settings.verbose >= 1:
+			print "> Finished developping closed forms (%.2gs)" % (t1-t0)
 
 	def prettyPrint(self):
 

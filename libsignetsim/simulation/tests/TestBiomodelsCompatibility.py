@@ -74,8 +74,8 @@ class TestBiomodelsCompatibility(TestCase):
 						   'BIOMD0000000562', 'BIOMD0000000592',
 						   'BIOMD0000000593']
 
-	START = 'BIOMD0000000001'
-	STOP = 'BIOMD0000000001'
+	START = ''
+	STOP = ''
 
 	def testTimeseriesBiomodels(self):
 
@@ -92,7 +92,6 @@ class TestBiomodelsCompatibility(TestCase):
 					(self.STOP != '' and i_modelId > sorted(curatedModelsIds).index(self.STOP))
 			):
 				pass
-
 
 			elif modelId not in self.INCOMPATIBLE_CASES:
 
@@ -133,18 +132,18 @@ class TestBiomodelsCompatibility(TestCase):
 					result = False
 
 				except TagNotImplementedModelException as e:
-					print "> %s : [ERR, TAG INCOMPATIBLE] (%s)" % (modelId, e)
+					# print "> %s : [ERR, TAG INCOMPATIBLE] (%s)" % (modelId, e)
 					result = False
 
 				except PackageNotImplementedModelException as e:
-					print "> %s : [ERR, PACKAGE INCOMPATIBLE] (%s)" % (modelId, e)
+					# print "> %s : [ERR, PACKAGE INCOMPATIBLE] (%s)" % (modelId, e)
 					result = False
 
 				except Exception as e:
 					print "> %s : [ERR] (%s) (%.2gs)" % (modelId, e, time()-t0)
 					result = False
 
-			else:
-				print "> %s : [Not Compatible]" % modelId
+			# else:
+			# 	print "> %s : [Not Compatible]" % modelId
 
 		self.assertEqual(result, True)

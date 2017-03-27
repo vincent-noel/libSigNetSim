@@ -23,6 +23,7 @@
 """
 
 from libsignetsim.simulation.tests.SbmlTestCaseSimulation import SbmlTestCaseSimulation
+from libsignetsim.sedml.tests.SedmlTestCase import SedmlTestCase
 from libsignetsim.model.ModelException import LibSigNetSimException
 from libsignetsim.simulation.SimulationException import SimulationException
 
@@ -51,9 +52,9 @@ class __main__():
 
 		parser.add_option("-c", "--test-conformity", dest="test_conformity", nargs=3,
 						  help="Generate output for specified case. To use with Sbml Test Suite", metavar="CASE LEVEL VERSION")
-
-		parser.add_option("-e", "--test-export", dest="test_export", nargs=3,
-						  help="Test sbml output for specified case. To use with Sbml Test Suite", metavar="CASE LEVEL VERSION")
+		#
+		# parser.add_option("-e", "--test-export", dest="test_export", nargs=3,
+		# 				  help="Test sbml output for specified case. To use with Sbml Test Suite", metavar="CASE LEVEL VERSION")
 
 		(options, _) = parser.parse_args()
 
@@ -67,44 +68,38 @@ class __main__():
 		if options.test_conformity is not None:
 
 			try:
-				simulation = SbmlTestCaseSimulation(
+				test = SedmlTestCase(
 								int(options.test_conformity[0]),
 								options.test_conformity[1],
-								options.test_conformity[2],
-								test_export=False)
+								options.test_conformity[2]
+				)
 
-				simulation.runTestSuiteWraper()
-
-			except LibSigNetSimException as e:
-				print "Caught %s" % str(type(e))
-				print "> %s" % e.message
-				traceback.print_exc()
-
-			except SimulationException as e:
-				print "Caught %s" % str(type(e))
-				print "> %s" % e.message
-				traceback.print_exc()
-
-
-		elif options.test_export is not None:
-
-			try:
-				simulation = SbmlTestCaseSimulation(
-								int(options.test_export[0]),
-								options.test_export[1],
-								options.test_export[2],
-								test_export=True)
-				simulation.runTestSuiteWraper()
+				test.runTestSuiteWraper()
 
 			except LibSigNetSimException as e:
 				print "Caught %s" % str(type(e))
 				print "> %s" % e.message
 				traceback.print_exc()
 
-			except SimulationException as e:
-				print "Caught %s" % str(type(e))
-				print "> %s" % e.message
-				traceback.print_exc()
+		# elif options.test_export is not None:
+		#
+		# 	try:
+		# 		simulation = SbmlTestCaseSimulation(
+		# 						int(options.test_export[0]),
+		# 						options.test_export[1],
+		# 						options.test_export[2],
+		# 						test_export=True)
+		# 		simulation.runTestSuiteWraper()
+		#
+		# 	except LibSigNetSimException as e:
+		# 		print "Caught %s" % str(type(e))
+		# 		print "> %s" % e.message
+		# 		traceback.print_exc()
+		#
+		# 	except SimulationException as e:
+		# 		print "Caught %s" % str(type(e))
+		# 		print "> %s" % e.message
+		# 		traceback.print_exc()
 
 
 

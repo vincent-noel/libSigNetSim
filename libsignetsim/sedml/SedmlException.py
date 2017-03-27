@@ -39,3 +39,12 @@ class SedmlModelNotFound(SedmlException):
 
 class SedmlFileNotFound(SedmlException):
 	pass
+
+class SedmlUnknownURI(SedmlException):
+	pass
+
+class SedmlUnknownXPATH(SedmlException):
+	pass
+
+class SedmlNotImplemented(SedmlException):
+	pass

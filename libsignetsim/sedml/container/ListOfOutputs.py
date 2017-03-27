@@ -68,3 +68,17 @@ class ListOfOutputs(SedBase):
 			elif isinstance(t_output, Report):
 				output = list_of_outputs.createReport()
 				t_output.writeSedml(output, level, version)
+
+	def build(self):
+
+		for output in self.listOfOutputs:
+			output.build()
+
+	def getReports(self):
+
+		reports = []
+		for output in self.listOfOutputs:
+			if isinstance(output, Report):
+				reports.append(output)
+
+		return reports

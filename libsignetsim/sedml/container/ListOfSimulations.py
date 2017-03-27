@@ -59,9 +59,16 @@ class ListOfSimulations(SedBase):
 				simulation = list_of_simulations.createUniformTimeCourse()
 				t_simulation.writeSedml(simulation, level, version)
 
+	def getSimulation(self, simulation_reference):
+
+		for simulation in self.listOfSimulations:
+			if simulation.getId() == simulation_reference:
+				return simulation
 
 	def buildSimulation(self, simulation_reference, model):
 
-		for t_simulation in self.listOfSimulations:
-			if t_simulation.getId() == simulation_reference:
-				return t_simulation.buildSimulation(model)
+		return self.getSimulation(simulation_reference).build(model)
+
+	def runSimulation(self, simulation_reference):
+
+		return self.getSimulation(simulation_reference).run()

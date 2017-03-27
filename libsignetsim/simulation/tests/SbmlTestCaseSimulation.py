@@ -90,7 +90,6 @@ class SbmlTestCaseSimulation(TimeseriesSimulation):
 			self.model = self.loadSbmlModel_v2(t_filename)
 
 		else:
-			# print "opening %s" % self.getModelFilename()
 			self.model = self.loadSbmlModel_v2(self.getModelFilename())
 
 

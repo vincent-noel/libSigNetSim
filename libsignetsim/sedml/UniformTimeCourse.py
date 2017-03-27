@@ -43,7 +43,6 @@ class UniformTimeCourse(Simulation):
 		self.__numberOfPoints = None
 		self.__algorithm = None
 
-
 	def readSedml(self, simulation, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
 		Simulation.readSedml(self, simulation, level, version)
@@ -99,11 +98,31 @@ class UniformTimeCourse(Simulation):
 	def getAlgorithm(self):
 		return self.__algorithm
 
-	def buildSimulation(self, sbmlModel):
+	def build(self, sbmlModel):
 
 		return TimeseriesSimulation(
 			list_of_models=[sbmlModel],
 			time_min=self.__initialTime,
 			time_max=self.__outputEndTime,
-			nb_samples=self.__numberOfPoints
+			nb_samples=self.__numberOfPoints+1
 		)
+	#
+	# def run(self):
+	#
+	# 	self.__simulationObject.run()
+	# 	self.__results = self.__simulationObject.rawData
+	#
+	def getSimulationObject(self):
+		return self.__simulationObject
+	#
+	# def getResults(self):
+	#
+	# 	return self.__results
+	#
+	# def getResultsByVariable(self, variable_sbmlid):
+	#
+	# 	return self.__results[1][variable_sbmlid]
+	#
+	# def getTimes(self):
+	#
+	# 	return self.__results[0]

@@ -22,7 +22,7 @@
 
 """
 
-from libsignetsim.sedml.tests.SedmlTestCase import SedTestCase
+from libsignetsim.sedml.tests.SedmlTestCase import SedmlTestCase
 from libsignetsim.settings.Settings import Settings
 
 from unittest import TestCase
@@ -36,11 +36,11 @@ class TestSedmlCompatibility(TestCase):
 
 	TODO_CASES = []
 	TODO_VERSIONS = []
+
 	INCOMPATIBLE_CASES = [962, 987, 988]
 	INCOMPATIBLE_TAGS = ['CSymbolDelay']
 
 	COMPATIBLE_PACKAGES = ['comp']
-
 
 	SEMANTIC_CASES_LINK = "http://downloads.sourceforge.net/project/sbml/test-suite/3.2.0/case-archives/sbml-semantic-test-cases-2016-07-27.zip"
 
@@ -148,16 +148,16 @@ class TestSedmlCompatibility(TestCase):
 
 				nb_cases += 1
 
-				try:
-					if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
-						print ""
+				# try:
+				if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
+					print ""
 
-					SedTestCase(case, str(level), str(version))
+				test = SedmlTestCase(case, str(level), str(version))
+				test.run()
+				nb_success += 1
+				# print ">> l%dv%d : OK (%.2gs)" % (level, version, time()-start)
 
-					nb_success += 1
-					# print ">> l%dv%d : OK (%.2gs)" % (level, version, time()-start)
-
-				except Exception as e:
-					print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
+				# except Exception as e:
+				# 	print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
 
 		return nb_success, nb_cases

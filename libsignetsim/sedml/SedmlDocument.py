@@ -22,27 +22,28 @@
 
 """
 
+from libsignetsim.sedml.SedBase import SedBase
+
 from libsignetsim.sedml.container.ListOfModels import ListOfModels
 from libsignetsim.sedml.container.ListOfSimulations import ListOfSimulations
 from libsignetsim.sedml.container.ListOfTasks import ListOfTasks
 from libsignetsim.sedml.container.ListOfDataGenerators import ListOfDataGenerators
 from libsignetsim.sedml.container.ListOfOutputs import ListOfOutputs
 
-from libsignetsim.simulation.TimeseriesSimulation import TimeseriesSimulation
-
 from libsignetsim.sedml.SedmlException import SedmlFileNotFound
-from libsignetsim.model.ModelException import TagNotImplementedModelException
 
 from libsignetsim.settings.Settings import Settings
 
 from libsedml import readSedMLFromFile, writeSedMLToFile, SedDocument
 from os.path import dirname, basename, exists
 
-class SedmlDocument(object):
+class SedmlDocument(SedBase):
 	""" Sedml document class """
 
 	def __init__ (self):
 		""" Constructor of model class """
+
+		SedBase.__init__(self, self)
 
 		self.path = None
 		self.filename = None
@@ -71,6 +72,9 @@ class SedmlDocument(object):
 
 		self.level = document.getLevel()
 		self.version = document.getVersion()
+
+		SedBase.readSedml(self, document, self.level, self.version)
+
 		self.listOfModels.readSedml(document.getListOfModels(), self.level, self.version)
 		self.listOfSimulations.readSedml(document.getListOfSimulations(), self.level, self.version)
 		self.listOfTasks.readSedml(document.getListOfTasks(), self.level, self.version)
@@ -83,6 +87,8 @@ class SedmlDocument(object):
 
 		document.setLevel(self.level)
 		document.setVersion(self.version)
+
+		SedBase.writeSedml(self, document, self.level, self.version)
 
 		self.listOfModels.writeSedml(document.getListOfModels(), self.level, self.version)
 		self.listOfSimulations.writeSedml(document.getListOfSimulations(), self.level, self.version)
@@ -97,15 +103,11 @@ class SedmlDocument(object):
 		writeSedMLToFile(document, filename)
 
 	def run(self):
+		self.listOfTasks.buildTasks()
+		self.listOfTasks.runTasks()
+		self.listOfOutputs.build()
+		# print self.listOfOutputs.getReports()[0].getData()
 
-		# try:
-			tasks = self.listOfTasks.getTasks()
-			for task in tasks:
-				task.run()
 
-		# except TagNotImplementedModelException as e:
-		# 	print e
-		#
-		# except Exception as e:
-		# 	print "%s : %s" % (type(e), e)
+
 

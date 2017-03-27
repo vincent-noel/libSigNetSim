@@ -38,6 +38,8 @@ class DataSet(SedBase, HasId):
 		self.__dataReference = None
 		self.__label = None
 
+		self.__data = None
+
 	def readSedml(self, data_set, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
 		SedBase.readSedml(self, data_set, level, version)
@@ -71,3 +73,24 @@ class DataSet(SedBase, HasId):
 
 	def setLabel(self, label):
 		self.__label = label
+
+	def build(self):
+
+		data_generator = self.__document.listOfDataGenerators.getDataGenerator(self.__dataReference)
+		math = data_generator.getMath()
+		data = data_generator.listOfVariables.getData()
+
+		self.__data = []
+
+		for i in range(len(data[data.keys()[0]])):
+
+			subs = {}
+			for var in data_generator.listOfVariables.listOfVariables:
+				subs.update({var.getSympySymbol():data[var][i]})
+
+			self.__data.append(float(math.getInternalMathFormula().subs(subs)))
+
+	def getData(self):
+
+		return {self.__label: self.__data}
+

@@ -33,7 +33,7 @@ import numpy
 
 class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 
-	CASES_PATH = "libsignetsim/simulation/tests/biomodels_copasi"
+	CASES_PATH = "libsignetsim/simulation/tests/"
 
 	def __init__ (self, model_id, time_ech=0.01, time_max=10, abs_tol=1e-12, rel_tol=1e-6, test_export=False, keep_files=True):
 
@@ -51,7 +51,6 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 		self.simulatedData = None
 		self.expectedData = None
 
-		# self.loadSBMLTestSuiteSettings()
 		self.loadTestCaseModel()
 		self.loadTestCaseResults()
 		# self.testExport= True
@@ -64,19 +63,13 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 										rel_tol=rel_tol,
 										keep_files=keep_files)
 
-	#
-	# def runTestSuiteWraper(self):
-	#
-	# 	res_exec = TimeseriesSimulation.run(self)
-	# 	self.writeSbmlTestOutput()
-	#
-
 	def run(self):
 
 		res_exec = TimeseriesSimulation.run(self)
 
 		if res_exec == 0:
 			self.simulatedData = self.rawData[0]
+			self.writeTestOutput()
 			return self.checkResults()
 			# return res_exec == 0
 		else:
@@ -101,7 +94,7 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 
 	def loadTestCaseResults(self):
 
-		results = open(self.getResultsFilename(), "r")
+		results = open(self.getExpectedResultsFilename(), "r")
 		header = results.readline()
 		results.close()
 
@@ -119,20 +112,22 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 				self.sbmlIdToPlot.append(var)
 				self.sbmlIdToPlotAmount.append(var)
 
-		data = numpy.genfromtxt(self.getResultsFilename(), skip_header=1)
+		data = numpy.genfromtxt(self.getExpectedResultsFilename(), skip_header=1)
 
 		self.expectedData = (data[:,0], data[:,1:data.shape[0]-1])
 
 	def getModelFilename(self):
-		return "%s/%s.xml" % (self.CASES_PATH, self.model_id)
+		return "%s/biomodels_copasi/%s.xml" % (self.CASES_PATH, self.model_id)
 
+
+	def getExpectedResultsFilename(self):
+		return "%s/biomodels_copasi/%s.csv" % (self.CASES_PATH, self.model_id)
 
 	def getResultsFilename(self):
-		return "%s/%s.csv" % (self.CASES_PATH, self.model_id)
-
+		return "%s/biomodels_signetsim/%s.csv" % (self.CASES_PATH, self.model_id)
 
 	def getTemporaryModelFilename(self):
-		return "%s/t_%s.xml" % (self.CASES_PATH, self.model_id)
+		return "%s/biomodels_copasi/t_%s.xml" % (self.CASES_PATH, self.model_id)
 
 
 
@@ -189,3 +184,52 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 			return 0
 		else:
 			return -1
+
+
+	def writeTestOutput(self):
+
+		if self.rawData is not None:
+
+			if not exists(join(self.CASES_PATH, "biomodels_signetsim")):
+				mkdir(join(self.CASES_PATH, "biomodels_signetsim"))
+
+			results_file = open(self.getResultsFilename(), 'w')
+			(traj_times, trajs) = self.rawData[0]
+
+			# Writing header
+			line = "# ['time'"
+
+			for sbml_id in self.sbmlIdToPlot:
+				if sbml_id in self.sbmlIdToPlotConcentrations:
+					line += ",'[%s]'" % sbml_id
+
+				elif sbml_id in self.sbmlIdToPlotAmount:
+					line += ",'%s'" % sbml_id
+
+			results_file.write(line + "]\n")
+
+			for i_t, t_time in enumerate(traj_times):
+				line = "%.14f" % t_time
+
+				for sbml_id in self.sbmlIdToPlot:
+					if sbml_id in self.listOfModels[0].listOfVariables.keys():
+						t_var = self.listOfModels[0].listOfVariables[sbml_id]
+						if t_var.isSpecies():
+
+							t_compartment = t_var.getCompartment()
+							# Here we ask for the concentration but it's declared an amount
+							if t_var.getSbmlId() in self.sbmlIdToPlotConcentrations and t_var.hasOnlySubstanceUnits:
+								line += " %.16g" % (trajs[t_var.getSbmlId()][i_t]/trajs[t_compartment.getSbmlId()][i_t])
+
+							# Here we ask for an amout but it's declared a concentration
+							elif t_var.getSbmlId() in self.sbmlIdToPlotAmount and not t_var.hasOnlySubstanceUnits:
+								line += " %.16g" % (trajs[t_var.getSbmlId()][i_t]*trajs[t_compartment.getSbmlId()][i_t])
+
+							else:
+								line += " %.16g" % trajs[t_var.getSbmlId()][i_t]
+						else:
+							line += " %.16g" % trajs[t_var.getSbmlId()][i_t]
+
+				results_file.write(line + "\n")
+
+			results_file.close()

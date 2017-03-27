@@ -45,3 +45,7 @@ class Plot2D(Output):
 
 		Output.writeSedml(self, plot, level, version)
 		self.listOfCurves.writeSedml(plot.getListOfCurves(), level, version)
+
+	def build(self):
+
+		pass

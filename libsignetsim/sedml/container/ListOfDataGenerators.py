@@ -52,3 +52,9 @@ class ListOfDataGenerators(SedBase):
 		for t_data_generator in self.listOfDataGenerators:
 			data_generator = list_of_data_generators.createDataGenerator()
 			t_data_generator.writeSedml(data_generator, level, version)
+
+	def getDataGenerator(self, data_reference):
+
+		for data_generator in self.listOfDataGenerators:
+			if data_generator.getId() == data_reference:
+				return data_generator
