@@ -115,6 +115,8 @@ class TestSedmlCompatibility(TestCase):
 			compatible = True
 
 			for tag in case_tags:
+
+
 				if tag.strip() in self.INCOMPATIBLE_TAGS:
 					compatible = False
 
@@ -122,7 +124,7 @@ class TestSedmlCompatibility(TestCase):
 					  and tag.strip().split(':')[0] not in self.COMPATIBLE_PACKAGES):
 					compatible = False
 
-			if compatible and (self.TODO_CASES == [] or case_id in self.TODO_CASES):
+			if compatible and case_id not in self.INCOMPATIBLE_CASES and (self.TODO_CASES == [] or case_id in self.TODO_CASES):
 				(t_success, t_cases) = self.runCase(case_id)
 				nb_success += t_success
 				nb_cases += t_cases

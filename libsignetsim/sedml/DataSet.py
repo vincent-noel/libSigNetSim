@@ -86,7 +86,7 @@ class DataSet(SedBase, HasId):
 
 			subs = {}
 			for var in data_generator.listOfVariables.listOfVariables:
-				subs.update({var.getSympySymbol():data[var][i]})
+				subs.update({var.getSympySymbol():float(data[var][i])})
 
 			self.__data.append(float(math.getInternalMathFormula().subs(subs)))
 
