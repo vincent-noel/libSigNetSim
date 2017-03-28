@@ -74,8 +74,8 @@ class TestBiomodelsCompatibility(TestCase):
 						   'BIOMD0000000562', 'BIOMD0000000592',
 						   'BIOMD0000000593']
 
-	START = ''
-	STOP = ''
+	START = 'BIOMD0000000001'
+	STOP = 'BIOMD0000000001'
 
 	def testTimeseriesBiomodels(self):
 
