@@ -48,7 +48,7 @@
 
 int       log_integration_duration = LOGGING_UNACTIVE;
 char *    log_integration_duration_filename = "integration_duration.log";
-int       log_integration_errors = LOGGING_UNACTIVE;
+int       log_integration_errors = LOGGING_ACTIVE;
 char *    log_integration_errors_filename = "integration_errors.log";
 char *    log_directory = ".";
 char *    working_directory = ".";

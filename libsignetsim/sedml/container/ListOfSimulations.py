@@ -25,10 +25,10 @@
 from libsignetsim.sedml.SedBase import SedBase
 from libsignetsim.sedml.UniformTimeCourse import UniformTimeCourse
 from libsignetsim.settings.Settings import Settings
-# import libsbml
 
+import libsbml
 from libsedml import SEDML_SIMULATION_UNIFORMTIMECOURSE, SEDML_SIMULATION_ONESTEP, SEDML_SIMULATION_STEADYSTATE
-# reload(libsbml)
+reload(libsbml)
 
 class ListOfSimulations(SedBase):
 

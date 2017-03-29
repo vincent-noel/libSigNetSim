@@ -27,7 +27,10 @@ from libsignetsim.sedml.math.SedmlMathWriter import SedmlMathWriter
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.sympy_shortcuts import (SympySymbol, SympyInteger)
 
+import libsbml
 from libsedml import parseFormula, formulaToString, ASTNode
+reload(libsbml)
+
 from sympy import srepr
 
 

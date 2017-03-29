@@ -34,7 +34,10 @@ from libsignetsim.sedml.SedmlException import SedmlFileNotFound
 
 from libsignetsim.settings.Settings import Settings
 
+import libsbml
 from libsedml import readSedMLFromFile, writeSedMLToFile, SedDocument
+reload(libsbml)
+
 from os.path import dirname, basename, exists
 
 class SedmlDocument(SedBase):

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+		<title>Results</title>
+		<!-- Bootstrap core CSS -->
+
+		<!-- Custom styles for this template -->
+
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+	</head>
+
+	<body>
+
+	<div class="container-fluid">
+		<br/>
+		<table border="0" width="100%">
+			<tr>
+				<td width="10%">
+					<button type="button" class="btn btn-primary" onclick="list_previous();">Previous</button>
+				</td>
+				<td width="80%">
+					<div class="container-fluid" id="list_models"></div>
+				</td>
+				<td width="10%" align="right">
+					<button type="button" class="btn btn-primary" onclick="list_next();">Next</button>
+				</td>
+			</tr>
+		</table>
+
+		<h3 id="model_id" align="center"></h3>
+
+		<table border="0" width="100%">
+			<tr>
+				<td width="50%">
+					<canvas id="canvas_signetsim"></canvas>
+				</td>
+				<td width="50%" align="right">
+					<canvas id="canvas_copasi"></canvas>
+				</td>
+			</tr>
+		</table>
+		<br/><br/><br/>
+		<canvas id="canvas_differences"></canvas>
+	</div>
+	<script src="biomodels_differences.js"></script>
+
+  </body>
+</html>

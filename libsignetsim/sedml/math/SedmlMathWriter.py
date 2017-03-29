@@ -25,6 +25,7 @@
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.sedml.SedmlException import SedmlMathException
 
+import libsbml
 # token: cn , ci , csymbol , sep
 from libsedml import AST_NAME, AST_NAME_TIME, AST_INTEGER, AST_REAL
 from sympy_shortcuts import SympyInteger, SympyFloat, SympySymbol
@@ -91,6 +92,8 @@ from sympy_shortcuts import (
 )
 
 from libsedml import ASTNode
+reload(libsbml)
+
 
 class SedmlMathWriter(object):
 	""" Class for handling math formulaes """

@@ -11,10 +11,11 @@ install:
 
 
 script:
-  - python -m unittest libsignetsim.sedml.tests.TestSedmlCompatibility
   - python -m unittest libsignetsim.simulation.tests.TestTimeseries
   - python -m unittest libsignetsim.simulation.tests.TestSteadyStates
-  - python -m unittest libsignetsim.simulation.tests.TestBiomodelsCompatibility
   - python -m unittest libsignetsim.optimization.tests.TestOptimization
+  - python -m unittest libsignetsim.tests.sbmltestsuite.TestSuite
+  - python -m unittest libsignetsim.tests.biomodels.TestBiomodelsCompatibility
+
 
 

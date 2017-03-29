@@ -22,8 +22,7 @@
 
 """
 
-from libsignetsim.simulation.tests.SbmlTestCaseSimulation import SbmlTestCaseSimulation
-from libsignetsim.sedml.tests.SedmlTestCase import SedmlTestCase
+from libsignetsim.tests.sbmltestsuite.TestSuiteCase import TestSuiteCase
 from libsignetsim.model.ModelException import LibSigNetSimException
 from libsignetsim.simulation.SimulationException import SimulationException
 
@@ -68,7 +67,7 @@ class __main__():
 		if options.test_conformity is not None:
 
 			try:
-				test = SedmlTestCase(
+				test = TestSuiteCase(
 								int(options.test_conformity[0]),
 								options.test_conformity[1],
 								options.test_conformity[2]

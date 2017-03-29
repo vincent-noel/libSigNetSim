@@ -24,6 +24,7 @@
 
 from libsignetsim.sedml.SedmlException import SedmlMathException
 
+import libsbml
 # token: cn , ci , csymbol , sep
 from libsedml import AST_NAME, AST_NAME_TIME
 from sympy_shortcuts import SympyInteger, SympyFloat, SympySymbol
@@ -89,7 +90,7 @@ from libsedml import (AST_CONSTANT_TRUE, AST_CONSTANT_FALSE, AST_CONSTANT_PI, AS
 from sympy_shortcuts import (SympyTrue, SympyFalse, SympyPi, SympyE, SympyInf, SympyNan)
 
 from libsedml import parseFormula
-
+reload(libsbml)
 
 class SedmlMathReader(object):
 	""" Class for handling math formulaes """
