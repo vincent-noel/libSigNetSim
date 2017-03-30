@@ -66,7 +66,7 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 		if res_exec == 0:
 			self.simulatedData = self.rawData[0]
 			# # print self.simulatedData
-			# self.writeTestOutput()
+			self.writeTestOutput()
 			return self.checkResults()
 
 		else:
@@ -181,9 +181,6 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 	def writeTestOutput(self):
 
 		if self.rawData is not None:
-
-			if not exists(join(self.CASES_PATH, "biomodels_signetsim")):
-				mkdir(join(self.CASES_PATH, "biomodels_signetsim"))
 
 			results_file = open(self.getResultsFilename(), 'w')
 			(traj_times, trajs) = self.rawData[0]

@@ -21,47 +21,45 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
-from libsignetsim.sedml.SedBase import SedBase
+from libsignetsim.sedml.container.ListOf import ListOf
 from libsignetsim.sedml.DataSet import DataSet
 from libsignetsim.settings.Settings import Settings
 
-class ListOfDataSets(SedBase):
+class ListOfDataSets(ListOf):
 
 	def __init__(self, document):
 
-		SedBase.__init__(self, document)
+		ListOf.__init__(self, document)
 
 		self.__document = document
-		self.listOfDataSets = []
-
 
 	def readSedml(self, list_of_data_sets, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.readSedml(self, list_of_data_sets, level, version)
+		ListOf.readSedml(self, list_of_data_sets, level, version)
 
 		for t_data_set in list_of_data_sets:
 			data_set = DataSet(self.__document)
 			data_set.readSedml(t_data_set, level, version)
-			self.listOfDataSets.append(data_set)
+			ListOf.append(self, data_set)
 
 	def writeSedml(self, list_of_data_sets, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.writeSedml(self, list_of_data_sets, level, version)
+		ListOf.writeSedml(self, list_of_data_sets, level, version)
 
-		for t_data_set in self.listOfDataSets:
+		for t_data_set in self:
 			data_set = list_of_data_sets.createDataSet()
 			t_data_set.writeSedml(data_set, level, version)
 
 	def build(self):
 
-		for data_set in self.listOfDataSets:
+		for data_set in self:
 			data_set.build()
 
 	def getData(self):
 
 		data = {}
 
-		for data_set in self.listOfDataSets:
+		for data_set in self:
 			data.update(data_set.getData())
 
 		return data

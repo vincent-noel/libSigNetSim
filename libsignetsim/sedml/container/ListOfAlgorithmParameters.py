@@ -22,34 +22,34 @@
 
 """
 
-from libsignetsim.sedml.SedBase import SedBase
+from libsignetsim.sedml.container.ListOf import ListOf
 from libsignetsim.sedml.AlgorithmParameter import AlgorithmParameter
 from libsignetsim.settings.Settings import Settings
 
 
-class ListOfAlgorithmParameters(SedBase):
+class ListOfAlgorithmParameters(ListOf):
 
 	def __init__(self, document):
 
-		SedBase.__init__(self, document)
+		ListOf.__init__(self, document)
 
 		self.__document = document
-		self.listOfAlgorithmParameters = []
+		# self.listOfAlgorithmParameters = []
 
 	def readSedml(self, list_of_algo_params, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.readSedml(self, list_of_algo_params, level, version)
+		ListOf.readSedml(self, list_of_algo_params, level, version)
 
 		for t_algo_param in list_of_algo_params:
 			algo_param = AlgorithmParameter(self.__document)
 			algo_param.readSedml(t_algo_param, level, version)
-			self.listOfAlgorithmParameters.append(algo_param)
+			ListOf.append(self, algo_param)
 
 	def writeSedml(self, list_of_algo_params, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.writeSedml(self, list_of_algo_params, level, version)
+		ListOf.writeSedml(self, list_of_algo_params, level, version)
 
-		for t_algo_param in self.listOfAlgorithmParameters:
+		for t_algo_param in self:
 			algo_param = list_of_algo_params.createAlgorithmParameter()
 			algo_param.writeSedml(t_algo_param, level, version)
 

@@ -22,7 +22,7 @@
 
 """
 
-from libsignetsim.sedml.SedBase import SedBase
+from libsignetsim.sedml.container.ListOf import ListOf
 from libsignetsim.sedml.Plot2D import Plot2D
 from libsignetsim.sedml.Report import Report
 from libsignetsim.settings.Settings import Settings
@@ -31,35 +31,34 @@ import libsbml
 from libsedml import SEDML_OUTPUT_PLOT2D, SEDML_OUTPUT_REPORT
 reload(libsbml)
 
-class ListOfOutputs(SedBase):
+class ListOfOutputs(ListOf):
 
 	def __init__(self, document):
 
-		SedBase.__init__(self, document)
+		ListOf.__init__(self, document)
 		self.__document = document
-		self.listOfOutputs = []
 
 	def readSedml(self, list_of_outputs, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.readSedml(self, list_of_outputs, level, version)
+		ListOf.readSedml(self, list_of_outputs, level, version)
 
 		for t_output in list_of_outputs:
 
 			if t_output.getTypeCode() == SEDML_OUTPUT_PLOT2D:
 				output = Plot2D(self.__document)
 				output.readSedml(t_output, level, version)
-				self.listOfOutputs.append(output)
+				ListOf.append(self, output)
 
 			elif t_output.getTypeCode() == SEDML_OUTPUT_REPORT:
 				output = Report(self.__document)
 				output.readSedml(t_output, level, version)
-				self.listOfOutputs.append(output)
+				ListOf.append(self, output)
 
 	def writeSedml(self, list_of_outputs, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.writeSedml(self, list_of_outputs, level, version)
+		ListOf.writeSedml(self, list_of_outputs, level, version)
 
-		for t_output in self.listOfOutputs:
+		for t_output in self:
 
 			if isinstance(t_output, Plot2D):
 				output = list_of_outputs.createPlot2D()
@@ -71,13 +70,13 @@ class ListOfOutputs(SedBase):
 
 	def build(self):
 
-		for output in self.listOfOutputs:
+		for output in self:
 			output.build()
 
 	def getReports(self):
 
 		reports = []
-		for output in self.listOfOutputs:
+		for output in self:
 			if isinstance(output, Report):
 				reports.append(output)
 

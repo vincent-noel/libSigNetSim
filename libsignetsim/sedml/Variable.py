@@ -90,8 +90,6 @@ class Variable(SedBase, HasId):
 		return self.__target
 
 	def getSympySymbol(self):
-		# print self.getId()
-		# print SympySymbol(self.getId())
 		return SympySymbol(self.getId())
 
 	def getData(self):

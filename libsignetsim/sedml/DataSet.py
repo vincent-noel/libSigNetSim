@@ -78,15 +78,17 @@ class DataSet(SedBase, HasId):
 
 		data_generator = self.__document.listOfDataGenerators.getDataGenerator(self.__dataReference)
 		math = data_generator.getMath()
-		data = data_generator.listOfVariables.getData()
+		data_variables = data_generator.listOfVariables.getData()
 
 		self.__data = []
 
-		for i in range(len(data[data.keys()[0]])):
+		for i in range(len(data_variables[data_variables.keys()[0]])):
 
 			subs = {}
-			for var in data_generator.listOfVariables.listOfVariables:
-				subs.update({var.getSympySymbol():float(data[var][i])})
+			for var in data_generator.listOfVariables:
+				subs.update({var.getSympySymbol():float(data_variables[var][i])})
+
+			subs.update(data_generator.listOfParameters.getSubs())
 
 			self.__data.append(float(math.getInternalMathFormula().subs(subs)))
 

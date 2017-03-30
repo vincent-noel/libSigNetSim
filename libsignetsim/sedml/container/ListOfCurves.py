@@ -21,15 +21,15 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
-from libsignetsim.sedml.SedBase import SedBase
+from libsignetsim.sedml.container.ListOf import ListOf
 from libsignetsim.sedml.Curve import Curve
 from libsignetsim.settings.Settings import Settings
 
-class ListOfCurves(SedBase):
+class ListOfCurves(ListOf):
 
 	def __init__(self, document):
 
-		SedBase.__init__(self, document)
+		ListOf.__init__(self, document)
 
 		self.__document = document
 		self.listOfCurves = []
@@ -37,17 +37,17 @@ class ListOfCurves(SedBase):
 
 	def readSedml(self, list_of_curves, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.readSedml(self, list_of_curves, level, version)
+		ListOf.readSedml(self, list_of_curves, level, version)
 
 		for t_curve in list_of_curves:
 			curve = Curve(self.__document)
 			curve.readSedml(t_curve, level, version)
-			self.listOfCurves.append(curve)
+			ListOf.append(self, curve)
 
 	def writeSedml(self, list_of_curves, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.writeSedml(self, list_of_curves, level, version)
+		ListOf.writeSedml(self, list_of_curves, level, version)
 
-		for t_curve in self.listOfCurves:
+		for t_curve in self:
 			curve = list_of_curves.createCurve()
 			t_curve.writeSedml(curve, level, version)

@@ -23,7 +23,11 @@
 """
 from libsignetsim.sedml.SedBase import SedBase
 from libsignetsim.sedml.HasId import HasId
+
 from libsignetsim.settings.Settings import Settings
+
+from libsignetsim.sedml.math.sympy_shortcuts import SympySymbol, SympyFloat
+
 
 class Parameter(SedBase, HasId):
 
@@ -57,3 +61,6 @@ class Parameter(SedBase, HasId):
 
 	def setValue(self, value):
 		self.__value = value
+
+	def getSub(self):
+		return {SympySymbol(self.getId()): SympyFloat(self.__value)}

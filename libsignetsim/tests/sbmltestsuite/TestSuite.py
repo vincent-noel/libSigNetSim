@@ -54,7 +54,7 @@ class TestSuite(TestCase):
 		self.testCasesVersions = {}
 		Settings.verbose = 0
 
-	def testSedmlCompatibility(self):
+	def testSuiteRun(self):
 
 		self.testSuitePath = Settings.tempDirectory
 		Settings.sbmlTestCasesPath = "/tmp/"

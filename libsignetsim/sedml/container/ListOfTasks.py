@@ -21,42 +21,40 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
+from libsignetsim.sedml.container.ListOf import ListOf
 from libsignetsim.sedml.Task import Task
-from libsignetsim.sedml.SedBase import SedBase
+
 from libsignetsim.settings.Settings import Settings
 
 import libsbml
 from libsedml import SEDML_TASK
 reload(libsbml)
 
-class ListOfTasks(SedBase):
+
+class ListOfTasks(ListOf):
 
 	def __init__(self, document):
 
-		SedBase.__init__(self, document)
+		ListOf.__init__(self, document)
 
 		self.__document = document
-		self.listOfTasks = []
 
 	def readSedml(self, list_of_tasks, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.readSedml(self, list_of_tasks, level, version)
+		ListOf.readSedml(self, list_of_tasks, level, version)
 
 		for t_task in list_of_tasks:
-			task = None
 
 			if t_task.getTypeCode() == SEDML_TASK:
 				task = Task(self.__document)
-
-			if task is not None:
 				task.readSedml(t_task, level, version)
-				self.listOfTasks.append(task)
+				ListOf.append(self, task)
 
 	def writeSedml(self, list_of_tasks, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.writeSedml(self, list_of_tasks, level, version)
+		ListOf.writeSedml(self, list_of_tasks, level, version)
 
-		for t_task in self.listOfTasks:
+		for t_task in self:
 
 			if isinstance(t_task, Task):
 				task = list_of_tasks.createTask()
@@ -64,16 +62,16 @@ class ListOfTasks(SedBase):
 
 	def getTask(self, task_reference):
 
-		for task in self.listOfTasks:
+		for task in self:
 			if task.getId() == task_reference:
 				return task
 
 	def buildTasks(self):
 
-		for task in self.listOfTasks:
+		for task in self:
 			task.build()
 
 	def runTasks(self):
 
-		for task in self.listOfTasks:
+		for task in self:
 			task.run()

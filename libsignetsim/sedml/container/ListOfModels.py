@@ -22,47 +22,46 @@
 
 """
 
-from libsignetsim.sedml.SedBase import SedBase
+from libsignetsim.sedml.container.ListOf import ListOf
 from libsignetsim.sedml.Model import Model
 from libsignetsim.settings.Settings import Settings
 
 
-class ListOfModels(SedBase):
+class ListOfModels(ListOf):
 
 	def __init__(self, document):
 
-		SedBase.__init__(self, document)
+		ListOf.__init__(self, document)
 
 		self.__document = document
-		self.listOfModels = []
 
 	def readSedml(self, list_of_models, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.readSedml(self, list_of_models, level, version)
+		ListOf.readSedml(self, list_of_models, level, version)
 
 		for t_model in list_of_models:
 			model = Model(self.__document)
 			model.readSedml(t_model, level, version)
-			self.listOfModels.append(model)
+			ListOf.append(self, model)
 
 	def writeSedml(self, list_of_models, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.writeSedml(self, list_of_models, level, version)
+		ListOf.writeSedml(self, list_of_models, level, version)
 
-		for t_model in self.listOfModels:
+		for t_model in self:
 			model = list_of_models.createModel()
 			t_model.writeSedml(model, level, version)
 
 	def getSbmlModels(self):
 
 		models = []
-		for model in self.listOfModels:
+		for model in self:
 			models.append(model.getSbmlModel())
 
 		return models
 
 	def getByModelReference(self, model_reference):
 
-		for t_model in self.listOfModels:
+		for t_model in self:
 			if t_model.getId() == model_reference:
 				return t_model.getSbmlModel()

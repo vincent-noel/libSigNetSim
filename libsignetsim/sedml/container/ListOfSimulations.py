@@ -22,7 +22,7 @@
 
 """
 
-from libsignetsim.sedml.SedBase import SedBase
+from libsignetsim.sedml.container.ListOf import ListOf
 from libsignetsim.sedml.UniformTimeCourse import UniformTimeCourse
 from libsignetsim.settings.Settings import Settings
 
@@ -30,30 +30,29 @@ import libsbml
 from libsedml import SEDML_SIMULATION_UNIFORMTIMECOURSE, SEDML_SIMULATION_ONESTEP, SEDML_SIMULATION_STEADYSTATE
 reload(libsbml)
 
-class ListOfSimulations(SedBase):
+class ListOfSimulations(ListOf):
 
 	def __init__(self, document):
 
-		SedBase.__init__(self, document)
+		ListOf.__init__(self, document)
 		self.__document = document
-		self.listOfSimulations = []
 
 	def readSedml(self, list_of_simulations, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.readSedml(self, list_of_simulations, level, version)
+		ListOf.readSedml(self, list_of_simulations, level, version)
 
 		for t_simulation in list_of_simulations:
 
 			if t_simulation.getTypeCode() == SEDML_SIMULATION_UNIFORMTIMECOURSE:
 				simulation = UniformTimeCourse(self.__document)
 				simulation.readSedml(t_simulation, level, version)
-				self.listOfSimulations.append(simulation)
+				ListOf.append(self, simulation)
 
 	def writeSedml(self, list_of_simulations, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.writeSedml(self, list_of_simulations, level, version)
+		ListOf.writeSedml(self, list_of_simulations, level, version)
 
-		for t_simulation in self.listOfSimulations:
+		for t_simulation in self:
 
 			if isinstance(t_simulation, UniformTimeCourse):
 				simulation = list_of_simulations.createUniformTimeCourse()
@@ -61,7 +60,7 @@ class ListOfSimulations(SedBase):
 
 	def getSimulation(self, simulation_reference):
 
-		for simulation in self.listOfSimulations:
+		for simulation in self:
 			if simulation.getId() == simulation_reference:
 				return simulation
 

@@ -22,39 +22,38 @@
 
 """
 
-from libsignetsim.sedml.SedBase import SedBase
+from libsignetsim.sedml.container.ListOf import ListOf
 from libsignetsim.sedml.DataGenerator import DataGenerator
 from libsignetsim.settings.Settings import Settings
 
 
-class ListOfDataGenerators(SedBase):
+class ListOfDataGenerators(ListOf):
 
 	def __init__(self, document):
 
-		SedBase.__init__(self, document)
+		ListOf.__init__(self, document)
 		self.__document = document
-		self.listOfDataGenerators = []
 
 	def readSedml(self, list_of_data_generators, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.readSedml(self, list_of_data_generators, level, version)
+		ListOf.readSedml(self, list_of_data_generators, level, version)
 
 		for t_data_generator in list_of_data_generators:
 
 			data_generator = DataGenerator(self.__document)
 			data_generator.readSedml(t_data_generator, level, version)
-			self.listOfDataGenerators.append(data_generator)
+			ListOf.append(self, data_generator)
 
 	def writeSedml(self, list_of_data_generators, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.writeSedml(self, list_of_data_generators, level, version)
+		ListOf.writeSedml(self, list_of_data_generators, level, version)
 
-		for t_data_generator in self.listOfDataGenerators:
+		for t_data_generator in self:
 			data_generator = list_of_data_generators.createDataGenerator()
 			t_data_generator.writeSedml(data_generator, level, version)
 
 	def getDataGenerator(self, data_reference):
 
-		for data_generator in self.listOfDataGenerators:
+		for data_generator in self:
 			if data_generator.getId() == data_reference:
 				return data_generator

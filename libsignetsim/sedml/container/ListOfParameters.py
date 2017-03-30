@@ -22,33 +22,40 @@
 
 """
 
-from libsignetsim.sedml.SedBase import SedBase
+from libsignetsim.sedml.container.ListOf import ListOf
 from libsignetsim.sedml.Parameter import Parameter
 from libsignetsim.settings.Settings import Settings
 
 
-class ListOfParameters(SedBase):
+class ListOfParameters(ListOf):
 
 	def __init__(self, document):
 
-		SedBase.__init__(self, document)
+		ListOf.__init__(self, document)
 
 		self.__document = document
-		self.listOfParameters = []
 
 	def readSedml(self, list_of_parameters, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.readSedml(self, list_of_parameters, level, version)
+		ListOf.readSedml(self, list_of_parameters, level, version)
 
 		for t_parameter in list_of_parameters:
 			parameter = Parameter(self.__document)
 			parameter.readSedml(t_parameter, level, version)
-			self.listOfParameters.append(parameter)
+			ListOf.append(self, parameter)
 
 	def writeSedml(self, list_of_parameters, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.writeSedml(self, list_of_parameters, level, version)
+		ListOf.writeSedml(self, list_of_parameters, level, version)
 
-		for t_parameter in self.listOfParameters:
+		for t_parameter in self:
 			parameter = list_of_parameters.createParameter()
 			t_parameter.writeSedml(parameter, level, version)
+
+	def getSubs(self):
+
+		data = {}
+		for parameter in self:
+			data.update(parameter.getSub())
+
+		return data

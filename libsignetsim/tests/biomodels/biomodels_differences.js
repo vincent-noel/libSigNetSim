@@ -458,7 +458,7 @@ function parseResult(raw_text)
 function readSigNetSimResult(case_id, deferred_signetsim)
 {
     var textfile;
-    var filename = "cases/" + case_id + "/results_signetsim.csv";
+    var filename = "cases/" + case_id + "/results_simulated.csv";
     var deferred_signetsim = new $.Deferred();
 
     if (window.XMLHttpRequest)
@@ -485,7 +485,7 @@ function readSigNetSimResult(case_id, deferred_signetsim)
 function readCopasiResult(case_id)
 {
     var textfile;
-    var filename = "cases/" + case_id + "results.csv";
+    var filename = "cases/" + case_id + "/results.csv";
     var deferred_copasi = new $.Deferred();
 
     if (window.XMLHttpRequest)

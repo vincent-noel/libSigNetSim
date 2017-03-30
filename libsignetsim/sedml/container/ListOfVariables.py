@@ -22,42 +22,40 @@
 
 """
 
-from libsignetsim.sedml.SedBase import SedBase
+from libsignetsim.sedml.container.ListOf import ListOf
 from libsignetsim.sedml.Variable import Variable
 from libsignetsim.settings.Settings import Settings
 
 
-class ListOfVariables(SedBase):
+class ListOfVariables(ListOf):
 
 	def __init__(self, document):
 
-		SedBase.__init__(self, document)
+		ListOf.__init__(self, document)
 
 		self.__document = document
-		self.listOfVariables = []
 
 	def readSedml(self, list_of_variables, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.readSedml(self, list_of_variables, level, version)
+		ListOf.readSedml(self, list_of_variables, level, version)
 
 		for t_var in list_of_variables:
 			var = Variable(self.__document)
 			var.readSedml(t_var, level, version)
-			self.listOfVariables.append(var)
+			ListOf.append(self, var)
 
 	def writeSedml(self, list_of_variables, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.writeSedml(self, list_of_variables, level, version)
+		ListOf.writeSedml(self, list_of_variables, level, version)
 
-		for t_var in self.listOfVariables:
+		for t_var in self:
 			var = list_of_variables.createVariable()
 			t_var.writeSedml(var, level, version)
 
 	def getData(self):
 
 		data = {}
-		for variable in self.listOfVariables:
-			# print variable.getData()
+		for variable in self:
 			data.update(variable.getData())
 
 		return data
