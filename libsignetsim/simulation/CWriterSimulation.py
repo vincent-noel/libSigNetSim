@@ -39,7 +39,17 @@ class CWriterSimulation(CWriterModels, CWriterData):
 						abs_tol=Settings.defaultAbsTol,
 						rel_tol=Settings.defaultRelTol):
 
-		CWriterModels.__init__(self, list_of_models, list_samples, abs_tol, rel_tol)
+		if abs_tol is not None:
+			self.absTol = abs_tol
+		else:
+			self.absTol = Settings.defaultAbsTol
+
+		if rel_tol is not None:
+			self.relTol = rel_tol
+		else:
+			self.relTol = Settings.defaultRelTol
+
+		CWriterModels.__init__(self, list_of_models, list_samples, self.absTol, self.relTol)
 
 		if experiment is not None:
 			CWriterData.__init__(self, [experiment], workingModel=list_of_models[0])

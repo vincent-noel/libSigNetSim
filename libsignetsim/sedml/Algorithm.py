@@ -52,3 +52,15 @@ class Algorithm(SedBase):
 			algo.setKisaoID(self.__kisaoID)
 
 		self.listOfAlgorithmParameters.writeSedml(algo.getListOfAlgorithmParameters(), level, version)
+
+	def hasRelTol(self):
+		return self.listOfAlgorithmParameters.hasRelTol()
+
+	def hasAbsTol(self):
+		return self.listOfAlgorithmParameters.hasAbsTol()
+
+	def getRelTol(self):
+		return self.listOfAlgorithmParameters.getRelTol()
+
+	def getAbsTol(self):
+		return self.listOfAlgorithmParameters.getAbsTol()

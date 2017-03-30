@@ -52,6 +52,8 @@ class TestSuite(TestCase):
 		self.testCasesPath = None
 		self.testCasesTags = {}
 		self.testCasesVersions = {}
+
+		self.testExport = False
 		Settings.verbose = 0
 
 	def testSuiteRun(self):
@@ -154,7 +156,7 @@ class TestSuite(TestCase):
 				if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
 					print ""
 
-				test = TestSuiteCase(case, str(level), str(version))
+				test = TestSuiteCase(case, str(level), str(version), test_export=self.testExport)
 				test.run()
 				nb_success += 1
 				# print ">> l%dv%d : OK (%.2gs)" % (level, version, time()-start)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" AlgorithmParameter.py
+""" Change.py
 
 
 	This file ...
@@ -22,46 +22,32 @@
 
 """
 from libsignetsim.sedml.SedBase import SedBase
+from libsignetsim.sedml.HasId import HasId
 from libsignetsim.settings.Settings import Settings
 
-class AlgorithmParameter(SedBase):
 
-	REL_TOL = '0000209'
-	ABS_TOL = '0000211'
+class Change(SedBase, HasId):
 
 	def __init__(self, document):
 
 		SedBase.__init__(self, document)
+		HasId.__init__(self, document)
 
 		self.__document = document
-		self.__kisaoID = None
-		self.__value = None
+		self.__target = None
 
-	def readSedml(self, algo_param, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+	def readSedml(self, change, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.readSedml(self, algo_param, level, version)
+		SedBase.readSedml(self, change, level, version)
+		HasId.readSedml(self, change, level, version)
 
-		if algo_param.isSetKisaoID():
-			self.__kisaoID = algo_param.getKisaoID()
+		if change.isSetTarget():
+			self.__target = change.getTarget()
 
-		if algo_param.isSetValue():
-			self.__value = algo_param.getValue()
+	def writeSedml(self, change, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-	def writeSedml(self, algo_param, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+		SedBase.writeSedml(self, change, level, version)
+		HasId.writeSedml(self, change, level, version)
 
-		SedBase.writeSedml(self, algo_param, level, version)
-
-		if self.__kisaoID is not None:
-			algo_param.setKisaoID(self.__kisaoID)
-
-		if self.__value is not None:
-			algo_param.setValue(self.__value)
-
-	def isRelTol(self):
-		return self.__kisaoID == self.REL_TOL
-
-	def isAbsTol(self):
-		return self.__kisaoID == self.ABS_TOL
-
-	def getValue(self):
-		return self.__value
+		if self.__target is not None:
+			change.setTarget(self.__target)

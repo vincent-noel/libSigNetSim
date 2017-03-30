@@ -258,23 +258,18 @@ class SbmlDocument(object):
 
 	def writeSbml(self, sbml_filename=None, path=None):
 
-
-
 		t0 = time()
-
 
 		if sbml_filename is not None:
 			if isabs(sbml_filename):
-
 				self.documentPath = dirname(sbml_filename)
+
 			self.documentFilename = basename(sbml_filename)
 
-		elif path is not None:
+		if path is not None:
 			self.documentPath = path
 
-
 		sbmlDoc = SBMLDocument(self.sbmlLevel,self.sbmlVersion)
-
 
 		# Adding xhtml namespace to write notes
 		# sbmlDoc.getNamespaces().add("http://www.w3.org/1999/xhtml", "xhtml")
@@ -308,8 +303,7 @@ class SbmlDocument(object):
 
 
 		# Writing the final file
-		# print self.documentPath
-		# print self.documentFilename
+
 		result = writeSBMLToFile(sbmlDoc, join(self.documentPath, self.documentFilename))
 		if result == 1:
 			return True

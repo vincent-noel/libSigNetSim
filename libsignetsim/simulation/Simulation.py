@@ -127,7 +127,6 @@ class Simulation(CWriterSimulation):
 	def writeSimulationFiles(self):
 
 		mkdir(self.getTempDirectory())
-		# self.writeModelsFile()
 		CWriterSimulation.writeSimulationFiles(self)
 
 		res_path = join(self.getTempDirectory(),
@@ -187,7 +186,7 @@ class Simulation(CWriterSimulation):
 			return self.SIM_SUCCESS
 
 
-	def __execute__(self, nb_procs=4, steady_states=False):
+	def __execute__(self, nb_procs=Settings.defaultMaxProcNumbers, steady_states=False):
 
 		present_dir = getcwd()
 

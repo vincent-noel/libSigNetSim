@@ -25,16 +25,17 @@
 from libsignetsim.sedml.SedmlDocument import SedmlDocument
 from libsignetsim.settings.Settings import Settings
 
-from os.path import join, exists
+from os.path import join, exists, isdir
 from os import mkdir
 
 class TestSuiteCase(object):
 
-	def __init__ (self, case_id, sbml_level, sbml_version):
+	def __init__ (self, case_id, sbml_level, sbml_version, test_export=True):
 
 		self.caseId = "%05d" % case_id
 		self.sbmlLevel = sbml_level
 		self.sbmlVersion = sbml_version
+		self.testExport = test_export
 
 		self.document = None
 		self.sbmlIdToCheck = None
@@ -72,8 +73,10 @@ class TestSuiteCase(object):
 		)
 
 	def getTemporarySedmlFilename(self):
-		return join(Settings.sbmlTestResultsPath, "%s-sbml-l%sv%s-sedml.xml" % (self.caseId, self.sbmlLevel, self.sbmlVersion))
+		return join(Settings.sbmlTestResultsPath, "%s/%s-sbml-l%sv%s-sedml.xml" % (self.caseId, self.caseId, self.sbmlLevel, self.sbmlVersion))
 
+	def getTemporaryPath(self):
+		return join(Settings.sbmlTestResultsPath, "%s" % self.caseId)
 
 	def loadSBMLTestSuiteSettings(self):
 
@@ -104,6 +107,19 @@ class TestSuiteCase(object):
 
 		self.document = SedmlDocument()
 		self.document.readSedmlFromFile(self.getFilename())
+
+		if self.testExport:
+
+			if not isdir(self.getTemporaryPath()):
+				mkdir(self.getTemporaryPath())
+
+			self.document.writeSedmlToFile(
+				self.getTemporarySedmlFilename(),
+				write_sbml_dependencies=True
+			)
+
+			self.document = SedmlDocument()
+			self.document.readSedmlFromFile(self.getTemporarySedmlFilename())
 
 	def checkResults(self):
 

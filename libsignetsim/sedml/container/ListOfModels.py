@@ -62,6 +62,11 @@ class ListOfModels(ListOf):
 
 	def getByModelReference(self, model_reference):
 
-		for t_model in self:
-			if t_model.getId() == model_reference:
-				return t_model.getSbmlModel()
+		for model in self:
+			if model.getId() == model_reference:
+				return model.getSbmlModel()
+
+	def writeSbmlModelsToPath(self, path):
+
+		for model in self:
+			model.writeSbmlModelToPath(path)

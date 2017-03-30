@@ -23,7 +23,6 @@
 """
 
 from libsignetsim.sedml.Simulation import Simulation
-from libsignetsim.sedml.Algorithm import Algorithm
 
 from libsignetsim.simulation.TimeseriesSimulation import TimeseriesSimulation
 
@@ -41,7 +40,6 @@ class UniformTimeCourse(Simulation):
 		self.__outputStartTime = None
 		self.__outputEndTime = None
 		self.__numberOfPoints = None
-		self.__algorithm = None
 
 	def readSedml(self, simulation, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -59,10 +57,6 @@ class UniformTimeCourse(Simulation):
 		if simulation.isSetNumberOfPoints():
 			self.__numberOfPoints = simulation.getNumberOfPoints()
 
-		if simulation.isSetAlgorithm():
-			self.__algorithm = Algorithm(self.__document)
-			self.__algorithm.readSedml(simulation.getAlgorithm(), level, version)
-
 	def writeSedml(self, simulation, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
 		Simulation.writeSedml(self, simulation, level,version)
@@ -78,9 +72,6 @@ class UniformTimeCourse(Simulation):
 
 		if self.__numberOfPoints is not None:
 			simulation.setNumberOfPoints(self.__numberOfPoints)
-
-		if self.__algorithm is not None:
-			self.__algorithm.writeSedml(simulation.createAlgorithm(), level, version)
 
 
 	def getInitialTime(self):
@@ -104,25 +95,10 @@ class UniformTimeCourse(Simulation):
 			list_of_models=[sbmlModel],
 			time_min=self.__initialTime,
 			time_max=self.__outputEndTime,
-			nb_samples=self.__numberOfPoints+1
+			nb_samples=self.__numberOfPoints+1,
+			abs_tol=Simulation.getAlgorithm(self).getAbsTol(),
+			rel_tol=Simulation.getAlgorithm(self).getRelTol()
 		)
-	#
-	# def run(self):
-	#
-	# 	self.__simulationObject.run()
-	# 	self.__results = self.__simulationObject.rawData
-	#
+
 	def getSimulationObject(self):
 		return self.__simulationObject
-	#
-	# def getResults(self):
-	#
-	# 	return self.__results
-	#
-	# def getResultsByVariable(self, variable_sbmlid):
-	#
-	# 	return self.__results[1][variable_sbmlid]
-	#
-	# def getTimes(self):
-	#
-	# 	return self.__results[0]

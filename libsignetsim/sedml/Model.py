@@ -23,10 +23,12 @@
 """
 from libsignetsim.sedml.SedBase import SedBase
 from libsignetsim.sedml.HasId import HasId
-from libsignetsim.sedml.SedmlException import SedmlModelLanguageNotSupported, SedmlModelNotFound
+from libsignetsim.sedml.container.ListOfChanges import ListOfChanges
+from libsignetsim.sedml.Source import Source
+from libsignetsim.sedml.SedmlException import SedmlModelLanguageNotSupported
 from libsignetsim.model.SbmlDocument import SbmlDocument
 from libsignetsim.settings.Settings import Settings
-from os.path import exists, join
+from os.path import exists, join, basename
 
 class Model(SedBase, HasId):
 
@@ -37,8 +39,10 @@ class Model(SedBase, HasId):
 
 		self.__document = document
 		self.__language = None
-		self.__source = None
+		# self.__source = None
+		self.__source = Source(self.__document)
 		self.__sbmlModel = None
+		self.listOfChanges = ListOfChanges(self.__document)
 
 	def readSedml(self, model, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -56,14 +60,10 @@ class Model(SedBase, HasId):
 					raise SedmlModelLanguageNotSupported("Language %s not supported" % self.__language)
 
 		if model.isSetSource():
-			self.__source = model.getSource()
+			self.__source.readSedml(model.getSource(), level, version)
+			# self.__source = model.getSource()
 
-			if not exists(join(self.__document.path, self.__source)):
-				raise SedmlModelNotFound("File %s not found" % self.__source)
-
-			else:
-				if Settings.verbose >= 1:
-					print "> Loading SBML Document %s" % self.__source
+		self.listOfChanges.readSedml(model.getListOfChanges(), level, version)
 
 	def writeSedml(self, model, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -73,8 +73,13 @@ class Model(SedBase, HasId):
 		if self.__language is not None:
 			model.setLanguage(self.__language)
 
-		if self.__source is not None:
-			model.setSource(self.__source)
+		# if self.__source is not None:
+		# 	model.setSource(self.__source)
+
+		if self.__source.writeSedml(level, version) is not None:
+			model.setSource(self.__source.writeSedml(level, version))
+
+		self.listOfChanges.writeSedml(model.getListOfChanges(), level, version)
 
 	def getSbmlModel(self):
 
@@ -86,8 +91,17 @@ class Model(SedBase, HasId):
 	def __loadModel(self):
 
 		sbml_doc = SbmlDocument()
-		sbml_doc.readSBMLFromFile(join(self.__document.path, self.__source))
+		sbml_doc.readSBMLFromFile(self.__source.getFilename())
 
 		self.__sbmlModel = sbml_doc.getModelInstance()
+
+	def writeSbmlModelToPath(self, path):
+
+		self.__source.setSource(basename(self.__source.getFilename()))
+
+		if self.__sbmlModel is None:
+			self.__loadModel()
+
+		self.__sbmlModel.parentDoc.writeSbml(self.__source.getSource(), path)
 
 

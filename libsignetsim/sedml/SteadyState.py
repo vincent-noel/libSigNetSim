@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" Simulation.py
+""" SteadyState.py
 
 
 	This file ...
@@ -22,40 +22,34 @@
 
 """
 
-from libsignetsim.sedml.SedBase import SedBase
-from libsignetsim.sedml.HasId import HasId
+from libsignetsim.sedml.Simulation import Simulation
 
-from libsignetsim.sedml.Algorithm import Algorithm
+from libsignetsim.simulation.SteadyStatesSimulation import SteadyStatesSimulation
 
 from libsignetsim.settings.Settings import Settings
 
 
-class Simulation(SedBase, HasId):
+class SteadyState(Simulation):
 
 	def __init__(self, document):
 
-		SedBase.__init__(self, document)
-		HasId.__init__(self, document)
+		Simulation.__init__(self, document)
 
 		self.__document = document
-		self.__algorithm = None
 
 	def readSedml(self, simulation, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.readSedml(self, simulation, level, version)
-		HasId.readSedml(self, simulation, level, version)
-
-		if simulation.isSetAlgorithm():
-			self.__algorithm = Algorithm(self.__document)
-			self.__algorithm.readSedml(simulation.getAlgorithm(), level, version)
+		Simulation.readSedml(self, simulation, level, version)
 
 	def writeSedml(self, simulation, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.writeSedml(self, simulation, level, version)
-		HasId.writeSedml(self, simulation, level, version)
+		Simulation.writeSedml(self, simulation, level,version)
 
-		if self.__algorithm is not None:
-			self.__algorithm.writeSedml(simulation.createAlgorithm(), level, version)
+	def build(self, sbml_model):
 
-	def getAlgorithm(self):
-		return self.__algorithm
+		return SteadyStatesSimulation(
+			list_of_models=[sbml_model],
+		)
+
+	def getSimulationObject(self):
+		return self.__simulationObject

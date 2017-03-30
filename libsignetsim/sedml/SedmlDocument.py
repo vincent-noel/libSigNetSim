@@ -100,7 +100,13 @@ class SedmlDocument(SedBase):
 		self.listOfOutputs.writeSedml(document.getListOfOutputs(), self.level, self.version)
 		return document
 
-	def writeSedmlToFile(self, filename, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+	def writeSedmlToFile(self, filename,
+							level=Settings.defaultSedmlLevel,
+							version=Settings.defaultSedmlVersion,
+							write_sbml_dependencies = False):
+
+		if write_sbml_dependencies:
+			self.listOfModels.writeSbmlModelsToPath(dirname(filename))
 
 		document = self.writeSedml(level, version)
 		writeSedMLToFile(document, filename)

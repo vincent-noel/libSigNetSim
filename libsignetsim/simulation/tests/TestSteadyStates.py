@@ -31,8 +31,42 @@ from unittest import TestCase
 class TestSteadyStates(TestCase):
 	""" Tests high level functions """
 
+	def testNoInitialValues(self):
 
-	def testSimulateMichaelisMenten(self):
+		m = Model()
+		m.setName("Enzymatic Reaction")
+
+		e = m.listOfSpecies.new("E")
+		s = m.listOfSpecies.new("S")
+		p = m.listOfSpecies.new("P")
+
+		vmax = m.listOfParameters.new("vmax")
+		km = m.listOfParameters.new("km")
+
+		r = m.listOfReactions.new("Enzymatic reaction")
+		r.listOfReactants.add(s)
+		r.listOfModifiers.add(e)
+		r.listOfProducts.add(p)
+		r.kineticLaw.setPrettyPrintMathFormula("vmax*E*S/(km+S)")
+
+		e.setValue(10)
+		s.setValue(12)
+		p.setValue(0)
+		vmax.setValue(0.211)
+		km.setValue(1.233)
+
+		reference_data = 12.0
+
+		sim = SteadyStatesSimulation(
+			list_of_models=[m],
+		)
+		sim.run()
+
+		results = sim.listOfData_v2[0]
+
+		self.assertAlmostEqual(reference_data, results[p.getSbmlId()])
+
+	def testSeveralInitialValues(self):
 
 		m = Model()
 		m.setName("Enzymatic Reaction")
@@ -65,7 +99,6 @@ class TestSteadyStates(TestCase):
 			list_of_models=[m],
 			species_input=input_species,
 			list_of_initial_values=input_data,
-			time_max=100.0
 		)
 		sim.run()
 

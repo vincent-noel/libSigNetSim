@@ -53,3 +53,29 @@ class ListOfAlgorithmParameters(ListOf):
 			algo_param = list_of_algo_params.createAlgorithmParameter()
 			algo_param.writeSedml(t_algo_param, level, version)
 
+	def hasRelTol(self):
+
+		for param in self:
+			if param.isRelTol():
+				return True
+		return False
+
+	def hasAbsTol(self):
+
+		for param in self:
+			if param.isAbsTol():
+				return True
+		return False
+
+
+	def getRelTol(self):
+
+		for param in self:
+			if param.isRelTol():
+				return param.getValue()
+
+	def getAbsTol(self):
+
+		for param in self:
+			if param.isAbsTol():
+				return param.getValue()

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" Simulation.py
+""" OneStep.py
 
 
 	This file ...
@@ -22,40 +22,30 @@
 
 """
 
-from libsignetsim.sedml.SedBase import SedBase
-from libsignetsim.sedml.HasId import HasId
-
-from libsignetsim.sedml.Algorithm import Algorithm
+from libsignetsim.sedml.Simulation import Simulation
 
 from libsignetsim.settings.Settings import Settings
 
 
-class Simulation(SedBase, HasId):
+class OneStep(Simulation):
 
 	def __init__(self, document):
 
-		SedBase.__init__(self, document)
-		HasId.__init__(self, document)
+		Simulation.__init__(self, document)
 
 		self.__document = document
-		self.__algorithm = None
+		self.__step = None
 
 	def readSedml(self, simulation, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.readSedml(self, simulation, level, version)
-		HasId.readSedml(self, simulation, level, version)
+		Simulation.readSedml(self, simulation, level, version)
 
-		if simulation.isSetAlgorithm():
-			self.__algorithm = Algorithm(self.__document)
-			self.__algorithm.readSedml(simulation.getAlgorithm(), level, version)
+		if simulation.isSetStep():
+			self.__step = simulation.getStep()
 
 	def writeSedml(self, simulation, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		SedBase.writeSedml(self, simulation, level, version)
-		HasId.writeSedml(self, simulation, level, version)
+		Simulation.writeSedml(self, simulation, level,version)
 
-		if self.__algorithm is not None:
-			self.__algorithm.writeSedml(simulation.createAlgorithm(), level, version)
-
-	def getAlgorithm(self):
-		return self.__algorithm
+		if self.__step is not None:
+			simulation.setStep(self.__step)

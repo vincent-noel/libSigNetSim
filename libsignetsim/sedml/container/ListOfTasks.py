@@ -23,11 +23,11 @@
 """
 from libsignetsim.sedml.container.ListOf import ListOf
 from libsignetsim.sedml.Task import Task
-
+from libsignetsim.sedml.RepeatedTask import RepeatedTask
 from libsignetsim.settings.Settings import Settings
 
 import libsbml
-from libsedml import SEDML_TASK
+from libsedml import SEDML_TASK, SEDML_TASK_REPEATEDTASK
 reload(libsbml)
 
 
@@ -50,6 +50,11 @@ class ListOfTasks(ListOf):
 				task.readSedml(t_task, level, version)
 				ListOf.append(self, task)
 
+			elif t_task.getTypeCode() == SEDML_TASK_REPEATEDTASK:
+				task = RepeatedTask(self.__document)
+				task.readSedml(t_task, level, version)
+				ListOf.append(self, task)
+
 	def writeSedml(self, list_of_tasks, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
 		ListOf.writeSedml(self, list_of_tasks, level, version)
@@ -58,6 +63,10 @@ class ListOfTasks(ListOf):
 
 			if isinstance(t_task, Task):
 				task = list_of_tasks.createTask()
+				t_task.writeSedml(task, level, version)
+
+			elif isinstance(t_task, RepeatedTask):
+				task = list_of_tasks.createRepeatedTask()
 				t_task.writeSedml(task, level, version)
 
 	def getTask(self, task_reference):
