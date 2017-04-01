@@ -260,14 +260,19 @@ class SbmlDocument(object):
 
 		t0 = time()
 
+		# print sbml_filename
+
 		if sbml_filename is not None:
-			if isabs(sbml_filename):
-				self.documentPath = dirname(sbml_filename)
+			# if isabs(sbml_filename):
+			self.documentPath = dirname(sbml_filename)
 
 			self.documentFilename = basename(sbml_filename)
 
 		if path is not None:
 			self.documentPath = path
+
+		# print self.documentPath
+		# print self.documentFilename
 
 		sbmlDoc = SBMLDocument(self.sbmlLevel,self.sbmlVersion)
 

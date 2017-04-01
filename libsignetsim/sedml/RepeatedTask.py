@@ -43,13 +43,13 @@ class RepeatedTask(AbstractTask):
 	def readSedml(self, task, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 		AbstractTask.readSedml(self, task, level, version)
 
-		if task.isSetRange():
-			self.__range = task.getRange()
+		if task.isSetRangeId():
+			self.__range = task.getRangeId()
 
 		if task.isSetResetModel():
 			self.__resetModel = task.getResetModel()
 
-		self.listOfSetValueChanges.readSedml(task.getListOfChanges(), level, version)
+		self.listOfSetValueChanges.readSedml(task.getListOfTaskChanges(), level, version)
 		self.listOfRanges.readSedml(task.getListOfRanges(), level, version)
 		self.listOfSubTasks.readSedml(task.getListOfSubTasks(), level, version)
 
@@ -58,13 +58,20 @@ class RepeatedTask(AbstractTask):
 		AbstractTask.writeSedml(self, task, level, version)
 
 		if self.__range is not None:
-			task.setRange(self.__range)
+			task.setRangeId(self.__range)
 
 		if self.__resetModel is not None:
 			task.setResetModel(self.__resetModel)
 
-		self.listOfSetValueChanges.writeSedml(task.getListOfChanges(), level, version)
+		self.listOfSetValueChanges.writeSedml(task.getListOfTaskChanges(), level, version)
 		self.listOfRanges.writeSedml(task.getListOfRanges(), level, version)
 		self.listOfSubTasks.writeSedml(task.getListOfSubTasks(), level, version)
 
+	def setRangeReference(self, range_reference):
+		self.__range = range_reference
 
+	def setRange(self, range_obj):
+		self.__range = range_obj.getId()
+
+	def setResetModel(self, reset_model):
+		self.__resetModel = reset_model

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sedML xmlns="http://sed-ml.org/sed-ml/level1/version2" level="1" version="2">
+  <listOfModels>
+    <model id="model_0" language="urn:sedml:language:sbml" source="urn:miriam:biomodels.db:BIOMD0000000048"/>
+  </listOfModels>
+</sedML>

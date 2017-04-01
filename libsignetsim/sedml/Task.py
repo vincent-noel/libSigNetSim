@@ -68,6 +68,12 @@ class Task(AbstractTask):
 	def setSimulationReference(self, simulation_reference):
 		self.__simulationReference = simulation_reference
 
+	def setModel(self, model):
+		self.__modelReference = model.getId()
+
+	def setSimulation(self, simulation):
+		self.__simulationReference = simulation.getId()
+
 	def build(self):
 
 		model = self.__document.listOfModels.getByModelReference(self.__modelReference)

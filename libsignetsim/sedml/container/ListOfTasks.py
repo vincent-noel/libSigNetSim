@@ -38,6 +38,33 @@ class ListOfTasks(ListOf):
 		ListOf.__init__(self, document)
 
 		self.__document = document
+		self.__taskCounter = 0
+
+	def new(self, task_type, task_id=None):
+
+		t_task_id = task_id
+		if t_task_id is None:
+			t_task_id = "task_%d" % self.__taskCounter
+
+		if task_type == SEDML_TASK:
+			task = Task(self.__document)
+			task.setId(t_task_id)
+			ListOf.append(self, task)
+			self.__taskCounter += 1
+			return task
+
+		elif task_type == SEDML_TASK_REPEATEDTASK:
+			task = RepeatedTask(self.__document)
+			task.setId(t_task_id)
+			ListOf.append(self, task)
+			self.__taskCounter += 1
+			return task
+
+	def createTask(self, task_id=None):
+		return self.new(SEDML_TASK, task_id)
+
+	def createRepeatedTask(self, task_id=None):
+		return self.new(SEDML_TASK_REPEATEDTASK, task_id)
 
 	def readSedml(self, list_of_tasks, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -49,11 +76,13 @@ class ListOfTasks(ListOf):
 				task = Task(self.__document)
 				task.readSedml(t_task, level, version)
 				ListOf.append(self, task)
+				self.__taskCounter += 1
 
 			elif t_task.getTypeCode() == SEDML_TASK_REPEATEDTASK:
 				task = RepeatedTask(self.__document)
 				task.readSedml(t_task, level, version)
 				ListOf.append(self, task)
+				self.__taskCounter += 1
 
 	def writeSedml(self, list_of_tasks, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 

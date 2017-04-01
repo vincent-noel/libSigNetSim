@@ -105,10 +105,15 @@ class SedmlDocument(SedBase):
 							version=Settings.defaultSedmlVersion,
 							write_sbml_dependencies = False):
 
+		self.path = dirname(filename)
+		self.filename = basename(filename)
+
+
 		if write_sbml_dependencies:
 			self.listOfModels.writeSbmlModelsToPath(dirname(filename))
 
 		document = self.writeSedml(level, version)
+
 		writeSedMLToFile(document, filename)
 
 	def run(self):

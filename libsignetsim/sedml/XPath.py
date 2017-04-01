@@ -22,7 +22,9 @@
 
 """
 from libsignetsim.settings.Settings import Settings
-
+from libsignetsim.model.sbml.Species import Species
+from libsignetsim.model.sbml.Compartment import Compartment
+from libsignetsim.model.sbml.Parameter import Parameter
 from re import match
 
 class XPath(object):
@@ -30,8 +32,66 @@ class XPath(object):
 	def __init__(self, document):
 		self.__document = document
 
-	def readSedml(self, variable, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
-		pass
+		self.__path = None
+		self.__refType = None
+		self.__ref = None
 
-	def writeSedml(self, variable, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
-		pass
+	def readSedml(self, xpath, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		self.__path = xpath.split('/')
+		if self.__path[0] == "" and self.__path[1] == "sbml:sbml" and self.__path[2] == "sbml:model":
+
+			ind_last_token = len(self.__path) - 1
+			res_match = match(r"(sbml:[a-zA-Z]+)\[@([a-zA-Z]+)=\'(.*)\'\]", self.__path[ind_last_token])
+
+			self.__path[ind_last_token] = res_match.groups()[0]
+			self.__refType = res_match.groups()[1]
+			self.__ref = res_match.groups()[2]
+
+	def getModelObject(self, sbml_model):
+
+		ind_last_token = len(self.__path) - 1
+
+		t_container = None
+		if self.__path[ind_last_token] == "sbml:species":
+			t_container = sbml_model.listOfSpecies
+
+		elif self.__path[ind_last_token] == "sbml:compartment":
+			t_container = sbml_model.listOfCompartments
+
+		elif self.__path[ind_last_token] == "sbml:parameter":
+			t_container = sbml_model.listOfParameters
+
+		if t_container is not None:
+			if self.__refType == "id":
+				return t_container.getBySbmlId(self.__ref)
+
+			elif self.__refType == "name":
+				return t_container.getByName(self.__ref)
+
+	def setModelObject(self, object):
+
+		self.__path = ["", "sbml:sbml", "sbml:model"]
+
+		if object.getModel().sbmlLevel == 1:
+			self.__refType = "name"
+			self.__ref = object.getName()
+		else:
+			self.__refType = "id"
+			self.__ref = object.getSbmlId()
+
+		if isinstance(object, Compartment):
+			self.__path += ["sbml:listOfCompartments", "sbml:compartment"]
+
+		elif isinstance(object, Species):
+			self.__path += ["sbml:listOfSpecies", "sbml:species"]
+
+		elif isinstance(object, Parameter):
+			self.__path += ["sbml:listOfParameters", "sbml:parameter"]
+
+	def writeSedml(self, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+		return self.getXPath()
+
+	def getXPath(self):
+		if self.__path is not None:
+			return "/".join(self.__path) + ("[@%s='%s']" % (self.__refType, self.__ref))

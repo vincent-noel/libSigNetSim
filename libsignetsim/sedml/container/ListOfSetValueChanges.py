@@ -36,6 +36,22 @@ class ListOfSetValueChanges(ListOf):
 		ListOf.__init__(self, document)
 
 		self.__document = document
+		self.__setValueCounter = 0
+
+	def new(self, set_value_id=None):
+
+		t_set_value_id = set_value_id
+		if t_set_value_id is None:
+			t_set_value_id = "setvalue_%d" % self.__setValueCounter
+
+		set_value = SetValue(self.__document)
+		set_value.setId(t_set_value_id)
+		ListOf.append(self, set_value)
+		self.__setValueCounter += 1
+		return set_value
+
+	def createSetValue(self, set_value_id=None):
+		return self.new(set_value_id)
 
 	def readSedml(self, list_of_changes, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -45,6 +61,7 @@ class ListOfSetValueChanges(ListOf):
 			t_change = SetValue(self.__document)
 			t_change.readSedml(change, level, version)
 			ListOf.append(self, t_change)
+			self.__setValueCounter += 1
 
 	def writeSedml(self, list_of_changes, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -52,4 +69,4 @@ class ListOfSetValueChanges(ListOf):
 
 		for change in self:
 			t_change = list_of_changes.createSetValue()
-			t_change.writeSedml(change, level, version)
+			change.writeSedml(t_change, level, version)

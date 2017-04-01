@@ -24,6 +24,9 @@
 
 from libsignetsim.sedml.container.ListOf import ListOf
 from libsignetsim.sedml.UniformTimeCourse import UniformTimeCourse
+from libsignetsim.sedml.SteadyState import SteadyState
+from libsignetsim.sedml.OneStep import OneStep
+
 from libsignetsim.settings.Settings import Settings
 
 import libsbml
@@ -36,6 +39,43 @@ class ListOfSimulations(ListOf):
 
 		ListOf.__init__(self, document)
 		self.__document = document
+		self.__simulationCounter = 0
+
+	def new(self, simulation_type, simulation_id=None):
+
+		t_simulation_id = simulation_id
+		if t_simulation_id is None:
+			t_simulation_id = "simulation_%d" % self.__simulationCounter
+
+		if simulation_type == SEDML_SIMULATION_UNIFORMTIMECOURSE:
+			simulation = UniformTimeCourse(self.__document)
+			simulation.setId(t_simulation_id)
+			ListOf.append(self, simulation)
+			self.__simulationCounter += 1
+			return simulation
+
+		elif simulation_type == SEDML_SIMULATION_STEADYSTATE:
+			simulation = SteadyState(self.__document)
+			simulation.setId(t_simulation_id)
+			ListOf.append(self, simulation)
+			self.__simulationCounter += 1
+			return simulation
+
+		elif simulation_type == SEDML_SIMULATION_ONESTEP:
+			simulation = OneStep(self.__document)
+			simulation.setId(t_simulation_id)
+			ListOf.append(self, simulation)
+			self.__simulationCounter += 1
+			return simulation
+
+	def createUniformTimeCourse(self, simulation_id=None):
+		return self.new(SEDML_SIMULATION_UNIFORMTIMECOURSE, simulation_id)
+
+	def createSteadyState(self, simulation_id=None):
+		return self.new(SEDML_SIMULATION_STEADYSTATE, simulation_id)
+
+	def createOneStep(self, simulation_id=None):
+		return self.new(SEDML_SIMULATION_ONESTEP, simulation_id)
 
 	def readSedml(self, list_of_simulations, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -47,6 +87,19 @@ class ListOfSimulations(ListOf):
 				simulation = UniformTimeCourse(self.__document)
 				simulation.readSedml(t_simulation, level, version)
 				ListOf.append(self, simulation)
+				self.__simulationCounter += 1
+
+			elif t_simulation.getTypeCode() == SEDML_SIMULATION_STEADYSTATE:
+				simulation = SteadyState(self.__document)
+				simulation.readSedml(t_simulation, level, version)
+				ListOf.append(self, simulation)
+				self.__simulationCounter += 1
+
+			elif t_simulation.getTypeCode() == SEDML_SIMULATION_ONESTEP:
+				simulation = OneStep(self.__document)
+				simulation.readSedml(t_simulation, level, version)
+				ListOf.append(self, simulation)
+				self.__simulationCounter += 1
 
 	def writeSedml(self, list_of_simulations, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -57,6 +110,17 @@ class ListOfSimulations(ListOf):
 			if isinstance(t_simulation, UniformTimeCourse):
 				simulation = list_of_simulations.createUniformTimeCourse()
 				t_simulation.writeSedml(simulation, level, version)
+				self.__simulationCounter += 1
+
+			elif isinstance(t_simulation, SteadyState):
+				simulation = list_of_simulations.createSteadyState()
+				t_simulation.writeSedml(simulation, level, version)
+				self.__simulationCounter += 1
+
+			elif isinstance(t_simulation, OneStep):
+				simulation = list_of_simulations.createOneStep()
+				t_simulation.writeSedml(simulation, level, version)
+				self.__simulationCounter += 1
 
 	def getSimulation(self, simulation_reference):
 

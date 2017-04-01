@@ -32,8 +32,21 @@ class ListOfCurves(ListOf):
 		ListOf.__init__(self, document)
 
 		self.__document = document
-		self.listOfCurves = []
+		self.__curvesCounter = 0
 
+	def new(self, curve_id=None):
+		t_curve_id = curve_id
+		if t_curve_id is None:
+			t_curve_id = "curve_%d" % self.__curvesCounter
+
+		curve = Curve(self.__document)
+		curve.setId(t_curve_id)
+		ListOf.append(self, curve)
+		self.__curvesCounter += 1
+		return curve
+
+	def createCurve(self, curve_id=None):
+		return self.new(curve_id)
 
 	def readSedml(self, list_of_curves, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -43,6 +56,7 @@ class ListOfCurves(ListOf):
 			curve = Curve(self.__document)
 			curve.readSedml(t_curve, level, version)
 			ListOf.append(self, curve)
+			self.__curvesCounter += 1
 
 	def writeSedml(self, list_of_curves, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 

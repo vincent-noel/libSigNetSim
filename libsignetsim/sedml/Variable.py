@@ -23,6 +23,7 @@
 """
 from libsignetsim.sedml.SedBase import SedBase
 from libsignetsim.sedml.HasId import HasId
+from libsignetsim.sedml.XPath import XPath
 from libsignetsim.sedml.SedmlException import SedmlUnknownURI, SedmlUnknownXPATH
 from libsignetsim.settings.Settings import Settings
 
@@ -40,7 +41,8 @@ class Variable(SedBase, HasId):
 		self.__taskReference = None
 		self.__modelReference = None
 		self.__symbol = None
-		self.__target = None
+		# self.__symbolv2 =
+		self.__target = XPath(self.__document)
 
 
 	def readSedml(self, variable, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
@@ -58,7 +60,7 @@ class Variable(SedBase, HasId):
 			self.__symbol = variable.getSymbol()
 
 		if variable.isSetTarget():
-			self.__target = variable.getTarget()
+			self.__target.readSedml(variable.getTarget(), level, version)
 
 	def writeSedml(self, variable, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -74,8 +76,8 @@ class Variable(SedBase, HasId):
 		if self.__symbol is not None:
 			variable.setSymbol(self.__symbol)
 
-		if self.__target is not None:
-			variable.setTarget(self.__target)
+		if self.__target.writeSedml(level, version) is not None:
+			variable.setTarget(self.__target.writeSedml(level, version))
 
 	def getTaskReference(self):
 		return self.__taskReference
@@ -99,7 +101,7 @@ class Variable(SedBase, HasId):
 		if self.__symbol is not None:
 
 			symbol_tokens = self.__symbol.split(':')
-
+			# print symbol_tokens
 			if len(symbol_tokens) == 4 and symbol_tokens[1] == 'sedml' and symbol_tokens[2] == 'symbol':
 
 				symbol = self.__symbol.split(':')[3]
@@ -114,30 +116,27 @@ class Variable(SedBase, HasId):
 
 				raise SedmlUnknownURI("Unknown URI %s" % self.__symbol)
 
-		elif self.__target is not None:
-			target_tokens = self.__target.split(':')
+		elif self.__target.getXPath() is not None:
+			sbml_model = self.__document.listOfModels.getByModelReference(simulation.getModelReference())
+			sbml_object = self.__target.getModelObject(sbml_model)
+			return {self: simulation.getResultsByVariable(sbml_object.getSbmlId())}
 
-			if target_tokens[0] == "/sbml" and target_tokens[1] == "sbml/sbml":
+	def setTaskReference(self, task_reference):
+		self.__taskReference = task_reference
 
-				last_token = target_tokens[len(target_tokens)-1]
-				res_match = match(r"([a-zA-Z]+)\[@([a-zA-Z]+)=\'(.*)\'\]", last_token)
+	def setTask(self, task):
+		self.__taskReference = task.getId()
 
-				if res_match is not None and len(res_match.groups()) == 3:
-					if res_match.groups()[1] == 'id':
-						sbml_id = res_match.groups()[2]
-						return {self: simulation.getResultsByVariable(sbml_id)}
-					elif res_match.groups()[1] == 'name':
+	def setModelReference(self, model_reference):
+		self.__modelReference = model_reference
 
-						sbml_model = self.__document.listOfModels.getByModelReference(simulation.getModelReference())
-						sbml_id = sbml_model.listOfVariables.getByName(res_match.groups()[2]).getSbmlId()
-						return {self: simulation.getResultsByVariable(sbml_id)}
+	def setModel(self, model):
+		self.__modelReference = model.getId()
 
-				else:
-					raise SedmlUnknownXPATH("Unknown variable in XPATH %s" % last_token)
-			else:
-				return SedmlUnknownXPATH("Unknown XPATH %s" % self.__target)
+	def setTarget(self, object):
+		self.__target.setModelObject(object)
 
-
-
+	def setSymbol(self, symbol):
+		self.__symbol = symbol
 
 

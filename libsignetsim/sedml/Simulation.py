@@ -38,7 +38,7 @@ class Simulation(SedBase, HasId):
 		HasId.__init__(self, document)
 
 		self.__document = document
-		self.__algorithm = None
+		self.__algorithm = Algorithm(self.__document)
 
 	def readSedml(self, simulation, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -46,7 +46,6 @@ class Simulation(SedBase, HasId):
 		HasId.readSedml(self, simulation, level, version)
 
 		if simulation.isSetAlgorithm():
-			self.__algorithm = Algorithm(self.__document)
 			self.__algorithm.readSedml(simulation.getAlgorithm(), level, version)
 
 	def writeSedml(self, simulation, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
@@ -54,8 +53,7 @@ class Simulation(SedBase, HasId):
 		SedBase.writeSedml(self, simulation, level, version)
 		HasId.writeSedml(self, simulation, level, version)
 
-		if self.__algorithm is not None:
-			self.__algorithm.writeSedml(simulation.createAlgorithm(), level, version)
+		self.__algorithm.writeSedml(simulation.createAlgorithm(), level, version)
 
 	def getAlgorithm(self):
 		return self.__algorithm

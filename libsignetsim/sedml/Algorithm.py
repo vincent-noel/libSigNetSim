@@ -27,6 +27,9 @@ from libsignetsim.settings.Settings import Settings
 
 class Algorithm(SedBase):
 
+	KINSOL = "KISAO:0000282"
+	CVODE = "KISAO:0000019"
+
 	def __init__(self, document):
 
 		SedBase.__init__(self, document)
@@ -64,3 +67,9 @@ class Algorithm(SedBase):
 
 	def getAbsTol(self):
 		return self.listOfAlgorithmParameters.getAbsTol()
+
+	def setKinSol(self):
+		self.__kisaoID = self.KINSOL
+
+	def setCVODE(self):
+		self.__kisaoID = self.CVODE

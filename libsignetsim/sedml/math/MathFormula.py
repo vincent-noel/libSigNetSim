@@ -62,26 +62,28 @@ class MathFormula(SedmlMathReader, SedmlMathWriter):
 
 		self.level = level
 		self.version = version
-		self.internalTree = SedmlMathReader.translateForInternal(self, formula)
+		if formula is not None:
+			self.internalTree = SedmlMathReader.translateForInternal(self, formula)
 
-		if Settings.verbose >= 2:
-			print "\n> readSedml : "
-			print ">> input : %s" % self.printSbml(formula)
-			print ">> output simplified : %s" % str(self.internalTree)
-			print ">> output : %s" % srepr(self.internalTree)
+			if Settings.verbose >= 2:
+				print "\n> readSedml : "
+				print ">> input : %s" % self.printSbml(formula)
+				print ">> output simplified : %s" % str(self.internalTree)
+				print ">> output : %s" % srepr(self.internalTree)
 
 	def writeSedml(self, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 		""" Export math formula to sbml """
 
-		formula = SedmlMathWriter.translateForSbml(self, self.internalTree, level, version)
+		if self.internalTree is not None:
+			formula = SedmlMathWriter.translateForSbml(self, self.internalTree, level, version)
 
-		if Settings.verbose >= 2:
-			print "\n> writeSedml"
-			print ">> input : %s" % srepr(elf.internalTree)
-			print ">> input simplified : %s" % str(self.internalTree)
-			print ">> output : %s" % self.printSbml(formula, level, version)
+			if Settings.verbose >= 2:
+				print "\n> writeSedml"
+				print ">> input : %s" % srepr(elf.internalTree)
+				print ">> input simplified : %s" % str(self.internalTree)
+				print ">> output : %s" % self.printSbml(formula, level, version)
 
-		return formula
+			return formula
 
 
 
@@ -130,12 +132,12 @@ class MathFormula(SedmlMathReader, SedmlMathWriter):
 
 		else:
 			return "Unknown math type !"
-	#
-	# def setSbmlMathFormula(self, tree, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-	# 	self.setMathFormula(tree, self.MATH_SBML, sbml_level, sbml_version)
-	#
-	# def setInternalMathFormula(self, tree):
-	# 	self.setMathFormula(tree, self.MATH_INTERNAL)
+
+	def setSbmlMathFormula(self, tree, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+		self.setMathFormula(tree, self.MATH_SBML, sbml_level, sbml_version)
+
+	def setInternalMathFormula(self, tree):
+		self.setMathFormula(tree, self.MATH_INTERNAL)
 	#
 	# def setValueMathFormula(self, value):
 	# 	if isinstance(value, int):
@@ -163,17 +165,18 @@ class MathFormula(SedmlMathReader, SedmlMathWriter):
 	# 	self.setInternalMathFormula(self.getInternalMathFormula().subs(t_subs_mask))
 	#
 	#
-	# def setMathFormula(self, tree, math_type=MATH_INTERNAL, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-	#
-	# 	if math_type == self.MATH_INTERNAL:
-	# 		self.internalTree = tree
-	# 	elif math_type == self.MATH_FINALINTERNAL:
-	# 		self.internalTree = self.translateFinalForInternal(tree)
-	#
-	#
-	# 	elif math_type == self.MATH_SBML:
-	# 		self.internalTree = None
-	# 		self.readSbml(tree, sbml_level, sbml_version)
+
+	def setMathFormula(self, tree, math_type=MATH_INTERNAL, sbml_level=Settings.defaultSedmlLevel, sbml_version=Settings.defaultSedmlVersion):
+
+		if math_type == self.MATH_INTERNAL:
+			self.internalTree = tree
+
+		elif math_type == self.MATH_SBML:
+			self.internalTree = None
+			self.readSbml(tree, sbml_level, sbml_version)
+
+		elif math_type == self.MATH_PRETTYPRINT:
+			pass
 	#
 	#
 	# def renameSbmlId(self, old_sbml_id, new_sbml_id):

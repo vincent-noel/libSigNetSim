@@ -32,6 +32,8 @@ from os.path import exists, join, basename
 
 class Model(SedBase, HasId):
 
+	LANGUAGE_SBML = "urn:sedml:language:sbml"
+
 	def __init__(self, document):
 
 		SedBase.__init__(self, document)
@@ -52,7 +54,7 @@ class Model(SedBase, HasId):
 		if model.isSetLanguage():
 			self.__language = model.getLanguage()
 
-			if self.__language != "urn:sedml:language:sbml":
+			if self.__language != self.LANGUAGE_SBML:
 
 				if len(self.__language.split(":")) == 4:
 					raise SedmlModelLanguageNotSupported("Language %s not supported" % self.__language.split(":")[3])
@@ -97,11 +99,16 @@ class Model(SedBase, HasId):
 
 	def writeSbmlModelToPath(self, path):
 
-		self.__source.setSource(basename(self.__source.getFilename()))
 
 		if self.__sbmlModel is None:
 			self.__loadModel()
 
 		self.__sbmlModel.parentDoc.writeSbml(self.__source.getSource(), path)
+		self.__source.setSource(basename(self.__source.getFilename()))
 
+	def setLanguageSbml(self):
+		self.__language = self.LANGUAGE_SBML
+
+	def setSource(self, source):
+		self.__source.setSource(source)
 

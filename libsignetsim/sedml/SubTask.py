@@ -48,3 +48,12 @@ class SubTask(object):
 
 		if self.__order is not None:
 			subtask.setOrder(self.__order)
+
+	def setTaskReference(self, task_reference):
+		self.__task = task_reference
+
+	def setTask(self, task):
+		self.__task = task.getId()
+
+	def setOrder(self, order):
+		self.__order = order

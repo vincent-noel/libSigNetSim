@@ -59,3 +59,14 @@ class SetValue(ComputeChange):
 		if self.__symbol is not None:
 			change.setSymbol(self.__symbol)
 
+	def setModelReference(self, model_reference):
+		self.__modelReference = model_reference
+
+	def setModel(self, model):
+		self.__modelReference = model.getId()
+
+	def setRangeReference(self, range_reference):
+		self.__range = range_reference
+
+	def setRange(self, range_obj):
+		self.__range = range_obj.getId()

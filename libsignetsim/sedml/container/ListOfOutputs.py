@@ -37,6 +37,33 @@ class ListOfOutputs(ListOf):
 
 		ListOf.__init__(self, document)
 		self.__document = document
+		self.__outputCounter = 0
+
+	def new(self, output_type, output_id=None):
+
+		t_output_id = output_id
+		if t_output_id is None:
+			t_output_id = "output_%d" % self.__outputCounter
+
+		if output_type == SEDML_OUTPUT_PLOT2D:
+			output = Plot2D(self.__document)
+			output.setId(t_output_id)
+			ListOf.append(self, output)
+			self.__outputCounter += 1
+			return output
+
+		elif output_type == SEDML_OUTPUT_REPORT:
+			output = Report(self.__document)
+			output.setId(t_output_id)
+			ListOf.append(self, output)
+			self.__outputCounter += 1
+			return output
+
+	def createPlot2D(self, output_id=None):
+		return self.new(SEDML_OUTPUT_PLOT2D, output_id)
+
+	def createReport(self, output_id=None):
+		return self.new(SEDML_OUTPUT_REPORT, output_id)
 
 	def readSedml(self, list_of_outputs, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -48,11 +75,13 @@ class ListOfOutputs(ListOf):
 				output = Plot2D(self.__document)
 				output.readSedml(t_output, level, version)
 				ListOf.append(self, output)
+				self.__outputCounter += 1
 
 			elif t_output.getTypeCode() == SEDML_OUTPUT_REPORT:
 				output = Report(self.__document)
 				output.readSedml(t_output, level, version)
 				ListOf.append(self, output)
+				self.__outputCounter += 1
 
 	def writeSedml(self, list_of_outputs, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 

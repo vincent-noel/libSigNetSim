@@ -36,8 +36,8 @@ class FunctionalRange(Range):
 		Range.__init__(self, document)
 
 		self.__document = document
-		self.listOfVariables = ListOfVariables(self.__document)
-		self.listOfParameters = ListOfParameters(self.__document)
+		self.listOfVariables = ListOfVariables(self.__document, self)
+		self.listOfParameters = ListOfParameters(self.__document, self)
 		self.__math = MathFormula(self.__document)
 
 	def readSedml(self, functional_range, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):

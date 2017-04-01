@@ -40,6 +40,43 @@ class ListOfRanges(ListOf):
 
 		ListOf.__init__(self, document)
 		self.__document = document
+		self.__rangeCounter = 0
+
+	def new(self, range_type, range_id=None):
+
+		t_range_id = range_id
+		if t_range_id is None:
+			t_range_id = "range_%d" % self.__rangeCounter
+
+		if range_type == SEDML_RANGE_UNIFORMRANGE:
+			t_range = UniformRange(self.__document)
+			t_range.setId(t_range_id)
+			ListOf.append(self, t_range)
+			self.__rangeCounter += 1
+			return t_range
+
+		elif range_type == SEDML_RANGE_VECTORRANGE:
+			t_range = VectorRange(self.__document)
+			t_range.setId(t_range_id)
+			ListOf.append(self, t_range)
+			self.__rangeCounter += 1
+			return t_range
+
+		elif range_type == SEDML_RANGE_FUNCTIONALRANGE:
+			t_range = FunctionalRange(self.__document)
+			t_range.setId(t_range_id)
+			ListOf.append(self, t_range)
+			self.__rangeCounter += 1
+			return t_range
+
+	def createUniformRange(self, range_id=None):
+		return self.new(SEDML_RANGE_UNIFORMRANGE, range_id)
+
+	def createVectorRange(self, range_id=None):
+		return self.new(SEDML_RANGE_VECTORRANGE, range_id)
+
+	def createFunctionalRange(self, range_id=None):
+		return self.new(SEDML_RANGE_FUNCTIONALRANGE, range_id)
 
 	def readSedml(self, list_of_ranges, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -51,16 +88,19 @@ class ListOfRanges(ListOf):
 				t_range = UniformRange(self.__document)
 				t_range.readSedml(tt_range, level, version)
 				ListOf.append(self, t_range)
+				self.__rangeCounter += 1
 
 			elif tt_range.getTypeCode() == SEDML_RANGE_VECTORRANGE:
 				t_range = VectorRange(self.__document)
 				t_range.readSedml(tt_range, level, version)
 				ListOf.append(self, t_range)
+				self.__rangeCounter += 1
 
 			elif tt_range.getTypeCode() == SEDML_RANGE_FUNCTIONALRANGE:
 				t_range = FunctionalRange(self.__document)
 				t_range.readSedml(tt_range, level, version)
 				ListOf.append(self, t_range)
+				self.__rangeCounter += 1
 
 	def writeSedml(self, list_of_ranges, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -70,12 +110,12 @@ class ListOfRanges(ListOf):
 
 			if isinstance(tt_range, UniformRange):
 				t_range = list_of_ranges.createUniformRange()
-				t_range.writeSedml(tt_range, level, version)
+				tt_range.writeSedml(t_range, level, version)
 
 			elif isinstance(tt_range, VectorRange):
 				t_range = list_of_ranges.createVectorRange()
-				t_range.writeSedml(tt_range, level, version)
+				tt_range.writeSedml(t_range, level, version)
 
 			elif isinstance(tt_range, FunctionalRange):
 				t_range = list_of_ranges.createFunctionalRange()
-				t_range.writeSedml(tt_range, level, version)
+				tt_range.writeSedml(t_range, level, version)

@@ -29,11 +29,12 @@ from libsignetsim.settings.Settings import Settings
 
 class ListOfParameters(ListOf):
 
-	def __init__(self, document):
+	def __init__(self, document, parent):
 
 		ListOf.__init__(self, document)
 
 		self.__document = document
+		self.__parent = parent
 
 	def readSedml(self, list_of_parameters, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 

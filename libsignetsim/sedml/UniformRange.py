@@ -23,7 +23,7 @@
 """
 from libsignetsim.sedml.Range import Range
 from libsignetsim.settings.Settings import Settings
-
+from libsignetsim.sedml.math.sympy_shortcuts import SympySymbol
 
 class UniformRange(Range):
 
@@ -93,3 +93,12 @@ class UniformRange(Range):
 
 	def setStype(self, type):
 		self.__type = type
+
+	def setLinear(self):
+		self.__type = self.LINEAR
+
+	def setLog(self):
+		self.__type = self.LOG
+
+	def getSymbol(self):
+		return SympySymbol(self.getId())

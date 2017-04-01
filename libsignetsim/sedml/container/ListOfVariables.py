@@ -29,11 +29,28 @@ from libsignetsim.settings.Settings import Settings
 
 class ListOfVariables(ListOf):
 
-	def __init__(self, document):
+	def __init__(self, document, parent):
 
 		ListOf.__init__(self, document)
 
 		self.__document = document
+		self.__parent = parent
+		self.__variableCounter = 0
+
+	def new(self, variable_id=None):
+
+		t_variable_id = variable_id
+		if t_variable_id is None:
+			t_variable_id = "%s_variable_%d" % (self.__parent.getId(), self.__variableCounter)
+
+		variable = Variable(self.__document)
+		variable.setId(t_variable_id)
+		self.__variableCounter += 1
+		ListOf.append(self, variable)
+		return variable
+
+	def createVariable(self, variable_id=None):
+		return self.new(variable_id)
 
 	def readSedml(self, list_of_variables, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -43,6 +60,7 @@ class ListOfVariables(ListOf):
 			var = Variable(self.__document)
 			var.readSedml(t_var, level, version)
 			ListOf.append(self, var)
+			self.__variableCounter += 1
 
 	def writeSedml(self, list_of_variables, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 

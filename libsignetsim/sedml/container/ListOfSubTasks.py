@@ -33,6 +33,17 @@ class ListOfSubTasks(ListOf):
 
 		ListOf.__init__(self, document)
 		self.__document = document
+		self.__subTaskCounter = 0
+
+	def new(self):
+
+		sub_task = SubTask(self.__document)
+		ListOf.append(self, sub_task)
+		self.__subTaskCounter += 1
+		return sub_task
+
+	def createSubTask(self):
+		return self.new()
 
 	def readSedml(self, list_of_sub_tasks, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -42,6 +53,7 @@ class ListOfSubTasks(ListOf):
 			t_sub_task = SubTask(self.__document)
 			t_sub_task.readSedml(sub_task, level, version)
 			ListOf.append(self, t_sub_task)
+			self.__subTaskCounter += 1
 
 	def writeSedml(self, list_of_sub_tasks, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -49,4 +61,6 @@ class ListOfSubTasks(ListOf):
 
 		for sub_task in self:
 			t_sub_task = list_of_sub_tasks.createSubTask()
-			t_sub_task.writeSedml(sub_task, level, version)
+			sub_task.writeSedml(t_sub_task, level, version)
+
+

@@ -34,6 +34,22 @@ class ListOfModels(ListOf):
 		ListOf.__init__(self, document)
 
 		self.__document = document
+		self.__modelCounter = 0
+
+	def new(self, model_id=None):
+
+		t_model_id = model_id
+		if t_model_id is None:
+			t_model_id = "model_%d" % self.__modelCounter
+
+		model = Model(self.__document)
+		model.setId(t_model_id)
+		ListOf.append(self, model)
+		self.__modelCounter += 1
+		return model
+
+	def createModel(self, model_id=None):
+		return self.new(model_id)
 
 	def readSedml(self, list_of_models, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -43,6 +59,7 @@ class ListOfModels(ListOf):
 			model = Model(self.__document)
 			model.readSedml(t_model, level, version)
 			ListOf.append(self, model)
+			self.__modelCounter += 1
 
 	def writeSedml(self, list_of_models, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 

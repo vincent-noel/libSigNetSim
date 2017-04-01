@@ -33,6 +33,24 @@ class ListOfDataGenerators(ListOf):
 
 		ListOf.__init__(self, document)
 		self.__document = document
+		self.__dataGeneratorCounter = 0
+
+	def new(self, data_generator_id=None):
+
+		t_data_generator_id = data_generator_id
+		if t_data_generator_id is None:
+			t_data_generator_id = "datagenerator_%d" % self.__dataGeneratorCounter
+
+		data_generator = DataGenerator(self.__document)
+		data_generator.setId(t_data_generator_id)
+		ListOf.append(self, data_generator)
+		self.__dataGeneratorCounter += 1
+		return data_generator
+
+
+	def createDataGenerator(self, data_generator_id=None):
+		return self.new(data_generator_id)
+
 
 	def readSedml(self, list_of_data_generators, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -43,6 +61,7 @@ class ListOfDataGenerators(ListOf):
 			data_generator = DataGenerator(self.__document)
 			data_generator.readSedml(t_data_generator, level, version)
 			ListOf.append(self, data_generator)
+			self.__dataGeneratorCounter += 1
 
 	def writeSedml(self, list_of_data_generators, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 

@@ -88,8 +88,14 @@ class Curve(SedBase, HasId):
 	def setXDataReference(self, x_data_reference):
 		self.__xDataReference = x_data_reference
 
+	def setXData(self, x_data):
+		self.__xDataReference = x_data.getId()
+
 	def setYDataReference(self, y_data_reference):
 		self.__yDataReference = y_data_reference
+
+	def setYData(self, y_data):
+		self.__yDataReference = y_data.getId()
 
 	def setLogX(self, log_x):
 		self.__logX = log_x

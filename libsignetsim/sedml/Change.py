@@ -23,6 +23,7 @@
 """
 from libsignetsim.sedml.SedBase import SedBase
 from libsignetsim.sedml.HasId import HasId
+from libsignetsim.sedml.XPath import XPath
 from libsignetsim.settings.Settings import Settings
 
 
@@ -34,7 +35,7 @@ class Change(SedBase, HasId):
 		HasId.__init__(self, document)
 
 		self.__document = document
-		self.__target = None
+		self.__target = XPath(self.__document)
 
 	def readSedml(self, change, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -42,12 +43,15 @@ class Change(SedBase, HasId):
 		HasId.readSedml(self, change, level, version)
 
 		if change.isSetTarget():
-			self.__target = change.getTarget()
+			self.__target.readSedml(change.getTarget(), level, version)
 
 	def writeSedml(self, change, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
 		SedBase.writeSedml(self, change, level, version)
 		HasId.writeSedml(self, change, level, version)
 
-		if self.__target is not None:
-			change.setTarget(self.__target)
+		if self.__target.getXPath() is not None:
+			change.setTarget(self.__target.writeSedml(level, version))
+
+	def getTarget(self):
+		return self.__target

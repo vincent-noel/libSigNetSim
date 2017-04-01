@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+""" TestSteadyStatesScan.py
+
+
+	This file is made for 'high level' tests, using various components
+
+
+	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+"""
+
+from libsignetsim.sedml.SedmlDocument import SedmlDocument
+
+from unittest import TestCase
+from os.path import join, dirname, isdir
+from os import mkdir
+
+class TestBiomodelsURI(TestCase):
+	""" Tests high level functions """
+
+
+	def testBiomodelsURI(self):
+
+		if not isdir(join(dirname(__file__), "files")):
+			mkdir(join(dirname(__file__), "files"))
+
+		sedml_doc = SedmlDocument()
+
+		model = sedml_doc.listOfModels.createModel()
+		model.setLanguageSbml()
+		model.setSource("urn:miriam:biomodels.db:BIOMD0000000048")
+		sbml_model = model.getSbmlModel()
+
+		sedml_doc.writeSedmlToFile(join(join(dirname(__file__), "files"), "biomodels_uri.xml"))
+
+
+

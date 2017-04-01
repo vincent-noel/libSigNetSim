@@ -26,8 +26,8 @@ from libsignetsim.settings.Settings import Settings
 
 class AlgorithmParameter(SedBase):
 
-	REL_TOL = '0000209'
-	ABS_TOL = '0000211'
+	REL_TOL = 'KISAO:0000209'
+	ABS_TOL = 'KISAO:0000211'
 
 	def __init__(self, document):
 
