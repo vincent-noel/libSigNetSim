@@ -84,7 +84,7 @@ class TestSteadyStatesScan(TestCase):
 		uniform_range = repeated_task.listOfRanges.createUniformRange()
 		uniform_range.setStart(0)
 		uniform_range.setEnd(100)
-		uniform_range.setNumberOfPoints(100)
+		uniform_range.setNumberOfPoints(5)
 		uniform_range.setLinear()
 		repeated_task.setRange(uniform_range)
 
@@ -119,8 +119,19 @@ class TestSteadyStatesScan(TestCase):
 		curve_s.setXData(data_generator_s)
 		curve_s.setYData(data_generator_p)
 
+		report = sedml_doc.listOfOutputs.createReport()
+		dataset_p = report.listOfDataSets.createDataSet()
+		dataset_p.setLabel("P")
+		dataset_p.setData(data_generator_p)
+
 		sedml_doc.run()
 		sedml_doc.writeSedmlToFile(join(join(dirname(__file__), "files"), "steadystatesscan.xml"))
+
+		simulated_data = sedml_doc.listOfOutputs.getReports()[0].getData()["P"]
+		expected_data = [0.0, 20.0, 40.0, 60.0, 80.0, 100.0]
+
+		for i, data in enumerate(expected_data):
+			self.assertAlmostEqual(data, simulated_data[i])
 
 
 

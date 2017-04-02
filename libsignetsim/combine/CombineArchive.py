@@ -84,16 +84,16 @@ class CombineArchive(object):
 		if len(all_sedmls) > 0:
 			return [join(self.__path, sedml) for sedml in all_sedmls]
 
-	def getAllSbmls(self):
+	# def getAllSbmls(self):
+	#
+	# 	all_sbmls = self.__manifest.getAllSbmls()
+	# 	if len(all_sbmls) > 0:
+	# 		return [join(self.__path, sbml) for sbml in all_sbmls]
 
-		all_sbmls = self.__manifest.getAllSbmls()
-		if len(all_sbmls) > 0:
-			return [join(self.__path, sbml) for sbml in all_sbmls]
-
-	def getTestSuiteExpectedResults(self):
-
-		if self.__manifest.getTestSuiteExpectedResults() is not None:
-			return join(self.__path, self.__manifest.getTestSuiteExpectedResults())
+	# def getTestSuiteExpectedResults(self):
+	#
+	# 	if self.__manifest.getTestSuiteExpectedResults() is not None:
+	# 		return join(self.__path, self.__manifest.getTestSuiteExpectedResults())
 
 
 	def runMasterSedml(self):
@@ -102,10 +102,11 @@ class CombineArchive(object):
 
 			filename = join(self.__path, self.__master[0])
 			if exists(filename):
-				print "Running SED-ML file %s" % self.__master[0]
+				# print "Running SED-ML file %s" % self.__master[0]
 				sedml_doc = SedmlDocument()
 				sedml_doc.readSedmlFromFile(filename)
 				sedml_doc.run()
+				return sedml_doc
 		else:
 			raise NoMasterSedmlFoundException()
 
@@ -114,14 +115,17 @@ class CombineArchive(object):
 	def runAllSedmls(self):
 
 		all_sedmls = self.__manifest.getAllSedmls()
+		sedml_docs = []
 		if len(all_sedmls) > 0:
 
 			for sedml_file in all_sedmls:
 				filename = join(self.__path, sedml_file)
 				if exists(filename):
-					print "Running SED-ML file %s" % sedml_file
+					# print "Running SED-ML file %s" % sedml_file
 					sedml_doc = SedmlDocument()
 					sedml_doc.readSedmlFromFile(filename)
 					sedml_doc.run()
+					sedml_docs.append(sedml_doc)
+			return sedml_docs
 		else:
 			raise NoSedmlFoundException()

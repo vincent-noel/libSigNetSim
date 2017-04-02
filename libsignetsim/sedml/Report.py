@@ -33,7 +33,7 @@ class Report(Output):
 		Output.__init__(self, document)
 
 		self.__document = document
-		self.listOfDataSets = ListOfDataSets(self.__document)
+		self.listOfDataSets = ListOfDataSets(self.__document, self)
 
 	def readSedml(self, report, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 

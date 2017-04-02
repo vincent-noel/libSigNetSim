@@ -55,5 +55,8 @@ class SedmlOneStepTaskException(SedmlException):
 	pass
 
 # Mixed subtasks are not implemented yet
-class SedmlMixedSubtasks(SedmlException):
+class SedmlMixedSubtasks(SedmlNotImplemented):
+	pass
+
+class SedmlMultipleModels(SedmlNotImplemented):
 	pass

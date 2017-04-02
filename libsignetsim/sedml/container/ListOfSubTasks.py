@@ -70,14 +70,22 @@ class ListOfSubTasks(ListOf):
 
 		types = []
 		for sub_task in self:
-			types.append(type(sub_task.getTask()))
+			types.append(type(sub_task.getTask().getSimulation()))
 
 		return len(set(types)) <= 1
+
+	def hasSingleModel(self):
+
+		models = []
+		for sub_task in self:
+			models.append(sub_task.getModel())
+
+		return len(set(models)) <= 1
 
 	def hasOneSteps(self):
 
 		for sub_task in self:
-			if not isinstance(sub_task, OneStep):
+			if not isinstance(sub_task.getTask().getSimulation(), OneStep):
 				return False
 
 		return True
@@ -85,7 +93,7 @@ class ListOfSubTasks(ListOf):
 	def hasSteadyStates(self):
 
 		for sub_task in self:
-			if not isinstance(sub_task, SteadyState):
+			if not isinstance(sub_task.getTask().getSimulation(), SteadyState):
 				return False
 
 		return True
@@ -93,8 +101,15 @@ class ListOfSubTasks(ListOf):
 	def hasUniformTimeCourses(self):
 
 		for sub_task in self:
-			if not isinstance(sub_task, UniformTimeCourse):
+			if not isinstance(sub_task.getTask().getSimulation(), UniformTimeCourse):
 				return False
 
 		return True
 
+	def getModels(self):
+
+		models = []
+		for sub_task in self:
+			models.append(sub_task.getTask().getModel())
+
+		return list(set(models))

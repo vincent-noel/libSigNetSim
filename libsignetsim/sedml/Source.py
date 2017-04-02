@@ -48,33 +48,6 @@ class Source(object):
 	def readSedml(self, source, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 		self.__source = source
 		self.parseSource(source)
-		# if source.startswith("http:"):
-		# 	self.__sourceType = self.DISTANT
-		# 	self.__url = source
-		# 	self.__filename = join(Settings.tempDirectory, source.split('/')[-1])
-		#
-		# 	# download_file = URLopener()
-		# 	# download_file.retrieve(self.__url, self.__filename)
-		#
-		# elif source.startswith("urn:"):
-		# 	# print "URN detected"
-		# 	self.__sourceType = self.URN
-		# 	self.__uri.readSedml(source, level, version)
-		# 	if self.__uri.getURL():
-		# 		self.__url = self.__uri.getURL()
-		#
-		# 		# print "Download URN done"
-		# else:
-		# 	self.__sourceType = self.LOCAL
-		# 	self.__sourceAvailable = True
-		# 	self.__filename = join(self.__document.path, source)
-		#
-		# if not exists(self.__filename):
-		# 	raise SedmlModelNotFound("File %s not found" % self.__source)
-		#
-		# else:
-		# 	if Settings.verbose >= 1:
-		# 		print "> Loading SBML Document %s" % self.__source
 
 	def writeSedml(self, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 		if self.__source is not None:
@@ -98,6 +71,11 @@ class Source(object):
 			self.__sourceType = self.LOCAL
 			self.__sourceAvailable = True
 			self.__filename = join(self.__document.path, source)
+	#
+	# def buildSource(self):
+	#
+	# 	if self.__sourceType == self.LOCAL:
+	# 		return self.
 
 	def downloadSource(self):
 

@@ -31,7 +31,6 @@ from os import mkdir
 class TestBiomodelsURI(TestCase):
 	""" Tests high level functions """
 
-
 	def testBiomodelsURI(self):
 
 		if not isdir(join(dirname(__file__), "files")):
@@ -42,9 +41,11 @@ class TestBiomodelsURI(TestCase):
 		model = sedml_doc.listOfModels.createModel()
 		model.setLanguageSbml()
 		model.setSource("urn:miriam:biomodels.db:BIOMD0000000048")
-		sbml_model = model.getSbmlModel()
 
-		sedml_doc.writeSedmlToFile(join(join(dirname(__file__), "files"), "biomodels_uri.xml"))
+		sbml_model = model.getSbmlModel()
+		self.assertEqual(sbml_model.getName(), "Kholodenko1999 - EGFR signaling")
+
+
 
 
 

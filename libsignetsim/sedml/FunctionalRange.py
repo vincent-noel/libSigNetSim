@@ -26,6 +26,7 @@ from libsignetsim.sedml.Range import Range
 from libsignetsim.sedml.container.ListOfParameters import ListOfParameters
 from libsignetsim.sedml.container.ListOfVariables import ListOfVariables
 from libsignetsim.sedml.math.MathFormula import MathFormula
+from libsignetsim.sedml.SedmlException import SedmlNotImplemented
 from libsignetsim.settings.Settings import Settings
 
 
@@ -61,3 +62,6 @@ class FunctionalRange(Range):
 
 	def setMath(self, math):
 		self.__math = math
+
+	def getValuesArray(self):
+		raise SedmlNotImplemented("Functional range is not implemented yet")

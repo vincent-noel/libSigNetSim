@@ -71,6 +71,9 @@ class DataSet(SedBase, HasId):
 	def setDataReference(self, data_reference):
 		self.__dataReference = data_reference
 
+	def setData(self, data):
+		self.__dataReference = data.getId()
+
 	def setLabel(self, label):
 		self.__label = label
 

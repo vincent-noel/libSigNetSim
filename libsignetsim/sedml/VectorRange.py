@@ -49,3 +49,6 @@ class VectorRange(Range):
 
 	def setValues(self, values):
 		self.__values = values
+
+	def getValuesArray(self):
+		return self.__values

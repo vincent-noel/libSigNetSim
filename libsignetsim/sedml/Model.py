@@ -41,7 +41,6 @@ class Model(SedBase, HasId):
 
 		self.__document = document
 		self.__language = None
-		# self.__source = None
 		self.__source = Source(self.__document)
 		self.__sbmlModel = None
 		self.listOfChanges = ListOfChanges(self.__document)
@@ -63,7 +62,6 @@ class Model(SedBase, HasId):
 
 		if model.isSetSource():
 			self.__source.readSedml(model.getSource(), level, version)
-			# self.__source = model.getSource()
 
 		self.listOfChanges.readSedml(model.getListOfChanges(), level, version)
 
@@ -74,9 +72,6 @@ class Model(SedBase, HasId):
 
 		if self.__language is not None:
 			model.setLanguage(self.__language)
-
-		# if self.__source is not None:
-		# 	model.setSource(self.__source)
 
 		if self.__source.writeSedml(level, version) is not None:
 			model.setSource(self.__source.writeSedml(level, version))

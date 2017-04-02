@@ -25,7 +25,8 @@ from libsignetsim.sedml.AbstractTask import AbstractTask
 from libsignetsim.sedml.container.ListOfSetValueChanges import ListOfSetValueChanges
 from libsignetsim.sedml.container.ListOfRanges import ListOfRanges
 from libsignetsim.sedml.container.ListOfSubTasks import ListOfSubTasks
-from libsignetsim.sedml.SedmlException import SedmlMixedSubtasks
+from libsignetsim.sedml.SedmlException import SedmlMixedSubtasks, SedmlMultipleModels
+from libsignetsim.simulation.SteadyStatesSimulation import SteadyStatesSimulation
 from libsignetsim.settings.Settings import Settings
 
 class RepeatedTask(AbstractTask):
@@ -37,9 +38,11 @@ class RepeatedTask(AbstractTask):
 		self.__document = document
 		self.__range = None
 		self.__resetModel = None
-		self.listOfSetValueChanges = ListOfSetValueChanges(self.__document)
-		self.listOfRanges = ListOfRanges(self.__document)
+		self.listOfSetValueChanges = ListOfSetValueChanges(self.__document, self)
+		self.listOfRanges = ListOfRanges(self.__document, self)
 		self.listOfSubTasks = ListOfSubTasks(self.__document)
+
+		self.__results = None
 
 	def readSedml(self, task, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 		AbstractTask.readSedml(self, task, level, version)
@@ -77,6 +80,14 @@ class RepeatedTask(AbstractTask):
 	def setResetModel(self, reset_model):
 		self.__resetModel = reset_model
 
+
+	def getModel(self):
+		models = self.listOfSubTasks.getModels()
+		if len(models) == 1:
+			return models[0]
+		else:
+			raise SedmlMultipleModels("Multiple models are not implemented")
+
 	def run(self):
 
 		if not self.listOfSubTasks.hasSingleTypeOfTask():
@@ -86,11 +97,25 @@ class RepeatedTask(AbstractTask):
 			pass
 
 		elif self.listOfSubTasks.hasSteadyStates():
-			pass
+			models = self.listOfSubTasks.getModels()
+			value_changes = self.listOfSetValueChanges.getValueChanges()
+
+			simulation = SteadyStatesSimulation(
+				list_of_models=models,
+				species_input=value_changes.keys()[0],
+				list_of_initial_values=value_changes.values()[0]
+			)
+			simulation.run()
+			self.__results = simulation.listOfData_v2
 
 		elif self.listOfSubTasks.hasUniformTimeCourses():
 			pass
 
 
+	def getResultsByVariable(self, variable_sbmlid):
+		results = []
+		for t_res in self.__results:
+			results.append(t_res[variable_sbmlid])
+		return results
 
 

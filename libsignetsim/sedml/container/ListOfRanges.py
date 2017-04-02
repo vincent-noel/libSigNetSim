@@ -36,17 +36,18 @@ reload(libsbml)
 
 class ListOfRanges(ListOf):
 
-	def __init__(self, document):
+	def __init__(self, document, repeated_task):
 
 		ListOf.__init__(self, document)
 		self.__document = document
+		self.__repeatedTask = repeated_task
 		self.__rangeCounter = 0
 
 	def new(self, range_type, range_id=None):
 
 		t_range_id = range_id
 		if t_range_id is None:
-			t_range_id = "range_%d" % self.__rangeCounter
+			t_range_id = "%s_range_%d" % (self.__repeatedTask.getId(), self.__rangeCounter)
 
 		if range_type == SEDML_RANGE_UNIFORMRANGE:
 			t_range = UniformRange(self.__document)
@@ -119,3 +120,10 @@ class ListOfRanges(ListOf):
 			elif isinstance(tt_range, FunctionalRange):
 				t_range = list_of_ranges.createFunctionalRange()
 				tt_range.writeSedml(t_range, level, version)
+
+	def getByRangeId(self, range_id):
+
+
+		for t_range in self:
+			if t_range.getId() == range_id:
+				return t_range

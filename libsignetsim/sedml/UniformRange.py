@@ -25,6 +25,7 @@ from libsignetsim.sedml.Range import Range
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.sedml.math.sympy_shortcuts import SympySymbol
 
+from numpy import linspace, logspace
 class UniformRange(Range):
 
 	LINEAR = "linear"
@@ -102,3 +103,9 @@ class UniformRange(Range):
 
 	def getSymbol(self):
 		return SympySymbol(self.getId())
+
+	def getValuesArray(self):
+		if self.__type == self.LOG:
+			return logspace(self.__start, self.__end, self.__numberOfPoints+1)
+		else:
+			return linspace(self.__start, self.__end, self.__numberOfPoints+1)

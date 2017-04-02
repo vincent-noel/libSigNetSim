@@ -66,3 +66,4 @@ class SubTask(object):
 
 	def setOrder(self, order):
 		self.__order = order
+

@@ -27,11 +27,28 @@ from libsignetsim.settings.Settings import Settings
 
 class ListOfDataSets(ListOf):
 
-	def __init__(self, document):
+	def __init__(self, document, report):
 
 		ListOf.__init__(self, document)
 
 		self.__document = document
+		self.__report = report
+		self.__dataSetCounter = 0
+
+	def new(self, data_set_id=None):
+
+		t_data_set_id = data_set_id
+		if t_data_set_id is None:
+			t_data_set_id = "%s_dataset_%d" % (self.__report.getId(), self.__dataSetCounter)
+
+		data_set = DataSet(self.__document)
+		data_set.setId(t_data_set_id)
+		ListOf.append(self, data_set)
+		self.__dataSetCounter += 1
+		return data_set
+
+	def createDataSet(self, data_set_id=None):
+		return self.new(data_set_id)
 
 	def readSedml(self, list_of_data_sets, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -41,6 +58,7 @@ class ListOfDataSets(ListOf):
 			data_set = DataSet(self.__document)
 			data_set.readSedml(t_data_set, level, version)
 			ListOf.append(self, data_set)
+			self.__dataSetCounter += 1
 
 	def writeSedml(self, list_of_data_sets, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 

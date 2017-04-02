@@ -10,14 +10,14 @@
   </listOfModels>
   <listOfTasks>
     <task id="task_0" modelReference="model_0" simulationReference="simulation_0"/>
-    <repeatedTask id="task_1" range="range_0" resetModel="true">
+    <repeatedTask id="task_1" range="task_1_range_0" resetModel="true">
       <listOfRanges>
-        <uniformRange id="range_0" start="0" end="100" numberOfPoints="100" type="linear"/>
+        <uniformRange id="task_1_range_0" start="0" end="100" numberOfPoints="5" type="linear"/>
       </listOfRanges>
       <listOfChanges>
-        <setValue range="range_0" modelReference="model_0" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id=&apos;S&apos;]">
+        <setValue range="task_1_range_0" modelReference="model_0" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id=&apos;S&apos;]">
           <math xmlns="http://www.w3.org/1998/Math/MathML">
-            <ci> range_0 </ci>
+            <ci> task_1_range_0 </ci>
           </math>
         </setValue>
       </listOfChanges>
@@ -50,5 +50,10 @@
         <curve id="curve_0" logX="false" logY="false" xDataReference="datagenerator_1" yDataReference="datagenerator_0"/>
       </listOfCurves>
     </plot2D>
+    <report id="output_1">
+      <listOfDataSets>
+        <dataSet id="output_1_dataset_0" label="P" dataReference="datagenerator_0"/>
+      </listOfDataSets>
+    </report>
   </listOfOutputs>
 </sedML>

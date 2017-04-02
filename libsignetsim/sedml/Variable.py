@@ -120,7 +120,7 @@ class Variable(SedBase, HasId):
 				raise SedmlUnknownURI("Unknown URI %s" % self.__symbol)
 
 		elif self.__target.getXPath() is not None:
-			sbml_model = self.__document.listOfModels.getByModelReference(simulation.getModelReference())
+			sbml_model = simulation.getModel()
 			sbml_object = self.__target.getModelObject(sbml_model)
 			return {self: simulation.getResultsByVariable(sbml_object.getSbmlId())}
 

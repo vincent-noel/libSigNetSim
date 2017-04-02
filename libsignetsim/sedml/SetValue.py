@@ -27,12 +27,17 @@ from libsignetsim.settings.Settings import Settings
 
 class SetValue(ComputeChange):
 
-	def __init__(self, document):
+	TARGET = 0
+	SYMBOL = 1
+
+	def __init__(self, document, repeated_task):
 
 		ComputeChange.__init__(self, document)
 		self.__document = document
+		self.__repeatedTask = repeated_task
 		self.__modelReference = None
 		self.__range = None
+		self.__variableType = None
 		self.__symbol = None
 
 	def readSedml(self, change, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
@@ -59,6 +64,12 @@ class SetValue(ComputeChange):
 		if self.__symbol is not None:
 			change.setSymbol(self.__symbol)
 
+	def isTargetChange(self):
+		return self.getTarget().getXPath() is not None
+
+	def isSymbolChange(self):
+		return self.__symbol is not None
+
 	def setModelReference(self, model_reference):
 		self.__modelReference = model_reference
 
@@ -70,3 +81,16 @@ class SetValue(ComputeChange):
 
 	def setRange(self, range_obj):
 		self.__range = range_obj.getId()
+
+
+	def getValueChange(self):
+
+		if self.isTargetChange():
+			model = self.__document.listOfModels.getByModelReference(self.__modelReference)
+			target = self.getTarget().getModelObject(model)
+
+			range = self.__repeatedTask.listOfRanges.getByRangeId(self.__range)
+			array_values = range.getValuesArray()
+
+			return {target: array_values}
+

@@ -34,8 +34,21 @@ class TestRunSedmls(TestCase):
 
 		ca = CombineArchive()
 		ca.readFile(join(join(dirname(__file__), "files"), "00001.omex"))
-		ca.runAllSedmls()
+		sedmls = ca.runAllSedmls()
+		for sedml in sedmls:
+			self.assertTrue(sedml.listOfOutputs.getReports() is not None)
 
+
+
+
+
+
+	def testMasterSedml(self):
+
+		ca = CombineArchive()
+		ca.readFile(join(join(dirname(__file__), "files"), "00001.omex"))
+		sedml = ca.runMasterSedml()
+		self.assertTrue(sedml.listOfOutputs.getReports() is not None)
 
 
 
