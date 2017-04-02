@@ -11,6 +11,7 @@ install:
 
 env:
   - TEST_SUITE=sbml-test-suite
+  - TEST_SUITE=biomodels
   - TEST_SUITE=others
 
 
