@@ -24,11 +24,10 @@
 from libsignetsim.sedml.SedBase import SedBase
 from libsignetsim.sedml.HasId import HasId
 from libsignetsim.sedml.XPath import XPath
-from libsignetsim.sedml.SedmlException import SedmlUnknownURI, SedmlUnknownXPATH
+from libsignetsim.sedml.URI import URI
 from libsignetsim.settings.Settings import Settings
 
 from libsignetsim.sedml.math.sympy_shortcuts import SympySymbol
-from re import match
 
 class Variable(SedBase, HasId):
 
@@ -40,8 +39,7 @@ class Variable(SedBase, HasId):
 		self.__document = document
 		self.__taskReference = None
 		self.__modelReference = None
-		self.__symbol = None
-		# self.__symbolv2 =
+		self.__symbol = URI(self.__document)
 		self.__target = XPath(self.__document)
 
 
@@ -57,7 +55,7 @@ class Variable(SedBase, HasId):
 			self.__modelReference = variable.getModelReference()
 
 		if variable.isSetSymbol():
-			self.__symbol = variable.getSymbol()
+			self.__symbol.readSedml(variable.getSymbol())
 
 		if variable.isSetTarget():
 			self.__target.readSedml(variable.getTarget(), level, version)
@@ -73,8 +71,8 @@ class Variable(SedBase, HasId):
 		if self.__modelReference is not None:
 			variable.setModelReference(self.__modelReference)
 
-		if self.__symbol is not None:
-			variable.setSymbol(self.__symbol)
+		if self.__symbol.getSymbol() is not None:
+			variable.setSymbol(self.__symbol.writeSedml(level, version))
 
 		if self.__target.writeSedml(level, version) is not None:
 			variable.setTarget(self.__target.writeSedml(level, version))
@@ -101,23 +99,8 @@ class Variable(SedBase, HasId):
 
 		simulation = self.__document.listOfTasks.getTask(self.__taskReference)
 
-		if self.__symbol is not None:
-
-			symbol_tokens = self.__symbol.split(':')
-			# print symbol_tokens
-			if len(symbol_tokens) == 4 and symbol_tokens[1] == 'sedml' and symbol_tokens[2] == 'symbol':
-
-				symbol = self.__symbol.split(':')[3]
-
-				if symbol == 'time':
-					return {self : simulation.getTimes()}
-
-				else:
-					raise SedmlUnknownURI("Unknown symbol %s" % symbol)
-
-			else:
-
-				raise SedmlUnknownURI("Unknown URI %s" % self.__symbol)
+		if self.__symbol.getSymbol() is not None and self.__symbol.isTime():
+			return {self : simulation.getTimes()}
 
 		elif self.__target.getXPath() is not None:
 			sbml_model = simulation.getModel()

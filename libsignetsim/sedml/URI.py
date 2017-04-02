@@ -23,46 +23,57 @@
 """
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.sedml.SedmlException import SedmlUnknownURI
-from re import match
-from urllib import URLopener
-from os.path import join, exists
-import json
-import requests
+from libsignetsim.sedml.math.sympy_shortcuts import SympySymbol
 
 class URI(object):
 
 	SEDML = "sedml"
 	MIRIAM = "miriam"
 
+	BIOMODELS = "biomodels.db"
+	SYMBOL = "symbol"
+
 	def __init__(self, document):
 		self.__document = document
+
 		self.__type = None
 		self.__tokens = None
+
+		self.__symbol = None
+
 		self.__url = None
 		self.__filename = None
 
-	def readSedml(self, source, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
-		self.parseURI(source)
-		# if source.startswith("urn:"):
-		#
-		# 	tokens = source.split(":")
-		# 	if len(tokens) == 4 and tokens[1] == "miriam" and tokens[2] == "biomodels.db":
-		# 		self.__url = "http://www.ebi.ac.uk/biomodels-main/download?mid=%s" % tokens[3]
-		# 		self.__filename = "%s.xml" % tokens[3]
-		#
-		# else:
-		# 	raise SedmlUnknownURI(source)
-	#
-	# def writeSedml(self, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
-	# 	if self.__source is not None:
-	# 		return self.__source
+	def readSedml(self, uri, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+		self.parseURI(uri)
+
+
+	def writeSedml(self, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+		if self.__tokens is not None:
+			return ":".join(self.__tokens)
+
+
 	def parseURI(self, uri):
 		if uri.startswith("urn:"):
 
-			tokens = uri.split(":")
-			if len(tokens) == 4 and tokens[1] == "miriam" and tokens[2] == "biomodels.db":
-				self.__url = "http://www.ebi.ac.uk/biomodels-main/download?mid=%s" % tokens[3]
-				self.__filename = "%s.xml" % tokens[3]
+			self.__tokens = uri.split(":")
+
+			if len(self.__tokens) == 4 and self.__tokens[1] == self.MIRIAM and self.__tokens[2] == self.BIOMODELS:
+				self.__url = "http://www.ebi.ac.uk/biomodels-main/download?mid=%s" % self.__tokens[3]
+				self.__filename = "%s.xml" % self.__tokens[3]
+				self.__type = self.BIOMODELS
+
+			elif len(self.__tokens) == 4 and self.__tokens[1] == self.SEDML and self.__tokens[2] == self.SYMBOL:
+				if self.__tokens[3] == 'time':
+					self.__type = self.SYMBOL
+					self.__symbol = SympySymbol("time")
+
+				else:
+					raise SedmlUnknownURI("Unknown symbol %s" % self.__tokens[3])
+
+			else:
+				raise SedmlUnknownURI("Unknown URI %s" % uri)
+
 
 		else:
 			raise SedmlUnknownURI(uri)
@@ -75,3 +86,10 @@ class URI(object):
 
 	def setURI(self, uri):
 		self.parseURI(uri)
+
+	def getSymbol(self):
+		if self.__type == self.SYMBOL and self.__symbol is not None:
+			return self.__symbol
+
+	def isTime(self):
+		return self.__type == self.SYMBOL and self.__symbol is not None and self.__symbol == SympySymbol("time")

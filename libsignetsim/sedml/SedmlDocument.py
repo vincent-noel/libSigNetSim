@@ -108,6 +108,7 @@ class SedmlDocument(SedBase):
 		self.path = dirname(filename)
 		self.filename = basename(filename)
 
+		self.listOfModels.makeRelativePaths(self.path)
 
 		if write_sbml_dependencies:
 			self.listOfModels.writeSbmlModelsToPath(dirname(filename))

@@ -92,8 +92,11 @@ class Model(SedBase, HasId):
 
 		self.__sbmlModel = sbml_doc.getModelInstance()
 
-	def writeSbmlModelToPath(self, path):
+	def makeRelativePath(self, path):
 
+		self.__source.makeRelativePath(path)
+
+	def writeSbmlModelToPath(self, path):
 
 		if self.__sbmlModel is None:
 			self.__loadModel()

@@ -83,6 +83,10 @@ class ListOfModels(ListOf):
 			if model.getId() == model_reference:
 				return model.getSbmlModel()
 
+	def makeRelativePaths(self, path):
+		for model in self:
+			model.makeRelativePath(path)
+
 	def writeSbmlModelsToPath(self, path):
 
 		for model in self:

@@ -22,13 +22,11 @@
 
 """
 from libsignetsim.sedml.URI import URI
+from libsignetsim.sedml.SedmlException import SedmlFileNotFound
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.sedml.SedmlException import SedmlModelNotFound
-from re import match
 from urllib import URLopener
-from os.path import join, exists
-import json
-import requests
+from os.path import join, exists, isabs, relpath
+from os import getcwd
 
 class Source(object):
 
@@ -70,12 +68,25 @@ class Source(object):
 		else:
 			self.__sourceType = self.LOCAL
 			self.__sourceAvailable = True
-			self.__filename = join(self.__document.path, source)
-	#
-	# def buildSource(self):
-	#
-	# 	if self.__sourceType == self.LOCAL:
-	# 		return self.
+			if isabs(source) or exists(join(getcwd(), source)):
+				self.__filename = source
+
+			elif self.__document.path is not None:
+				self.__filename = join(self.__document.path, source)
+			else:
+				raise SedmlFileNotFound("File not found : %s" % source)
+
+	def buildSource(self):
+
+		if self.__sourceType == self.LOCAL:
+			return self.__source
+
+		elif self.__sourceType == self.DISTANT:
+			return self.__url
+
+		elif self.__sourceType == self.URN:
+			return self.__uri.writeSedml()
+
 
 	def downloadSource(self):
 
@@ -94,3 +105,11 @@ class Source(object):
 	def setSource(self, source):
 		self.__source = source
 		self.parseSource(source)
+
+	def isLocal(self):
+		return self.__sourceType == self.LOCAL
+
+	def makeRelativePath(self, path):
+
+		if self.__sourceType == self.LOCAL and isabs(self.__source):
+			self.__source = relpath(self.__source, path)

@@ -27,7 +27,7 @@ from libsignetsim.sedml.SedmlDocument import SedmlDocument
 
 from unittest import TestCase
 from os.path import join, dirname, isdir
-from os import mkdir
+from os import mkdir, getcwd
 
 class TestSteadyStatesScan(TestCase):
 	""" Tests high level functions """
@@ -35,8 +35,10 @@ class TestSteadyStatesScan(TestCase):
 
 	def testExampleSpecification(self):
 
-		if not isdir(join(dirname(__file__), "files")):
-			mkdir(join(dirname(__file__), "files"))
+		testfiles_path = join(dirname(join(getcwd(), __file__)), "files")
+
+		if not isdir(testfiles_path):
+			mkdir(testfiles_path)
 
 		# Setting up the model
 		sbml_doc = SbmlDocument()
@@ -62,17 +64,17 @@ class TestSteadyStatesScan(TestCase):
 		vmax.setValue(0.211)
 		km.setValue(1.233)
 
-		sbml_doc.writeSbml(join(join(dirname(__file__), "files"), "enzymatic.xml"))
+		sbml_filename = join(testfiles_path, "enzymatic.xml")
+		sbml_doc.writeSbml(sbml_filename)
 
 		sedml_doc = SedmlDocument()
-		sedml_doc.writeSedmlToFile(join(join(dirname(__file__), "files"), "steadystatesscan.xml"))
 
 		simulation = sedml_doc.listOfSimulations.createSteadyState()
 		simulation.getAlgorithm().setKinSol()
 
 		model = sedml_doc.listOfModels.createModel()
 		model.setLanguageSbml()
-		model.setSource("enzymatic.xml")
+		model.setSource(sbml_filename)
 
 		task = sedml_doc.listOfTasks.createTask()
 		task.setModel(model)
@@ -125,7 +127,7 @@ class TestSteadyStatesScan(TestCase):
 		dataset_p.setData(data_generator_p)
 
 		sedml_doc.run()
-		sedml_doc.writeSedmlToFile(join(join(dirname(__file__), "files"), "steadystatesscan.xml"))
+		sedml_doc.writeSedmlToFile(join(testfiles_path, "steadystatesscan.xml"))
 
 		simulated_data = sedml_doc.listOfOutputs.getReports()[0].getData()["P"]
 		expected_data = [0.0, 20.0, 40.0, 60.0, 80.0, 100.0]
