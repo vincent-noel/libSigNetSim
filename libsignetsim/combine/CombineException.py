@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" SedmlException.py
+""" CombineException.py
 
 
 	This file ...
@@ -25,35 +25,20 @@
 from libsignetsim.LibSigNetSimException import LibSigNetSimException
 
 
-class SedmlException(LibSigNetSimException):
+class CombineException(LibSigNetSimException):
 	pass
 
-class SedmlMathException(SedmlException):
+class FileNotFoundException(CombineException):
 	pass
 
-class SedmlModelLanguageNotSupported(SedmlException):
+class NotAZipFileException(CombineException):
 	pass
 
-class SedmlModelNotFound(SedmlException):
+class NoManifestFoundException(CombineException):
 	pass
 
-class SedmlFileNotFound(SedmlException):
+class NoMasterSedmlFoundException(CombineException):
 	pass
 
-class SedmlUnknownURI(SedmlException):
-	pass
-
-class SedmlUnknownXPATH(SedmlException):
-	pass
-
-class SedmlNotImplemented(SedmlException):
-	pass
-
-# One step simulations cannot be executed as a single task, they must be part of a repeated task
-# At least, that's what I understand
-class SedmlOneStepTaskException(SedmlException):
-	pass
-
-# Mixed subtasks are not implemented yet
-class SedmlMixedSubtasks(SedmlException):
+class NoSedmlFoundException(CombineException):
 	pass

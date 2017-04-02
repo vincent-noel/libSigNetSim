@@ -57,3 +57,4 @@ class Simulation(SedBase, HasId):
 
 	def getAlgorithm(self):
 		return self.__algorithm
+

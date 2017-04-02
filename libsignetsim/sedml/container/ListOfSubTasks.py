@@ -23,7 +23,9 @@
 """
 from libsignetsim.sedml.container.ListOf import ListOf
 from libsignetsim.sedml.SubTask import SubTask
-
+from libsignetsim.sedml.UniformTimeCourse import UniformTimeCourse
+from libsignetsim.sedml.OneStep import OneStep
+from libsignetsim.sedml.SteadyState import SteadyState
 from libsignetsim.settings.Settings import Settings
 
 
@@ -63,4 +65,36 @@ class ListOfSubTasks(ListOf):
 			t_sub_task = list_of_sub_tasks.createSubTask()
 			sub_task.writeSedml(t_sub_task, level, version)
 
+	def hasSingleTypeOfTask(self):
+		""" Return true if all the subtasks are of the same type. Mixed subtasks are not implemented yet """
+
+		types = []
+		for sub_task in self:
+			types.append(type(sub_task.getTask()))
+
+		return len(set(types)) <= 1
+
+	def hasOneSteps(self):
+
+		for sub_task in self:
+			if not isinstance(sub_task, OneStep):
+				return False
+
+		return True
+
+	def hasSteadyStates(self):
+
+		for sub_task in self:
+			if not isinstance(sub_task, SteadyState):
+				return False
+
+		return True
+
+	def hasUniformTimeCourses(self):
+
+		for sub_task in self:
+			if not isinstance(sub_task, UniformTimeCourse):
+				return False
+
+		return True
 

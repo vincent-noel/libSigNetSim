@@ -25,6 +25,7 @@ from libsignetsim.sedml.AbstractTask import AbstractTask
 from libsignetsim.sedml.container.ListOfSetValueChanges import ListOfSetValueChanges
 from libsignetsim.sedml.container.ListOfRanges import ListOfRanges
 from libsignetsim.sedml.container.ListOfSubTasks import ListOfSubTasks
+from libsignetsim.sedml.SedmlException import SedmlMixedSubtasks
 from libsignetsim.settings.Settings import Settings
 
 class RepeatedTask(AbstractTask):
@@ -36,9 +37,9 @@ class RepeatedTask(AbstractTask):
 		self.__document = document
 		self.__range = None
 		self.__resetModel = None
-		self.listOfSetValueChanges = ListOfSetValueChanges(self)
-		self.listOfRanges = ListOfRanges(self)
-		self.listOfSubTasks = ListOfSubTasks(self)
+		self.listOfSetValueChanges = ListOfSetValueChanges(self.__document)
+		self.listOfRanges = ListOfRanges(self.__document)
+		self.listOfSubTasks = ListOfSubTasks(self.__document)
 
 	def readSedml(self, task, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 		AbstractTask.readSedml(self, task, level, version)
@@ -76,7 +77,20 @@ class RepeatedTask(AbstractTask):
 	def setResetModel(self, reset_model):
 		self.__resetModel = reset_model
 
-	def build(self):
-		print "building repeated task !!"
 	def run(self):
-		print "running repeated task !!"
+
+		if not self.listOfSubTasks.hasSingleTypeOfTask():
+			raise SedmlMixedSubtasks("Mixed subtasks are not implemented")
+
+		if self.listOfSubTasks.hasOneSteps():
+			pass
+
+		elif self.listOfSubTasks.hasSteadyStates():
+			pass
+
+		elif self.listOfSubTasks.hasUniformTimeCourses():
+			pass
+
+
+
+

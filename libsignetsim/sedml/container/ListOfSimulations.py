@@ -127,11 +127,11 @@ class ListOfSimulations(ListOf):
 		for simulation in self:
 			if simulation.getId() == simulation_reference:
 				return simulation
-
-	def buildSimulation(self, simulation_reference, model):
-
-		return self.getSimulation(simulation_reference).build(model)
-
-	def runSimulation(self, simulation_reference):
-
-		return self.getSimulation(simulation_reference).run()
+	#
+	# def buildSimulation(self, simulation_reference, model):
+	#
+	# 	return self.getSimulation(simulation_reference).build(model)
+	#
+	# def runSimulation(self, simulation_reference):
+	#
+	# 	return self.getSimulation(simulation_reference).run()

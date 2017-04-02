@@ -49,6 +49,15 @@ class SubTask(object):
 		if self.__order is not None:
 			subtask.setOrder(self.__order)
 
+	def getTaskReference(self):
+		return self.__task
+
+	def getTask(self):
+		return self.__document.listOfTasks.getTask(self.__task)
+
+	def getOrder(self):
+		return self.__order
+
 	def setTaskReference(self, task_reference):
 		self.__task = task_reference
 

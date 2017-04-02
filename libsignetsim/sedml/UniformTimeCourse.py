@@ -89,9 +89,9 @@ class UniformTimeCourse(Simulation):
 	def getAlgorithm(self):
 		return self.__algorithm
 
-	def build(self, sbmlModel):
+	def run(self, sbmlModel):
 
-		return TimeseriesSimulation(
+		t_simulation = TimeseriesSimulation(
 			list_of_models=[sbmlModel],
 			time_min=self.__initialTime,
 			time_max=self.__outputEndTime,
@@ -99,6 +99,8 @@ class UniformTimeCourse(Simulation):
 			abs_tol=Simulation.getAlgorithm(self).getAbsTol(),
 			rel_tol=Simulation.getAlgorithm(self).getRelTol()
 		)
+		t_simulation.run()
+		return t_simulation
 
 	def getSimulationObject(self):
 		return self.__simulationObject

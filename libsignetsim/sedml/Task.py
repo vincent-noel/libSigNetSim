@@ -22,6 +22,8 @@
 
 """
 from libsignetsim.sedml.AbstractTask import AbstractTask
+from libsignetsim.sedml.OneStep import OneStep
+from libsignetsim.sedml.SedmlException import SedmlOneStepTaskException
 from libsignetsim.settings.Settings import Settings
 
 class Task(AbstractTask):
@@ -74,15 +76,16 @@ class Task(AbstractTask):
 	def setSimulation(self, simulation):
 		self.__simulationReference = simulation.getId()
 
-	def build(self):
-
-		model = self.__document.listOfModels.getByModelReference(self.__modelReference)
-		self.__simulationObject = self.__document.listOfSimulations.buildSimulation(self.__simulationReference, model)
-
-
 	def run(self):
 
-		self.__simulationObject.run()
+		# One step simulations cannot be executed as a single task, they must be part of a repeated task
+		# At least, that's what I understand
+		if isinstance(self.__document.listOfSimulations.getSimulation(self.__simulationReference), OneStep):
+			raise SedmlOneStepTaskException("One step simulations cannot be executed as a single task")
+
+		model = self.__document.listOfModels.getByModelReference(self.__modelReference)
+		simulation = self.__document.listOfSimulations.getSimulation(self.__simulationReference)
+		self.__simulationObject = simulation.run(model)
 		self.__results = self.__simulationObject.rawData[0]
 
 	def getSimulationObject(self):

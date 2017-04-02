@@ -122,7 +122,6 @@ class SedmlDocument(SedBase):
 		tasks_to_run = self.listOfDataGenerators.getTasksToRun(data_to_generate)
 
 		for task in tasks_to_run:
-			task.build()
 			task.run()
 
 		self.listOfOutputs.build()
