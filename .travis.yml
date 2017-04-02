@@ -10,7 +10,7 @@ install:
   - python fix_libsedml_addChild.py
 
 env:
-  - TEST_SUITE=sbml_test_suite
+  - TEST_SUITE=sbml-test-suite
   - TEST_SUITE=others
 
 
