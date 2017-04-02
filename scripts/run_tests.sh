@@ -4,9 +4,9 @@ elif [ $1 = "biomodels" ]; then
     coverage run --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.tests.biomodels.TestBiomodelsCompatibility
 else
     coverage run --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.simulation.tests.TestTimeseries
-    coverage run --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.simulation.tests.TestSteadyStates
-    coverage run --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.optimization.tests.TestOptimization
-    coverage run --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.sedml.tests.TestBiomodelsURI
-    coverage run --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.sedml.tests.TestSteadyStatesScan
-    coverage run --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.combine.tests.TestRunSedmls
+    coverage -a run --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.simulation.tests.TestSteadyStates
+    coverage -a run --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.optimization.tests.TestOptimization
+    coverage -a run --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.sedml.tests.TestBiomodelsURI
+    coverage -a run --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.sedml.tests.TestSteadyStatesScan
+    coverage -a run --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.combine.tests.TestRunSedmls
 fi
