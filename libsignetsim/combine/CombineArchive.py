@@ -66,6 +66,9 @@ class CombineArchive(object):
 
 		self.extractArchive()
 
+		#TODO : browse the manifest, check if the archive exists, then create add the file to the list of files ?
+
+
 	def extractArchive(self):
 
 		self.__file.extractall(self.__path)

@@ -8,3 +8,4 @@ sympy
 python-libsedml
 bioservices
 pandas
+lxml
