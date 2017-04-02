@@ -117,10 +117,15 @@ class SedmlDocument(SedBase):
 		writeSedMLToFile(document, filename)
 
 	def run(self):
-		self.listOfTasks.buildTasks()
-		self.listOfTasks.runTasks()
+
+		data_to_generate = self.listOfOutputs.getDataToGenerate()
+		tasks_to_run = self.listOfDataGenerators.getTasksToRun(data_to_generate)
+
+		for task in tasks_to_run:
+			task.build()
+			task.run()
+
 		self.listOfOutputs.build()
-		# print self.listOfOutputs.getReports()[0].getData()
 
 
 

@@ -76,3 +76,11 @@ class ListOfDataGenerators(ListOf):
 		for data_generator in self:
 			if data_generator.getId() == data_reference:
 				return data_generator
+
+	def getTasksToRun(self, data_to_generate):
+
+		tasks = []
+		for data in data_to_generate:
+			tasks += data.getTasksToRun()
+
+		return list(set(tasks))

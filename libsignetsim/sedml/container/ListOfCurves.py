@@ -65,3 +65,11 @@ class ListOfCurves(ListOf):
 		for t_curve in self:
 			curve = list_of_curves.createCurve()
 			t_curve.writeSedml(curve, level, version)
+
+	def getDataToGenerate(self):
+
+		data = []
+		for curve in self:
+			data += curve.getDataToGenerate()
+
+		return list(set(data))

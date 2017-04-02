@@ -49,3 +49,7 @@ class Plot2D(Output):
 	def build(self):
 
 		pass
+
+	def getDataToGenerate(self):
+
+		return self.listOfCurves.getDataToGenerate()

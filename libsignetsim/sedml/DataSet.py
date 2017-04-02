@@ -96,3 +96,6 @@ class DataSet(SedBase, HasId):
 
 		return {self.__label: self.__data}
 
+	def getDataToGenerate(self):
+
+		return self.__document.listOfDataGenerators.getDataGenerator(self.__dataReference)

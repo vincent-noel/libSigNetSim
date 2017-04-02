@@ -51,3 +51,7 @@ class Report(Output):
 	def getData(self):
 
 		return self.listOfDataSets.getData()
+
+	def getDataToGenerate(self):
+
+		return self.listOfDataSets.getDataToGenerate()

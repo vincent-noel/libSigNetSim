@@ -63,3 +63,11 @@ class ListOfDataSets(ListOf):
 			data.update(data_set.getData())
 
 		return data
+
+	def getDataToGenerate(self):
+
+		data = []
+		for data_set in self:
+			data.append(data_set.getDataToGenerate())
+
+		return list(set(data))

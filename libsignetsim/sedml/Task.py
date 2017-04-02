@@ -84,7 +84,6 @@ class Task(AbstractTask):
 
 		self.__simulationObject.run()
 		self.__results = self.__simulationObject.rawData[0]
-		# print self.__results
 
 	def getSimulationObject(self):
 		return self.__simulationObject

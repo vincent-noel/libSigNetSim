@@ -34,7 +34,7 @@ from os import getcwd, mkdir, system
 class TestSuite(TestCase):
 	""" Tests SED-ML semantic test cases """
 
-	TODO_CASES = [1]
+	TODO_CASES = []
 	TODO_VERSIONS = []
 
 	INCOMPATIBLE_CASES = [962, 987, 988]

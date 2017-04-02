@@ -119,6 +119,7 @@ class TestSteadyStatesScan(TestCase):
 		curve_s.setXData(data_generator_s)
 		curve_s.setYData(data_generator_p)
 
+		sedml_doc.run()
 		sedml_doc.writeSedmlToFile(join(join(dirname(__file__), "files"), "steadystatesscan.xml"))
 
 

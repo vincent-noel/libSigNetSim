@@ -102,3 +102,10 @@ class Curve(SedBase, HasId):
 
 	def setLogY(self, log_y):
 		self.__logY = log_y
+
+	def getDataToGenerate(self):
+
+		return [
+			self.__document.listOfDataGenerators.getDataGenerator(self.__xDataReference),
+			self.__document.listOfDataGenerators.getDataGenerator(self.__yDataReference)
+		]

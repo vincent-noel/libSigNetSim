@@ -47,7 +47,7 @@
   <listOfOutputs>
     <plot2D id="output_0">
       <listOfCurves>
-        <curve id="curve_0" logX="false" logY="false" xDataReference="S" yDataReference="P"/>
+        <curve id="curve_0" logX="false" logY="false" xDataReference="datagenerator_1" yDataReference="datagenerator_0"/>
       </listOfCurves>
     </plot2D>
   </listOfOutputs>

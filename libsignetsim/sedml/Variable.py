@@ -82,6 +82,9 @@ class Variable(SedBase, HasId):
 	def getTaskReference(self):
 		return self.__taskReference
 
+	def getTask(self):
+		return self.__document.listOfTasks.getTask(self.__taskReference)
+
 	def getModelReference(self):
 		return self.__modelReference
 
@@ -138,5 +141,6 @@ class Variable(SedBase, HasId):
 
 	def setSymbol(self, symbol):
 		self.__symbol = symbol
+
 
 

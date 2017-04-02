@@ -65,3 +65,7 @@ class DataGenerator(SedBase, HasId):
 
 	def setMath(self, math):
 		self.__math = math
+
+	def getTasksToRun(self):
+
+		return self.listOfVariables.getTasksToRun()

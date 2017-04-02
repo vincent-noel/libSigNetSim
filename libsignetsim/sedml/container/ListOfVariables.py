@@ -77,3 +77,11 @@ class ListOfVariables(ListOf):
 			data.update(variable.getData())
 
 		return data
+
+	def getTasksToRun(self):
+
+		tasks = []
+		for variable in self:
+			tasks.append(variable.getTask())
+
+		return list(set(tasks))

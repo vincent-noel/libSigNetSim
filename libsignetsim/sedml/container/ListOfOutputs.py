@@ -110,3 +110,11 @@ class ListOfOutputs(ListOf):
 				reports.append(output)
 
 		return reports
+
+	def getDataToGenerate(self):
+
+		data = []
+		for output in self:
+			data += output.getDataToGenerate()
+
+		return list(set(data))

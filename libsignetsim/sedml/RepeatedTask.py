@@ -75,3 +75,8 @@ class RepeatedTask(AbstractTask):
 
 	def setResetModel(self, reset_model):
 		self.__resetModel = reset_model
+
+	def build(self):
+		print "building repeated task !!"
+	def run(self):
+		print "running repeated task !!"
