@@ -8,6 +8,7 @@ before_install:
 install:
   - python setup.py install
   - python fix_libsedml_addChild.py
+  - pip install coveralls
 
 env:
   - TEST_SUITE=sbml-test-suite
@@ -18,4 +19,5 @@ env:
 script:
   - bash scripts/run_tests.sh $TEST_SUITE
 
-
+after_success:
+  - coveralls

@@ -1,12 +1,12 @@
 if [ $1 = "sbml-test-suite" ]; then
-    python -m unittest libsignetsim.tests.sbmltestsuite.TestSuite
+    coverage run --omit=*/venv/* -m unittest libsignetsim.tests.sbmltestsuite.TestSuite
 elif [ $1 = "biomodels" ]; then
-    python -m unittest libsignetsim.tests.biomodels.TestBiomodelsCompatibility
+    coverage run --omit=*/venv/* -m unittest libsignetsim.tests.biomodels.TestBiomodelsCompatibility
 else
-    python -m unittest libsignetsim.simulation.tests.TestTimeseries
-    python -m unittest libsignetsim.simulation.tests.TestSteadyStates
-    python -m unittest libsignetsim.optimization.tests.TestOptimization
-    python -m unittest libsignetsim.sedml.tests.TestBiomodelsURI
-    python -m unittest libsignetsim.sedml.tests.TestSteadyStatesScan
-    python -m unittest libsignetsim.combine.tests.TestRunSedmls
+    coverage run --omit=*/venv/* -m unittest libsignetsim.simulation.tests.TestTimeseries
+    coverage run --omit=*/venv/* -m unittest libsignetsim.simulation.tests.TestSteadyStates
+    coverage run --omit=*/venv/* -m unittest libsignetsim.optimization.tests.TestOptimization
+    coverage run --omit=*/venv/* -m unittest libsignetsim.sedml.tests.TestBiomodelsURI
+    coverage run --omit=*/venv/* -m unittest libsignetsim.sedml.tests.TestSteadyStatesScan
+    coverage run --omit=*/venv/* -m unittest libsignetsim.combine.tests.TestRunSedmls
 fi

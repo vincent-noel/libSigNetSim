@@ -53,7 +53,7 @@ class TestSuite(TestCase):
 		self.testCasesTags = {}
 		self.testCasesVersions = {}
 
-		self.testExport = False
+		self.testExport = True
 		Settings.verbose = 0
 
 	def testSuiteRun(self):
