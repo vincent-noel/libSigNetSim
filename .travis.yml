@@ -11,13 +11,18 @@ install:
   - pip install coveralls
 
 env:
-  - TEST_SUITE=sbml-test-suite
-  - TEST_SUITE=biomodels
-  - TEST_SUITE=others
+  - TEST_SUITE=sbml-test-suite VERSION=1.2
+  - TEST_SUITE=sbml-test-suite VERSION=2.1
+  - TEST_SUITE=sbml-test-suite VERSION=2.2
+  - TEST_SUITE=sbml-test-suite VERSION=2.3
+  - TEST_SUITE=sbml-test-suite VERSION=2.4
+  - TEST_SUITE=sbml-test-suite VERSION=2.5
+  - TEST_SUITE=biomodels VERSION=
+  - TEST_SUITE=others VERSION=
 
 
 script:
-  - bash scripts/run_tests.sh $TEST_SUITE
+  - bash scripts/run_tests.sh $TEST_SUITE $VERSION
 
 after_script:
   - coveralls

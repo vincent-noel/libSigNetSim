@@ -1,5 +1,19 @@
 if [ $1 = "sbml-test-suite" ]; then
-    coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.tests.sbmltestsuite.TestSuite
+    if [ $2 = "1.2" ]; then
+        coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.tests.sbmltestsuite.TestSuite_l1v2
+    elif [ $2 = "2.1" ]; then
+        coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.tests.sbmltestsuite.TestSuite_l2v1
+    elif [ $2 = "2.2" ]; then
+        coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.tests.sbmltestsuite.TestSuite_l2v2
+    elif [ $2 = "2.3" ]; then
+        coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.tests.sbmltestsuite.TestSuite_l2v3
+    elif [ $2 = "2.4" ]; then
+        coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.tests.sbmltestsuite.TestSuite_l2v4
+    elif [ $2 = "2.5" ]; then
+        coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.tests.sbmltestsuite.TestSuite_l2v5
+    elif [ $2 = "3.1" ]; then
+        coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.tests.sbmltestsuite.TestSuite_l3v1
+    fi
 elif [ $1 = "biomodels" ]; then
     coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.tests.biomodels.TestBiomodelsCompatibility
 else

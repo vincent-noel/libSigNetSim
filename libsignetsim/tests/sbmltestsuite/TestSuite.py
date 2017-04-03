@@ -31,7 +31,7 @@ from os.path import join, expanduser, exists
 from os import getcwd, mkdir, system
 
 
-class TestSuite(TestCase):
+class TestSuite(object):
 	""" Tests SED-ML semantic test cases """
 
 	TODO_CASES = []
@@ -44,10 +44,9 @@ class TestSuite(TestCase):
 
 	SEMANTIC_CASES_LINK = "http://downloads.sourceforge.net/project/sbml/test-suite/3.2.0/case-archives/sbml-semantic-test-cases-2016-07-27.zip"
 
-	def __init__(self, *args, **kwargs):
+	def __init__(self, version):
 
-		TestCase.__init__(self, *args, **kwargs)
-
+		self.TODO_VERSIONS.append(version)
 		self.testSuitePath = join(expanduser('~'), ".test-suite/")
 		self.testCasesPath = None
 		self.testCasesTags = {}
@@ -68,7 +67,7 @@ class TestSuite(TestCase):
 			system(cmd)
 
 		self.loadTestCasesInfo()
-		self.assertEqual(self.runTestCases(), True)
+		return self.runTestCases()
 
 	def loadTestCasesInfo(self, path=None):
 		""" Loads cases info from the .cases-tags-map """
@@ -140,10 +139,11 @@ class TestSuite(TestCase):
 		nb_cases = 0
 		nb_success = 0
 
-		print "> Running case %05d (%s)" % (case, str(self.testCasesVersions[case]))
 
 		for versions in self.testCasesVersions[case]:
 			if self.TODO_VERSIONS == [] or versions in self.TODO_VERSIONS:
+
+				print "> Running case %05d (%s)" % (case, str(self.TODO_VERSIONS))
 
 				start = time()
 				level_version = versions.split('.')

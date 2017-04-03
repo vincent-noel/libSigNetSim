@@ -278,22 +278,28 @@ class TestSteadyStatesScan(TestCase):
 		curve_basal = plot.listOfCurves.createCurve()
 		curve_basal.setXData(data_time)
 		curve_basal.setYData(data_basal)
+		curve_basal.setLogX(True)
 
 		curve_basalAch = plot.listOfCurves.createCurve()
 		curve_basalAch.setXData(data_time)
 		curve_basalAch.setYData(data_basalAch)
+		curve_basalAch.setLogX(True)
 
 		curve_dll = plot.listOfCurves.createCurve()
 		curve_dll.setXData(data_time)
 		curve_dll.setYData(data_DLL)
+		curve_dll.setLogX(True)
 
 		curve_ill = plot.listOfCurves.createCurve()
 		curve_ill.setXData(data_time)
 		curve_ill.setYData(data_ILL)
+		curve_ill.setLogX(True)
 
 		curve_all = plot.listOfCurves.createCurve()
 		curve_all.setXData(data_time)
 		curve_all.setYData(data_ALL)
+		curve_all.setLogX(True)
+
 
 		report = sedml_doc.listOfOutputs.createReport()
 
