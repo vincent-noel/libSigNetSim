@@ -141,7 +141,7 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 
 		# self.buildStoichiometryMatrix()
 		# self.listOfConservationLaws.buildConservationLaws()
-
+		# self.listOfConservationLaws.printConservationLaws()
 
 
 

@@ -3,6 +3,8 @@ if [ $1 = "sbml-test-suite" ]; then
 elif [ $1 = "biomodels" ]; then
     coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.tests.biomodels.TestBiomodelsCompatibility
 else
+    coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.model.tests.TestFindKineticLaws
+    coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.model.tests.TestReduceModel
     coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.simulation.tests.TestTimeseries
     coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.simulation.tests.TestSteadyStates
     coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.optimization.tests.TestOptimization

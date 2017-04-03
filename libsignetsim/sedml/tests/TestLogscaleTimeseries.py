@@ -141,13 +141,17 @@ class TestSteadyStatesScan(TestCase):
 		curve_all.setXData(data_time)
 		curve_all.setYData(data_ALL)
 
-		# report = sedml_doc.listOfOutputs.createReport()
-		# dataset_p = report.listOfDataSets.createDataSet()
-		# dataset_p.setLabel("P")
-		# dataset_p.setData(data_generator_p)
-		#
+		report = sedml_doc.listOfOutputs.createReport()
+		dataset_time = report.listOfDataSets.createDataSet()
+		dataset_time.setLabel("Time")
+		dataset_time.setData(data_time)
+
+		dataset_basal = report.listOfDataSets.createDataSet()
+		dataset_basal.setLabel("Basal")
+		dataset_basal.setData(data_basal)
+
 		# sedml_doc.run()
-		sedml_doc.writeSedmlToFile(join(testfiles_path, "BIOMD0000000001_curation_1.xml"))
+
 		#
 		# simulated_data = sedml_doc.listOfOutputs.getReports()[0].getData()["P"]
 		# expected_data = [0.0, 20.0, 40.0, 60.0, 80.0, 100.0]
@@ -155,7 +159,20 @@ class TestSteadyStatesScan(TestCase):
 		# for i, data in enumerate(expected_data):
 		# 	self.assertAlmostEqual(data, simulated_data[i])
 
+		sedml_doc.writeSedmlToFile(join(testfiles_path, "BIOMD0000000001_curation_1.xml"))
 		sedml_doc = SedmlDocument()
 		sedml_doc.readSedmlFromFile(join(testfiles_path, "BIOMD0000000001_curation_1.xml"))
 
 
+	def testFig4CPubli(self):
+		""" Here the tricky part is that we must integrate the first 20 seconds, 
+			until the event (with whatever timescale I guess), 
+			and then integrate 100s with a log scale
+		 
+		 	Maybe and idea is to have a repeated task, containing :
+		 	- a simulation for the first 20s, with just two time points
+		 	- a repeated task, containing the log scale simulation
+		 	
+		 	Should work, but not sure how to just plot discarding the first simulation
+		"""
+		pass

@@ -121,7 +121,7 @@ class KineticLawIdentifier(object):
 	def removeCompartmentsFromRate(self, formula=None):
 
 		if formula is None:
-			t_rate = self.getDeveloppedInternalMathFormula()
+			t_rate = self.getDefinition().getDeveloppedInternalMathFormula()
 		else:
 			t_rate = formula
 
@@ -136,7 +136,7 @@ class KineticLawIdentifier(object):
 	def removeSpeciesAndCompartmentsFromRate(self, formula=None):
 
 		if formula is None:
-			t_rate = self.getDeveloppedInternalMathFormula()
+			t_rate = self.getDefinition().getDeveloppedInternalMathFormula()
 		else:
 			t_rate = formula
 
@@ -254,7 +254,7 @@ class KineticLawIdentifier(object):
 
 	def findKineticLaw(self):
 
-		print "> Looking for the kinetic law"
+		# print "> Looking for the kinetic law"
 
 		self.reactionType = self.UNDEFINED
 
@@ -287,12 +287,12 @@ class KineticLawIdentifier(object):
 		else:
 			self.reactionType = self.UNDEFINED
 
-		print self.reactionTypes[self.reactionType]
+		# print self.reactionTypes[self.reactionType]
 
 
 	def getReversibleFormulas(self):
 
-		t_formula = self.getDeveloppedInternalMathFormula()
+		t_formula = self.getDefinition().getDeveloppedInternalMathFormula()
 		for compartment in self.model.listOfCompartments.values():
 			t_formula = t_formula.subs(compartment.symbol.getInternalMathFormula(), SympyInteger(1))
 

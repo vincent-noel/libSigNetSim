@@ -19,5 +19,5 @@ env:
 script:
   - bash scripts/run_tests.sh $TEST_SUITE
 
-after_success:
+after_script:
   - coveralls

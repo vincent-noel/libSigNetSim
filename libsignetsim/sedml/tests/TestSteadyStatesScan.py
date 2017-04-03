@@ -127,7 +127,6 @@ class TestSteadyStatesScan(TestCase):
 		dataset_p.setData(data_generator_p)
 
 		sedml_doc.run()
-		sedml_doc.writeSedmlToFile(join(testfiles_path, "steadystatesscan.xml"))
 
 		simulated_data = sedml_doc.listOfOutputs.getReports()[0].getData()["P"]
 		expected_data = [0.0, 20.0, 40.0, 60.0, 80.0, 100.0]
@@ -135,5 +134,6 @@ class TestSteadyStatesScan(TestCase):
 		for i, data in enumerate(expected_data):
 			self.assertAlmostEqual(data, simulated_data[i])
 
+		sedml_doc.writeSedmlToFile(join(testfiles_path, "steadystatesscan.xml"))
 
 
