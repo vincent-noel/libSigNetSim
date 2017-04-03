@@ -43,6 +43,8 @@ class TestSteadyStatesScan(TestCase):
 
 		simulation = sedml_doc.listOfSimulations.createOneStep()
 		simulation.getAlgorithm().setCVODE()
+		simulation.getAlgorithm().listOfAlgorithmParameters.setRelTol(1e-6)
+		simulation.getAlgorithm().listOfAlgorithmParameters.setAbsTol(1e-30)
 
 		model = sedml_doc.listOfModels.createModel()
 		model.setLanguageSbml()
@@ -61,9 +63,9 @@ class TestSteadyStatesScan(TestCase):
 		repeated_task.setResetModel(False)
 
 		uniform_range = repeated_task.listOfRanges.createUniformRange()
-		uniform_range.setStart(0)
-		uniform_range.setEnd(100)
-		uniform_range.setNumberOfPoints(10)
+		uniform_range.setStart(6e-5)
+		uniform_range.setEnd(1e+2)
+		uniform_range.setNumberOfPoints(15)
 		uniform_range.setLog()
 		repeated_task.setRange(uniform_range)
 
@@ -79,45 +81,197 @@ class TestSteadyStatesScan(TestCase):
 		var_time.setSymbolTime()
 		data_time.getMath().setInternalMathFormula(var_time.getSympySymbol())
 
+		# Let's try to first reproduce the Basal on the figure, aka the fraction of total receptors
+		# So we need all vars to compute the fraction
 		data_basal = sedml_doc.listOfDataGenerators.createDataGenerator()
 		data_basal.setName("Basal")
-		var_basal = data_basal.listOfVariables.createVariable("B")
-		var_basal.setTask(repeated_task)
-		var_basal.setModel(model)
-		var_basal.setTarget(sbml_model.listOfSpecies.getBySbmlId("B"))
-		data_basal.getMath().setInternalMathFormula(var_basal.getSympySymbol())
+
+		data_basal_var_basal = data_basal.listOfVariables.createVariable("B")
+		data_basal_var_basal.setTask(repeated_task)
+		data_basal_var_basal.setModel(model)
+		data_basal_var_basal.setTarget(sbml_model.listOfSpecies.getBySbmlId("B"))
+
+		data_basal_var_basalAch = data_basal.listOfVariables.createVariable("BL")
+		data_basal_var_basalAch.setTask(repeated_task)
+		data_basal_var_basalAch.setModel(model)
+		data_basal_var_basalAch.setTarget(sbml_model.listOfSpecies.getBySbmlId("BL"))
+
+		data_basal_var_DLL = data_basal.listOfVariables.createVariable("DLL")
+		data_basal_var_DLL.setTask(repeated_task)
+		data_basal_var_DLL.setModel(model)
+		data_basal_var_DLL.setTarget(sbml_model.listOfSpecies.getBySbmlId("DLL"))
+
+		data_basal_var_ILL = data_basal.listOfVariables.createVariable("ILL")
+		data_basal_var_ILL.setTask(repeated_task)
+		data_basal_var_ILL.setModel(model)
+		data_basal_var_ILL.setTarget(sbml_model.listOfSpecies.getBySbmlId("ILL"))
+
+		data_basal_var_ALL = data_basal.listOfVariables.createVariable("ALL")
+		data_basal_var_ALL.setTask(repeated_task)
+		data_basal_var_ALL.setModel(model)
+		data_basal_var_ALL.setTarget(sbml_model.listOfSpecies.getBySbmlId("ALL"))
+
+		t_formula = data_basal_var_basal.getSympySymbol() / (
+			data_basal_var_basal.getSympySymbol()
+			+ data_basal_var_basalAch.getSympySymbol()
+			+ data_basal_var_DLL.getSympySymbol()
+			+ data_basal_var_ILL.getSympySymbol()
+			+ data_basal_var_ALL.getSympySymbol()
+		)
+		data_basal.getMath().setInternalMathFormula(t_formula)
+
 
 		data_basalAch = sedml_doc.listOfDataGenerators.createDataGenerator()
 		data_basalAch.setName("BasalACh")
-		var_basalAch = data_basalAch.listOfVariables.createVariable("BL")
-		var_basalAch.setTask(repeated_task)
-		var_basalAch.setModel(model)
-		var_basalAch.setTarget(sbml_model.listOfSpecies.getBySbmlId("BL"))
-		data_basalAch.getMath().setInternalMathFormula(var_basalAch.getSympySymbol())
+
+		data_basalAch_var_basal = data_basalAch.listOfVariables.createVariable("B")
+		data_basalAch_var_basal.setTask(repeated_task)
+		data_basalAch_var_basal.setModel(model)
+		data_basalAch_var_basal.setTarget(sbml_model.listOfSpecies.getBySbmlId("B"))
+
+		data_basalAch_var_basalAch = data_basalAch.listOfVariables.createVariable("BL")
+		data_basalAch_var_basalAch.setTask(repeated_task)
+		data_basalAch_var_basalAch.setModel(model)
+		data_basalAch_var_basalAch.setTarget(sbml_model.listOfSpecies.getBySbmlId("BL"))
+
+		data_basalAch_var_DLL = data_basalAch.listOfVariables.createVariable("DLL")
+		data_basalAch_var_DLL.setTask(repeated_task)
+		data_basalAch_var_DLL.setModel(model)
+		data_basalAch_var_DLL.setTarget(sbml_model.listOfSpecies.getBySbmlId("DLL"))
+
+		data_basalAch_var_ILL = data_basalAch.listOfVariables.createVariable("ILL")
+		data_basalAch_var_ILL.setTask(repeated_task)
+		data_basalAch_var_ILL.setModel(model)
+		data_basalAch_var_ILL.setTarget(sbml_model.listOfSpecies.getBySbmlId("ILL"))
+
+		data_basalAch_var_ALL = data_basalAch.listOfVariables.createVariable("ALL")
+		data_basalAch_var_ALL.setTask(repeated_task)
+		data_basalAch_var_ALL.setModel(model)
+		data_basalAch_var_ALL.setTarget(sbml_model.listOfSpecies.getBySbmlId("ALL"))
+
+		t_formula = data_basalAch_var_basalAch.getSympySymbol() / (
+			data_basalAch_var_basal.getSympySymbol()
+			+ data_basalAch_var_basalAch.getSympySymbol()
+			+ data_basalAch_var_DLL.getSympySymbol()
+			+ data_basalAch_var_ILL.getSympySymbol()
+			+ data_basalAch_var_ALL.getSympySymbol()
+		)
+		data_basalAch.getMath().setInternalMathFormula(t_formula)
+
 
 		data_DLL = sedml_doc.listOfDataGenerators.createDataGenerator()
 		data_DLL.setName("DesensitisedACh2")
-		var_DLL = data_DLL.listOfVariables.createVariable("DLL")
-		var_DLL.setTask(repeated_task)
-		var_DLL.setModel(model)
-		var_DLL.setTarget(sbml_model.listOfSpecies.getBySbmlId("DLL"))
-		data_DLL.getMath().setInternalMathFormula(var_DLL.getSympySymbol())
+
+		data_DLL_var_basal = data_DLL.listOfVariables.createVariable("B")
+		data_DLL_var_basal.setTask(repeated_task)
+		data_DLL_var_basal.setModel(model)
+		data_DLL_var_basal.setTarget(sbml_model.listOfSpecies.getBySbmlId("B"))
+
+		data_DLL_var_basalAch = data_DLL.listOfVariables.createVariable("BL")
+		data_DLL_var_basalAch.setTask(repeated_task)
+		data_DLL_var_basalAch.setModel(model)
+		data_DLL_var_basalAch.setTarget(sbml_model.listOfSpecies.getBySbmlId("BL"))
+
+		data_DLL_var_DLL = data_DLL.listOfVariables.createVariable("DLL")
+		data_DLL_var_DLL.setTask(repeated_task)
+		data_DLL_var_DLL.setModel(model)
+		data_DLL_var_DLL.setTarget(sbml_model.listOfSpecies.getBySbmlId("DLL"))
+
+		data_DLL_var_ILL = data_DLL.listOfVariables.createVariable("ILL")
+		data_DLL_var_ILL.setTask(repeated_task)
+		data_DLL_var_ILL.setModel(model)
+		data_DLL_var_ILL.setTarget(sbml_model.listOfSpecies.getBySbmlId("ILL"))
+
+		data_DLL_var_ALL = data_DLL.listOfVariables.createVariable("ALL")
+		data_DLL_var_ALL.setTask(repeated_task)
+		data_DLL_var_ALL.setModel(model)
+		data_DLL_var_ALL.setTarget(sbml_model.listOfSpecies.getBySbmlId("ALL"))
+
+		t_formula = data_DLL_var_DLL.getSympySymbol() / (
+			data_DLL_var_basal.getSympySymbol()
+			+ data_DLL_var_basalAch.getSympySymbol()
+			+ data_DLL_var_DLL.getSympySymbol()
+			+ data_DLL_var_ILL.getSympySymbol()
+			+ data_DLL_var_ALL.getSympySymbol()
+		)
+		data_DLL.getMath().setInternalMathFormula(t_formula)
+
 
 		data_ILL = sedml_doc.listOfDataGenerators.createDataGenerator()
 		data_ILL.setName("IntermediateACh2")
-		var_ILL = data_ILL.listOfVariables.createVariable("ILL")
-		var_ILL.setTask(repeated_task)
-		var_ILL.setModel(model)
-		var_ILL.setTarget(sbml_model.listOfSpecies.getBySbmlId("ILL"))
-		data_ILL.getMath().setInternalMathFormula(var_ILL.getSympySymbol())
+
+		data_ILL_var_basal = data_ILL.listOfVariables.createVariable("B")
+		data_ILL_var_basal.setTask(repeated_task)
+		data_ILL_var_basal.setModel(model)
+		data_ILL_var_basal.setTarget(sbml_model.listOfSpecies.getBySbmlId("B"))
+
+		data_ILL_var_basalAch = data_ILL.listOfVariables.createVariable("BL")
+		data_ILL_var_basalAch.setTask(repeated_task)
+		data_ILL_var_basalAch.setModel(model)
+		data_ILL_var_basalAch.setTarget(sbml_model.listOfSpecies.getBySbmlId("BL"))
+
+		data_ILL_var_DLL = data_ILL.listOfVariables.createVariable("DLL")
+		data_ILL_var_DLL.setTask(repeated_task)
+		data_ILL_var_DLL.setModel(model)
+		data_ILL_var_DLL.setTarget(sbml_model.listOfSpecies.getBySbmlId("DLL"))
+
+		data_ILL_var_ILL = data_ILL.listOfVariables.createVariable("ILL")
+		data_ILL_var_ILL.setTask(repeated_task)
+		data_ILL_var_ILL.setModel(model)
+		data_ILL_var_ILL.setTarget(sbml_model.listOfSpecies.getBySbmlId("ILL"))
+
+		data_ILL_var_ALL = data_ILL.listOfVariables.createVariable("ALL")
+		data_ILL_var_ALL.setTask(repeated_task)
+		data_ILL_var_ALL.setModel(model)
+		data_ILL_var_ALL.setTarget(sbml_model.listOfSpecies.getBySbmlId("ALL"))
+
+		t_formula = data_ILL_var_ILL.getSympySymbol() / (
+			data_ILL_var_basal.getSympySymbol()
+			+ data_ILL_var_basalAch.getSympySymbol()
+			+ data_ILL_var_DLL.getSympySymbol()
+			+ data_ILL_var_ILL.getSympySymbol()
+			+ data_ILL_var_ALL.getSympySymbol()
+		)
+		data_ILL.getMath().setInternalMathFormula(t_formula)
+
 
 		data_ALL = sedml_doc.listOfDataGenerators.createDataGenerator()
 		data_ALL.setName("ActiveACh2")
-		var_ALL = data_ALL.listOfVariables.createVariable("ALL")
-		var_ALL.setTask(repeated_task)
-		var_ALL.setModel(model)
-		var_ALL.setTarget(sbml_model.listOfSpecies.getBySbmlId("ALL"))
-		data_ALL.getMath().setInternalMathFormula(var_ALL.getSympySymbol())
+
+		data_ALL_var_basal = data_ALL.listOfVariables.createVariable("B")
+		data_ALL_var_basal.setTask(repeated_task)
+		data_ALL_var_basal.setModel(model)
+		data_ALL_var_basal.setTarget(sbml_model.listOfSpecies.getBySbmlId("B"))
+
+		data_ALL_var_basalAch = data_ALL.listOfVariables.createVariable("BL")
+		data_ALL_var_basalAch.setTask(repeated_task)
+		data_ALL_var_basalAch.setModel(model)
+		data_ALL_var_basalAch.setTarget(sbml_model.listOfSpecies.getBySbmlId("BL"))
+
+		data_ALL_var_DLL = data_ALL.listOfVariables.createVariable("DLL")
+		data_ALL_var_DLL.setTask(repeated_task)
+		data_ALL_var_DLL.setModel(model)
+		data_ALL_var_DLL.setTarget(sbml_model.listOfSpecies.getBySbmlId("DLL"))
+
+		data_ALL_var_ILL = data_ALL.listOfVariables.createVariable("ILL")
+		data_ALL_var_ILL.setTask(repeated_task)
+		data_ALL_var_ILL.setModel(model)
+		data_ALL_var_ILL.setTarget(sbml_model.listOfSpecies.getBySbmlId("ILL"))
+
+		data_ALL_var_ALL = data_ALL.listOfVariables.createVariable("ALL")
+		data_ALL_var_ALL.setTask(repeated_task)
+		data_ALL_var_ALL.setModel(model)
+		data_ALL_var_ALL.setTarget(sbml_model.listOfSpecies.getBySbmlId("ALL"))
+
+		t_formula = data_ALL_var_ALL.getSympySymbol() / (
+			data_ALL_var_basal.getSympySymbol()
+			+ data_ALL_var_basalAch.getSympySymbol()
+			+ data_ALL_var_DLL.getSympySymbol()
+			+ data_ALL_var_ILL.getSympySymbol()
+			+ data_ALL_var_ALL.getSympySymbol()
+		)
+		data_ALL.getMath().setInternalMathFormula(t_formula)
+
 
 
 		plot = sedml_doc.listOfOutputs.createPlot2D()
@@ -142,6 +296,7 @@ class TestSteadyStatesScan(TestCase):
 		curve_all.setYData(data_ALL)
 
 		report = sedml_doc.listOfOutputs.createReport()
+
 		dataset_time = report.listOfDataSets.createDataSet()
 		dataset_time.setLabel("Time")
 		dataset_time.setData(data_time)
@@ -150,14 +305,53 @@ class TestSteadyStatesScan(TestCase):
 		dataset_basal.setLabel("Basal")
 		dataset_basal.setData(data_basal)
 
-		# sedml_doc.run()
+		dataset_basalAch = report.listOfDataSets.createDataSet()
+		dataset_basalAch.setLabel("BasalACh")
+		dataset_basalAch.setData(data_basalAch)
 
-		#
-		# simulated_data = sedml_doc.listOfOutputs.getReports()[0].getData()["P"]
-		# expected_data = [0.0, 20.0, 40.0, 60.0, 80.0, 100.0]
-		#
-		# for i, data in enumerate(expected_data):
-		# 	self.assertAlmostEqual(data, simulated_data[i])
+		dataset_DLL = report.listOfDataSets.createDataSet()
+		dataset_DLL.setLabel("DesensitisedACh2")
+		dataset_DLL.setData(data_DLL)
+
+		dataset_ILL = report.listOfDataSets.createDataSet()
+		dataset_ILL.setLabel("IntermediateACh2")
+		dataset_ILL.setData(data_ILL)
+
+		dataset_ALL = report.listOfDataSets.createDataSet()
+		dataset_ALL.setLabel("ActiveACh2")
+		dataset_ALL.setData(data_ALL)
+		sedml_doc.run()
+
+		expected_data = {
+			"Basal": [1.0, 0.8703929751604004, 0.7749423419177442, 0.6946061123069424, 0.597290529625008, 0.4537850318551511,
+		 0.34750139692209975, 0.29949244626945737, 0.22270499980202377, 0.10951146314675342, 0.03412836890172797,
+		 0.024200752996025095, 0.022706292875704824, 0.019314868585969504, 0.012743352308043987, 0.004557742803571135,
+		 0.000838864752742402],
+			"BasalACh": [0.0, 0.12733989706088109, 0.20860665566561312, 0.23515925558680748, 0.208278208041077, 0.1632517601817593,
+		 0.12918341396276756, 0.11193037804649376, 0.08324269397045204, 0.04095051744993127, 0.012785114865493191,
+		 0.009075094010791105, 0.00851472322023259, 0.007242960070971262, 0.004778682083793607, 0.0017091291129665094,
+		 0.00031457282942824776],
+			"DesensitisedACh2": [0.0, 5.276504575778524e-13, 3.331032690025042e-11, 1.3348713563479085e-09, 3.390793915547514e-08,
+		 5.913794319390883e-07, 7.374447747054566e-06, 6.638876496189277e-05, 0.00046273880818307436,
+		 0.0025754514927221668, 0.010801340789850395, 0.034193460998989275, 0.09266196884291755, 0.22816586990710194,
+		 0.49072979203151695, 0.8177845618016254, 0.9663717628010179],
+			"IntermediateACh2": [0.0, 7.928585437579911e-07, 1.7394771632477156e-05, 0.00023455456576278516, 0.002016484487472414,
+		 0.012106619410986482, 0.05107905183405494, 0.15467605453139202, 0.3705004603739618, 0.68727111950252,
+		 0.8914220977379401, 0.8960358851611324, 0.8418739633309424, 0.7161477843260169, 0.4725300197675206,
+		 0.16907495528569005, 0.031209549157480712],
+			"ActiveACh2": [0.0, 0.0022663349196470604, 0.016433607611699937, 0.070000076205616, 0.1924147439385037, 0.3708559971726711,
+		 0.47222876283333054, 0.43383473238769515, 0.32308910704537935, 0.15969144840807312, 0.050863077704988394,
+		 0.03649480683306223, 0.034243051730202576, 0.029128517109940463, 0.019218153809124724, 0.006873610996146915,
+		 0.0012652504593307923]
+		}
+
+		simulated_data = sedml_doc.listOfOutputs.getReports()[0].getData()
+
+
+		for var, values in expected_data.items():
+			if var != "Time":
+				for i, value in enumerate(values):
+					self.assertAlmostEqual(value, simulated_data[var][i])
 
 		sedml_doc.writeSedmlToFile(join(testfiles_path, "BIOMD0000000001_curation_1.xml"))
 		sedml_doc = SedmlDocument()

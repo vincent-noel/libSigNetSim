@@ -62,9 +62,9 @@ class TestSteadyStates(TestCase):
 		)
 		sim.run()
 
-		results = sim.listOfData_v2[0]
+		results = sim.listOfData_v2
 
-		self.assertAlmostEqual(reference_data, results[p.getSbmlId()])
+		self.assertAlmostEqual(reference_data, results[p.getSbmlId()][0])
 
 	def testSeveralInitialValues(self):
 
@@ -105,4 +105,4 @@ class TestSteadyStates(TestCase):
 		results = sim.listOfData_v2
 
 		for i, t_data in enumerate(reference_data):
-			self.assertAlmostEqual(t_data, results[i][p.getSbmlId()])
+			self.assertAlmostEqual(t_data, results[p.getSbmlId()][i])

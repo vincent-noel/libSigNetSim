@@ -51,7 +51,7 @@ class ListOfAlgorithmParameters(ListOf):
 
 		for t_algo_param in self:
 			algo_param = list_of_algo_params.createAlgorithmParameter()
-			algo_param.writeSedml(t_algo_param, level, version)
+			t_algo_param.writeSedml(algo_param, level, version)
 
 	def hasRelTol(self):
 
@@ -79,3 +79,15 @@ class ListOfAlgorithmParameters(ListOf):
 		for param in self:
 			if param.isAbsTol():
 				return param.getValue()
+
+	def setRelTol(self, rel_tol):
+
+		param = AlgorithmParameter(self.__document)
+		param.setRelTol(rel_tol)
+		ListOf.append(self, param)
+
+	def setAbsTol(self, abs_tol):
+
+		param = AlgorithmParameter(self.__document)
+		param.setAbsTol(abs_tol)
+		ListOf.append(self, param)

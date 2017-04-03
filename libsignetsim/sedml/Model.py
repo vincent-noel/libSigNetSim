@@ -43,7 +43,10 @@ class Model(SedBase, HasId):
 		self.__language = None
 		self.__source = Source(self.__document)
 		self.__sbmlModel = None
+
 		self.listOfChanges = ListOfChanges(self.__document, self)
+		self.__nbChanges = 0
+		self.__changesApplied = False
 
 	def readSedml(self, model, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -80,8 +83,14 @@ class Model(SedBase, HasId):
 
 	def getSbmlModel(self):
 
-		if self.__sbmlModel is None:
+		if self.__sbmlModel is None or self.__nbChanges != len(self.listOfChanges):
+
 			self.__loadModel()
+			self.__nbChanges = len(self.listOfChanges)
+
+			if len(self.listOfChanges) > 0:
+				self.listOfChanges.applyChanges(self.__sbmlModel)
+				self.__changesApplied = True
 
 		return self.__sbmlModel
 
@@ -98,7 +107,7 @@ class Model(SedBase, HasId):
 
 	def writeSbmlModelToPath(self, path):
 
-		if self.__sbmlModel is None:
+		if self.__sbmlModel is None or self.__changesApplied:
 			self.__loadModel()
 
 		self.__sbmlModel.parentDoc.writeSbml(self.__source.getSource(), path)

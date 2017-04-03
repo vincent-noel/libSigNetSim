@@ -49,10 +49,12 @@ class TimeseriesSimulation(Simulation):
 					log_scale=Settings.simulationLogScale,
 					time_ech=Settings.simulationTimeEch,
 					nb_samples=Settings.simulationNbSamples,
+				  	list_samples=None,
 					keep_files=Settings.simulationKeepFiles):
 
-		self.listOfSamples = None
-		self.buildListSamples(time_min, time_max, log_scale, time_ech, nb_samples)
+		self.listOfSamples = list_samples
+		if self.listOfSamples is None:
+			self.buildListSamples(time_min, time_max, log_scale, time_ech, nb_samples)
 
 		Simulation.__init__(self,
 							list_of_models=list_of_models,

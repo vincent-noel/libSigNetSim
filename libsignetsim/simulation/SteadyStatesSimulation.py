@@ -94,7 +94,7 @@ class SteadyStatesSimulation(Simulation):
             print "> Files written in %.2fs" % (mid-start)
         res = self.runSimulation(steady_states=True)
         if res == self.SIM_SUCCESS:
-            self.loadSimulationResults_v2()
+            self.loadSimulationResults_v3()
             if not self.keepFiles:
                 self.cleanTempDirectory()
 
@@ -160,3 +160,61 @@ class SteadyStatesSimulation(Simulation):
                 resultsFile.close()
 
                 self.listOfData_v2.append(val_vars)
+
+
+
+    def loadSimulationResults_v3(self):
+
+        t_model = self.listOfModels[0]
+        self.listOfData_v2 = {}
+
+        for variable in t_model.listOfVariables.values():
+            self.listOfData_v2.update({variable.getSbmlId(): []})
+        # print self.listOfData_v2
+
+        if len(self.listOfInitialValues) > 0:
+
+            for i_initial_values, _ in enumerate(self.listOfInitialValues):
+
+                t_file = join(
+                    self.getTempDirectory(),
+                    Settings.C_simulationResultsDirectory,
+                    "results_0_%d" % i_initial_values
+                )
+
+                if isfile(t_file):
+
+                    resultsFile = open(t_file, "r")
+
+                    for line in resultsFile:
+                        data = line.split()
+
+                        for variable in t_model.listOfVariables.values():
+                            t_array = self.listOfData_v2[variable.getSbmlId()]
+                            t_array.append(float(data[variable.getPos()]))
+                            self.listOfData_v2.update({variable.getSbmlId(): t_array})
+
+                    resultsFile.close()
+
+        else:
+            t_file = join(
+                self.getTempDirectory(),
+                Settings.C_simulationResultsDirectory,
+                "results_0"
+            )
+
+            if isfile(t_file):
+
+                resultsFile = open(t_file, "r")
+
+                for line in resultsFile:
+                    data = line.split()
+
+                    for variable in t_model.listOfVariables.values():
+                        t_array = self.listOfData_v2[variable.getSbmlId()]
+                        t_array.append(float(data[variable.getPos()]))
+                        self.listOfData_v2.update({variable.getSbmlId(): t_array})
+
+                resultsFile.close()
+
+        # print self.listOfData_v2

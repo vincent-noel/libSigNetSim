@@ -55,7 +55,7 @@ class AlgorithmParameter(SedBase):
 			algo_param.setKisaoID(self.__kisaoID)
 
 		if self.__value is not None:
-			algo_param.setValue(self.__value)
+			algo_param.setValue(str(self.__value))
 
 	def isRelTol(self):
 		return self.__kisaoID == self.REL_TOL
@@ -65,3 +65,11 @@ class AlgorithmParameter(SedBase):
 
 	def getValue(self):
 		return self.__value
+
+	def setRelTol(self, rel_tol):
+		self.__kisaoID = self.REL_TOL
+		self.__value = rel_tol
+
+	def setAbsTol(self, abs_tol):
+		self.__kisaoID = self.ABS_TOL
+		self.__value = abs_tol

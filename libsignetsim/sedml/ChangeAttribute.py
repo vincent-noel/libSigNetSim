@@ -22,6 +22,7 @@
 
 """
 from libsignetsim.sedml.Change import Change
+from libsignetsim.sedml.XPath import XPath
 from libsignetsim.settings.Settings import Settings
 
 
@@ -51,3 +52,9 @@ class ChangeAttribute(Change):
 
 	def getNewValue(self):
 		return self.__newValue
+
+	def applyChange(self, sbml_model):
+
+		object = self.getTarget().getModelObject(sbml_model)
+		if self.getTarget().getAttribute() == XPath.VALUE:
+			object.setValue(self.__newValue)

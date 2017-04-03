@@ -29,6 +29,11 @@ from re import match
 
 class XPath(object):
 
+	VALUE = "value"
+	NAME = "name"
+	ID = "id"
+	METAID = "metaid"
+
 	def __init__(self, document):
 		self.__document = document
 
@@ -107,3 +112,6 @@ class XPath(object):
 				str += "/@%s" % self.__attribute
 
 			return str
+
+	def getAttribute(self):
+		return self.__attribute

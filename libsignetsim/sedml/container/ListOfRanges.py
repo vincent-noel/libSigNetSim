@@ -123,7 +123,6 @@ class ListOfRanges(ListOf):
 
 	def getByRangeId(self, range_id):
 
-
 		for t_range in self:
 			if t_range.getId() == range_id:
 				return t_range

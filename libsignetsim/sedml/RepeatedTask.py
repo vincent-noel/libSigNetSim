@@ -27,6 +27,7 @@ from libsignetsim.sedml.container.ListOfRanges import ListOfRanges
 from libsignetsim.sedml.container.ListOfSubTasks import ListOfSubTasks
 from libsignetsim.sedml.SedmlException import SedmlMixedSubtasks, SedmlMultipleModels
 from libsignetsim.simulation.SteadyStatesSimulation import SteadyStatesSimulation
+from libsignetsim.simulation.TimeseriesSimulation import TimeseriesSimulation
 from libsignetsim.settings.Settings import Settings
 
 class RepeatedTask(AbstractTask):
@@ -42,6 +43,7 @@ class RepeatedTask(AbstractTask):
 		self.listOfRanges = ListOfRanges(self.__document, self)
 		self.listOfSubTasks = ListOfSubTasks(self.__document)
 
+		self.__times = None
 		self.__results = None
 
 	def readSedml(self, task, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
@@ -94,7 +96,23 @@ class RepeatedTask(AbstractTask):
 			raise SedmlMixedSubtasks("Mixed subtasks are not implemented")
 
 		if self.listOfSubTasks.hasOneSteps():
-			pass
+			models = self.listOfSubTasks.getModels()
+			abs_tol = self.listOfSubTasks.getAbsTols()[0]
+			rel_tol = self.listOfSubTasks.getRelTols()[0]
+			range = self.listOfRanges.getByRangeId(self.__range)
+			timepoints = range.getValuesArray()
+
+			simulation = TimeseriesSimulation(
+				list_of_models=models,
+				list_samples=timepoints,
+				abs_tol=abs_tol,
+				rel_tol=rel_tol,
+				keep_files=True
+			)
+			simulation.run()
+
+			self.__times = simulation.rawData[0][0]
+			self.__results = simulation.rawData[0][1]
 
 		elif self.listOfSubTasks.hasSteadyStates():
 			models = self.listOfSubTasks.getModels()
@@ -113,9 +131,7 @@ class RepeatedTask(AbstractTask):
 
 
 	def getResultsByVariable(self, variable_sbmlid):
-		results = []
-		for t_res in self.__results:
-			results.append(t_res[variable_sbmlid])
-		return results
+		return self.__results[variable_sbmlid]
 
-
+	def getTimes(self):
+		return self.__times

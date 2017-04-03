@@ -44,7 +44,6 @@ class ListOfChanges(ListOf):
 		self.__changeCounter = 0
 
 	def new(self, change_type, change_id=None):
-
 		t_change_id = change_id
 		if t_change_id is None:
 			t_change_id = "%s_change_%d" % (self.__model.getId(), self.__changeCounter)
@@ -62,6 +61,8 @@ class ListOfChanges(ListOf):
 			ListOf.append(self, t_change)
 			self.__changeCounter += 1
 			return t_change
+
+		print len(self)
 
 	def createChangeAttribute(self, change_id=None):
 		return self.new(SEDML_CHANGE_ATTRIBUTE, change_id)
@@ -99,3 +100,8 @@ class ListOfChanges(ListOf):
 			elif isinstance(change, ComputeChange):
 				t_change = list_of_changes.createComputeChange()
 				change.writeSedml(t_change, level, version)
+
+	def applyChanges(self, sbml_model):
+
+		for change in self:
+			change.applyChange(sbml_model)

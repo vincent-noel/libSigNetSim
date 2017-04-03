@@ -113,3 +113,17 @@ class ListOfSubTasks(ListOf):
 			models.append(sub_task.getTask().getModel())
 
 		return list(set(models))
+
+	def getAbsTols(self):
+		abs_tols = []
+		for sub_task in self:
+			abs_tols.append(sub_task.getTask().getSimulation().getAlgorithm().getAbsTol())
+
+		return abs_tols
+
+	def getRelTols(self):
+		rel_tols = []
+		for sub_task in self:
+			rel_tols.append(sub_task.getTask().getSimulation().getAlgorithm().getRelTol())
+
+		return rel_tols
