@@ -17,6 +17,7 @@ env:
   - TEST_SUITE=sbml-test-suite VERSION=2.3
   - TEST_SUITE=sbml-test-suite VERSION=2.4
   - TEST_SUITE=sbml-test-suite VERSION=2.5
+  - TEST_SUITE=sbml-test-suite VERSION=3.1
   - TEST_SUITE=biomodels VERSION=
   - TEST_SUITE=others VERSION=
 
