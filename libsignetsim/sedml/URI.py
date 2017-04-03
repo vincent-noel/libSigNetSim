@@ -93,3 +93,6 @@ class URI(object):
 
 	def isTime(self):
 		return self.__type == self.SYMBOL and self.__symbol is not None and self.__symbol == SympySymbol("time")
+
+	def setTime(self):
+		self.parseURI("urn:sedml:symbol:time")

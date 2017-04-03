@@ -8,5 +8,6 @@ else
     coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.optimization.tests.TestOptimization
     coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.sedml.tests.TestBiomodelsURI
     coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.sedml.tests.TestSteadyStatesScan
+    coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.sedml.tests.TestLogscaleTimeseries
     coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.combine.tests.TestRunSedmls
 fi

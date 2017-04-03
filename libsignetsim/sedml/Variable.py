@@ -125,5 +125,8 @@ class Variable(SedBase, HasId):
 	def setSymbol(self, symbol):
 		self.__symbol = symbol
 
+	def setSymbolTime(self):
+		self.__symbol.setTime()
+
 
 

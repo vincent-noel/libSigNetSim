@@ -35,11 +35,39 @@ reload(libsbml)
 
 class ListOfChanges(ListOf):
 
-	def __init__(self, document):
+	def __init__(self, document, model):
 
 		ListOf.__init__(self, document)
 
 		self.__document = document
+		self.__model = model
+		self.__changeCounter = 0
+
+	def new(self, change_type, change_id=None):
+
+		t_change_id = change_id
+		if t_change_id is None:
+			t_change_id = "%s_change_%d" % (self.__model.getId(), self.__changeCounter)
+
+		if change_type == SEDML_CHANGE_ATTRIBUTE:
+			t_change = ChangeAttribute(self.__document)
+			t_change.setId(t_change_id)
+			ListOf.append(self, t_change)
+			self.__changeCounter += 1
+			return t_change
+
+		elif change_type == SEDML_CHANGE_COMPUTECHANGE:
+			t_change = ComputeChange(self.__document)
+			t_change.setId(t_change_id)
+			ListOf.append(self, t_change)
+			self.__changeCounter += 1
+			return t_change
+
+	def createChangeAttribute(self, change_id=None):
+		return self.new(SEDML_CHANGE_ATTRIBUTE, change_id)
+
+	def createComputeChange(self, change_id=None):
+		return self.new(SEDML_CHANGE_COMPUTECHANGE, change_id)
 
 	def readSedml(self, list_of_changes, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -51,11 +79,13 @@ class ListOfChanges(ListOf):
 				t_change = ChangeAttribute(self.__document)
 				t_change.readSedml(change, level, version)
 				ListOf.append(self, t_change)
+				self.__changeCounter += 1
 
 			elif change.getTypeCode() == SEDML_CHANGE_COMPUTECHANGE:
 				t_change = ComputeChange(self.__document)
 				t_change.readSedml(change, level, version)
 				ListOf.append(self, t_change)
+				self.__changeCounter += 1
 
 	def writeSedml(self, list_of_changes, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -64,8 +94,8 @@ class ListOfChanges(ListOf):
 		for change in self:
 			if isinstance(change, ChangeAttribute):
 				t_change = list_of_changes.createChangeAttribute()
-				t_change.writeSedml(change, level, version)
+				change.writeSedml(t_change, level, version)
 
 			elif isinstance(change, ComputeChange):
 				t_change = list_of_changes.createComputeChange()
-				t_change.writeSedml(change, level, version)
+				change.writeSedml(t_change, level, version)

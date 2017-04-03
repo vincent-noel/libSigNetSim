@@ -44,4 +44,10 @@ class ChangeAttribute(Change):
 		Change.writeSedml(self, change, level, version)
 
 		if self.__newValue is not None:
-			change.setNewValue(self.__newValue)
+			change.setNewValue(str(self.__newValue))
+
+	def setNewValue(self, value):
+		self.__newValue = value
+
+	def getNewValue(self):
+		return self.__newValue

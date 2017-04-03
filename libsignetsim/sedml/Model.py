@@ -43,7 +43,7 @@ class Model(SedBase, HasId):
 		self.__language = None
 		self.__source = Source(self.__document)
 		self.__sbmlModel = None
-		self.listOfChanges = ListOfChanges(self.__document)
+		self.listOfChanges = ListOfChanges(self.__document, self)
 
 	def readSedml(self, model, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 

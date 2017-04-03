@@ -35,6 +35,7 @@ class XPath(object):
 		self.__path = None
 		self.__refType = None
 		self.__ref = None
+		self.__attribute = None
 
 	def readSedml(self, xpath, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -42,6 +43,11 @@ class XPath(object):
 		if self.__path[0] == "" and self.__path[1] == "sbml:sbml" and self.__path[2] == "sbml:model":
 
 			ind_last_token = len(self.__path) - 1
+
+			if self.__path[ind_last_token].startswith("@"):
+				self.__attribute = self.__path[ind_last_token][1:]
+				ind_last_token -= 1
+
 			res_match = match(r"(sbml:[a-zA-Z]+)\[@([a-zA-Z]+)=\'(.*)\'\]", self.__path[ind_last_token])
 
 			self.__path[ind_last_token] = res_match.groups()[0]
@@ -69,7 +75,7 @@ class XPath(object):
 			elif self.__refType == "name":
 				return t_container.getByName(self.__ref)
 
-	def setModelObject(self, object):
+	def setModelObject(self, object, attribute=None):
 
 		self.__path = ["", "sbml:sbml", "sbml:model"]
 
@@ -89,9 +95,15 @@ class XPath(object):
 		elif isinstance(object, Parameter):
 			self.__path += ["sbml:listOfParameters", "sbml:parameter"]
 
+		self.__attribute = attribute
+
 	def writeSedml(self, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 		return self.getXPath()
 
 	def getXPath(self):
 		if self.__path is not None:
-			return "/".join(self.__path) + ("[@%s='%s']" % (self.__refType, self.__ref))
+			str = "/".join(self.__path) + ("[@%s='%s']" % (self.__refType, self.__ref))
+			if self.__attribute is not None:
+				str += "/@%s" % self.__attribute
+
+			return str
