@@ -9,11 +9,11 @@ before_install:
 - docker pull labestiol/signetsim-precise
 
 install:
-- docker run -di --name test_env -v $(pwd):/root labestiol/signetsim-precise bash
-- docker exec test_env /bin/bash -c "cd /root/; bash scripts/install.sh"
+- docker run -di --name test_env -v $(pwd):/root/libSigNetSim labestiol/signetsim-precise bash
+- docker exec test_env /bin/bash -c "cd /root/libSigNetSim; bash scripts/install.sh"
 
 script:
-- docker exec test_env /bin/bash -c "cd root; bash scripts/run_tests.sh sbml-test-suite 1.2"
+- docker exec test_env /bin/bash -c "cd root/libSigNetSim; bash scripts/run_tests.sh others"
 
 after_script:
 - ls -al
