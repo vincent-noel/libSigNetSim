@@ -12,7 +12,8 @@ install:
 - docker exec test_env /bin/bash -c "cd /root/; bash scripts/install.sh"
 
 script:
-- docker exec test_env /bin/bash -c "cd root; bash scripts/run_tests.sh sbml-test-suite l1v2"
+- docker exec test_env /bin/bash -c "cd root; bash scripts/run_tests.sh sbml-test-suite 1.2"
 
 after_script:
-- docker exec test_env /bin/bash -c "cd root; coveralls"
+- ls -al
+- coveralls
