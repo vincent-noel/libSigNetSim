@@ -17,4 +17,6 @@ script:
 
 after_script:
 - ls -al
+- pwd
+- cat .coverage
 - coveralls
