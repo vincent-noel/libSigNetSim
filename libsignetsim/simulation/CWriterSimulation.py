@@ -26,14 +26,15 @@ from libsignetsim.settings.Settings import Settings
 from libsignetsim.cwriter.CWriterModels import CWriterModels
 from libsignetsim.cwriter.CWriterData import CWriterData
 
-from os.path import join, exists
+from os.path import join
 from os import mkdir
-from shutil import copytree, copyfile
+from shutil import copyfile
 from time import time
 
 class CWriterSimulation(CWriterModels, CWriterData):
 
 	def __init__ (self, list_of_models,
+						time_min,
 						list_samples,
 						experiment=None,
 						abs_tol=Settings.defaultAbsTol,
@@ -49,7 +50,7 @@ class CWriterSimulation(CWriterModels, CWriterData):
 		else:
 			self.relTol = Settings.defaultRelTol
 
-		CWriterModels.__init__(self, list_of_models, list_samples, self.absTol, self.relTol)
+		CWriterModels.__init__(self, list_of_models, time_min, list_samples, self.absTol, self.relTol)
 
 		if experiment is not None:
 			CWriterData.__init__(self, [experiment], workingModel=list_of_models[0])
@@ -59,7 +60,6 @@ class CWriterSimulation(CWriterModels, CWriterData):
 		self.listSamples = list_samples
 		self.experiment = experiment
 		self.listOfModels = list_of_models
-
 
 	def writeSimulationFiles(self):
 
@@ -79,11 +79,6 @@ class CWriterSimulation(CWriterModels, CWriterData):
 
 		copyfile(join(Settings.basePath, "lib/templates/simulation/Makefile"), join(self.getTempDirectory(), "Makefile") )
 		copyfile(join(Settings.basePath, "lib/templates/simulation/main.c"), join(self.getTempDirectory(), "src/main.c") )
-
-		# t_vars_to_keep = []
-		# if self.experiment is not None:
-		# 	t_vars_to_keep = self.experiment.getTreatedVariables()
-
 
 		for modelInd, model in enumerate(self.listOfModels):
 			model.build(dont_reduce=True, tmin=min(self.listSamples))

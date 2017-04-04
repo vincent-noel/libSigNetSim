@@ -28,20 +28,13 @@ from libsignetsim.settings.Settings import Settings
 from matplotlib.pyplot import show
 from numpy import amin, amax, linspace, logspace
 from os.path import join, isfile
-from time import time
 
 class TimeseriesSimulation(Simulation):
 
 	DEFAULT_NB_SAMPLES = 500
-	# color_scheme = ['#009ece', '#ff9e00', '#9ccf31', '#f7d708', '#ce0000']
-	color_scheme = (["#FFB300",   "#803E75",   "#FF6800",   "#A6BDD7"]
-					+ ["#C10020",   "#CEA262",   "#817066",   "#007D34"]
-					+ ["#F6768E",   "#00538A",   "#FF7A5C",   "#53377A"]
-					+ ["#FF8E00",   "#B32851",   "#F4C800",  "#7F180D"]
-					+ ["#93AA00",   "#593315",   "#F13A13",   "#232C16"])
 
 	def __init__ (self, list_of_models=[],
-				  	experiment=None,
+					experiment=None,
 					time_min=Settings.simulationTimeMin,
 					time_max=Settings.simulationTimeMax,
 					abs_tol=Settings.defaultAbsTol,
@@ -49,7 +42,7 @@ class TimeseriesSimulation(Simulation):
 					log_scale=Settings.simulationLogScale,
 					time_ech=Settings.simulationTimeEch,
 					nb_samples=Settings.simulationNbSamples,
-				  	list_samples=None,
+					list_samples=None,
 					keep_files=Settings.simulationKeepFiles):
 
 		self.listOfSamples = list_samples
@@ -58,6 +51,7 @@ class TimeseriesSimulation(Simulation):
 
 		Simulation.__init__(self,
 							list_of_models=list_of_models,
+							time_min=Settings.simulationTimeMin,
 							list_samples=self.listOfSamples,
 							experiment=experiment,
 							abs_tol=abs_tol,
@@ -76,77 +70,74 @@ class TimeseriesSimulation(Simulation):
 		else:
 			self.listOfSamples = linspace(time_min, time_max, nb_samples)
 
-	def loadSimulationResults_v2(self):
+	def run(self):
 
-		t_filename = join(self.getTempDirectory(),
-									Settings.C_simulationDirectory,
-									Settings.C_simulationResultsDirectory,
-									"results_0")
+		self.writeSimulationFiles()
+		self.runSimulation()
+		self.loadSimulationResults()
+
+		if not self.keepFiles:
+			self.cleanTempDirectory()
+
+	def loadSimulationResults(self):
+
+		self.rawData = []
+		t_filename = self.getTempDirectory() + Settings.C_simulationResultsDirectory + "results_0"
 		t_filename_2 = t_filename + "_0"
-
-		t_model = self.listOfModels[0]
-
-
 		if isfile(t_filename):
-			(t, traj_vars) = self.readResultFile_v2(t_filename)
-			self.listOfData_v2 = (t, traj_vars)
+			(t, y) = self.readResultFile(t_filename)
+			self.rawData.append((t,y))
 
 		elif isfile(t_filename_2):
-
 			ind = 0
-			self.listOfData_v2 = []
 			while(isfile(t_filename + ("_%d" % ind))):
-				(t, y) = self.readResultFile_v2(t_filename + ("_%d" % ind))
-				self.listOfData_v2.append((t, y))
+				(t, y) = self.readResultFile(t_filename + ("_%d" % ind))
+				self.rawData.append((t,y))
 				ind += 1
 
-
-	def readResultFile_v2(self, filename):
+	def readResultFile(self, filename):
 
 		resultsFile = open(filename, 'r')
 
 		t = []
-		traj_vars = {}
-		for var in self.listOfModels[0].listOfVariables.keys():
-			traj_vars.update({var:[]})
+		trajs = {}
 
-		for line in resultsFile:
+		variables = resultsFile.readline().strip().split(',')
+		variables = [variable.strip() for variable in variables]
+
+		for variable in variables:
+			if variable != 'time':
+				trajs.update({variable:[]})
+
+		for line in resultsFile.readlines():
+
 			data = line.split()
 			t.append(float(data[0]))
 
-			for sbmlId, variable in self.listOfModels[0].listOfVariables.items():
-				traj_vars[sbmlId].append(float(data[1+variable.getPos()]))
+			for i_variable, variable in enumerate(variables):
+				if variable != 'time':
+					trajs[variable].append(float(data[i_variable]))
 
 		resultsFile.close()
 
-		return (t,traj_vars)
+		# The simulations only deals with amounts, but some species are
+		# Concentrations. So we need to transform them back
+		for key, variable in self.listOfModels[0].listOfVariables.iteritems():
+			if variable.isConcentration():
+				t_traj = trajs[key]
 
+				t_comp_traj = trajs[variable.getCompartment().getSbmlId()]
+				res_traj = []
 
+				for i, point in enumerate(t_traj):
+					res_traj.append(point/t_comp_traj[i])
+				trajs.update({key:res_traj})
 
-	def run(self):
-
-		start = time()
-		self.writeSimulationFiles()
-		# mid = time()
-
-		# if Settings.verbose >= 1:
-		# 	print "> Files written in %.2fs" % (mid-start)
-		res = self.runSimulation()
-		if res == self.SIM_SUCCESS:
-			self.loadSimulationResults()
-			if not self.keepFiles:
-				self.cleanTempDirectory()
-
-		# stop = time()
-		#
-		# if Settings.verbose:
-		# 	print "> Simulation executed in %.2fs" % (stop-start)
-
-		return res
+		return (t, trajs)
 
 	def plot(self):
 
-		if (self.listOfModels[0].timeUnits is not None and self.listOfModels[0].extentUnits is not None):
+		if self.listOfModels[0].timeUnits is not None and self.listOfModels[0].extentUnits is not None:
 			figure = SigNetSimFigure(
 					x_unit=self.listOfModels[0].timeUnits.getNameOrSbmlId(),
 					y_unit=self.listOfModels[0].extentUnits.getNameOrSbmlId())
@@ -170,7 +161,7 @@ class TimeseriesSimulation(Simulation):
 			t_var = self.listOfModels[0].listOfVariables[name]
 			if not t_var.isConstant():
 				ax.plot(t, t_trajs[i_species], '-',
-					color=self.color_scheme[i_species % len(self.color_scheme)],
+					color=SigNetSimFigure.color_scheme[i_species % len(self.color_scheme)],
 					linewidth=int(5 * figure.w),
 					label=str(t_var.getNameOrSbmlId()))
 

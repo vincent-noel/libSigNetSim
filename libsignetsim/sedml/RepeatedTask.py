@@ -111,8 +111,8 @@ class RepeatedTask(AbstractTask):
 			)
 			simulation.run()
 
-			self.__times = simulation.rawData[0][0]
-			self.__results = simulation.rawData[0][1]
+			self.__times = simulation.getRawData()[0][0]
+			self.__results = simulation.getRawData()[0][1]
 
 		elif self.listOfSubTasks.hasSteadyStates():
 			models = self.listOfSubTasks.getModels()
@@ -124,7 +124,7 @@ class RepeatedTask(AbstractTask):
 				list_of_initial_values=value_changes.values()[0]
 			)
 			simulation.run()
-			self.__results = simulation.listOfData_v2
+			self.__results = simulation.getRawData()
 
 		elif self.listOfSubTasks.hasUniformTimeCourses():
 			pass

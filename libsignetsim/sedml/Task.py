@@ -92,7 +92,7 @@ class Task(AbstractTask):
 		model = self.__document.listOfModels.getByModelReference(self.__modelReference)
 		simulation = self.__document.listOfSimulations.getSimulation(self.__simulationReference)
 		self.__simulationObject = simulation.run(model)
-		self.__results = self.__simulationObject.rawData[0]
+		self.__results = self.__simulationObject.getRawData()[0]
 
 	def getSimulationObject(self):
 		return self.__simulationObject

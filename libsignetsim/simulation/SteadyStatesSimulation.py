@@ -23,19 +23,19 @@
 """
 
 from libsignetsim.simulation.Simulation import Simulation
-from libsignetsim.settings.Settings import Settings
 
-from os.path import join, isfile
-from time import clock
 from libsignetsim.data.ExperimentalCondition import ExperimentalCondition
 from libsignetsim.data.ExperimentalData import ExperimentalData
 from libsignetsim.data.ListOfExperimentalData import ListOfExperimentalData
 from libsignetsim.data.Experiment import Experiment as Experiment
 
-class SteadyStatesSimulation(Simulation):
+from libsignetsim.settings.Settings import Settings
 
-    SIM_SUCCESS         =   0
-    SIM_FAILURE         =   -1
+from os.path import join, isfile
+from time import clock
+
+
+class SteadyStatesSimulation(Simulation):
 
     SIM_DONE            =   10
     SIM_TODO            =   11
@@ -53,6 +53,7 @@ class SteadyStatesSimulation(Simulation):
 
         Simulation.__init__(self,
             list_of_models=list_of_models,
+            time_min=0,
             list_samples=[0.0, time_max*1.1],
             experiment=self.experiment,
             keep_files=keep_files
@@ -82,7 +83,6 @@ class SteadyStatesSimulation(Simulation):
 
                 self.experiment.addCondition(t_condition)
 
-
     def run(self):
 
         start = clock()
@@ -90,87 +90,26 @@ class SteadyStatesSimulation(Simulation):
         mid = clock()
 
         if Settings.verboseTiming >= 1:
-
             print "> Files written in %.2fs" % (mid-start)
-        res = self.runSimulation(steady_states=True)
-        if res == self.SIM_SUCCESS:
-            self.loadSimulationResults_v3()
-            if not self.keepFiles:
-                self.cleanTempDirectory()
+
+        self.runSimulation(steady_states=True)
+        self.loadSimulationResults()
+
+        if not self.keepFiles:
+            self.cleanTempDirectory()
 
         stop = clock()
 
         if Settings.verboseTiming >= 1:
             print "> Simulation executed in %.2fs" % (stop-start)
 
-    def loadSimulationResults_v2(self):
-
-        self.listOfData_v2 = []
+    def loadSimulationResults(self):
 
         t_model = self.listOfModels[0]
-
-        if len(self.listOfInitialValues) > 0:
-
-            for i_initial_values, _ in enumerate(self.listOfInitialValues):
-
-                t_file = join(
-                    self.getTempDirectory(),
-                    Settings.C_simulationResultsDirectory,
-                    "results_0_%d" % i_initial_values
-                )
-
-                if isfile(t_file):
-
-                    resultsFile = open(t_file, "r")
-
-                    val_vars = {}
-
-                    for line in resultsFile:
-                        data = line.split()
-
-                        for variable in t_model.listOfVariables.values():
-
-                            val_vars.update({variable.getSbmlId() : float(data[variable.getPos()])})
-                            # traj_vars[sbmlId].append(float(data[1+variable.getPos()]))
-
-                    resultsFile.close()
-
-                    self.listOfData_v2.append(val_vars)
-
-        else:
-            t_file = join(
-                self.getTempDirectory(),
-                Settings.C_simulationResultsDirectory,
-                "results_0"
-            )
-
-            if isfile(t_file):
-
-                resultsFile = open(t_file, "r")
-
-                val_vars = {}
-
-                for line in resultsFile:
-                    data = line.split()
-
-                    for variable in t_model.listOfVariables.values():
-                        val_vars.update({variable.getSbmlId(): float(data[variable.getPos()])})
-                        # traj_vars[sbmlId].append(float(data[1+variable.getPos()]))
-
-                resultsFile.close()
-
-                self.listOfData_v2.append(val_vars)
-
-
-
-    def loadSimulationResults_v3(self):
-
-        t_model = self.listOfModels[0]
-        self.listOfData_v2 = {}
+        self.rawData = {}
 
         for variable in t_model.listOfVariables.values():
-            self.listOfData_v2.update({variable.getSbmlId(): []})
-        # print self.listOfData_v2
+            self.rawData.update({variable.getSbmlId(): []})
 
         if len(self.listOfInitialValues) > 0:
 
@@ -190,9 +129,9 @@ class SteadyStatesSimulation(Simulation):
                         data = line.split()
 
                         for variable in t_model.listOfVariables.values():
-                            t_array = self.listOfData_v2[variable.getSbmlId()]
+                            t_array = self.rawData[variable.getSbmlId()]
                             t_array.append(float(data[variable.getPos()]))
-                            self.listOfData_v2.update({variable.getSbmlId(): t_array})
+                            self.rawData.update({variable.getSbmlId(): t_array})
 
                     resultsFile.close()
 
@@ -211,10 +150,8 @@ class SteadyStatesSimulation(Simulation):
                     data = line.split()
 
                     for variable in t_model.listOfVariables.values():
-                        t_array = self.listOfData_v2[variable.getSbmlId()]
+                        t_array = self.rawData[variable.getSbmlId()]
                         t_array.append(float(data[variable.getPos()]))
-                        self.listOfData_v2.update({variable.getSbmlId(): t_array})
+                        self.rawData.update({variable.getSbmlId(): t_array})
 
                 resultsFile.close()
-
-        # print self.listOfData_v2

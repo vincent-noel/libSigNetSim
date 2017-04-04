@@ -56,7 +56,7 @@ class Manifest(object):
 					if child.get(self.MASTER) is not None:
 						self.__masters.append(child.get(self.MASTER) == "true")
 					else:
-						self.__masters.append(None)
+						self.__masters.append(False)
 
 	def getMaster(self):
 
@@ -64,17 +64,16 @@ class Manifest(object):
 		return (self.__locations[ind_master], self.__formats[ind_master])
 
 	def getAllSedmls(self):
-		return [self.__locations[i] for i, format in enumerate(self.__formats) if format == "sed-ml"]
+		return [self.__locations[i] for i, format in enumerate(self.__formats) if format.startswith("sed-ml")]
 
 	def getAllSbmls(self):
-		return [self.__locations[i] for i, format in enumerate(self.__formats) if format == "sbml"]
+		return [self.__locations[i] for i, format in enumerate(self.__formats) if format.startwith("sbml")]
 
 	def getTestSuiteExpectedResults(self):
 
 		for location in self.__locations:
 			if location.endswith("results.csv"):
 				return location
-
 
 	def getTempDirectory(self):
 		return self.path

@@ -33,9 +33,9 @@ class CModelWriter(object):
 
 		self.objId = obj_id
 
-	def writeCCode(self, f_h, f_c, i_model, list_samples, abs_tol, rel_tol):
+	def writeCCode(self, f_h, f_c, i_model, time_min, list_samples, abs_tol, rel_tol):
 
-		self.writeSimulationInitialization(f_h, f_c, i_model, list_samples, abs_tol, rel_tol)
+		self.writeSimulationInitialization(f_h, f_c, i_model, time_min, list_samples, abs_tol, rel_tol)
 		self.writeSimulationFinalization(f_h, f_c, i_model)
 
 		if self.getMathModel().hasDAEs:
@@ -49,7 +49,7 @@ class CModelWriter(object):
 		self.writeEventsAssignmentFunction(f_h, f_c, i_model)
 		self.writeEventsPriorityFunction(f_h, f_c, i_model)
 
-	def writeSimulationInitialization(self, f_h, f_c, model_id, list_samples, abs_tol, rel_tol):
+	def writeSimulationInitialization(self, f_h, f_c, model_id, time_min, list_samples, abs_tol, rel_tol):
 		""" Writes the model initialization function in C files """
 
 		variable_name = "model_%d" % model_id
@@ -138,10 +138,8 @@ class CModelWriter(object):
 		for i in range(1,len(list_samples)):
 			list_samples_str += ", %.16g" % list_samples[i]
 
-
 		f_c.write("  %s.integration_settings = malloc(sizeof(IntegrationSettings));\n" % variable_name)
-		f_c.write("  %s.integration_settings->t_min = %g;\n" % (variable_name, min(list_samples)))
-		f_c.write("  %s.integration_settings->t_max = %g;\n" % (variable_name, max(list_samples)))
+		f_c.write("  %s.integration_settings->t_min = %g;\n" % (variable_name, time_min))
 		f_c.write("  %s.integration_settings->nb_samples = %d;\n" % (variable_name, len(list_samples)))
 		f_c.write("  %s.integration_settings->abs_tol = %g;\n" % (variable_name, abs_tol))
 		f_c.write("  %s.integration_settings->rel_tol = %g;\n" % (variable_name, rel_tol))

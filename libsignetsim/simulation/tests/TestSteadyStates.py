@@ -62,7 +62,7 @@ class TestSteadyStates(TestCase):
 		)
 		sim.run()
 
-		results = sim.listOfData_v2
+		results = sim.getRawData()
 
 		self.assertAlmostEqual(reference_data, results[p.getSbmlId()][0])
 
@@ -102,7 +102,7 @@ class TestSteadyStates(TestCase):
 		)
 		sim.run()
 
-		results = sim.listOfData_v2
+		results = sim.getRawData()
 
 		for i, t_data in enumerate(reference_data):
 			self.assertAlmostEqual(t_data, results[p.getSbmlId()][i])

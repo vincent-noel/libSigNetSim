@@ -28,6 +28,7 @@ from libsignetsim.settings.Settings import Settings
 class CWriterModels(object):
 
 	def __init__ (self, list_of_models,
+				  	time_min,
 					list_samples,
 					abs_tol,
 					rel_tol,
@@ -36,6 +37,7 @@ class CWriterModels(object):
 		self.listOfModels = list_of_models
 
 		# Simulation variables
+		self.timeMin = time_min
 		self.listSamples = list_samples
 		self.absTol = abs_tol
 		self.relTol = rel_tol
@@ -153,7 +155,7 @@ class CWriterModels(object):
 		self.writeModelsFinalization(f_h, f_c)
 
 		for i_model, model in enumerate(self.listOfModels):
-			model.writeCCode(f_h, f_c, i_model, self.listSamples, self.absTol, self.relTol)
+			model.writeCCode(f_h, f_c, i_model, self.timeMin, self.listSamples, self.absTol, self.relTol)
 
 		f_c.close()
 		f_h.close()

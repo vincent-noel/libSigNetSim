@@ -136,7 +136,6 @@ typedef struct IntegrationData
 	// Events priority function
 	int                     (*priorityEventsPtr)(realtype, N_Vector, void *);
 
-
 	realtype                rel_tol;
 	N_Vector                abs_tol;
 
@@ -146,8 +145,6 @@ typedef struct IntegrationData
 typedef struct IntegrationSettings
 {
 	double                t_min;
-	double                t_max;
-//	double                t_sampling;
 	int                   nb_samples;
 	double                abs_tol;
 	double                rel_tol;

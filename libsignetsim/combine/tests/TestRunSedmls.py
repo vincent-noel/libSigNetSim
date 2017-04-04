@@ -38,11 +38,6 @@ class TestRunSedmls(TestCase):
 		for sedml in sedmls:
 			self.assertTrue(sedml.listOfOutputs.getReports() is not None)
 
-
-
-
-
-
 	def testMasterSedml(self):
 
 		ca = CombineArchive()

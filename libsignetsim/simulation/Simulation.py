@@ -23,11 +23,8 @@
 """
 
 from libsignetsim.simulation.CWriterSimulation import CWriterSimulation
-from libsignetsim.simulation.SimulationException import SimulationException
-from libsignetsim.model.math.MathFormula import MathFormula
+from libsignetsim.simulation.SimulationException import SimulationExecutionException, SimulationCompilationException, SimulationNoDataException
 from libsignetsim.settings.Settings import Settings
-# from libsignetsim.model.Model import Model
-from libsignetsim.model.SbmlDocument import SbmlDocument
 from time import time, clock
 from os import mkdir, setpgrp, getcwd
 from os.path import join, isfile, exists, getsize
@@ -38,16 +35,13 @@ from string import ascii_uppercase, ascii_lowercase, digits
 
 class Simulation(CWriterSimulation):
 
-
-	SIM_SUCCESS         =    0
-	SIM_FAILURE         =   -1
-
 	SIM_DONE            =   10
 	SIM_TODO            =   11
 
 
 	def __init__ (self,
 					list_of_models,
+				  	time_min,
 					list_samples,
 					experiment=None,
 					abs_tol=Settings.defaultAbsTol,
@@ -60,6 +54,7 @@ class Simulation(CWriterSimulation):
 
 		CWriterSimulation.__init__(self,
 						list_of_models=list_of_models,
+						time_min=time_min,
 						list_samples=list_samples,
 						experiment=experiment,
 						abs_tol=abs_tol,
@@ -68,43 +63,12 @@ class Simulation(CWriterSimulation):
 		self.listOfModels = list_of_models
 
 		self.__simulationDone = self.SIM_TODO
-
-		self.listOfData = None
-		self.listOfData_v2 = None
 		self.rawData = None
 
 		self.nbConditions = 0
 
 		if experiment is not None:
 			self.nbConditions = len(experiment.listOfConditions)
-
-	def restore(self, session_id, simulation_id):
-
-		self.sessionId = session_id
-		self.simulationId = simulation_id
-		self.restoreModels()
-
-	def restoreModels(self):
-
-		if self.sessionId is not None and self.simulationId is not None:
-			if isfile(join(self.getTempDirectory(), "model.sbml")):
-				print "restoring single model"
-				self.loadSbmlModel(join(self.getTempDirectory(), "model.sbml"))
-
-
-			elif isfile(join(self.getTempDirectory(), "model_0.sbml")):
-				print "restoring multiple model: not implemented yet"
-
-
-
-	def loadSbmlModel_v2(self, filename, modelDefinition=False):
-
-		document = SbmlDocument()
-		document.readSBMLFromFile(filename)
-		if modelDefinition:
-			return document.model
-		else:
-			return document.getModelInstance()
 
 
 	def getTempDirectory(self):
@@ -155,8 +119,6 @@ class Simulation(CWriterSimulation):
 			cmd_comp = "make -C %s sim-serial" % self.getTempDirectory()
 		else:
 			cmd_comp = "make -C %s sim-parallel" % self.getTempDirectory()
-		# else:
-		#     cmd_comp = "make -C %s sim-serial" % self.getTempDirectory()
 
 		res_comp = call(cmd_comp,
 						stdout=open("%sout_comp" % self.getTempDirectory(),"w"),
@@ -169,22 +131,14 @@ class Simulation(CWriterSimulation):
 
 			if Settings.verbose >= 1:
 				print "-"*40 + "\n"
-				print "> Error during file compilation :"
+				print "> Error during simulation compilation :"
 				f_err_comp = open(self.getTempDirectory() + "err_comp", 'r')
 				for line in f_err_comp:
 					print line
 				print "-"*40 + "\n"
 				f_err_comp.close()
 
-			raise SimulationException(
-				SimulationException.COMP_ERROR,
-				"Error during file simulation (%d)" % res_comp
-			)
-			return self.SIM_FAILURE
-
-		else:
-			return self.SIM_SUCCESS
-
+			raise SimulationCompilationException("Error during simulation compilation (%d)" % res_comp)
 
 	def __execute__(self, nb_procs=Settings.defaultMaxProcNumbers, steady_states=False):
 
@@ -205,7 +159,7 @@ class Simulation(CWriterSimulation):
 					self.getTempDirectory(),
 					nb_procs, flags,
 					present_dir)
-		# print "executing $%s" % cmd_sim
+
 		res_sim = call(cmd_sim,
 					  stdout=open("%sout_sim" % self.getTempDirectory(),"w"),
 					  stderr=open("%serr_sim" % self.getTempDirectory(),"w"),
@@ -213,23 +167,16 @@ class Simulation(CWriterSimulation):
 
 		if res_sim != 0 or getsize(join(self.getTempDirectory(), "err_sim")) > 0:
 
-			raise SimulationException(
-						SimulationException.SIM_ERROR,
-						"Error during file simulation (%d, %d)" % (
-								res_sim,
-								getsize(self.getTempDirectory() + "err_sim")))
-
 			if Settings.verbose >= 1:
-				print "> Error during file simulation (%d, %d)" % (
-						res_sim,
-						getsize(self.getTempDirectory() + "err_sim"))
+				print "-" * 40 + "\n"
+				print "> Error during simulation execution :"
+				f_err_sim = open(self.getTempDirectory() + "err_sim", 'r')
+				for line in f_err_sim:
+					print line
+				print "-" * 40 + "\n"
+				f_err_sim.close()
 
-			return self.SIM_FAILURE
-
-		elif not exists(join(self.getTempDirectory(), "out_sim")):
-			print "OUTSIM DOESNT EXIST WTF"
-
-			return self.SIM_SUCCESS
+			raise SimulationExecutionException("Error during simulation execution (%d)" % res_sim)
 
 		else:
 			if Settings.verbose >= 2:
@@ -240,8 +187,6 @@ class Simulation(CWriterSimulation):
 					print line
 				print "-"*40 + "\n"
 				f_out_sim.close()
-
-			return self.SIM_SUCCESS
 
 
 	def runSimulation(self, progress_signal=None, steady_states=False, nb_procs=4):
@@ -260,112 +205,12 @@ class Simulation(CWriterSimulation):
 		if Settings.verboseTiming >= 1:
 			print ">> Simulation executed in %.2fs" % (end-mid)
 
-
 		self.__simulationDone = self.SIM_DONE
-		return self.SIM_SUCCESS
-
-
-
-	def loadSimulationResults(self):
-
-		self.rawData = []
-		t_filename = self.getTempDirectory() + Settings.C_simulationResultsDirectory + "results_0"
-		t_filename_2 = t_filename + "_0"
-		if isfile(t_filename):
-			(t, y) = self.readResultFile(t_filename)
-			self.rawData.append((t,y))
-
-		elif isfile(t_filename_2):
-			ind = 0
-			while(isfile(t_filename + ("_%d" % ind))):
-				(t, y) = self.readResultFile(t_filename + ("_%d" % ind))
-				self.rawData.append((t,y))
-				ind += 1
-
-	def readResultFile(self, filename):
-
-		resultsFile = open(filename, 'r')
-
-		t = []
-		trajs = {}
-
-		variables = resultsFile.readline().strip().split(',')
-		variables = [variable.strip() for variable in variables]
-
-		for variable in variables:
-			if variable != 'time':
-				trajs.update({variable:[]})
-
-		for line in resultsFile.readlines():
-
-			data = line.split()
-			t.append(float(data[0]))
-
-			for i_variable, variable in enumerate(variables):
-				if variable != 'time':
-					trajs[variable].append(float(data[i_variable]))
-
-
-		resultsFile.close()
-
-
-		# The simulations only deals with amounts, but some species are
-		# Concentrations. So we need to transform them back
-		for key, variable in self.listOfModels[0].listOfVariables.iteritems():
-			if variable.isConcentration():
-				t_traj = trajs[key]
-
-				t_comp_traj = trajs[variable.getCompartment().getSbmlId()]
-				res_traj = []
-
-				for i, point in enumerate(t_traj):
-					res_traj.append(point/t_comp_traj[i])
-				trajs.update({key:res_traj})
-
-		return (t, trajs)
 
 
 	def getRawData(self):
 		if self.__simulationDone == self.SIM_DONE:
 			return self.rawData
+		else:
+			raise SimulationNoDataException("No data : simulation hasn't been executed yet")
 
-
-	def writeOutput(self, output_file):
-
-		if self.listOfData is not None:
-			results_file = open(output_file, 'w')
-			(traj_times, traj_species, traj_params, traj_compartments, _) = self.listOfData
-
-			# Writing header
-			line = "time"
-			for species in self.listOfModels[0].listOfSpecies.values():
-				line += ",%s" % species.sbmlId
-
-			for compartment in self.listOfModels[0].listOfCompartments.values():
-				line += ",%s" % compartment.sbmlId
-
-			for parameter in self.listOfModels[0].listOfParameters.values():
-				line += ",%s" % parameter.sbmlId
-
-
-
-			results_file.write(line + "\n")
-
-
-			# Writing content
-			for i_t, t_time in enumerate(traj_times):
-				line = "%.14f" % t_time
-
-				for i_species, species in enumerate(self.listOfModels[0].listOfSpecies.values()):
-					line += ",%.14f" % traj_species[i_species][i_t]
-
-				for i_compartment, compartment in enumerate(self.listOfModels[0].listOfCompartments.values()):
-					line += ",%.14f" % traj_compartments[i_compartment][i_t]
-
-				for i_parameter, parameter in enumerate(self.listOfModels[0].listOfParameters.values()):
-					line += ",%.14f" % traj_params[i_parameter][i_t]
-
-
-				results_file.write(line + "\n")
-
-			results_file.close()

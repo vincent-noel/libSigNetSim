@@ -23,9 +23,9 @@
 """
 
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.ModelException import (
-	MathException, SbmlException, TagNotImplementedModelException, PackageNotImplementedModelException
-)
+from libsignetsim.model.ModelException import TagNotImplementedModelException, PackageNotImplementedModelException
+from libsignetsim.model.ModelException import SbmlException, MathException
+from libsignetsim.simulation.SimulationException import SimulationException
 from libsignetsim.tests.biomodels.BiomodelsTestCaseSimulation import BiomodelsTestCaseSimulation
 
 from unittest import TestCase
@@ -48,34 +48,14 @@ class TestBiomodelsCompatibility(TestCase):
 	# Read/Write issue
 	INCOMPATIBLE_CASES = []
 
-	# # COPASI Errors
-	# ## Invalid states
-	# INCOMPATIBLE_CASES += ['BIOMD0000000226', 'BIOMD0000000227',
-	# 					   'BIOMD0000000248', 'BIOMD0000000250',
-	# 					   'BIOMD0000000277', 'BIOMD0000000527',
-	# 					   'BIOMD0000000577', 'BIOMD0000000603',
-	# 					   'BIOMD0000000604', 'BIOMD0000000605',
-	# 					   'BIOMD0000000606', 'BIOMD0000000607',
-	# 					   'BIOMD0000000610']
-	#
-	# ## Numerical instability
-	# INCOMPATIBLE_CASES += ['BIOMD0000000474']
-	#
-	# ## Unknown error
-	# INCOMPATIBLE_CASES += ['BIOMD0000000428', 'BIOMD0000000510',
-	# 					   'BIOMD0000000511', 'BIOMD0000000512',
-	# 					   'BIOMD0000000513', 'BIOMD0000000514',
-	# 					   'BIOMD0000000515', 'BIOMD0000000516',
-	# 					   'BIOMD0000000562', 'BIOMD0000000592',
-	# 					   'BIOMD0000000593']
-
-	## Copasi Invalid state
+	# COPASI Errors
+	# Copasi Invalid state
 	INCOMPATIBLE_CASES += ['BIOMD0000000127', 'BIOMD0000000226',
 						'BIOMD0000000227', 'BIOMD0000000248',
 						'BIOMD0000000250', 'BIOMD0000000255',
 						'BIOMD0000000277']
 
-	## TODO FIX
+	# TODO FIX
 	INCOMPATIBLE_CASES += ['BIOMD0000000055', 'BIOMD0000000056',
 						'BIOMD0000000059', 'BIOMD0000000071',
 						'BIOMD0000000075', 'BIOMD0000000091',
@@ -133,10 +113,6 @@ class TestBiomodelsCompatibility(TestCase):
 					if res >= 0:
 						print "> %s : [OK] (%.2gs)" % (modelId, time()-t0)
 
-					elif res == -1:
-						print "> %s : [ERR, Simulation failed] (%.2gs)" % (modelId, time()-t0)
-						result = False
-
 					elif res == -2:
 						print "> %s : [ERR, Incorrect values] (%.2gs)" % (modelId, time()-t0)
 						result = False
@@ -144,9 +120,20 @@ class TestBiomodelsCompatibility(TestCase):
 					elif res == -3:
 						print "> %s : [ERR, Incorrect times] (%.2gs)" % (modelId, time()-t0)
 						result = False
+
 					else:
 						print "> %s : [ERR, Unknown error] (%.2gs)" % (modelId, time()-t0)
 						result = False
+
+				except TagNotImplementedModelException as e:
+					print "> %s : [ERR, TAG INCOMPATIBLE] (%s)" % (modelId, e)
+
+				except PackageNotImplementedModelException as e:
+					print "> %s : [ERR, PACKAGE INCOMPATIBLE] (%s)" % (modelId, e)
+
+				except SimulationException as e:
+					print "> %s : [ERR, Simulation failed] (%s) (%.2gs)" % (modelId, e, time()-t0)
+					result = False
 
 				except MathException as e:
 					print "> %s : [ERR, Math] (%s) (%.2gs)" % (modelId, e, time()-t0)
@@ -156,17 +143,11 @@ class TestBiomodelsCompatibility(TestCase):
 					print "> %s : [ERR, SBML] (%s) (%.2gs)" % (modelId, e, time()-t0)
 					result = False
 
-				except TagNotImplementedModelException as e:
-					print "> %s : [ERR, TAG INCOMPATIBLE] (%s)" % (modelId, e)
-
-				except PackageNotImplementedModelException as e:
-					print "> %s : [ERR, PACKAGE INCOMPATIBLE] (%s)" % (modelId, e)
-
 				except Exception as e:
 					print "> %s : [ERR] (%s) (%.2gs)" % (modelId, e, time()-t0)
 					result = False
 
-			# else:
-			# 	print "> %s : [Not Compatible]" % modelId
+			else:
+				print "> %s : [Not Compatible]" % modelId
 
 		self.assertEqual(result, True)

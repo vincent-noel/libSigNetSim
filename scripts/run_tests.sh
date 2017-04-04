@@ -26,4 +26,5 @@ else
     coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.sedml.tests.TestSteadyStatesScan
     coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.sedml.tests.TestLogscaleTimeseries
     coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.combine.tests.TestRunSedmls
+    coverage run -a --omit=*/venv/*,*/virtualenv/* -m unittest libsignetsim.combine.tests.TestShowCase
 fi

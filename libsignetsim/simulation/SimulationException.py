@@ -21,16 +21,16 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
+from libsignetsim.LibSigNetSimException import LibSigNetSimException
 
-class SimulationException(Exception):
+class SimulationException(LibSigNetSimException):
+    pass
 
-    COMP_ERROR  =   0
-    SIM_ERROR   =   1
+class SimulationExecutionException(SimulationException):
+    pass
 
-    def __init__(self, value, message):
+class SimulationCompilationException(SimulationException):
+    pass
 
-        self.value = value
-        self.message = message
-
-        def __str__(self):
-            return "%d : %s" % (self.value, self.message)
+class SimulationNoDataException(SimulationException):
+    pass

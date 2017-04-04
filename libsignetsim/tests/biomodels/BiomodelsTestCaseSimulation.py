@@ -23,6 +23,8 @@
 """
 
 from libsignetsim.simulation.TimeseriesSimulation import TimeseriesSimulation
+from libsignetsim.model.SbmlDocument import SbmlDocument
+
 from os.path import join, exists
 from os import mkdir
 import numpy
@@ -61,33 +63,18 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 
 	def run(self):
 
-		res_exec = TimeseriesSimulation.run(self)
+		TimeseriesSimulation.run(self)
 
-		if res_exec == 0:
-			self.simulatedData = self.rawData[0]
-			# # print self.simulatedData
-			self.writeTestOutput()
-			return self.checkResults()
+		self.simulatedData = self.getRawData()[0]
+		self.writeTestOutput()
 
-		else:
-			return -1
-
+		return self.checkResults()
 
 	def loadTestCaseModel(self):
 
-
-		# if self.testExport:
-		# 	self.model = self.loadSbmlModel_v2(self.getModelFilename(), modelDefinition=True)
-		# 	t_filename = self.getTemporaryModelFilename()
-		# 	t_document = self.model.parentDoc
-		# 	t_document.writeSbml(t_filename)
-		# 
-		# 	self.model = self.loadSbmlModel_v2(t_filename)
-		# 
-		# else:
-		self.model = self.loadSbmlModel_v2(self.getModelFilename())
-
-
+		document = SbmlDocument()
+		document.readSBMLFromFile(self.getModelFilename())
+		self.model = document.getModelInstance()
 
 	def loadTestCaseResults(self):
 
@@ -132,10 +119,6 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 			(traj_times, trajs) = self.simulatedData
 			(etraj_times, etrajs) = self.expectedData
 
-			# for i, t in enumerate(traj_times):
-			# 	if etraj_times[i] != t:
-			# 		return -3
-
 
 			for t in range(etrajs.shape[0]):
 
@@ -176,7 +159,6 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 			return 0
 		else:
 			return -1
-
 
 	def writeTestOutput(self):
 

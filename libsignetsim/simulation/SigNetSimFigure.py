@@ -23,46 +23,46 @@
 """
 
 import matplotlib.pyplot as plt
-# from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
-from matplotlib.dates import DateFormatter
 import matplotlib
 matplotlib.rcParams['figure.figsize'] = (20.0, 10.0)
-color_scheme = ['#009ece', '#ff9e00', '#9ccf31', '#f7d708', '#ce0000']
-color_scheme_light = ['#67b6ce']
-default_width = 1000
-default_dpi = 600
+
 
 class SigNetSimFigure(Figure):
 
+    # color_scheme = ['#009ece', '#ff9e00', '#9ccf31', '#f7d708', '#ce0000']
+    color_scheme = (["#FFB300", "#803E75", "#FF6800", "#A6BDD7"]
+                    + ["#C10020", "#CEA262", "#817066", "#007D34"]
+                    + ["#F6768E", "#00538A", "#FF7A5C", "#53377A"]
+                    + ["#FF8E00", "#B32851", "#F4C800", "#7F180D"]
+                    + ["#93AA00", "#593315", "#F13A13", "#232C16"])
+    color_scheme_light = ['#67b6ce']
+    default_width = 1000
+    default_dpi = 600
 
     def __init__(self,
                  width=default_width,
                  x_unit="",
                  y_unit="",
-                 nb_rows=1,
-                 nb_cols=1,
                  dpi=default_dpi):
 
 
         if dpi is None:
-            self.__dpi = default_dpi
+            self.__dpi = self.default_dpi
         else:
             self.__dpi = dpi
         if width is None:
-            self.w = default_width / float(self.__dpi)
-            self.h = (default_width * 0.667) / float(self.__dpi)
+            self.w = self.default_width / float(self.__dpi)
+            self.h = (self.default_width * 0.667) / float(self.__dpi)
         else:
             self.w = width / float(self.__dpi)
             self.h = (width * 0.667) / float(self.__dpi)
 
         self.x_unit = x_unit
         self.y_unit = y_unit
-        #
-        # print self.h
-        # print self.w
+
         Figure.__init__(self,
-                        figsize=(10,6),#self.w, self.h * float(nb_rows)),
+                        figsize=(10,6),
                         dpi=self.__dpi,
                         tight_layout=False,
                         facecolor='white')
