@@ -5,10 +5,10 @@ language: python
 python: 2.7
 
 before_install:
-- docker pull labestiol/signetsim-env
+- docker pull labestiol/signetsim-precise
 
 script:
-- docker run labestiol/signetsim-env /bin/sh -c "cd /root/; coverage run -m unittest test"
+- docker run labestiol/signetsim-precise /bin/sh -c "cd /root/; coverage run -m unittest test"
 
 after_script:
 - coveralls
