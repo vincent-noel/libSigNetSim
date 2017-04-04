@@ -1,29 +1,14 @@
+sudo: required
+services:
+  - docker
 language: python
 python: 2.7
 
 before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y libopenmpi-dev openmpi-bin libsundials-serial-dev libsundials-serial liblapack-dev libblas-dev libatlas-dev libfreetype6-dev libpng12-dev libatlas-base-dev python-dev python-pip python-setuptools git subversion gfortran g++ gcc make pkg-config unzip wget
-
-install:
-  - python setup.py install
-  - python fix_libsedml_addChild.py
-  - pip install coveralls
-
-env:
-  - TEST_SUITE=sbml-test-suite VERSION=1.2
-  - TEST_SUITE=sbml-test-suite VERSION=2.1
-  - TEST_SUITE=sbml-test-suite VERSION=2.2
-  - TEST_SUITE=sbml-test-suite VERSION=2.3
-  - TEST_SUITE=sbml-test-suite VERSION=2.4
-  - TEST_SUITE=sbml-test-suite VERSION=2.5
-  - TEST_SUITE=sbml-test-suite VERSION=3.1
-  - TEST_SUITE=biomodels VERSION=
-  - TEST_SUITE=others VERSION=
-
+- docker pull labestiol/signetsim-env
 
 script:
-  - bash scripts/run_tests.sh $TEST_SUITE $VERSION
+- docker run labestiol/signetsim-env /bin/sh -c "cd /root/; coverage run -m unittest test"
 
 after_script:
-  - coveralls
+- coveralls
