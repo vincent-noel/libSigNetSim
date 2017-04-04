@@ -8,12 +8,9 @@ before_install:
 - docker pull labestiol/signetsim-precise
 
 install:
-- docker run -v $(pwd):/root labestiol/signetsim-precise /bin/sh -c "cd /root/; python setup.py install"
-- docker run -v $(pwd):/root labestiol/signetsim-precise /bin/sh -c "cd /root/; python fix_libsedml_addChild.py"
 
 script:
-- docker run -v $(pwd):/root labestiol/signetsim-precise /bin/sh -c "cd /root/; python -m unittest libsignetsim.tests.sbmltestsuite.TestSuite_l3v1"
-- docker ps -a
+- docker run -v $(pwd):/root labestiol/signetsim-precise /bin/sh -c "cd /root/; python setup.py install; python fix_libsedml_addChild.py; python -m unittest libsignetsim.tests.sbmltestsuite.TestSuite_l3v1"
 
 after_script:
 - coveralls

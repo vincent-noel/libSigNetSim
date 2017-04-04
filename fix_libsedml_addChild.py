@@ -5,6 +5,7 @@ import libsedml, shutil, os
 original_file = libsedml.__file__
 original_filepath = os.path.dirname(original_file)
 
+
 original_file = os.path.join(original_filepath, "__init__.py")
 backup_file = os.path.join(original_filepath, "__init__.backup")
 
@@ -23,6 +24,7 @@ for line in original:
 original.close()
 
 # Writing the new file
+print "> Modifying %s" % original_file
 new = open(os.path.join(original_filepath, "__init__.py"), "w")
 for i, line in enumerate(lines):
 	
@@ -32,8 +34,10 @@ for i, line in enumerate(lines):
 		and
 			lines[i+3].startswith("        return _libsedml.ASTNode_addChild(self, disownedChild, inRead)")
 	):
+		print "> Found line to modify"
 		new.write("        if disownedChild is not None: disownedChild.thisown = 0\n")
 	else:
 		new.write(line)
 
 new.close()
+print "> Done"
