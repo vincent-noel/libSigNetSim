@@ -1,8 +1,21 @@
 sudo: required
-services:
-  - docker
+
+services: docker
+
 language: python
+
 python: 2.7
+
+env:
+  - TEST_SUITE=sbml-test-suite VERSION=1.2
+  - TEST_SUITE=sbml-test-suite VERSION=2.1
+  - TEST_SUITE=sbml-test-suite VERSION=2.2
+  - TEST_SUITE=sbml-test-suite VERSION=2.3
+  - TEST_SUITE=sbml-test-suite VERSION=2.4
+  - TEST_SUITE=sbml-test-suite VERSION=2.5
+  - TEST_SUITE=sbml-test-suite VERSION=3.1
+  - TEST_SUITE=biomodels
+  - TEST_SUITE=others
 
 before_install:
 - pip install coveralls
@@ -13,10 +26,7 @@ install:
 - docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; bash scripts/install.sh"
 
 script:
-- docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; bash scripts/run_tests.sh others"
+- docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; bash scripts/run_tests.sh $TEST_SUITE $VERSION"
 
 after_script:
-- ls -al
-- pwd
-- cat .coverage
 - coveralls
