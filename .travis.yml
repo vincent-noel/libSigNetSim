@@ -4,11 +4,14 @@ services:
 language: python
 python: 2.7
 
-install:
+before_install:
 - docker pull labestiol/signetsim-precise
 
+install:
+- docker run -di --name test_env -v $(pwd):/root/ labestiol/signetsim-precise /bin/sh -c "cd /root/; bash scripts/install.sh"
+
 script:
-- docker run -v $(pwd):/root labestiol/signetsim-precise /bin/sh -c "cd /root/; python setup.py install; python fix_libsedml_addChild.py; python -m unittest libsignetsim.tests.sbmltestsuite.TestSuite_l3v1"
+- docker exec test_env /bin/sh -c "cd root; bash scripts/run_tests.sh sbml-test-suite l1v2"
 
 after_script:
-- coveralls
+- docker exec test_env /bin/sh -c "cd root; coveralls"
