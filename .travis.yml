@@ -19,10 +19,10 @@ env:
 
 before_install:
 - pip install coveralls
-- docker pull labestiol/signetsim-precise
+- docker pull signetsim/ubuntu-precise
 
 install:
-- docker run -di --name test_env -v $(pwd):/home/travis/build/vincent-noel/libSigNetSim labestiol/signetsim-precise bash
+- docker run -di --name test_env -v $(pwd):/home/travis/build/vincent-noel/libSigNetSim signetsim/ubuntu-precise bash
 - docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; bash scripts/install.sh"
 
 script:
