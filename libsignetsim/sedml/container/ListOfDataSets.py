@@ -68,11 +68,6 @@ class ListOfDataSets(ListOf):
 			data_set = list_of_data_sets.createDataSet()
 			t_data_set.writeSedml(data_set, level, version)
 
-	def build(self):
-
-		for data_set in self:
-			data_set.build()
-
 	def getData(self):
 
 		data = {}

@@ -174,7 +174,7 @@ class SbmlDocument(object):
 		# 	print "> Dependencies : %s (%d)" % (self.documentDependenciesPaths, len(self.listOfExternalModelDefinitions))
 
 
-	def readSBMLFromFile(self, sbml_filename):
+	def readSbmlFromFile(self, sbml_filename):
 		# print "> Opening SBML file : %s" % sbml_filename
 
 		t0 = time()
@@ -385,7 +385,7 @@ class SbmlDocument(object):
 			self.documentDependencies = []
 			for path in self.documentDependenciesPaths:
 				t_document = SbmlDocument()
-				t_document.readSBMLFromFile(join(self.documentPath, path))
+				t_document.readSbmlFromFile(join(self.documentPath, path))
 				self.documentDependencies.append(t_document)
 
 

@@ -25,6 +25,7 @@
 from libsignetsim.sedml.container.ListOf import ListOf
 from libsignetsim.sedml.Plot2D import Plot2D
 from libsignetsim.sedml.Report import Report
+from libsignetsim.figure.SigNetSimFigure import SigNetSimFigure
 from libsignetsim.settings.Settings import Settings
 
 import libsbml
@@ -97,10 +98,25 @@ class ListOfOutputs(ListOf):
 				output = list_of_outputs.createReport()
 				t_output.writeSedml(output, level, version)
 
-	def build(self):
+	def showFigures(self):
 
 		for output in self:
-			output.build()
+			if isinstance(output, Plot2D):
+				output.showFigure()
+
+	def hasFigure(self):
+
+		for output in self:
+			if isinstance(output, Plot2D):
+				return True
+
+	def nbFigures(self):
+		nb = 0
+		for output in self:
+			if isinstance(output, Plot2D):
+				nb += 1
+
+		return nb
 
 	def getReports(self):
 

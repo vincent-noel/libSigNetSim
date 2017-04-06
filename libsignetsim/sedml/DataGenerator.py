@@ -42,6 +42,8 @@ class DataGenerator(SedBase, HasId):
 		self.listOfParameters = ListOfParameters(self.__document, self)
 		self.__math = MathFormula(self.__document)
 
+		self.__data = None
+
 	def readSedml(self, data_generator, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
 		SedBase.readSedml(self, data_generator, level, version)
@@ -67,5 +69,23 @@ class DataGenerator(SedBase, HasId):
 		self.__math = math
 
 	def getTasksToRun(self):
-
 		return self.listOfVariables.getTasksToRun()
+
+	def build(self):
+
+		raw_data = self.listOfVariables.getData()
+		nb_timepoints = len(raw_data[raw_data.keys()[0]])
+		self.__data = []
+
+		for i in range(nb_timepoints):
+
+			subs = {}
+			for var in self.listOfVariables:
+				subs.update({var.getSympySymbol():float(raw_data[var][i])})
+
+			subs.update(self.listOfParameters.getSubs())
+
+			self.__data.append(float(self.getMath().getInternalMathFormula().subs(subs)))
+
+	def getData(self):
+		return self.__data

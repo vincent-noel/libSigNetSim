@@ -73,3 +73,21 @@ class ListOfCurves(ListOf):
 			data += curve.getDataToGenerate()
 
 		return list(set(data))
+
+	def getXAxisTitle(self):
+
+		titles = []
+		for curve in self:
+			titles.append(curve.getXAxisTitle())
+
+		if len(set(titles)) == 1:
+			return titles[0]
+
+	def getYAxisTitle(self):
+
+		titles = []
+		for curve in self:
+			titles.append(curve.getYAxisTitle())
+
+		if len(set(titles)) == 1:
+			return titles[0]

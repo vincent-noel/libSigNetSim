@@ -84,3 +84,7 @@ class ListOfDataGenerators(ListOf):
 			tasks += data.getTasksToRun()
 
 		return list(set(tasks))
+
+	def build(self):
+		for data_genertor in self:
+			data_genertor.build()

@@ -109,3 +109,22 @@ class Curve(SedBase, HasId):
 			self.__document.listOfDataGenerators.getDataGenerator(self.__xDataReference),
 			self.__document.listOfDataGenerators.getDataGenerator(self.__yDataReference)
 		]
+
+	def build(self, fig, plot, curve_id, print_ynames):
+
+		data_x = self.__document.listOfDataGenerators.getDataGenerator(self.__xDataReference)
+		data_y = self.__document.listOfDataGenerators.getDataGenerator(self.__yDataReference)
+
+		# print "X : %s" % str(data_x.getData())
+		# print "Y : %s" % str(data_y.getData())
+		if not print_ynames:
+			fig.plot(plot, curve_id, data_x.getData(), data_y.getData())
+		else:
+			fig.plot(plot, curve_id, data_x.getData(), data_y.getData(), y_name=self.getYAxisTitle())
+
+	def getXAxisTitle(self):
+		return self.__document.listOfDataGenerators.getDataGenerator(self.__xDataReference).getName()
+
+	def getYAxisTitle(self):
+		return self.__document.listOfDataGenerators.getDataGenerator(self.__yDataReference).getName()
+

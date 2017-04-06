@@ -109,7 +109,7 @@ class TestTimeseries(TestCase):
 						  11.99999995305381, 11.99999999151893, 11.99999999846709, 11.99999999972277]
 
 		m = self.__buildMichaelisModel()
-		
+
 		sim = TimeseriesSimulation([m], time_min=0, list_samples=range(1,21))
 		sim.run()
 		_,y = sim.getRawData()[0]
@@ -127,7 +127,7 @@ class TestTimeseries(TestCase):
 		self.assertTrue(exists(sbml_path))
 
 		doc = SbmlDocument()
-		doc.readSBMLFromFile(sbml_path)
+		doc.readSbmlFromFile(sbml_path)
 		model = doc.getModelInstance()
 
 		sim = TimeseriesSimulation([model], time_min=0, time_ech=1, time_max=100)

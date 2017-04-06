@@ -104,3 +104,15 @@ class UniformTimeCourse(Simulation):
 
 	def getSimulationObject(self):
 		return self.__simulationObject
+
+	def setInitialTime(self, initial_time):
+		self.__initialTime = initial_time
+
+	def setOutputStartTime(self, output_start_time):
+		self.__outputStartTime = output_start_time
+
+	def setOutputEndTime(self, output_end_time):
+		self.__outputEndTime = output_end_time
+
+	def setNumberOfPoints(self, number_of_points):
+		self.__numberOfPoints = number_of_points

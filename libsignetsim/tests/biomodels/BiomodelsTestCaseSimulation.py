@@ -73,7 +73,7 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 	def loadTestCaseModel(self):
 
 		document = SbmlDocument()
-		document.readSBMLFromFile(self.getModelFilename())
+		document.readSbmlFromFile(self.getModelFilename())
 		self.model = document.getModelInstance()
 
 	def loadTestCaseResults(self):

@@ -25,7 +25,7 @@ from libsignetsim.sedml.URI import URI
 from libsignetsim.sedml.SedmlException import SedmlFileNotFound
 from libsignetsim.settings.Settings import Settings
 from urllib import URLopener
-from os.path import join, exists, isabs, relpath
+from os.path import join, exists, isabs, relpath, commonprefix
 from os import getcwd
 
 class Source(object):
@@ -111,5 +111,6 @@ class Source(object):
 
 	def makeRelativePath(self, path):
 
-		if self.__sourceType == self.LOCAL and isabs(self.__source):
-			self.__source = relpath(self.__source, path)
+		if self.__sourceType == self.LOCAL and (isabs(self.__source) or commonprefix([self.__source, path]) != ""):
+				self.__source = relpath(self.__source, path)
+

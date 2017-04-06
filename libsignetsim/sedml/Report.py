@@ -45,9 +45,6 @@ class Report(Output):
 		Output.writeSedml(self, report, level, version)
 		self.listOfDataSets.writeSedml(report.getListOfDataSets(), level, version)
 
-	def build(self):
-		self.listOfDataSets.build()
-
 	def getData(self):
 
 		return self.listOfDataSets.getData()

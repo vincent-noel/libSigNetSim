@@ -97,12 +97,11 @@ class Model(SedBase, HasId):
 	def __loadModel(self):
 
 		sbml_doc = SbmlDocument()
-		sbml_doc.readSBMLFromFile(self.__source.getFilename())
+		sbml_doc.readSbmlFromFile(self.__source.getFilename())
 
 		self.__sbmlModel = sbml_doc.getModelInstance()
 
 	def makeRelativePath(self, path):
-
 		self.__source.makeRelativePath(path)
 
 	def writeSbmlModelToPath(self, path):

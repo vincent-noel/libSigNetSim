@@ -36,7 +36,7 @@ class TestFindKineticLaws(TestCase):
 
 		testfiles_path = join(join(getcwd(), dirname(__file__)), "files")
 		sbml_doc = SbmlDocument()
-		sbml_doc.readSBMLFromFile(join(testfiles_path, "modelqlzB7i.xml"))
+		sbml_doc.readSbmlFromFile(join(testfiles_path, "modelqlzB7i.xml"))
 
 		sbml_model = sbml_doc.getModelInstance()
 

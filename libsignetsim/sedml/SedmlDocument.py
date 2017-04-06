@@ -125,8 +125,12 @@ class SedmlDocument(SedBase):
 		for task in tasks_to_run:
 			task.run()
 
-		self.listOfOutputs.build()
+		self.listOfDataGenerators.build()
+		# self.listOfOutputs.build()
 
+	def showFigures(self):
+
+		self.listOfOutputs.showFigures()
 
 
 

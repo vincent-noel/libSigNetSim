@@ -77,27 +77,10 @@ class DataSet(SedBase, HasId):
 	def setLabel(self, label):
 		self.__label = label
 
-	def build(self):
-
-		data_generator = self.__document.listOfDataGenerators.getDataGenerator(self.__dataReference)
-		math = data_generator.getMath()
-		data_variables = data_generator.listOfVariables.getData()
-
-		self.__data = []
-
-		for i in range(len(data_variables[data_variables.keys()[0]])):
-
-			subs = {}
-			for var in data_generator.listOfVariables:
-				subs.update({var.getSympySymbol():float(data_variables[var][i])})
-
-			subs.update(data_generator.listOfParameters.getSubs())
-
-			self.__data.append(float(math.getInternalMathFormula().subs(subs)))
-
 	def getData(self):
 
-		return {self.__label: self.__data}
+		data_generator = self.__document.listOfDataGenerators.getDataGenerator(self.__dataReference)
+		return {self.__label: data_generator.getData()}
 
 	def getDataToGenerate(self):
 

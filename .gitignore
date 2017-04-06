@@ -12,3 +12,6 @@ __pycache__/
 # Biomodels test results
 results_simulated.csv
 
+# Notebooks checkpoints
+*/.ipynb_checkpoints/*
+

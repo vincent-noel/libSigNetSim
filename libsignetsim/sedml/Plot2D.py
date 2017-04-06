@@ -24,6 +24,7 @@
 
 from libsignetsim.sedml.Output import Output
 from libsignetsim.sedml.container.ListOfCurves import ListOfCurves
+from libsignetsim.figure.SigNetSimFigure import SigNetSimFigure
 from libsignetsim.settings.Settings import Settings
 
 
@@ -46,9 +47,25 @@ class Plot2D(Output):
 		Output.writeSedml(self, plot, level, version)
 		self.listOfCurves.writeSedml(plot.getListOfCurves(), level, version)
 
-	def build(self):
+	def showFigure(self):
+		fig = SigNetSimFigure()
+		subplot = fig.add_subplot(1,1,1)
 
-		pass
+		print_ynames = False
+		if self.listOfCurves.getXAxisTitle() is not None:
+			subplot.set_xlabel(self.listOfCurves.getXAxisTitle())
+
+		if self.listOfCurves.getYAxisTitle() is not None:
+			subplot.set_ylabel(self.listOfCurves.getYAxisTitle())
+		else:
+			print_ynames = True
+
+		for i, curve in enumerate(self.listOfCurves):
+			curve.build(fig, subplot, i, print_ynames)
+
+		if print_ynames:
+			subplot.legend(loc='upper right')
+
 
 	def getDataToGenerate(self):
 
