@@ -86,9 +86,6 @@ class UniformTimeCourse(Simulation):
 	def getNumberOfPoints(self):
 		return self.__numberOfPoints
 
-	def getAlgorithm(self):
-		return self.__algorithm
-
 	def run(self, sbmlModel):
 
 		t_simulation = TimeseriesSimulation(

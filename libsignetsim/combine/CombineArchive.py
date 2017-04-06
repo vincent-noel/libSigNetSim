@@ -59,11 +59,11 @@ class CombineArchive(object):
 
 		self.__file = ZipFile(file)
 		print self.__file.namelist()
-		if not self.MANIFEST in self.__file.namelist() and len(self.__file.namelist()) > 1:
+		if not self.MANIFEST in self.__file.namelist():# and len(self.__file.namelist()) > 1:
 			raise NoManifestFoundException("No manifest found in archive %s" % file)
-
-		elif len(self.__file.namelist() == 1):
-			self.master = self.__file.namelist()[0]
+		#
+		# elif len(self.__file.namelist()) == 1:
+		# 	self.master = self.__file.namelist()[0]
 
 		else:
 			self.__manifest.readManifest(self.__file.read(self.MANIFEST))
