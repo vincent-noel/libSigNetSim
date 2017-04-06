@@ -126,6 +126,7 @@ IntegrationResult * InitializeIntegrationResult(ModelDefinition * model)
 //  }
 //  else
 //  {
+    integration_result->time_min = model->integration_settings->t_min;
 	integration_result->nb_samples = model->integration_settings->nb_samples;
 	integration_result->list_samples = malloc(sizeof(double)*(model->integration_settings->nb_samples));
 

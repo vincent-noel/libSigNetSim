@@ -33,14 +33,8 @@ from os.path import exists
 class TestTimeseries(TestCase):
 	""" Tests high level functions """
 
+	def __buildMichaelisModel(self):
 
-	def testSimulateMichaelisMenten(self):
-
-		reference_data = [0.0, 1.897738187453314, 3.756955433409792, 5.562177924708521, 7.287504219961273,
-						  8.886453435701496, 10.27109268766486, 11.28772309320835, 11.80437071324164,
-						  11.95991226988507, 11.99256438900284, 11.99865019516933, 11.9997559549625,
-						  11.99995590896604, 11.99999203526398, 11.99999856126113, 11.99999974010935,
-						  11.99999995305381, 11.99999999151893, 11.99999999846709, 11.99999999972277]
 		m = Model()
 		m.setName("Enzymatic Reaction")
 
@@ -63,6 +57,19 @@ class TestTimeseries(TestCase):
 		vmax.setValue(0.211)
 		km.setValue(1.233)
 
+		return m
+
+
+	def testSimulateMichaelisMenten(self):
+
+		reference_data = [0.0, 1.897738187453314, 3.756955433409792, 5.562177924708521, 7.287504219961273,
+						  8.886453435701496, 10.27109268766486, 11.28772309320835, 11.80437071324164,
+						  11.95991226988507, 11.99256438900284, 11.99865019516933, 11.9997559549625,
+						  11.99995590896604, 11.99999203526398, 11.99999856126113, 11.99999974010935,
+						  11.99999995305381, 11.99999999151893, 11.99999999846709, 11.99999999972277]
+
+		m = self.__buildMichaelisModel()
+
 		sim = TimeseriesSimulation([m], time_min=0, time_ech=1, time_max=20)
 		sim.run()
 		_,y = sim.getRawData()[0]
@@ -70,6 +77,48 @@ class TestTimeseries(TestCase):
 
 		for i, t_data in enumerate(reference_data):
 			self.assertAlmostEqual(t_data, model_data[i], delta=1e-6)
+
+
+
+	def testZeroResults(self):
+
+		reference_data = [0.0, 1.897738187453314, 3.756955433409792, 5.562177924708521, 7.287504219961273,
+						  8.886453435701496, 10.27109268766486, 11.28772309320835, 11.80437071324164,
+						  11.95991226988507, 11.99256438900284, 11.99865019516933, 11.9997559549625,
+						  11.99995590896604, 11.99999203526398, 11.99999856126113, 11.99999974010935,
+						  11.99999995305381, 11.99999999151893, 11.99999999846709, 11.99999999972277]
+
+		m = self.__buildMichaelisModel()
+
+		sim = TimeseriesSimulation([m], time_min=0, list_samples=range(0,21))
+		sim.run()
+		_,y = sim.getRawData()[0]
+		model_data = y['P']
+
+		for i, t_data in enumerate(reference_data):
+			self.assertAlmostEqual(t_data, model_data[i], delta=1e-6)
+
+
+	def testNonzeroResult(self):
+		""" Here we test a simulation which starts at zero, but the sample list doesn't include it """
+
+		reference_data = [1.897738187453314, 3.756955433409792, 5.562177924708521, 7.287504219961273,
+						  8.886453435701496, 10.27109268766486, 11.28772309320835, 11.80437071324164,
+						  11.95991226988507, 11.99256438900284, 11.99865019516933, 11.9997559549625,
+						  11.99995590896604, 11.99999203526398, 11.99999856126113, 11.99999974010935,
+						  11.99999995305381, 11.99999999151893, 11.99999999846709, 11.99999999972277]
+
+		m = self.__buildMichaelisModel()
+		
+		sim = TimeseriesSimulation([m], time_min=0, list_samples=range(1,21))
+		sim.run()
+		_,y = sim.getRawData()[0]
+
+		model_data = y['P']
+
+		for i, t_data in enumerate(reference_data):
+			self.assertAlmostEqual(t_data, model_data[i], delta=1e-6)
+
 
 
 	def testCellCycle(self):

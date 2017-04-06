@@ -228,7 +228,7 @@ IntegrationResult * simulateModelIDA(ModelDefinition * model,
     ida_mem = InitializeIDA(model, user_data, condition, errLog);
 
     iout = 0;
-    t = RCONST(result->list_samples[iout]);
+    t = RCONST(result->time_min);
 //    t = (realtype) model->integration_settings->t_min;
 
 
@@ -294,9 +294,12 @@ IntegrationResult * simulateModelIDA(ModelDefinition * model,
     }
 
 //    nout = model->integration_settings->nb_samples - 1;
-    tout = RCONST(result->list_samples[iout+1]);
     model->integration_functions->assPtr(t,user_data->derivative_variables, (void *) user_data);
-    writeResultSample(model, result, user_data, t, iout);
+    if (t == result->list_samples[0]){
+        writeResultSample(model, result, user_data, t, iout);
+        iout++;
+    }
+    tout = RCONST(result->list_samples[iout]);
 
     while(1)
     {
@@ -320,19 +323,43 @@ IntegrationResult * simulateModelIDA(ModelDefinition * model,
                 //printf("> Event at t=%.16g\n", t);
 
                 // Updating roots
-                int i;
+                int i, strict;
                 int total_roots = (user_data->nb_roots + user_data->nb_timed_events);
                 int * new_roots = calloc(total_roots, sizeof(int));
 
                 flag = IDAGetRootInfo(ida_mem, new_roots);
 
                 for (i=0; i < total_roots; i++)
-                    if (new_roots[i] != 0)
+                    if (new_roots[i] != 0){
                         user_data->roots_triggers[i] = new_roots[i];
-
+                  		if (user_data->roots_operators[i] == 1 || user_data->roots_operators[i] == 3)
+						    strict = 1;
+						else
+						    strict = 0;
+                    }
                 free(new_roots);
 
-                executeEventsIDA(user_data, t);
+                if (t == tout)
+				{
+
+					model->integration_functions->assPtr(t, user_data->derivative_variables, (void *) user_data);
+
+					if (strict == 0)
+					{
+                        executeEventsIDA(user_data, t);
+					    writeResultSample(model, result, user_data, t, iout);
+					}
+					else
+					{
+					    writeResultSample(model, result, user_data, t, iout);
+					    executeEventsIDA(user_data, t);
+					}
+					iout++;
+
+				}
+				else executeEventsIDA(user_data, t);
+
+//                executeEventsIDA(user_data, t);
 
                 //And we reinit the solver to accept this change of value
                 flag = IDAReInit(ida_mem, t, user_data->derivative_variables,
@@ -355,13 +382,13 @@ IntegrationResult * simulateModelIDA(ModelDefinition * model,
                 if (check_flag(&flag, "IDARootInit", 1, errLog))
                     return NULL;
 
-                if (t == tout)
-                {
-                    model->integration_functions->assPtr(tout, user_data->derivative_variables, (void *) user_data);
-                    iout++;
-//                    tout += RCONST(model->integration_settings->t_sampling);
-                    writeResultSample(model, result, user_data, t, iout);
-                }
+//                if (t == tout)
+//                {
+//                    model->integration_functions->assPtr(tout, user_data->derivative_variables, (void *) user_data);
+//                    iout++;
+////                    tout += RCONST(model->integration_settings->t_sampling);
+//                    writeResultSample(model, result, user_data, t, iout);
+//                }
 
                 // Computing derivatives if need be
                 flag = IDASetId(ida_mem, user_data->type_variables);
@@ -384,9 +411,9 @@ IntegrationResult * simulateModelIDA(ModelDefinition * model,
             else if (flag == IDA_SUCCESS)
             {
                 model->integration_functions->assPtr(tout, user_data->derivative_variables, (void *) user_data);
+                writeResultSample(model, result, user_data, t, iout);
                 iout++;
 //                tout += RCONST(model->integration_settings->t_sampling);
-                writeResultSample(model, result, user_data, t, iout);
             }
 
             else
@@ -399,12 +426,13 @@ IntegrationResult * simulateModelIDA(ModelDefinition * model,
         else
         {
             model->integration_functions->assPtr(tout, user_data->derivative_variables, (void *) user_data);
+            t += RCONST(result->list_samples[iout+1]);
+            writeResultSample(model, result, user_data, tout, iout);
             iout++;
 //            tout += RCONST(model->integration_settings->t_sampling);
-            writeResultSample(model, result, user_data, tout, iout);
         }
-		if (iout == (result->nb_samples-1)) break;
-		else tout = RCONST(result->list_samples[iout+1]);
+		if (iout == (result->nb_samples)) break;
+		else tout = RCONST(result->list_samples[iout]);
 //        if (iout == nout) break;
     }
 

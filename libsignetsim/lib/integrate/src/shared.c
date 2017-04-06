@@ -394,6 +394,7 @@ void writeResultSample(ModelDefinition * model, IntegrationResult * result, Inte
 {
     int i;
 
+//    printf("> Writing sample %d : %.2g\n", sample, t);
     // Writing initial data point to the results variable
     result->t[sample] = t;
     for (i=0; i < model->nb_derivative_variables; i++)

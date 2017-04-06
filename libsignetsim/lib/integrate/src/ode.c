@@ -227,7 +227,7 @@ IntegrationResult * simulateModelCVODE(ModelDefinition * model,
 	void * cvode_mem = InitializeCVODE(model, user_data, condition, errLog);
 
 	iout = 0;
-	t = RCONST(result->list_samples[iout]);
+	t = RCONST(result->time_min);
 
 	// Firing Initial Assignments
 	// if (model->nb_init_assignments > 0) {
@@ -285,10 +285,12 @@ IntegrationResult * simulateModelCVODE(ModelDefinition * model,
 
 
 	model->integration_functions->assPtr(t,user_data->derivative_variables, (void *) user_data);
-	writeResultSample(model, result, user_data, t, iout);
+	if (t == result->list_samples[0]){
+	    writeResultSample(model, result, user_data, t, iout);
+	    iout++;
+    }
 
-
-	tout = RCONST(result->list_samples[1]);
+	tout = RCONST(result->list_samples[iout]);
 
 	while(1)
 	{
@@ -337,7 +339,6 @@ IntegrationResult * simulateModelCVODE(ModelDefinition * model,
 				{
 
 					model->integration_functions->assPtr(t, user_data->derivative_variables, (void *) user_data);
-					iout++;
 
 					if (strict == 0)
 					{
@@ -349,6 +350,8 @@ IntegrationResult * simulateModelCVODE(ModelDefinition * model,
 					    writeResultSample(model, result, user_data, t, iout);
 					    executeEventsCVODE(user_data, t);
 					}
+					iout++;
+
 				}
 				else executeEventsCVODE(user_data, t);
 
@@ -376,8 +379,8 @@ IntegrationResult * simulateModelCVODE(ModelDefinition * model,
 			{
 				model->integration_functions->assPtr(t, user_data->derivative_variables, (void *) user_data);
 				// tout += RCONST(model->integration_settings->t_sampling);
-				iout++;
 				writeResultSample(model, result, user_data, t, iout);
+				iout++;
 //				tout = RCONST(result->list_samples[iout+1]);
 			}
 
@@ -392,18 +395,21 @@ IntegrationResult * simulateModelCVODE(ModelDefinition * model,
 		{
 			model->integration_functions->assPtr(tout, user_data->derivative_variables, (void *) user_data);
 			t = RCONST(result->list_samples[iout+1]);
-
+			writeResultSample(model, result, user_data, t, iout);
 			iout++;
 			// printf("%g (%d)\n", tout, iout);
 			// int iii;
 			// for (iii=0; iii < result->nb_samples; iii++)
 			// printf ("%g, ", result->list_samples[iii]);
 			// printf("\n");
-			writeResultSample(model, result, user_data, t, iout);
 			// tout += RCONST(model->integration_settings->t_sampling);
 		}
-		if (iout == (result->nb_samples-1)) break;
-		else tout = RCONST(result->list_samples[iout+1]);
+
+		if (iout == (result->nb_samples))
+		    break;
+		else
+		    tout = RCONST(result->list_samples[iout]);
+
 //		 printf("%d : %g (%d) (t : %g -> %g)\n", iout, result->list_samples[iout], result->nb_samples, t, tout);
 
 

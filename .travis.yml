@@ -7,6 +7,7 @@ language: python
 python: 2.7
 
 env:
+  - TEST_SUITE=biomodels
   - TEST_SUITE=sbml-test-suite VERSION=1.2
   - TEST_SUITE=sbml-test-suite VERSION=2.1
   - TEST_SUITE=sbml-test-suite VERSION=2.2
@@ -14,7 +15,6 @@ env:
   - TEST_SUITE=sbml-test-suite VERSION=2.4
   - TEST_SUITE=sbml-test-suite VERSION=2.5
   - TEST_SUITE=sbml-test-suite VERSION=3.1
-  - TEST_SUITE=biomodels
   - TEST_SUITE=others
 
 before_install:

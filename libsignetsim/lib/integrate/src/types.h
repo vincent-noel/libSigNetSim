@@ -61,8 +61,9 @@ typedef struct IntegrationResult
 	int                     nb_constant_variables;
 	// int                     nb_algebraic_variables;
 
+    double                  time_min;                   /* beginning of the simulation */
 	int                     nb_samples;                 /* number of samples */
-	double                  sampling_frequency;         /* sampling frequency */
+//	double                  sampling_frequency;         /* sampling frequency */
 	double    *             list_samples;               /* list of time samples, alternative to sampling_frequency */
 
 
