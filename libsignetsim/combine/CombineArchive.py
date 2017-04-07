@@ -24,7 +24,7 @@
 from libsignetsim.combine.Manifest import Manifest
 from libsignetsim.combine.ListOfFiles import ListOfFiles
 from libsignetsim.combine.CombineException import (
-	FileNotFoundException, NotAZipFileException, NoManifestFoundException, NoMasterSedmlFoundException,
+	FileNotFoundException, NotAZipFileException, NoMasterSedmlFoundException,
 	NoSedmlFoundException
 )
 from libsignetsim.sedml.SedmlDocument import SedmlDocument
@@ -37,7 +37,6 @@ from os.path import exists, join
 
 class CombineArchive(object):
 
-	MANIFEST = "manifest.xml"
 
 	SEDML = "sed-ml"
 
@@ -45,9 +44,7 @@ class CombineArchive(object):
 
 		self.__file = None
 		self.__listOfFiles = ListOfFiles(self)
-		self.__manifest = Manifest(self)
 		self.__path = Settings.tempDirectory + ''.join(choice(ascii_uppercase + ascii_lowercase + digits) for _ in range(12))
-		self.__master = None
 
 	def readFile(self, file):
 
@@ -58,21 +55,14 @@ class CombineArchive(object):
 			raise NotAZipFileException("File %s is not a zip file" % file)
 
 		self.__file = ZipFile(file)
-		print self.__file.namelist()
-		if not self.MANIFEST in self.__file.namelist():# and len(self.__file.namelist()) > 1:
-			raise NoManifestFoundException("No manifest found in archive %s" % file)
-		#
-		# elif len(self.__file.namelist()) == 1:
-		# 	self.master = self.__file.namelist()[0]
-
-		else:
-			self.__manifest.readManifest(self.__file.read(self.MANIFEST))
-			self.__master = self.__manifest.getMaster()
+		self.__listOfFiles.readListOfFiles(self.__file)
 
 		self.extractArchive()
-
+		self.__listOfFiles.writeListOfFiles()
 		#TODO : browse the manifest, check if the archive exists, then create add the file to the list of files ?
 
+	def getListOfFiles(self):
+		return self.__listOfFiles
 
 	def extractArchive(self):
 
@@ -80,17 +70,17 @@ class CombineArchive(object):
 
 	def getMasterSedml(self):
 
-		if self.__master is not None and self.__master[1].startswith(self.SEDML):
-			return join(self.__path, self.__master[0])
+		if self.__listOfFiles.getMaster() is not None and self.__listOfFiles.getMaster().isSedml():
+			return join(self.__path, self.__listOfFiles.getMaster().getFilename())
 		else:
 			raise NoMasterSedmlFoundException("No master Sedml found")
 
 
 	def getAllSedmls(self):
 
-		all_sedmls = self.__manifest.getAllSedmls()
+		all_sedmls = self.__listOfFiles.getAllSedmls()
 		if len(all_sedmls) > 0:
-			return [join(self.__path, sedml) for sedml in all_sedmls]
+			return [join(self.__path, sedml.getFilename()) for sedml in all_sedmls]
 
 	def runMasterSedml(self):
 
@@ -121,3 +111,8 @@ class CombineArchive(object):
 		sedml_doc.readSedmlFromFile(filename)
 		sedml_doc.run()
 		return sedml_doc
+	#
+	# def getfileContent(self, filename):
+	#
+	# 	file = open(filename, 'r')
+	# 	return f

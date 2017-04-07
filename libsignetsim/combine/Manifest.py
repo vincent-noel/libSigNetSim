@@ -58,22 +58,54 @@ class Manifest(object):
 					else:
 						self.__masters.append(False)
 
+	def writeManifest(self):
+
+		root = etree.Element("omexManifest")
+		root.set("xmlns","http://identifiers.org/combine.specifications/omex-manifest")
+
+		archive = etree.SubElement(root, "content")
+		archive.set("location", ".")
+		archive.set("format", "http://identifiers.org/combine.specifications/omex")
+
+		manifest = etree.SubElement(root, "content")
+		manifest.set("location", "./manifest.xml")
+		manifest.set("format", "http://identifiers.org/combine.specifications/omex-manifest")
+
+		for file in self.__archive.getListOfFiles():
+			t_content = etree.SubElement(root, "content")
+			t_content.set("location", "./" + file.getFilename())
+			t_content.set("format", file.getFormat())
+			if file.isMaster():
+				t_content.set("master", "true")
+
+		str = etree.tostring(root, encoding='utf-8', pretty_print=True, xml_declaration=True)
+		# print str
+		return str
+
 	def getMaster(self):
+		return self.__locations[self.__masters.index(True)]
 
-		ind_master = self.__masters.index(True)
-		return (self.__locations[ind_master], self.__formats[ind_master])
+	def isInManifest(self, filename):
+		return filename in self.__locations
 
-	def getAllSedmls(self):
-		return [self.__locations[i] for i, format in enumerate(self.__formats) if format.startswith("sed-ml")]
+	def addInManifest(self, filename, format, master=False):
+		self.__locations.append(filename)
+		self.__format.append(format)
+		self.__masters.append(master)
 
-	def getAllSbmls(self):
-		return [self.__locations[i] for i, format in enumerate(self.__formats) if format.startwith("sbml")]
+	def getFormat(self, filename):
+		return self.__formats[self.__locations.index(filename)]
 
-	def getTestSuiteExpectedResults(self):
+	def setFormat(self, filename, format):
+		self.__formats[self.__locations.index(filename)] = format
 
-		for location in self.__locations:
-			if location.endswith("results.csv"):
-				return location
 
-	def getTempDirectory(self):
-		return self.path
+	def isMaster(self, filename):
+		return self.__masters[self.__locations.index(filename)]
+
+	def setMaster(self, filename):
+		if True in self.__formats:
+			self.__formats = [False]*len(self.__locations)
+
+		self.__formats[self.__locations.index(filename)] = True
+

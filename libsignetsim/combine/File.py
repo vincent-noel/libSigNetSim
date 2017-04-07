@@ -23,11 +23,99 @@
 """
 
 from libsignetsim.settings.Settings import Settings
+from os.path import dirname, basename, join
+from mimetypes import guess_type
+from lxml import etree
+from libsbml import SBMLReader
 
+import libsbml
+from libsedml import readSedMLFromString
+reload(libsbml)
 
 class File(object):
 
-	def __init__(self, archive):
+	XML = "application/xml"
+	SBML = "http://identifiers.org/combine.specifications/sbml"
+	SEDML = "http://identifiers.org/combine.specifications/sed-ml"
+	CELLML = "http://identifiers.org/combine.specifications/cellml"
+	MANIFEST = "http://identifiers.org/combine.specifications/omex-manifest"
+	PDF = "application/pdf"
+	MARKDOWN = "text/markdown"
+	UNKNOWN = "application/octet-stream"
+
+
+	KNOWN_FORMATS = {
+		"xml" : XML,
+		"sbml" : SBML,
+		"sedml" : SEDML,
+		"cellml" : CELLML,
+		"pdf" : PDF,
+		"md" : MARKDOWN,
+	}
+
+	def __init__(self, archive, manifest):
 
 		self.__archive = archive
+		self.__manifest = manifest
+		self.__fullFilename = None
+		self.__content = None
+
+		self.__path = None
+		self.__filename = None
+		self.__extension = None
+		self.__format = None
+
+	def readFile(self, filename, archive_file):
+
+		self.__path = dirname(filename)
+		self.__filename = basename(filename)
+		self.__extension = self.__filename.split(".")[1]
+		if self.__extension in self.KNOWN_FORMATS:
+			self.__format = self.KNOWN_FORMATS[self.__extension]
+			if self.__format == self.XML:
+				self.__format = self.guessXML(archive_file.read(filename))
+		else:
+			self.__format = guess_type(filename)[0]
+
+		if self.__format is None:
+			self.__format = self.UNKNOWN
+
+		# print "Guessing mime type of %s : %s" % (filename, self.__format)
+
+	def isMaster(self):
+		return self.__manifest.isInManifest(self.getFilename()) and self.__manifest.isMaster(self.getFilename())
+
+	def isSedml(self):
+		return (self.__manifest.isInManifest(self.getFilename())
+				and self.__manifest.getFormat(self.getFilename()).startswith("sed-ml")
+		)
+
+	def getFilename(self):
+		return join(self.__path, self.__filename)
+
+	def getFormat(self):
+		return self.__format
+
+	def guessXML(self, xml_content):
+		root = etree.fromstring(xml_content)
+		tag = root.tag.split("}")[1]
+
+		if tag == "sbml":
+			sbmlReader = SBMLReader()
+			if sbmlReader is not None:
+				sbmlDoc = sbmlReader.readSBMLFromString(xml_content)
+				return self.SBML + ".level-%d.version-%d" % (sbmlDoc.getLevel(), sbmlDoc.getVersion())
+			else:
+				return self.SBML
+
+		elif tag == "sedML":
+			sedmlDoc = readSedMLFromString(xml_content)
+			return self.SEDML + ".level-%d.version-%d" % (sedmlDoc.getLevel(), sedmlDoc.getVersion())
+
+		elif tag == "omexManifest":
+			return self.MANIFEST
+
+		else:
+			return self.XML
+
 
