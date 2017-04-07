@@ -58,7 +58,6 @@ class CombineArchive(object):
 		self.__listOfFiles.readListOfFiles(self.__file)
 
 		self.extractArchive()
-		self.__listOfFiles.writeListOfFiles()
 		#TODO : browse the manifest, check if the archive exists, then create add the file to the list of files ?
 
 	def getListOfFiles(self):
@@ -67,6 +66,21 @@ class CombineArchive(object):
 	def extractArchive(self):
 
 		self.__file.extractall(self.__path)
+
+	def writeArchive(self, filename):
+
+		manifest_file= open(join(self.__path, "manifest.xml"), "w")
+		manifest_file.write(self.__listOfFiles.writeManifest())
+		manifest_file.close()
+
+		self.__file = ZipFile(filename, mode='w')
+		self.__file.write(join(self.__path, "manifest.xml"), "manifest.xml")
+
+		for file in self.__listOfFiles.writeListOfFiles():
+			self.__file.write(join(self.__path, file), file)
+
+		self.__file.close()
+
 
 	def getMasterSedml(self):
 

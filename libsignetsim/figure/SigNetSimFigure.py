@@ -49,10 +49,10 @@ class SigNetSimFigure(object):
         else:
             t_subplot = self.__figure.add_subplot(nb_cols, nb_rows, id_cell)
 
-        t_subplot.spines["top"].set_visible(False)
-        t_subplot.spines["right"].set_visible(False)
-        t_subplot.spines["bottom"].set_linewidth(0.3 * self.w)
-        t_subplot.spines["left"].set_linewidth(0.3 * self.w)
+        # t_subplot.spines["top"].set_visible(False)
+        # t_subplot.spines["right"].set_visible(False)
+        # t_subplot.spines["bottom"].set_linewidth(0.3 * self.w)
+        # t_subplot.spines["left"].set_linewidth(0.3 * self.w)
 
         t_subplot.tick_params(
             axis='x',          # changes apply to the x-axis

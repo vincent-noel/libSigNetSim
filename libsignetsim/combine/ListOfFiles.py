@@ -53,9 +53,11 @@ class ListOfFiles(list):
 				list.append(self, file)
 
 
+	def writeManifest(self):
+		return self.__manifest.writeManifest()
+
 	def writeListOfFiles(self):
-		self.__manifest.writeManifest()
-		return []
+		return [file.getFilename() for file in self]
 
 	# def getManifest(self):
 	# 	return self.__manifest
