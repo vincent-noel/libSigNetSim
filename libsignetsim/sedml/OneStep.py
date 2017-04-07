@@ -49,3 +49,9 @@ class OneStep(Simulation):
 
 		if self.__step is not None:
 			simulation.setStep(self.__step)
+
+	def setStep(self, step):
+		self.__step = step
+
+	def getStep(self):
+		return self.__step

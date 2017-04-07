@@ -84,12 +84,17 @@ from libsedml import (
 	AST_FUNCTION_ARCCSCH, AST_FUNCTION_ARCCOTH
 )
 from sympy_shortcuts import (SympyAsinh, SympyAcosh, SympyAtanh, SympyAcoth)
+
+# aggregate functions : min, max, sum, product
+AST_FUNCTION_MAX = 268
+from sympy_shortcuts import (SympyMax, SympyMin)
+
 # constants: true , false , notanumber , pi , infinity , exponentiale
 # TODO : Infinity, NaN
 from libsedml import (AST_CONSTANT_TRUE, AST_CONSTANT_FALSE, AST_CONSTANT_PI, AST_CONSTANT_E)
 from sympy_shortcuts import (SympyTrue, SympyFalse, SympyPi, SympyE, SympyInf, SympyNan)
 
-from libsedml import parseFormula
+from libsedml import parseFormula, formulaToString
 reload(libsbml)
 
 class SedmlMathReader(object):
@@ -404,8 +409,25 @@ class SedmlMathReader(object):
 			elif tree.getType() == AST_FUNCTION_TANH:
 				return SympyTanh(self.translateForInternal(tree.getChild(0)), evaluate=False)
 
+			# elif tree.getType() == AST_FUNCTION_MAX:
+			# 	return SympyMax(self.translateForInternal(tree.getChild(0)), evaluate=False)
+
 			else:
-				raise SedmlMathException("SedmlMathReader : Unknown function")
+				str = formulaToString(tree)
+
+				if str.startswith("min("):
+					raise SedmlMathException("SedmlMathReader : Min function not implemented")
+
+				elif str.startswith("max("):
+					raise SedmlMathException("SedmlMathReader : Max function not implemented")
+
+				elif str.startswith("sum("):
+					raise SedmlMathException("SedmlMathReader : Sum function not implemented")
+
+				elif str.startswith("product("):
+					raise SedmlMathException("SedmlMathReader : Product function not implemented")
+
+				raise SedmlMathException("SedmlMathReader : Unknown function %s" % formulaToString(tree))
 
 		elif tree.getType() == AST_LAMBDA:
 

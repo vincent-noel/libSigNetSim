@@ -56,7 +56,7 @@ class Model(SedBase, HasId):
 		if model.isSetLanguage():
 			self.__language = model.getLanguage()
 
-			if self.__language != self.LANGUAGE_SBML:
+			if not self.__language.startswith(self.LANGUAGE_SBML):
 
 				if len(self.__language.split(":")) == 4:
 					raise SedmlModelLanguageNotSupported("Language %s not supported" % self.__language.split(":")[3])
