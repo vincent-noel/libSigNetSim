@@ -65,7 +65,7 @@ class Task(AbstractTask):
 		return self.__simulationReference
 
 	def getModel(self):
-		return self.__document.listOfModels.getByModelReference(self.__modelReference)
+		return self.__document.listOfModels.getSbmlModelByReference(self.__modelReference)
 
 	def getSimulation(self):
 		return self.__document.listOfSimulations.getSimulation(self.__simulationReference)
@@ -89,7 +89,7 @@ class Task(AbstractTask):
 		if isinstance(self.__document.listOfSimulations.getSimulation(self.__simulationReference), OneStep):
 			raise SedmlOneStepTaskException("One step simulations cannot be executed as a single task")
 
-		model = self.__document.listOfModels.getByModelReference(self.__modelReference)
+		model = self.__document.listOfModels.getSbmlModelByReference(self.__modelReference)
 		simulation = self.__document.listOfSimulations.getSimulation(self.__simulationReference)
 		self.__simulationObject = simulation.run(model)
 		self.__results = self.__simulationObject.getRawData()[0]

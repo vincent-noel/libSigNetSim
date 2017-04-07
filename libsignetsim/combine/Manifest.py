@@ -50,8 +50,8 @@ class Manifest(object):
 
 					self.__locations.append(child.get(self.LOCATION)[2:])
 
-					t_format = child.get(self.FORMAT).split("/")
-					self.__formats.append(t_format[len(t_format)-1])
+					# t_format = child.get(self.FORMAT).split("/")
+					self.__formats.append(child.get(self.FORMAT))
 
 					if child.get(self.MASTER) is not None:
 						self.__masters.append(child.get(self.MASTER) == "true")
@@ -83,14 +83,15 @@ class Manifest(object):
 		return str
 
 	def getMaster(self):
-		return self.__locations[self.__masters.index(True)]
+		if True in self.__masters:
+			return self.__locations[self.__masters.index(True)]
 
 	def isInManifest(self, filename):
 		return filename in self.__locations
 
 	def addInManifest(self, filename, format, master=False):
 		self.__locations.append(filename)
-		self.__format.append(format)
+		self.__formats.append(format)
 		self.__masters.append(master)
 
 	def getFormat(self, filename):
@@ -104,8 +105,8 @@ class Manifest(object):
 		return self.__masters[self.__locations.index(filename)]
 
 	def setMaster(self, filename):
-		if True in self.__formats:
-			self.__formats = [False]*len(self.__locations)
+		if True in self.__masters:
+			self.__masters = [False]*len(self.__locations)
 
-		self.__formats[self.__locations.index(filename)] = True
+		self.__masters[self.__locations.index(filename)] = True
 

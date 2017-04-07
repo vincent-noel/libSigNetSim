@@ -41,16 +41,23 @@ class ListOfFiles(list):
 	def readListOfFiles(self, archive_file):
 
 		if not self.MANIFEST in archive_file.namelist():
-			raise NoManifestFoundException("No manifest found")
+			# raise NoManifestFoundException("No manifest found")
+			pass
 		else:
 			self.__manifest.readManifest(archive_file.read(self.MANIFEST))
-			self.__manifest.writeManifest()
+			# self.__manifest.writeManifest()
 
 		for t_file in archive_file.namelist():
 			if not t_file.endswith("/") and t_file != self.MANIFEST:
 				file = File(self.__archive, self.__manifest)
 				file.readFile(t_file, archive_file)
 				list.append(self, file)
+
+		if self.__manifest.getMaster() is None:
+			if len(self.getAllSedmls()) > 0:
+				new_master = self.getAllSedmls()[0]
+				new_master.setMaster()
+
 
 
 	def writeManifest(self):

@@ -86,7 +86,7 @@ class SetValue(ComputeChange):
 	def getValueChange(self):
 
 		if self.isTargetChange():
-			model = self.__document.listOfModels.getByModelReference(self.__modelReference)
+			model = self.__document.listOfModels.getSbmlModelByReference(self.__modelReference)
 			target = self.getTarget().getModelObject(model)
 
 			range = self.__repeatedTask.listOfRanges.getByRangeId(self.__range)

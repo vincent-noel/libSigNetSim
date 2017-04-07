@@ -41,11 +41,13 @@ class TestSteadyStatesScan(TestCase):
 
 		sedml_doc = SedmlDocument()
 
+		simulations = []
+
 		simulation = sedml_doc.listOfSimulations.createUniformTimeCourse()
 		simulation.setInitialTime(0)
-		simulation.setOutputStartTime(2e-5)
+		simulation.setOutputStartTime(0)
 		simulation.setOutputEndTime(100)
-		simulation.setNumberOfPoints(5e+6)
+		simulation.setNumberOfPoints(50)
 		simulation.getAlgorithm().setCVODE()
 		simulation.getAlgorithm().listOfAlgorithmParameters.setRelTol(1e-6)
 		simulation.getAlgorithm().listOfAlgorithmParameters.setAbsTol(1e-30)
@@ -352,7 +354,7 @@ class TestSteadyStatesScan(TestCase):
 		sedml_doc.writeSedmlToFile(join(testfiles_path, "BIOMD0000000001_fig4b.xml"))
 		sedml_doc = SedmlDocument()
 		sedml_doc.readSedmlFromFile(join(testfiles_path, "BIOMD0000000001_fig4b.xml"))
-
+		sedml_doc.run()
 	#
 	# def testFig4CPubli(self):
 	# 	""" Here the tricky part is that we must integrate the first 20 seconds,

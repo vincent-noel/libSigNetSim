@@ -72,13 +72,13 @@ class ListOfAlgorithmParameters(ListOf):
 
 		for param in self:
 			if param.isRelTol():
-				return param.getValue()
+				return float(param.getValue())
 
 	def getAbsTol(self):
 
 		for param in self:
 			if param.isAbsTol():
-				return param.getValue()
+				return float(param.getValue())
 
 	def setRelTol(self, rel_tol):
 

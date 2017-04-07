@@ -27,7 +27,7 @@ from libsignetsim.sedml.Simulation import Simulation
 from libsignetsim.simulation.TimeseriesSimulation import TimeseriesSimulation
 
 from libsignetsim.settings.Settings import Settings
-
+from numpy import linspace
 
 class UniformTimeCourse(Simulation):
 
@@ -88,11 +88,11 @@ class UniformTimeCourse(Simulation):
 
 	def run(self, sbmlModel):
 
+		samples = linspace(self.__outputStartTime, self.__outputEndTime, self.__numberOfPoints+1)
 		t_simulation = TimeseriesSimulation(
 			list_of_models=[sbmlModel],
 			time_min=self.__initialTime,
-			time_max=self.__outputEndTime,
-			nb_samples=self.__numberOfPoints+1,
+			list_samples=samples,
 			abs_tol=Simulation.getAlgorithm(self).getAbsTol(),
 			rel_tol=Simulation.getAlgorithm(self).getRelTol()
 		)

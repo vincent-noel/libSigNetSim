@@ -33,6 +33,7 @@ class Source(object):
 	LOCAL = 0
 	DISTANT = 1
 	URN = 2
+	REF = 3
 
 	def __init__(self, document):
 		self.__document = document
@@ -65,6 +66,11 @@ class Source(object):
 				self.__url = self.__uri.getURL()
 				self.__filename = join(Settings.tempDirectory, self.__uri.getFilename())
 
+		elif self.__document.listOfModels.getModelByReference(source) is not None:
+			self.__sourceType = self.REF
+			self.__ref = source
+			# self.__filename = self.__document.listOfModels.getModelByReference(source).getSource().getFilename()
+			# self.__sourceAvailable = True
 		else:
 			self.__sourceType = self.LOCAL
 			self.__sourceAvailable = True
@@ -87,6 +93,9 @@ class Source(object):
 		elif self.__sourceType == self.URN:
 			return self.__uri.writeSedml()
 
+		elif self.__sourceType == self.REF:
+			return self.__ref
+
 
 	def downloadSource(self):
 
@@ -98,7 +107,11 @@ class Source(object):
 		return self.__source
 
 	def getFilename(self):
-		if not self.__sourceAvailable:
+		# print "Getting filename for %s" % self.__source
+
+		if self.__sourceType == self.REF:
+			return self.__document.listOfModels.getModelByReference(self.__source).getSource().getFilename()
+		elif not self.__sourceAvailable:
 			self.downloadSource()
 		return self.__filename
 
@@ -114,3 +127,5 @@ class Source(object):
 		if self.__sourceType == self.LOCAL and (isabs(self.__source) or commonprefix([self.__source, path]) != ""):
 				self.__source = relpath(self.__source, path)
 
+	def getSourceType(self):
+		return self.__sourceType

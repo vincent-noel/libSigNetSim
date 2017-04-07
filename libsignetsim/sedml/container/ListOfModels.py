@@ -69,6 +69,13 @@ class ListOfModels(ListOf):
 			model = list_of_models.createModel()
 			t_model.writeSedml(model, level, version)
 
+	def getModelByReference(self, model_reference):
+
+		for model in self:
+			if model.getId() == model_reference:
+				return model
+
+
 	def getSbmlModels(self):
 
 		models = []
@@ -77,7 +84,7 @@ class ListOfModels(ListOf):
 
 		return models
 
-	def getByModelReference(self, model_reference):
+	def getSbmlModelByReference(self, model_reference):
 
 		for model in self:
 			if model.getId() == model_reference:

@@ -671,16 +671,14 @@ class TestShowCase(TestCase):
 	def testFig1B(self):
 
 		ca = CombineArchive()
-		ca.readFile(join(join(dirname(__file__), "files"), "CombineArchiveShowCase.omex"))
+		ca.readArchive(join(join(dirname(__file__), "files"), "CombineArchiveShowCase.omex"))
 		sedml_doc = ca.runMasterSedml()
 
 	def testValues(self):
 
 		ca = CombineArchive()
-		ca.readFile(join(join(dirname(__file__), "files"), "CombineArchiveShowCase.omex"))
+		ca.readArchive(join(join(dirname(__file__), "files"), "CombineArchiveShowCase.omex"))
 		sedmls = ca.getAllSedmls()
-
-
 
 		for sedml in sedmls:
 			if sedml != ca.getMasterSedml():
@@ -694,10 +692,10 @@ class TestShowCase(TestCase):
 	def testSaveAndReload(self):
 
 		ca = CombineArchive()
-		ca.readFile(join(join(dirname(__file__), "files"), "CombineArchiveShowCase.omex"))
+		ca.readArchive(join(join(dirname(__file__), "files"), "CombineArchiveShowCase.omex"))
 		ca.writeArchive(join(join(dirname(__file__), "files"), "CombineArchiveShowCase(2).omex"))
 		ca = CombineArchive()
-		ca.readFile(join(join(dirname(__file__), "files"), "CombineArchiveShowCase(2).omex"))
+		ca.readArchive(join(join(dirname(__file__), "files"), "CombineArchiveShowCase(2).omex"))
 		sedmls = ca.getAllSedmls()
 
 		for sedml in sedmls:

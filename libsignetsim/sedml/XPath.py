@@ -45,22 +45,27 @@ class XPath(object):
 	def readSedml(self, xpath, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
 		self.__path = xpath.split('/')
+
 		if self.__path[0] == "" and self.__path[1] == "sbml:sbml" and self.__path[2] == "sbml:model":
 
 			ind_last_token = len(self.__path) - 1
 
 			if self.__path[ind_last_token].startswith("@"):
 				self.__attribute = self.__path[ind_last_token][1:]
+				self.__path = self.__path[:-1]
 				ind_last_token -= 1
 
-			res_match = match(r"(sbml:[a-zA-Z]+)\[@([a-zA-Z]+)=\'(.*)\'\]", self.__path[ind_last_token])
+			# print self.__path[ind_last_token]
+			res_match = match(r"(sbml:[a-zA-Z]+)\[@([a-zA-Z]+)=[\'\"](.*)[\'\"]\]", self.__path[ind_last_token])
 
+			# print res_match.groups()
 			self.__path[ind_last_token] = res_match.groups()[0]
 			self.__refType = res_match.groups()[1]
 			self.__ref = res_match.groups()[2]
 
 	def getModelObject(self, sbml_model):
 
+		# print self.__path
 		ind_last_token = len(self.__path) - 1
 
 		t_container = None

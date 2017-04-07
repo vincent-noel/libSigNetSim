@@ -118,3 +118,5 @@ class Model(SedBase, HasId):
 	def setSource(self, source):
 		self.__source.setSource(source)
 
+	def getSource(self):
+		return self.__source

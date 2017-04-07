@@ -46,7 +46,7 @@ class CombineArchive(object):
 		self.__listOfFiles = ListOfFiles(self)
 		self.__path = Settings.tempDirectory + ''.join(choice(ascii_uppercase + ascii_lowercase + digits) for _ in range(12))
 
-	def readFile(self, file):
+	def readArchive(self, file):
 
 		if not exists(file):
 			raise FileNotFoundException("File %s not found" % file)
@@ -99,18 +99,19 @@ class CombineArchive(object):
 	def runMasterSedml(self):
 
 		filename = self.getMasterSedml()
+
 		if exists(filename):
 			return self.runSedml(filename)
 
 	def runAllSedmls(self):
 
-		all_sedmls = self.__manifest.getAllSedmls()
+		all_sedmls = self.__listOfFiles.getAllSedmls()
 		sedml_docs = []
 
 		if len(all_sedmls) > 0:
 
 			for sedml_file in all_sedmls:
-				filename = join(self.__path, sedml_file)
+				filename = join(self.__path, sedml_file.getFilename())
 				if exists(filename):
 					sedml_docs.append(self.runSedml(filename))
 

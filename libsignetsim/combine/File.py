@@ -34,14 +34,14 @@ reload(libsbml)
 
 class File(object):
 
-	XML = "application/xml"
+	XML = "http://purl.org/NET/mediatypes/application/xml"
 	SBML = "http://identifiers.org/combine.specifications/sbml"
 	SEDML = "http://identifiers.org/combine.specifications/sed-ml"
 	CELLML = "http://identifiers.org/combine.specifications/cellml"
 	MANIFEST = "http://identifiers.org/combine.specifications/omex-manifest"
-	PDF = "application/pdf"
-	MARKDOWN = "text/markdown"
-	UNKNOWN = "application/octet-stream"
+	PDF = "http://purl.org/NET/mediatypes/application/pdf"
+	MARKDOWN = "http://purl.org/NET/mediatypes/text/markdown"
+	UNKNOWN = "http://purl.org/NET/mediatypes/application/octet-stream"
 
 
 	KNOWN_FORMATS = {
@@ -69,25 +69,42 @@ class File(object):
 
 		self.__path = dirname(filename)
 		self.__filename = basename(filename)
-		self.__extension = self.__filename.split(".")[1]
-		if self.__extension in self.KNOWN_FORMATS:
+		self.__extension = self.__filename.split(".")[-1]
+
+		if self.__manifest.isInManifest(self.getFilename()) and self.__manifest.getFormat(self.getFilename()) is not None:
+			self.__format = self.__manifest.getFormat(self.getFilename())
+
+		elif self.__extension in self.KNOWN_FORMATS:
+
 			self.__format = self.KNOWN_FORMATS[self.__extension]
+
 			if self.__format == self.XML:
 				self.__format = self.guessXML(archive_file.read(filename))
+
 		else:
-			self.__format = guess_type(filename)[0]
+			self.__format = "http://purl.org/NET/mediatypes/%s" % guess_type(filename)[0]
 
 		if self.__format is None:
 			self.__format = self.UNKNOWN
 
-		# print "Guessing mime type of %s : %s" % (filename, self.__format)
+
+		if not self.__manifest.isInManifest(self.getFilename()):
+			self.__manifest.addInManifest(self.getFilename(), self.__format)
+
+		elif self.__manifest.getFormat(self.getFilename()) is None:
+			self.__manifest.setFormat(self.getFilename(), self.__format)
+
 
 	def isMaster(self):
 		return self.__manifest.isInManifest(self.getFilename()) and self.__manifest.isMaster(self.getFilename())
 
+	def setMaster(self):
+		if self.__manifest.isInManifest(self.getFilename()):
+			self.__manifest.setMaster(self.getFilename())
+
 	def isSedml(self):
 		return (self.__manifest.isInManifest(self.getFilename())
-				and self.__manifest.getFormat(self.getFilename()).startswith("sed-ml")
+				and self.__manifest.getFormat(self.getFilename()).startswith(self.SEDML)
 		)
 
 	def getFilename(self):
