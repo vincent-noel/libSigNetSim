@@ -54,7 +54,7 @@ class TestSteadyStatesScan(TestCase):
 
 		model = sedml_doc.listOfModels.createModel()
 		model.setLanguageSbml()
-		model.setSource(join(testfiles_path, "BIOMD0000000001.xml"))
+		model.setSource("urn:miriam:biomodels.db:BIOMD0000000001")
 		sbml_model = model.getSbmlModel()
 
 		change = model.listOfChanges.createChangeAttribute()

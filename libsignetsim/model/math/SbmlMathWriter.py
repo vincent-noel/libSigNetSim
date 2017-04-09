@@ -266,6 +266,7 @@ class SbmlMathWriter(object):
 			t_ast.setType(libsbml.AST_TIMES)
 			# t_ast_2 = None
 			t_tree_denominator = None
+			t_tree_numerator = None
 
 			for i_arg, arg in enumerate(tree.args):
 				if arg.func == SympyPow and arg.args[1].func == SympyNegOne:
@@ -281,12 +282,17 @@ class SbmlMathWriter(object):
 					else:
 						t_tree_denominator.addChild(self.translateForSbml(arg.args[0], sbml_level, sbml_version))
 				else:
+					t_tree_numerator = self.translateForSbml(arg, sbml_level, sbml_version)
+					# t_ast.addChild(t_tree_numerator)
 					t_ast.addChild(self.translateForSbml(arg, sbml_level, sbml_version))
 
 			if t_tree_denominator is not None:
 				t_ast_2 = libsbml.ASTNode()
 				t_ast_2.setType(libsbml.AST_DIVIDE)
-				t_ast_2.addChild(t_ast)
+				if t_ast.getNumChildren() == 1:
+					t_ast_2.addChild(t_tree_numerator)
+				else:
+					t_ast_2.addChild(t_ast)
 				t_ast_2.addChild(t_tree_denominator)
 				return t_ast_2
 

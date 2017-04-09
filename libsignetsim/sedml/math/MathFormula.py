@@ -28,7 +28,7 @@ from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.sympy_shortcuts import (SympySymbol, SympyInteger)
 
 import libsbml
-from libsedml import parseFormula, formulaToString, ASTNode
+from libsedml import formulaToString, ASTNode
 reload(libsbml)
 
 from sympy import srepr
@@ -75,11 +75,11 @@ class MathFormula(SedmlMathReader, SedmlMathWriter):
 		""" Export math formula to sbml """
 
 		if self.internalTree is not None:
-			formula = SedmlMathWriter.translateForSbml(self, self.internalTree, level, version)
+			formula = SedmlMathWriter.translateForSedml(self, self.internalTree, level, version)
 
 			if Settings.verbose >= 2:
 				print "\n> writeSedml"
-				print ">> input : %s" % srepr(elf.internalTree)
+				print ">> input : %s" % srepr(self.internalTree)
 				print ">> input simplified : %s" % str(self.internalTree)
 				print ">> output : %s" % self.printSbml(formula, level, version)
 
@@ -91,7 +91,7 @@ class MathFormula(SedmlMathReader, SedmlMathWriter):
 
 		if isinstance(formula, str):
 			return formula
-		elif isinstance(formula, ASTNode):
+		elif isinstance(formula, ASTNode):# or isinstance(formula, ASTNodeSBML):
 			return formulaToString(formula)
 		else:
 			return str(formula)

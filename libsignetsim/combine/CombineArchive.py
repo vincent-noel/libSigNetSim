@@ -120,12 +120,27 @@ class CombineArchive(object):
 		else:
 			raise NoSedmlFoundException()
 
-	def runSedml(self, filename):
+	def getMasterSedmlDoc(self):
+
+		filename = self.getMasterSedml()
+
+		if exists(filename):
+			return self.getSedmlDoc(filename)
+
+	def getSedmlDoc(self, filename):
 
 		sedml_doc = SedmlDocument()
 		sedml_doc.readSedmlFromFile(filename)
+		return sedml_doc
+
+	def runSedml(self, filename):
+
+		sedml_doc = self.getSedmlDoc(filename)
 		sedml_doc.run()
 		return sedml_doc
+
+	def getPath(self):
+		return self.__path
 	#
 	# def getfileContent(self, filename):
 	#

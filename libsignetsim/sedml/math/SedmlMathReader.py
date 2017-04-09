@@ -86,8 +86,7 @@ from libsedml import (
 from sympy_shortcuts import (SympyAsinh, SympyAcosh, SympyAtanh, SympyAcoth)
 
 # aggregate functions : min, max, sum, product
-AST_FUNCTION_MAX = 268
-from sympy_shortcuts import (SympyMax, SympyMin)
+from sympy_shortcuts import SympyFunction
 
 # constants: true , false , notanumber , pi , infinity , exponentiale
 # TODO : Infinity, NaN
@@ -96,6 +95,7 @@ from sympy_shortcuts import (SympyTrue, SympyFalse, SympyPi, SympyE, SympyInf, S
 
 from libsedml import parseFormula, formulaToString
 reload(libsbml)
+
 
 class SedmlMathReader(object):
 	""" Class for handling math formulaes """
@@ -409,23 +409,19 @@ class SedmlMathReader(object):
 			elif tree.getType() == AST_FUNCTION_TANH:
 				return SympyTanh(self.translateForInternal(tree.getChild(0)), evaluate=False)
 
-			# elif tree.getType() == AST_FUNCTION_MAX:
-			# 	return SympyMax(self.translateForInternal(tree.getChild(0)), evaluate=False)
-
 			else:
-				str = formulaToString(tree)
+				str_tree = formulaToString(tree)
+				if str_tree.startswith("min("):
+					return SympyFunction("min")(*([self.translateForInternal(tree.getChild(0))]))
 
-				if str.startswith("min("):
-					raise SedmlMathException("SedmlMathReader : Min function not implemented")
+				elif str_tree.startswith("max("):
+					return SympyFunction("max")(*([self.translateForInternal(tree.getChild(0))]))
 
-				elif str.startswith("max("):
-					raise SedmlMathException("SedmlMathReader : Max function not implemented")
+				elif str_tree.startswith("sum("):
+					return SympyFunction("sum")(*([self.translateForInternal(tree.getChild(0))]))
 
-				elif str.startswith("sum("):
-					raise SedmlMathException("SedmlMathReader : Sum function not implemented")
-
-				elif str.startswith("product("):
-					raise SedmlMathException("SedmlMathReader : Product function not implemented")
+				elif str_tree.startswith("product("):
+					return SympyFunction("product")(*([self.translateForInternal(tree.getChild(0))]))
 
 				raise SedmlMathException("SedmlMathReader : Unknown function %s" % formulaToString(tree))
 
