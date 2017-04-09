@@ -72,20 +72,7 @@ class DataGenerator(SedBase, HasId):
 		return self.listOfVariables.getTasksToRun()
 
 	def build(self):
-
-		raw_data = self.listOfVariables.getData()
-		nb_timepoints = len(raw_data[raw_data.keys()[0]])
-		self.__data = []
-
-		for i in range(nb_timepoints):
-
-			subs = {}
-			for var in self.listOfVariables:
-				subs.update({var.getSympySymbol():float(raw_data[var][i])})
-
-			subs.update(self.listOfParameters.getSubs())
-
-			self.__data.append(float(self.getMath().getInternalMathFormula().subs(subs)))
+		self.__data = self.getMath().evaluateMathFormula(self.listOfVariables.getData(), self.listOfParameters.getSubs())
 
 	def getData(self):
 		return self.__data

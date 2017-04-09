@@ -32,7 +32,7 @@ from libsedml import formulaToString, ASTNode
 reload(libsbml)
 
 from sympy import srepr
-
+from numpy import sum, product
 
 class MathFormula(SedmlMathReader, SedmlMathWriter):
 	""" Class for handling math formulaes """
@@ -95,6 +95,40 @@ class MathFormula(SedmlMathReader, SedmlMathWriter):
 			return formulaToString(formula)
 		else:
 			return str(formula)
+
+	def evaluateMathFormula(self, data, parameters):
+
+		nb_timepoints = len(data.values()[0])
+		return self.evaluate(self.internalTree, data, parameters, nb_timepoints)
+
+	def evaluate(self, expr, data, parameters, nb_timepoints):
+
+		if expr in data.keys():
+			return data[expr]
+
+		elif expr in parameters.keys():
+			return parameters[expr]*nb_timepoints
+
+		elif str(expr.func) in ["min", "max", "sum", "product"]:
+			evaluated_arg = self.evaluate(expr.args[0], data, parameters, nb_timepoints)
+
+			if str(expr.func) == "min":
+				return [min(evaluated_arg)]*nb_timepoints
+			elif str(expr.func) == "max":
+				return [max(evaluated_arg)]*nb_timepoints
+			elif str(expr.func) == "sum":
+				return [sum(evaluated_arg)]*nb_timepoints
+			elif str(expr.func) == "product":
+				return [product(evaluated_arg)]*nb_timepoints
+		else:
+
+			evaluated_args = [self.evaluate(arg, data, parameters, nb_timepoints) for arg in expr.args]
+			values = []
+			for timepoint in range(nb_timepoints):
+				evaluated_timepoint = (arg[timepoint] for arg in evaluated_args)
+				values.append(expr.func(*evaluated_timepoint))
+
+			return values
 
 
 	#

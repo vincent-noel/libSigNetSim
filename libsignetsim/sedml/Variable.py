@@ -100,12 +100,13 @@ class Variable(SedBase, HasId):
 		simulation = self.__document.listOfTasks.getTask(self.__taskReference)
 
 		if self.__symbol.getSymbol() is not None and self.__symbol.isTime():
-			return {self : simulation.getTimes()}
+			return {self.getSympySymbol(): simulation.getTimes()}
+			# return {self.getSymbol().getSymbol(): simulation.getTimes()}
 
 		elif self.__target.getXPath() is not None:
 			sbml_model = simulation.getModel()
 			sbml_object = self.__target.getModelObject(sbml_model)
-			return {self: simulation.getResultsByVariable(sbml_object.getSbmlId())}
+			return {self.getSympySymbol(): simulation.getResultsByVariable(sbml_object.getSbmlId())}
 
 	def setTaskReference(self, task_reference):
 		self.__taskReference = task_reference

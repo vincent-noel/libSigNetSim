@@ -47,7 +47,7 @@ class TestSteadyStatesScan(TestCase):
 		simulation.setInitialTime(0)
 		simulation.setOutputStartTime(0)
 		simulation.setOutputEndTime(100)
-		simulation.setNumberOfPoints(50)
+		simulation.setNumberOfPoints(5)
 		simulation.getAlgorithm().setCVODE()
 		simulation.getAlgorithm().listOfAlgorithmParameters.setRelTol(1e-6)
 		simulation.getAlgorithm().listOfAlgorithmParameters.setAbsTol(1e-30)

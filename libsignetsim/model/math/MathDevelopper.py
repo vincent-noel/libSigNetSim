@@ -55,21 +55,6 @@ def unevaluatedSubs(expr, substitutions, *args, **kwargs):
 	else:
 		return expr.func(*new_args, evaluate=False)
 
-	# try:
-	# 	res = expr.func(*new_args, evaluate=False)
-	#
-	# except:
-	# 	print str(expr)
-	# return res
-
-
-def printer(expr, *args, **kwargs):
-	"""Print out every node"""
-	print(expr)
-	if not expr.args:
-		return expr
-
-
 def simpleSubs(expr, substitutions, *args, **kwargs):
 	"""Perform expression substitution, ignoring derivatives."""
 	if expr in substitutions:
