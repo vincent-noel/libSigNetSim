@@ -34,7 +34,7 @@ class TestAnnotation(TestCase):
 	""" Tests high level functions """
 
 
-	def testReadWrite(self):
+	def testReadWriteModelHistory(self):
 
 		testfiles_path = join(join(getcwd(), dirname(__file__)), "files")
 		sbml_doc = SbmlDocument()
