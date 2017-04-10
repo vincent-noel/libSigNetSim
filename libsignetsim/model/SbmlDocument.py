@@ -325,6 +325,6 @@ class SbmlDocument(object):
 		if self.useCompPackage:
 			for document in self.documentDependencies:
 				if path is None:
-					document.writeSbml()
+					document.writeSbmlToFile()
 				else:
-					document.writeSbml(path=path)
+					document.writeSbmlToFile(path=path)
