@@ -26,6 +26,7 @@
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.DAE import DAE
 from libsignetsim.model.math.sympy_shortcuts import SympyEqual, SympyInteger, SympySymbol, SympyFloat
+from libsignetsim.model.ModelException import MathException
 from sympy import solve
 from time import time
 
@@ -87,39 +88,7 @@ class ListOfDAEs(list):
 		for equ in system:
 			if equ != True:
 				all_true = False
-		#
-		# if False in system or not all_true:
-		# 	for var in self.__model.listOfVariables.values():
-		# 		if var.isAlgebraic():
-		# 			del self.__model.solvedInitialConditions[var]
-		#
-		# 	system = []
-		# 	system_vars = []
-		#
-		# 	t_subs = {}
-		#
-		# 	for var, val in self.__model.solvedInitialConditions.items():
-		# 		t_subs.update({var.symbol.getInternalMathFormula():val.getInternalMathFormula()})
-		#
-		# 	for dae in self:
-		# 		t_formula = MathFormula(self.__model)
-		# 		t_formula.setInternalMathFormula(dae.getDefinition().getInternalMathFormula())
-		# 		t_formula.setInternalMathFormula(t_formula.getDeveloppedInternalMathFormula().subs(t_subs))
-		#
-		# 		system.append(
-		# 			SympyEqual(
-		# 				t_formula.getFinalMathFormula(),
-		# 				SympyInteger(0)
-		# 			)
-		# 		)
-		#
-		# 	system_vars = []
-		# 	for var in self.__model.listOfVariables.values():
-		# 		if var.isAlgebraic():
-		# 			system_vars.append(var.symbol.getInternalMathFormula())
 
-		# print system
-		# print system_vars
 		if len(system_vars) > 0 and not all_true:
 
 			init_cond = {}
@@ -250,132 +219,6 @@ class ListOfDAEs(list):
 					# raise MathException("Lacks an initial condition : %s" % var.getSbmlId())
 					print "Lacks an initial condition : %s" % var.getSbmlId()
 
-
-
-		#
-		# subs = {}
-		#
-		# if tmin == 0:
-		# 	subs = {SympySymbol("_time_"): SympyInteger(tmin)}
-		# else:
-		# 	subs = {SympySymbol("_time_"): SympyFloat(tmin)}
-		# for var, value in self.__model.solvedInitialConditions.items():
-		# 	if value.getInternalMathFormula() is not None:
-		# 		subs.update({var.symbol.getInternalMathFormula(): value.getInternalMathFormula()})
-		# for t_cfe in self.__model.listOfCFEs:
-		#
-		# 	# print var.symbol.getInternalMathFormula()
-		# 	t_value = MathFormula(self.__model)
-		# 	t_value.setInternalMathFormula(t_cfe.getDefinition().getDeveloppedInternalMathFormula().subs(subs))
-		# 	self.__model.solvedInitialConditions.update({t_cfe.getVariable():t_value})
-		#
-
-#
-
-	def solveInitialConditions(self, tmin=0):
-
-		system = []
-		system_vars = []
-
-		t_subs = {}
-
-		for var, val in self.__model.solvedInitialConditions.items():
-			t_subs.update({var.symbol.getInternalMathFormula():val.getInternalMathFormula()})
-
-		# print t_subs
-		for dae in self:
-			t_formula = MathFormula(self.__model)
-			t_formula.setInternalMathFormula(dae.getDefinition().getInternalMathFormula())
-			t_formula.setInternalMathFormula(t_formula.getDeveloppedInternalMathFormula().subs(t_subs))
-
-			system.append(
-				SympyEqual(
-					t_formula.getFinalMathFormula(),
-					SympyInteger(0)
-				)
-			)
-
-		system_vars = []
-		for var in self.__model.listOfVariables.values():
-			if var.value.getInternalMathFormula() is None and var.isAlgebraic():
-				system_vars.append(var.symbol.getInternalMathFormula())
-
-		# print system
-		# print system_vars
-		if False in system:
-			for var in self.__model.listOfVariables.values():
-				if var.isAlgebraic():
-					del self.__model.solvedInitialConditions[var]
-
-			system = []
-			system_vars = []
-
-			t_subs = {}
-
-			for var, val in self.__model.solvedInitialConditions.items():
-				t_subs.update({var.symbol.getInternalMathFormula():val.getInternalMathFormula()})
-
-			for dae in self:
-				t_formula = MathFormula(self.__model)
-				t_formula.setInternalMathFormula(dae.getDefinition().getInternalMathFormula())
-				t_formula.setInternalMathFormula(t_formula.getDeveloppedInternalMathFormula().subs(t_subs))
-
-				system.append(
-					SympyEqual(
-						t_formula.getFinalMathFormula(),
-						SympyInteger(0)
-					)
-				)
-
-			system_vars = []
-			for var in self.__model.listOfVariables.values():
-				if var.isAlgebraic():
-					system_vars.append(var.symbol.getInternalMathFormula())
-
-		# print system
-		# print system_vars
-		if len(system_vars) > 0:
-
-
-			res = solve(system, system_vars)
-			# print res
-			if res is not True and len(res) > 0:
-				if isinstance(res, dict):
-					for var, value in res.items():
-						t_var = self.__model.listOfVariables[str(var)]
-						t_value = MathFormula(self.__model)
-						t_value.setInternalMathFormula(value)
-						self.__model.solvedInitialConditions.update({t_var:t_value})
-
-				elif isinstance(res[0], dict):
-					for var, value in res[0].items():
-						t_var = self.__model.listOfVariables[str(var)]
-						t_value = MathFormula(self.__model)
-						t_value.setInternalMathFormula(value)
-						self.__model.solvedInitialConditions.update({t_var:t_value})
-				elif isinstance(res[0], tuple):
-					for i_var, value in enumerate(res[0]):
-						t_var = self.__model.listOfVariables[str(system_vars[i_var])]
-						t_value = MathFormula(self.__model)
-						t_value.setInternalMathFormula(value)
-						self.__model.solvedInitialConditions.update({t_var:t_value})
-
-
-		subs = {}
-
-		if tmin == 0:
-			subs = {SympySymbol("_time_"): SympyInteger(tmin)}
-		else:
-			subs = {SympySymbol("_time_"): SympyFloat(tmin)}
-		for var, value in self.__model.solvedInitialConditions.items():
-			if value.getInternalMathFormula() is not None:
-				subs.update({var.symbol.getInternalMathFormula(): value.getInternalMathFormula()})
-		for t_cfe in self.__model.listOfCFEs:
-
-			# print var.symbol.getInternalMathFormula()
-			t_value = MathFormula(self.__model)
-			t_value.setInternalMathFormula(t_cfe.getDefinition().getDeveloppedInternalMathFormula().subs(subs))
-			self.__model.solvedInitialConditions.update({t_cfe.getVariable():t_value})
 
 	def prettyPrint(self):
 

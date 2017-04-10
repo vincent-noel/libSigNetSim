@@ -66,6 +66,7 @@ class Plot2D(Output):
 		if print_ynames:
 			subplot.legend(loc='upper right')
 
+		subplot.set_title(self.getName())
 
 	def getDataToGenerate(self):
 

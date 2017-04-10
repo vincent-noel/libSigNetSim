@@ -38,10 +38,10 @@ from libsignetsim.model.sbml.container.ListOfSbmlObjects import ListOfSbmlObject
 from libsignetsim.model.sbml.container.ListOfSubmodels import ListOfSubmodels
 from libsignetsim.model.sbml.container.ListOfPorts import ListOfPorts
 
-# from libsignetsim.model.ModelException import ModelException
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
+from libsignetsim.model.sbml.SbmlModelHistory import SbmlModelHistory
 from libsignetsim.model.sbml.HasId import HasId
 
 from os.path import isfile
@@ -93,6 +93,8 @@ class SbmlModel(HasId, SbmlObject):
 		self.sbmlLevel = Settings.defaultSbmlLevel
 		self.sbmlVersion = Settings.defaultSbmlVersion
 
+		self.modelHistory = SbmlModelHistory(self)
+
 	def newModel(self, name):
 
 		self.setName(name)
@@ -125,11 +127,12 @@ class SbmlModel(HasId, SbmlObject):
 
 		t0 = time()
 
-		HasId.readSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
-		SbmlObject.readSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
-
 		self.sbmlLevel = sbml_level
 		self.sbmlVersion = sbml_version
+
+		HasId.readSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
+		SbmlObject.readSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
+		self.modelHistory.readSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
 
 		self.listOfFunctionDefinitions.readSbml(sbmlModel.getListOfFunctionDefinitions(), self.sbmlLevel, self.sbmlVersion)
 		self.listOfUnitDefinitions.readSbml(sbmlModel.getListOfUnitDefinitions(), self.sbmlLevel, self.sbmlVersion)
@@ -192,6 +195,7 @@ class SbmlModel(HasId, SbmlObject):
 
 		SbmlObject.writeSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
 		HasId.writeSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
+		self.modelHistory.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
 
 		self.listOfUnitDefinitions.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
 		self.listOfFunctionDefinitions.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
