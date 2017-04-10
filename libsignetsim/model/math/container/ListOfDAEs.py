@@ -50,7 +50,7 @@ class ListOfDAEs(list):
 				list.append(self, t_dae)
 
 
-	def solveInitialConditions_v2(self, tmin=0):
+	def solveInitialConditions(self, tmin=0):
 
 		DEBUG = False
 		system = []

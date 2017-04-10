@@ -41,7 +41,7 @@ from libsignetsim.model.sbml.container.ListOfPorts import ListOfPorts
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
-from libsignetsim.model.sbml.SbmlModelHistory import SbmlModelHistory
+from libsignetsim.model.sbml.SbmlModelAnnotation import SbmlModelAnnotation
 from libsignetsim.model.sbml.HasId import HasId
 
 from os.path import isfile
@@ -53,7 +53,7 @@ from libsbml import SBMLReader, SBMLDocument, formulaToString,\
 
 from time import time
 
-class SbmlModel(HasId, SbmlObject):
+class SbmlModel(HasId, SbmlObject, SbmlModelAnnotation):
 	""" Sbml model class """
 
 
@@ -66,6 +66,7 @@ class SbmlModel(HasId, SbmlObject):
 		HasId.__init__(self, self)
 		self.listOfSbmlObjects = ListOfSbmlObjects(self)
 		SbmlObject.__init__(self, self)
+		SbmlModelAnnotation.__init__(self)
 
 		self.listOfSpecies = ListOfSpecies(self)
 		self.listOfParameters = ListOfParameters(self)
@@ -92,8 +93,6 @@ class SbmlModel(HasId, SbmlObject):
 
 		self.sbmlLevel = Settings.defaultSbmlLevel
 		self.sbmlVersion = Settings.defaultSbmlVersion
-
-		self.modelHistory = SbmlModelHistory(self)
 
 	def newModel(self, name):
 
@@ -132,7 +131,7 @@ class SbmlModel(HasId, SbmlObject):
 
 		HasId.readSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
 		SbmlObject.readSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
-		self.modelHistory.readSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
+		SbmlModelAnnotation.readSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
 
 		self.listOfFunctionDefinitions.readSbml(sbmlModel.getListOfFunctionDefinitions(), self.sbmlLevel, self.sbmlVersion)
 		self.listOfUnitDefinitions.readSbml(sbmlModel.getListOfUnitDefinitions(), self.sbmlLevel, self.sbmlVersion)
@@ -195,7 +194,7 @@ class SbmlModel(HasId, SbmlObject):
 
 		SbmlObject.writeSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
 		HasId.writeSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
-		self.modelHistory.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
+		SbmlModelAnnotation.writeSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
 
 		self.listOfUnitDefinitions.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
 		self.listOfFunctionDefinitions.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
