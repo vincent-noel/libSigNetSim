@@ -45,7 +45,7 @@ class TestAnnotation(TestCase):
 		self.assertEqual(sbml_model.modelHistory.getListOfCreators()[0].getEmail(), "lenov@ebi.ac.uk")
 		self.assertEqual(sbml_model.modelHistory.getListOfCreators()[0].getGivenName(), "Nicolas")
 		self.assertEqual(sbml_model.modelHistory.getListOfCreators()[0].getFamilyName(), "Le Novère")
-		sbml_doc.writeSbml(join(Settings.tempDirectory, "BIOMD0000000001.xml"))
+		sbml_doc.writeSbmlToFile(join(Settings.tempDirectory, "BIOMD0000000001.xml"))
 
 
 

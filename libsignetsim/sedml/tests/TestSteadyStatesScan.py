@@ -65,7 +65,7 @@ class TestSteadyStatesScan(TestCase):
 		km.setValue(1.233)
 
 		sbml_filename = join(testfiles_path, "enzymatic.xml")
-		sbml_doc.writeSbml(sbml_filename)
+		sbml_doc.writeSbmlToFile(sbml_filename)
 
 		sedml_doc = SedmlDocument()
 

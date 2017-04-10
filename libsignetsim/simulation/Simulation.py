@@ -99,18 +99,18 @@ class Simulation(CWriterSimulation):
 
 		if not exists(res_path):
 			mkdir(res_path)
-
-	def writeModelsFile(self):
-		if len(self.listOfModels) > 1:
-			for i_model, model in enumerate(self.listOfModels):
-				model.writeSbml(join(self.getTempDirectory(),
-												"model_%d.sbml" % i_model))
-
-		else:
-			self.listOfModels[0].writeSbml(join(self.getTempDirectory(),
-														"model.sbml"))
-
-
+	#
+	# def writeModelsFile(self):
+	# 	if len(self.listOfModels) > 1:
+	# 		for i_model, model in enumerate(self.listOfModels):
+	# 			model.writeSbmlToFile(join(self.getTempDirectory(),
+	# 											"model_%d.sbml" % i_model))
+	#
+	# 	else:
+	# 		self.listOfModels[0].writeSbmlToFile(join(self.getTempDirectory(),
+	# 													"model.sbml"))
+	#
+	#
 
 	def __compile__(self, nb_procs=4):
 

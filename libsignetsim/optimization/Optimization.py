@@ -52,7 +52,7 @@ class Optimization(OptimizationExecution, OptimizationParameters):
 		mkdir(self.getTempDirectory())
 
 		if self.workingModel.parentDoc is not None:
-			self.workingModel.parentDoc.writeSbml(join(self.getTempDirectory(), "model.sbml"))
+			self.workingModel.parentDoc.writeSbmlToFile(join(self.getTempDirectory(), "model.sbml"))
 		self.workingModel.build(dont_reduce=True)
 
 

@@ -109,7 +109,7 @@ class Model(SedBase, HasId):
 		if self.__sbmlModel is None or self.__changesApplied:
 			self.__loadModel()
 
-		self.__sbmlModel.parentDoc.writeSbml(self.__source.getSource(), path)
+		self.__sbmlModel.parentDoc.writeSbmlToFile(self.__source.getSource(), path)
 		self.__source.setSource(basename(self.__source.getFilename()))
 
 	def setLanguageSbml(self):

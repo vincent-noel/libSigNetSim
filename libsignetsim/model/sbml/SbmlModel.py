@@ -41,6 +41,7 @@ from libsignetsim.model.sbml.container.ListOfPorts import ListOfPorts
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
+from libsignetsim.model.sbml.ModelUnits import ModelUnits
 from libsignetsim.model.sbml.SbmlModelAnnotation import SbmlModelAnnotation
 from libsignetsim.model.sbml.HasId import HasId
 
@@ -53,7 +54,7 @@ from libsbml import SBMLReader, SBMLDocument, formulaToString,\
 
 from time import time
 
-class SbmlModel(HasId, SbmlObject, SbmlModelAnnotation):
+class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation):
 	""" Sbml model class """
 
 
@@ -67,6 +68,7 @@ class SbmlModel(HasId, SbmlObject, SbmlModelAnnotation):
 		self.listOfSbmlObjects = ListOfSbmlObjects(self)
 		SbmlObject.__init__(self, self)
 		SbmlModelAnnotation.__init__(self)
+		ModelUnits.__init__(self)
 
 		self.listOfSpecies = ListOfSpecies(self)
 		self.listOfParameters = ListOfParameters(self)
@@ -85,12 +87,6 @@ class SbmlModel(HasId, SbmlObject, SbmlModelAnnotation):
 		self.conversionFactor = None
 		self.defaultCompartment = None
 
-		self.timeUnits = None
-		self.substanceUnits = None
-		self.concentrationUnits = None
-		self.compartmentUnits = None
-		self.extentUnits = None
-
 		self.sbmlLevel = Settings.defaultSbmlLevel
 		self.sbmlVersion = Settings.defaultSbmlVersion
 
@@ -100,25 +96,7 @@ class SbmlModel(HasId, SbmlObject, SbmlModelAnnotation):
 		self.setSbmlId("model_%d" % self.objId)
 
 		self.defaultCompartment = self.listOfCompartments.new("cell")
-		self.setDefaultUnits()
-
-	def setDefaultUnits(self):
-
-		self.substanceUnits = self.listOfUnitDefinitions.new()
-		self.substanceUnits.defaultAmountUnit()
-
-		self.extentUnits = self.substanceUnits
-
-		self.timeUnits = self.listOfUnitDefinitions.new()
-		self.timeUnits.defaultTimeUnits()
-
-		self.concentrationUnits = self.listOfUnitDefinitions.new()
-		self.concentrationUnits.defaultConcentrationUnit()
-
-		self.compartmentUnits = self.listOfUnitDefinitions.new()
-		self.compartmentUnits.defaultCompartmentUnits()
-
-		self.defaultCompartment.setUnits(self.compartmentUnits)
+		ModelUnits.setDefaultUnits(self)
 
 	def readSbml(self, sbmlModel,
 					sbml_level=Settings.defaultSbmlLevel,
@@ -135,28 +113,9 @@ class SbmlModel(HasId, SbmlObject, SbmlModelAnnotation):
 
 		self.listOfFunctionDefinitions.readSbml(sbmlModel.getListOfFunctionDefinitions(), self.sbmlLevel, self.sbmlVersion)
 		self.listOfUnitDefinitions.readSbml(sbmlModel.getListOfUnitDefinitions(), self.sbmlLevel, self.sbmlVersion)
-
-		# We need to load the units before reading the model's default units
-		if self.sbmlLevel >= 3:
-			if sbmlModel.isSetTimeUnits():
-				self.timeUnits = self.listOfUnitDefinitions.getBySbmlId(
-												sbmlModel.getTimeUnits())
-
-			if sbmlModel.isSetSubstanceUnits():
-				self.substanceUnits = self.listOfUnitDefinitions.getBySbmlId(
-												sbmlModel.getSubstanceUnits())
-
-
-			if sbmlModel.isSetExtentUnits():
-				self.extentUnits = self.listOfUnitDefinitions.getBySbmlId(
-												sbmlModel.getExtentUnits())
-
-		else:
-			if self.listOfUnitDefinitions.containsSbmlId("time"):
-				self.timeUnits = self.listOfUnitDefinitions.getBySbmlId("time")
-
-			if self.listOfUnitDefinitions.containsSbmlId("substance"):
-				self.substanceUnits = self.listOfUnitDefinitions.getBySbmlId("substance")
+		# # We need to load the units before reading the model's default units
+		# if self.sbmlLevel >= 3:
+		ModelUnits.readSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
 
 
 		self.listOfCompartments.readSbml(sbmlModel.getListOfCompartments(), self.sbmlLevel, self.sbmlVersion)
@@ -206,14 +165,9 @@ class SbmlModel(HasId, SbmlObject, SbmlModelAnnotation):
 		self.listOfConstraints.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
 		self.listOfReactions.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
 		self.listOfEvents.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
-		if self.sbmlLevel >= 3:
-			if self.timeUnits is not None:
-				sbmlModel.setTimeUnits(self.timeUnits.getSbmlId())
-			if self.substanceUnits is not None:
-				sbmlModel.setSubstanceUnits(self.substanceUnits.getSbmlId())
-			if self.extentUnits is not None:
-				sbmlModel.setExtentUnits(self.extentUnits.getSbmlId())
+		ModelUnits.writeSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
 
+		if self.sbmlLevel >= 3:
 			if self.conversionFactor is not None:
 				sbmlModel.setConversionFactor(formulaToL3String(self.conversionFactor.writeSbml(self.sbmlLevel, self.sbmlVersion)))
 
@@ -224,72 +178,6 @@ class SbmlModel(HasId, SbmlObject, SbmlModelAnnotation):
 
 		if Settings.verboseTiming >= 2:
 			print "> SBML Model %s written in %.2gs" % (self.getSbmlId(), time()-t0)
-
-
-	def getTimeUnits(self):
-		return self.timeUnits
-
-	def setTimeUnits(self, unit_sbml_id):
-
-		if unit_sbml_id is None:
-			self.timeUnits = None
-
-		elif self.sbmlLevel == 3:
-			self.timeUnits = self.listOfUnitDefinitions.getBySbmlId(unit_sbml_id)
-
-		elif self.sbmlLevel == 2:
-
-			# First we remove the old one if it exists
-			if self.listOfUnitDefinitions.containsSbmlId("time"):
-
-				t_unit_def = self.listOfUnitDefinitions.getBySbmlId("time")
-				i=0
-				while self.listOfUnitDefinitions.containsSbmlId("time_%d" % i):
-					i += 1
-
-				t_unit_def.sbmlId = "time_%d" % i
-
-			t_unit_def = self.listOfUnitDefinitions.getBySbmlId(unit_sbml_id)
-			t_unit_def.sbmlId = "time"
-			self.timeUnits = t_unit_def
-
-
-	def getSubstanceUnits(self):
-		return self.substanceUnits
-
-	def setSubstanceUnits(self, unit_sbml_id):
-
-		if unit_sbml_id is None:
-			self.substanceUnits = None
-
-		elif self.sbmlLevel == 3:
-			self.substanceUnits = self.listOfUnitDefinitions.getBySbmlId(unit_sbml_id)
-
-		elif self.sbmlLevel == 2:
-
-			# First we remove the old one if it exists
-			if self.listOfUnitDefinitions.containsSbmlId("substance"):
-
-				t_unit_def = self.listOfUnitDefinitions.getBySbmlId("substance")
-				i=0
-				while self.listOfUnitDefinitions.containsSbmlId("substance_%d" % i):
-					i += 1
-
-				t_unit_def.sbmlId = "substance_%d" % i
-
-			t_unit_def = self.listOfUnitDefinitions.getBySbmlId(unit_sbml_id)
-			t_unit_def.sbmlId = "substance"
-			self.substanceUnits = t_unit_def
-
-	def getExtentUnits(self):
-		return self.extentUnits
-
-	def setExtentUnits(self, unit_sbml_id):
-		if unit_sbml_id is None:
-			self.extentUnits = None
-
-		else:
-			self.extentUnits = self.listOfUnitDefinitions.getBySbmlId(unit_sbml_id)
 
 
 	def getConversionFactor(self):
