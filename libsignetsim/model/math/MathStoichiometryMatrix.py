@@ -29,16 +29,17 @@ from sympy import simplify, diff, solve, zeros
 class MathStoichiometryMatrix(object):
 	""" Sbml model class """
 
-	def __init__ (self):
+	def __init__ (self, model):
 		""" Constructor of model class """
 
+		self.__model = model
 		self.stoichiometryMatrix = None
 
 
-	def buildStoichiometryMatrix(self, including_fast_reactions=True):
+	def build(self, including_fast_reactions=True):
 
 		matrix = None
-		for i, reaction in enumerate(self.listOfReactions.values()):
+		for i, reaction in enumerate(self.__model.listOfReactions.values()):
 			if (not reaction.fast) or including_fast_reactions:
 
 				if matrix is None:
@@ -58,7 +59,7 @@ class MathStoichiometryMatrix(object):
 		if self.stoichiometryMatrix != None:
 			for i, reaction in enumerate(self.stoichiometryMatrix):
 
-				t_reaction = zeros(1,len(self.listOfSpecies))
+				t_reaction = zeros(1,len(self.__model.listOfSpecies))
 
 
 				for j, t_formula in enumerate(reaction):

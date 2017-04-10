@@ -59,7 +59,7 @@ from libsignetsim.model.math.container.ListOfDAEs import ListOfDAEs
 from libsignetsim.model.math.MathSlowModel import MathSlowModel
 from libsignetsim.model.math.container.ListOfConservationLaws import ListOfConservationLaws
 
-class MathModel(CModelWriter, MathStoichiometryMatrix):
+class MathModel(CModelWriter):
 	""" Sbml model class """
 
 	def __init__ (self, obj_id=0):
@@ -77,7 +77,7 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 
 		# MathConservationLaws.__init__(self)
 		# MathJacobianMatrix.__init__(self)
-		MathStoichiometryMatrix.__init__(self)
+		self.stoichiometryMatrix = MathStoichiometryMatrix(self)
 		self.listOfConservationLaws = ListOfConservationLaws(self)
 		# self.listOfFinalVariables = ListOfVariables(self)
 
@@ -92,7 +92,7 @@ class MathModel(CModelWriter, MathStoichiometryMatrix):
 		self.variablesAlgebraic = None
 		self.__upToDate = False
 
-		self.stoichiometryMatrix = None
+		# self.stoichiometryMatrix = None
 
 
 	def isUpToDate(self):

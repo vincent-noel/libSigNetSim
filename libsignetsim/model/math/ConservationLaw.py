@@ -24,6 +24,7 @@
 
 
 # from libsignetsim.model.math.MathFormula import MathFormula
+from libsignetsim.model.math.sympy_shortcuts import SympyEqual
 # from libsignetsim.model.math.sympy_shortcuts import  (
 # 	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
 # 	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
@@ -45,9 +46,24 @@
 class ConservationLaw(object):
 	""" Sbml model class """
 
-	def __init__ (self):
+	def __init__ (self, model):
 		""" Constructor of model class """
 
-		self.LHSs = []
-		self.RHSs = []
+		self.__model = model
+		self.LHS = None
+		self.RHS = None
 		self.vars = []
+
+	def new(self, lhs, rhs, vars):
+
+		self.LHS = lhs
+		self.RHS = rhs
+		self.vars = vars
+
+	def prettyPrint(self):
+
+		print ">> %s" % str(SympyEqual(
+								self.LHS.getDeveloppedInternalMathFormula(),
+								self.RHS.getDeveloppedInternalMathFormula())
+		)
+
