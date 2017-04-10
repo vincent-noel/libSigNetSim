@@ -31,4 +31,5 @@ else
     coverage run -a $OMIT -m unittest libsignetsim.sedml.tests.TestSpecificationL1V2
     coverage run -a $OMIT -m unittest libsignetsim.combine.tests.TestRunSedmls
     coverage run -a $OMIT -m unittest libsignetsim.combine.tests.TestShowCase
+    coverage run -a $OMIT -m unittest libsignetsim.combine.tests.TestNoManifest
 fi
