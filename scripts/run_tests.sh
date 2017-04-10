@@ -21,6 +21,7 @@ elif [ $1 = "biomodels" ]; then
 else
     coverage run -a $OMIT -m unittest libsignetsim.model.tests.TestFindKineticLaws
     coverage run -a $OMIT -m unittest libsignetsim.model.tests.TestReduceModel
+    coverage run -a $OMIT -m unittest libsignetsim.model.tests.TestModelDefinition
     coverage run -a $OMIT -m unittest libsignetsim.simulation.tests.TestTimeseries
     coverage run -a $OMIT -m unittest libsignetsim.simulation.tests.TestSteadyStates
     coverage run -a $OMIT -m unittest libsignetsim.optimization.tests.TestOptimization
