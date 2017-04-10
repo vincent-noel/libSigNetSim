@@ -44,15 +44,13 @@ from libsignetsim.model.math.sympy_shortcuts import (
 
 from libsignetsim.model.ModelException import MathException
 from libsignetsim.model.math.MathVariable import MathVariable
-from libsignetsim.model.math.MathConservationLaws import MathConservationLaws
 from libsignetsim.model.math.MathJacobianMatrix import MathJacobianMatrix
 from libsignetsim.model.math.MathStoichiometryMatrix import MathStoichiometryMatrix
-# from libsignetsim.model.ListOfVariables import ListOfVariables
 from libsignetsim.model.Variable import Variable
 from sympy import simplify, diff, solve, zeros, solveset, linsolve, srepr
 from time import time
 
-# from libsignetsim.model.ModelException import ModelException
+
 from libsignetsim.model.math.container.ListOfODEs import ListOfODEs
 from libsignetsim.model.math.container.ListOfCFEs import ListOfCFEs
 from libsignetsim.model.math.container.ListOfDAEs import ListOfDAEs
