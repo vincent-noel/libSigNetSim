@@ -202,12 +202,12 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 			raise SbmlException("MathFormula : Unable to parse math formula")
 
 		self.readSbml(sbml_formula, self.sbmlLevel, self.sbmlVersion)
-		t_subs_mask = {}
-		for t_var in self.__model.listOfSpecies.values():
-			if t_var.isConcentration():
-				t_subs_mask.update({t_var.symbol.getInternalMathFormula():SympySymbol("_speciesForcedConcentration_%s_" % str(t_var.symbol.getInternalMathFormula()))})
-
-		self.setInternalMathFormula(self.getInternalMathFormula().subs(t_subs_mask))
+		# t_subs_mask = {}
+		# for t_var in self.__model.listOfSpecies.values():
+		# 	if t_var.isConcentration():
+		# 		t_subs_mask.update({t_var.symbol.getInternalMathFormula():SympySymbol("_speciesForcedConcentration_%s_" % str(t_var.symbol.getInternalMathFormula()))})
+		#
+		# self.setInternalMathFormula(self.getInternalMathFormula().subs(t_subs_mask))
 
 
 	def setMathFormula(self, tree, math_type=MATH_INTERNAL, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):

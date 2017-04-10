@@ -106,7 +106,7 @@ class ListOfConservationLaws(list):
 
 	def build(self):
 
-		DEBUG = True
+		DEBUG = False
 
 		del self[:]
 
@@ -133,17 +133,10 @@ class ListOfConservationLaws(list):
 
 			t_nullspace = t_stoichiometry.nullspace()
 			t_nullspace2 = self.fixnullspace(t_nullspace)
-
-			# print t_nullspace
-			# print len(t_nullspace2)
-			# print len(list(set(t_nullspace2)))
 			t_nullspace3 = []
 			for t_res in t_nullspace2:
 				if t_res not in t_nullspace3:
 					t_nullspace3.append(t_res)
-
-			# print len(t_nullspace3)
-
 
 			for i, t_res in enumerate(t_nullspace3):
 				t_law = MathFormula.ZERO

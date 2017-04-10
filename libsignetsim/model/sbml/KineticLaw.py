@@ -255,7 +255,7 @@ class KineticLaw(KineticLawIdentifier):
 		t_reactants = self.getReactantsFormula()
 		t_modifiers = self.getModifiersFormula()
 
-		t_cat = parameters[0].symbol.getInternalMathFormula()
+		t_kcat = parameters[0].symbol.getInternalMathFormula()
 		t_kd = parameters[1].symbol.getInternalMathFormula()
 		t_n = parameters[2].symbol.getInternalMathFormula()
 
