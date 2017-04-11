@@ -40,8 +40,8 @@ else
 
     coverage run -a $OMIT -m unittest libsignetsim.sedml.tests.TestBiomodelsURI
     coverage run -a $OMIT -m unittest libsignetsim.sedml.tests.TestSteadyStatesScan
-    coverage run -a $OMIT -m unittest libsignetsim.sedml.tests.TestLogscaleTimeseries
     coverage run -a $OMIT -m unittest libsignetsim.sedml.tests.TestSpecificationL1V2
+    coverage run -a $OMIT -m unittest libsignetsim.sedml.tests.TestMath
 
     coverage run -a $OMIT -m unittest libsignetsim.combine.tests.TestRunSedmls
     coverage run -a $OMIT -m unittest libsignetsim.combine.tests.TestShowCase

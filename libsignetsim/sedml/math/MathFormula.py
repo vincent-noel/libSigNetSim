@@ -25,10 +25,10 @@
 from libsignetsim.sedml.math.SedmlMathReader import SedmlMathReader
 from libsignetsim.sedml.math.SedmlMathWriter import SedmlMathWriter
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.math.sympy_shortcuts import (SympySymbol, SympyInteger)
+from libsignetsim.model.math.sympy_shortcuts import (SympySymbol, SympyInteger, SympyFloat)
 
 import libsbml
-from libsedml import formulaToString, ASTNode
+from libsedml import formulaToString, ASTNode, parseFormula, parseL3Formula
 reload(libsbml)
 
 from sympy import srepr
@@ -59,6 +59,7 @@ class MathFormula(SedmlMathReader, SedmlMathWriter):
 
 	def readSedml(self, formula, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 		""" Import a math formula from sedml """
+		# print ">> input : %s" % formulaToString(formula)
 
 		self.level = level
 		self.version = version
@@ -102,8 +103,15 @@ class MathFormula(SedmlMathReader, SedmlMathWriter):
 		return self.evaluate(self.internalTree, data, parameters, nb_timepoints)
 
 	def evaluate(self, expr, data, parameters, nb_timepoints):
+		# print "evaluating %s" % str(expr)
 
-		if expr in data.keys():
+		if expr.func == SympyFloat:
+			return [float(expr)]*nb_timepoints
+
+		elif expr.func == SympyInteger:
+			return [int(expr)]*nb_timepoints
+
+		elif expr in data.keys():
 			return data[expr]
 
 		elif expr in parameters.keys():
@@ -126,6 +134,7 @@ class MathFormula(SedmlMathReader, SedmlMathWriter):
 			values = []
 			for timepoint in range(nb_timepoints):
 				evaluated_timepoint = (arg[timepoint] for arg in evaluated_args)
+				# print list(evaluated_timepoint)
 				values.append(expr.func(*evaluated_timepoint))
 
 			return values
@@ -184,21 +193,25 @@ class MathFormula(SedmlMathReader, SedmlMathWriter):
 	# def setFinalMathFormula(self, tree):
 	# 	self.setMathFormula(tree, math_type=self.MATH_FINALINTERNAL)
 	#
-	# def setPrettyPrintMathFormula(self, string):
-	#
-	# 	sbml_formula = parseL3Formula(str(string))
-	# 	if sbml_formula is None:
-	# 		raise SbmlException("MathFormula : Unable to parse math formula")
-	#
-	# 	self.readSbml(sbml_formula, self.sbmlLevel, self.sbmlVersion)
-	# 	t_subs_mask = {}
-	# 	for t_var in self.__model.listOfSpecies.values():
-	# 		if t_var.isConcentration():
-	# 			t_subs_mask.update({t_var.symbol.getInternalMathFormula():SympySymbol("_speciesForcedConcentration_%s_" % str(t_var.symbol.getInternalMathFormula()))})
-	#
-	# 	self.setInternalMathFormula(self.getInternalMathFormula().subs(t_subs_mask))
-	#
-	#
+	def setPrettyPrintMathFormula(self, string):
+
+		try:
+			sbml_formula = parseFormula(string)
+			if sbml_formula is not None:
+				self.readSedml(sbml_formula, self.level, self.version)
+			else:
+				sbml_formula = parseL3Formula(string)
+				self.readSedml(sbml_formula, self.level, self.version)
+
+		except:
+			try:
+				sbml_formula = parseL3Formula(string)
+				self.readSedml(sbml_formula, self.level, self.version)
+
+			except:
+				raise Exception("MathFormula : Unable to parse math formula")
+
+
 
 	def setMathFormula(self, tree, math_type=MATH_INTERNAL, sbml_level=Settings.defaultSedmlLevel, sbml_version=Settings.defaultSedmlVersion):
 

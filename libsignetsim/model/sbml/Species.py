@@ -60,7 +60,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 
 
-	def new(self, name=None, compartment=None, init_value=0, unit=None,
+	def new(self, name=None, compartment=None, value=0, unit=None,
 			 constant=False, boundaryCondition=False, hasOnlySubstanceUnits=False):
 
 
@@ -78,7 +78,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		HasUnits.new(self, unit)
 
 
-		self.setValue(init_value)
+		self.setValue(value)
 
 		self.constant = constant
 		self.boundaryCondition = boundaryCondition

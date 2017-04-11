@@ -122,7 +122,7 @@ class SedmlMathReader(object):
 			return SympySymbol(tree.getName())
 
 		elif tree.getType() == AST_NAME_TIME:
-			return SympySymbol("_time_")
+			return SympySymbol("time")
 
 		elif tree.isNumber():
 

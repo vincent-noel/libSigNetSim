@@ -94,9 +94,10 @@ class UniformTimeCourse(Simulation):
 			time_min=self.__initialTime,
 			list_samples=samples,
 			abs_tol=Simulation.getAlgorithm(self).getAbsTol(),
-			rel_tol=Simulation.getAlgorithm(self).getRelTol(),
+			rel_tol=Simulation.getAlgorithm(self).getRelTol(), keep_files=True
 		)
 		t_simulation.run()
+		# print "simulation executed"
 		return t_simulation
 
 	def getSimulationObject(self):

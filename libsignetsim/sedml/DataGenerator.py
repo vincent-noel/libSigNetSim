@@ -72,6 +72,7 @@ class DataGenerator(SedBase, HasId):
 		return self.listOfVariables.getTasksToRun()
 
 	def build(self):
+		# print self.listOfVariables.getData()
 		self.__data = self.getMath().evaluateMathFormula(self.listOfVariables.getData(), self.listOfParameters.getSubs())
 
 	def getData(self):

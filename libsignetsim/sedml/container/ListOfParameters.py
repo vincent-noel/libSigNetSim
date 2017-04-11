@@ -35,6 +35,20 @@ class ListOfParameters(ListOf):
 
 		self.__document = document
 		self.__parent = parent
+		self.__parameterCounter = 0
+
+	def new(self, parameter_id=None):
+
+		if parameter_id is None:
+			parameter_id = "%s_parameter_%d" % self.__parameterCounter
+
+		t_parameter = Parameter(self.__document)
+		t_parameter.setId(parameter_id)
+		ListOf.append(self, t_parameter)
+		self.__parameterCounter += 1
+		return t_parameter
+	def createParameter(self, parameter_id=None):
+		return self.new(parameter_id)
 
 	def readSedml(self, list_of_parameters, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -44,6 +58,7 @@ class ListOfParameters(ListOf):
 			parameter = Parameter(self.__document)
 			parameter.readSedml(t_parameter, level, version)
 			ListOf.append(self, parameter)
+			self.__parameterCounter += 1
 
 	def writeSedml(self, list_of_parameters, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 

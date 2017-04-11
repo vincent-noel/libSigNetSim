@@ -103,6 +103,7 @@ class Task(AbstractTask):
 
 	def getResultsByVariable(self, variable_sbmlid):
 
+		# print variable_sbmlid
 		return self.__results[1][variable_sbmlid]
 
 	def getTimes(self):

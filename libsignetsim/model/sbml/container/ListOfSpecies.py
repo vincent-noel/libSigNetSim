@@ -64,10 +64,12 @@ class ListOfSpecies(ListOf, HasIds, SbmlObject):
 		SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
 
 
-	def new(self, name=None):
+	def new(self, name=None, compartment=None, value=0, unit=None,
+			 constant=False, boundaryCondition=False, hasOnlySubstanceUnits=False):
 
 		t_species = Species(self.__model, self.nextId())
-		t_species.new(name)
+		t_species.new(name, compartment, value, unit, constant,
+							boundaryCondition, hasOnlySubstanceUnits)
 		ListOf.add(self, t_species)
 		return t_species
 
