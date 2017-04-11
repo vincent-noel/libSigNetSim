@@ -413,7 +413,6 @@ IntegrationResult * simulateModelIDA(ModelDefinition * model,
                 model->integration_functions->assPtr(tout, user_data->derivative_variables, (void *) user_data);
                 writeResultSample(model, result, user_data, t, iout);
                 iout++;
-//                tout += RCONST(model->integration_settings->t_sampling);
             }
 
             else
@@ -426,14 +425,12 @@ IntegrationResult * simulateModelIDA(ModelDefinition * model,
         else
         {
             model->integration_functions->assPtr(tout, user_data->derivative_variables, (void *) user_data);
-            t += RCONST(result->list_samples[iout+1]);
+			t = RCONST(result->list_samples[iout]);
             writeResultSample(model, result, user_data, tout, iout);
             iout++;
-//            tout += RCONST(model->integration_settings->t_sampling);
         }
 		if (iout == (result->nb_samples)) break;
 		else tout = RCONST(result->list_samples[iout]);
-//        if (iout == nout) break;
     }
 
     FinalizeIntegrationData(model, user_data);

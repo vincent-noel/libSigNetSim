@@ -25,7 +25,7 @@
 from libsignetsim.sedml.math.SedmlMathReader import SedmlMathReader
 from libsignetsim.sedml.math.SedmlMathWriter import SedmlMathWriter
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.math.sympy_shortcuts import (SympySymbol, SympyInteger, SympyFloat, SympyTrue, SympyFalse)
+from libsignetsim.model.math.sympy_shortcuts import (SympySymbol, SympyInteger, SympyFloat, SympyTrue, SympyFalse, SympyLambda)
 
 import libsbml
 from libsedml import formulaToString, ASTNode, parseFormula, parseL3Formula
@@ -111,10 +111,10 @@ class MathFormula(SedmlMathReader, SedmlMathWriter):
 		elif expr.func == SympyInteger:
 			return [int(expr)]*nb_timepoints
 
-		elif expr in [SympyTrue]:
+		elif expr == SympyTrue:
 			return [True]*nb_timepoints
 
-		elif expr == [SympyFalse]:
+		elif expr == SympyFalse:
 			return [False]*nb_timepoints
 
 		elif expr in data.keys():
@@ -134,6 +134,7 @@ class MathFormula(SedmlMathReader, SedmlMathWriter):
 				return [sum(evaluated_arg)]*nb_timepoints
 			elif str(expr.func) == "product":
 				return [product(evaluated_arg)]*nb_timepoints
+
 		else:
 
 			evaluated_args = [self.evaluate(arg, data, parameters, nb_timepoints) for arg in expr.args]

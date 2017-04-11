@@ -45,7 +45,7 @@ from sympy_shortcuts import (
 
 # arithmetic operators: plus , minus , times , divide , power , root , abs , exp , ln , log , floor , ceiling ,
 from libsedml import (
-	AST_PLUS, AST_MINUS, AST_TIMES, AST_DIVIDE, AST_POWER, AST_FUNCTION_ROOT, AST_FUNCTION_ABS, AST_FUNCTION_EXP,
+	AST_PLUS, AST_MINUS, AST_TIMES, AST_DIVIDE, AST_FUNCTION_POWER, AST_FUNCTION_ROOT, AST_FUNCTION_ABS, AST_FUNCTION_EXP,
 	AST_FUNCTION_LN, AST_FUNCTION_LOG, AST_FUNCTION_FLOOR, AST_FUNCTION_CEILING
 )
 from sympy_shortcuts import (SympyAdd, SympyMul, SympyPow, SympyAbs, SympyExp, SympyLog, SympyFloor, SympyCeiling)
@@ -542,7 +542,7 @@ class SedmlMathWriter(object):
 
 			# print "\n"
 			t_ast = ASTNode()
-			t_ast.setType(AST_POWER)
+			t_ast.setType(AST_FUNCTION_POWER)
 			t_ast.addChild(self.translateForSedml(tree.args[0], level, version))
 			t_ast.addChild(self.translateForSedml(tree.args[1], level, version))
 			return t_ast
