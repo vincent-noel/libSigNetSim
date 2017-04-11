@@ -100,26 +100,16 @@ class OptimizationExecution(object):
 			s_maxiter = "-m %d " % maxiter
 
 		mkdir(self.getTempDirectory() + "logs")
-		# mkdir(self.getTempDirectory() + "logs/err")
-		# mkdir(self.getTempDirectory() + "logs/clocksim")
 		mkdir(self.getTempDirectory() + "logs/score")
 		mkdir(self.getTempDirectory() + "logs/res")
-		# mkdir(self.getTempDirectory() + "logs/trace")
-		# mkdir(self.getTempDirectory() + "logs/clock")
-
-
 
 		present_dir = getcwd()
 
 		if nb_procs > 1:
-			target = "cd %s; mpirun -np %d ./lsa.mpi; cd %s" % (self.getTempDirectory(), nb_procs, present_dir)
+			target = "cd %s; mpirun --allow-run-as-root -np %d ./lsa.mpi; cd %s" % (self.getTempDirectory(), nb_procs, present_dir)
 
 		else:
 			target = "cd %s; ./lsa; cd %s" % (self.getTempDirectory(), present_dir)
-
-		# t_command_line = "cd %s; %s %s %s hybrid; cd %s" % (
-		#         self.getTempDirectory() + Settings.C_optimizationDirectory,
-		#         target, s_maxiter, t_timeout, getcwd())
 
 		t_command_line = "%s" % target
 
