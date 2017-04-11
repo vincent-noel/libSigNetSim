@@ -393,10 +393,13 @@ IntegrationResult * simulateModelCVODE(ModelDefinition * model,
 		}
 		else
 		{
+//		if (iout < (result->nb_samples-1)){
 			model->integration_functions->assPtr(tout, user_data->derivative_variables, (void *) user_data);
 			t = RCONST(result->list_samples[iout+1]);
 			writeResultSample(model, result, user_data, t, iout);
 			iout++;
+//			}
+//        else iout++;
 			// printf("%g (%d)\n", tout, iout);
 			// int iii;
 			// for (iii=0; iii < result->nb_samples; iii++)
