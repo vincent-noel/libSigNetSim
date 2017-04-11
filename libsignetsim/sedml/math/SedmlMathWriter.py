@@ -108,7 +108,7 @@ class SedmlMathWriter(object):
 		""" Translate a sympy tree into a C string """
 
 		if tree.func == SympySymbol:
-			if str(tree) == 'time':
+			if str(tree) == '_time_':
 				t_ast = ASTNode()
 				t_ast.setType(AST_NAME_TIME)
 				t_ast.setName("time")
