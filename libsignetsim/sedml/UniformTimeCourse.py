@@ -87,7 +87,7 @@ class UniformTimeCourse(Simulation):
 		return self.__numberOfPoints
 
 	def run(self, sbmlModel):
-		samples = linspace(self.__outputStartTime, self.__outputEndTime, self.__numberOfPoints+1)
+		samples = [float(value) for value in linspace(self.__outputStartTime, self.__outputEndTime, self.__numberOfPoints+1)]
 
 		t_simulation = TimeseriesSimulation(
 			list_of_models=[sbmlModel],

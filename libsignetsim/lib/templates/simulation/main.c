@@ -342,7 +342,7 @@ int main (int argc, char * argv[])
     initializeModels();
 
     char * folder = NULL;
-    int model_id = 0;
+    int model_id = -1;
     int i_arg = 1;
 
     // double time_max = CONV_TIME;

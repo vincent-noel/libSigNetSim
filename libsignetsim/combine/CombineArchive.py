@@ -37,6 +37,23 @@ from os.path import exists, join
 
 class CombineArchive(object):
 
+	OMEX = "Default combine archive"
+	SEDX = "SED-ML archive"
+	SBEX = "SBML archive"
+	CMEX = "CellML archive"
+	NEUX = "NeuroML archive"
+	PHEX = "PharmaML archive"
+	SBOX = "SBOL archive"
+
+	ARCHIVE_EXTENSIONS = {
+		"omex": OMEX,
+		"sedx": SEDX,
+		"sbex": SBEX,
+		"cmex": CMEX,
+		"neux": NEUX,
+		"phex": PHEX,
+		"sbox": SBOX
+	}
 
 	SEDML = "sed-ml"
 
@@ -45,6 +62,7 @@ class CombineArchive(object):
 		self.__file = None
 		self.__listOfFiles = ListOfFiles(self)
 		self.__path = Settings.tempDirectory + ''.join(choice(ascii_uppercase + ascii_lowercase + digits) for _ in range(12))
+		self.__extension = None
 
 	def readArchive(self, file):
 
@@ -55,6 +73,7 @@ class CombineArchive(object):
 			raise NotAZipFileException("File %s is not a zip file" % file)
 
 		self.__file = ZipFile(file)
+		self.__extension = file.split(".")[-1]
 		self.__listOfFiles.readListOfFiles(self.__file)
 
 		self.extractArchive()
@@ -84,8 +103,8 @@ class CombineArchive(object):
 
 	def getMasterSedml(self):
 
-		if self.__listOfFiles.getMaster() is not None and self.__listOfFiles.getMaster().isSedml():
-			return join(self.__path, self.__listOfFiles.getMaster().getFilename())
+		if self.__listOfFiles.getMasterSedml() is not None:
+			return join(self.__path, self.__listOfFiles.getMasterSedml().getFilename())
 		else:
 			raise NoMasterSedmlFoundException("No master Sedml found")
 
@@ -139,10 +158,27 @@ class CombineArchive(object):
 		sedml_doc.run()
 		return sedml_doc
 
+
 	def getPath(self):
 		return self.__path
-	#
-	# def getfileContent(self, filename):
-	#
-	# 	file = open(filename, 'r')
-	# 	return f
+
+	def isDefaultCombineArchive(self):
+		return self.__extension in self.ARCHIVE_EXTENSIONS and self.ARCHIVE_EXTENSIONS[self.__extension] == self.OMEX
+
+	def isSEDMLArchive(self):
+		return self.__extension in self.ARCHIVE_EXTENSIONS and self.ARCHIVE_EXTENSIONS[self.__extension] == self.SEDX
+
+	def isSBMLArchive(self):
+		return self.__extension in self.ARCHIVE_EXTENSIONS and self.ARCHIVE_EXTENSIONS[self.__extension] == self.SBEX
+
+	def isCellMLArchive(self):
+		return self.__extension in self.ARCHIVE_EXTENSIONS and self.ARCHIVE_EXTENSIONS[self.__extension] == self.CMEX
+
+	def isNeuroMLArchive(self):
+		return self.__extension in self.ARCHIVE_EXTENSIONS and self.ARCHIVE_EXTENSIONS[self.__extension] == self.NEUX
+
+	def isPharmaMLArchive(self):
+		return self.__extension in self.ARCHIVE_EXTENSIONS and self.ARCHIVE_EXTENSIONS[self.__extension] == self.PHEX
+
+	def isSBOLArchive(self):
+		return self.__extension in self.ARCHIVE_EXTENSIONS and self.ARCHIVE_EXTENSIONS[self.__extension] == self.SBOX

@@ -31,8 +31,7 @@ class CWriterModels(object):
 				  	time_min,
 					list_samples,
 					abs_tol,
-					rel_tol,
-					subdir=None):
+					rel_tol):
 
 		self.listOfModels = list_of_models
 
@@ -41,7 +40,6 @@ class CWriterModels(object):
 		self.listSamples = list_samples
 		self.absTol = abs_tol
 		self.relTol = rel_tol
-		self.subdir = subdir
 
 	def writeModelsHeaders(self, f_h, f_c):
 
@@ -155,7 +153,7 @@ class CWriterModels(object):
 		self.writeModelsFinalization(f_h, f_c)
 
 		for i_model, model in enumerate(self.listOfModels):
-			model.writeCCode(f_h, f_c, i_model, self.timeMin, self.listSamples, self.absTol, self.relTol)
+			model.writeCCode(f_h, f_c, i_model, self.timeMin[i_model], self.listSamples[i_model], self.absTol[i_model], self.relTol[i_model])
 
 		f_c.close()
 		f_h.close()

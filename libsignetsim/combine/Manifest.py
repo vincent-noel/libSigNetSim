@@ -82,9 +82,10 @@ class Manifest(object):
 		# print str
 		return str
 
-	def getMaster(self):
-		if True in self.__masters:
-			return self.__locations[self.__masters.index(True)]
+	# def getMaster(self):
+	# 	print self.__masters.index(True)
+	# 	if True in self.__masters:
+	# 		return self.__locations[self.__masters.index(True)]
 
 	def isInManifest(self, filename):
 		return filename in self.__locations
@@ -105,8 +106,9 @@ class Manifest(object):
 		return self.__masters[self.__locations.index(filename)]
 
 	def setMaster(self, filename):
-		if True in self.__masters:
-			self.__masters = [False]*len(self.__locations)
+		# Commented for now since we can actually have several masters
+		# if True in self.__masters:
+		# 	self.__masters = [False]*len(self.__locations)
 
 		self.__masters[self.__locations.index(filename)] = True
 

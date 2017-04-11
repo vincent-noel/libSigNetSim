@@ -53,7 +53,7 @@ class ListOfFiles(list):
 				file.readFile(t_file, archive_file)
 				list.append(self, file)
 
-		if self.__manifest.getMaster() is None:
+		if self.getMasterSedml() is None and self.__archive.isSEDMLArchive():
 			if len(self.getAllSedmls()) > 0:
 				new_master = self.getAllSedmls()[0]
 				new_master.setMaster()
@@ -69,9 +69,9 @@ class ListOfFiles(list):
 	# def getManifest(self):
 	# 	return self.__manifest
 
-	def getMaster(self):
+	def getMasterSedml(self):
 		for file in self:
-			if file.isMaster():
+			if file.isMaster() and file.isSedml():
 				return file
 
 

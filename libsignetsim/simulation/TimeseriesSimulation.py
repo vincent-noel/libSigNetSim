@@ -66,9 +66,9 @@ class TimeseriesSimulation(Simulation):
 			nb_samples = int(round((time_max-time_min)/time_ech))+1
 
 		if log_scale:
-			self.listOfSamples = logspace(time_min, time_max, nb_samples)
+			self.listOfSamples = [float(value) for value in logspace(time_min, time_max, nb_samples)]
 		else:
-			self.listOfSamples = linspace(time_min, time_max, nb_samples)
+			self.listOfSamples = [float(value) for value in linspace(time_min, time_max, nb_samples)]
 
 	def run(self):
 
@@ -82,18 +82,12 @@ class TimeseriesSimulation(Simulation):
 	def loadSimulationResults(self):
 
 		self.rawData = []
-		t_filename = self.getTempDirectory() + Settings.C_simulationResultsDirectory + "results_0"
-		t_filename_2 = t_filename + "_0"
-		if isfile(t_filename):
-			(t, y) = self.readResultFile(t_filename)
+		t_filename = self.getTempDirectory() + Settings.C_simulationResultsDirectory + "results"
+		ind = 0
+		while(isfile(t_filename + ("_%d" % ind))):
+			(t, y) = self.readResultFile(t_filename + ("_%d" % ind))
 			self.rawData.append((t,y))
-
-		elif isfile(t_filename_2):
-			ind = 0
-			while(isfile(t_filename + ("_%d" % ind))):
-				(t, y) = self.readResultFile(t_filename + ("_%d" % ind))
-				self.rawData.append((t,y))
-				ind += 1
+			ind += 1
 
 	def readResultFile(self, filename):
 

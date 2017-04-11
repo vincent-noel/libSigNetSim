@@ -646,26 +646,42 @@ class TestMath(TestCase):
 		time_63.setModel(model)
 		time_63.setSymbolTime()
 		data_63.getMath().setPrettyPrintMathFormula("tan(-6*time)")
-		# 
-		# # >> 1 + 2
-		# data_64 = sedml_doc.listOfDataGenerators.createDataGenerator()
-		# data_64.setName("data_64")
-		# data_64.getMath().setPrettyPrintMathFormula("1+2")
-		# 
-		# # >> 1 + -2
-		# data_65 = sedml_doc.listOfDataGenerators.createDataGenerator()
-		# data_65.setName("data_65")
-		# data_65.getMath().setPrettyPrintMathFormula("1 + -2")
-		# 
-		# # # >> (5/2)
-		# # data_66 = sedml_doc.listOfDataGenerators.createDataGenerator()
-		# # data_66.setName("data_66")
-		# # data_66.getMath().setPrettyPrintMathFormula("(5/2)")
-		# 
-		# # >> 8 * 3
-		# data_67 = sedml_doc.listOfDataGenerators.createDataGenerator()
-		# data_67.setName("data_67")
-		# data_67.getMath().setPrettyPrintMathFormula("8.3")
+
+		# >> 1 + 2
+		data_64 = sedml_doc.listOfDataGenerators.createDataGenerator()
+		data_64.setName("data_64")
+		time_64 = data_64.listOfVariables.createVariable("time")
+		time_64.setTask(task)
+		time_64.setModel(model)
+		time_64.setSymbolTime()
+		data_64.getMath().setPrettyPrintMathFormula("1+2")
+
+		# >> 1 + -2
+		data_65 = sedml_doc.listOfDataGenerators.createDataGenerator()
+		data_65.setName("data_65")
+		time_65 = data_65.listOfVariables.createVariable("time")
+		time_65.setTask(task)
+		time_65.setModel(model)
+		time_65.setSymbolTime()
+		data_65.getMath().setPrettyPrintMathFormula("1 + -2")
+
+		# # >> (5/2)
+		# data_66 = sedml_doc.listOfDataGenerators.createDataGenerator()
+		# data_66.setName("data_66")
+		# time_66 = data_66.listOfVariables.createVariable("time")
+		# time_66.setTask(task)
+		# time_66.setModel(model)
+		# time_66.setSymbolTime()
+		# data_66.getMath().setPrettyPrintMathFormula("(5/2)")
+
+		# >> 8 * 3
+		data_67 = sedml_doc.listOfDataGenerators.createDataGenerator()
+		data_67.setName("data_67")
+		time_67 = data_67.listOfVariables.createVariable("time")
+		time_67.setTask(task)
+		time_67.setModel(model)
+		time_67.setSymbolTime()
+		data_67.getMath().setPrettyPrintMathFormula("8.3")
 
 		# # >> lambda(time, p1, time*p1)
 		# data_68 = sedml_doc.listOfDataGenerators.createDataGenerator()
@@ -688,6 +704,6 @@ class TestMath(TestCase):
 		sedml_filename = join(testfiles_path, "testMath.sedml")
 		sedml_doc.writeSedmlToFile(sedml_filename)
 
-		# sedml_doc_2 = SedmlDocument()
-		# sedml_doc_2.readSedmlFromFile(sedml_filename)
-		# sedml_doc.run()
+		sedml_doc_2 = SedmlDocument()
+		sedml_doc_2.readSedmlFromFile(sedml_filename)
+		sedml_doc.run()

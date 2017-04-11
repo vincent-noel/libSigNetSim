@@ -25,7 +25,7 @@
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.cwriter.CWriterModels import CWriterModels
 from libsignetsim.cwriter.CWriterData import CWriterData
-
+from libsignetsim.simulation.SimulationException import SimulationException
 from os.path import join
 from os import mkdir
 from shutil import copyfile
@@ -36,30 +36,30 @@ class CWriterSimulation(CWriterModels, CWriterData):
 	def __init__ (self, list_of_models,
 						time_min,
 						list_samples,
-						experiment=None,
-						abs_tol=Settings.defaultAbsTol,
-						rel_tol=Settings.defaultRelTol):
+						experiment,
+						abs_tol,
+						rel_tol):
 
-		if abs_tol is not None:
-			self.absTol = abs_tol
-		else:
-			self.absTol = Settings.defaultAbsTol
-
-		if rel_tol is not None:
-			self.relTol = rel_tol
-		else:
-			self.relTol = Settings.defaultRelTol
-
-		CWriterModels.__init__(self, list_of_models, time_min, list_samples, self.absTol, self.relTol)
+		self.listOfModels = list_of_models
+		self.timeMin = time_min
+		self.listOfSamples = list_samples
+		self.absTol = abs_tol
+		self.relTol = rel_tol
+		CWriterModels.__init__(self, self.listOfModels, self.timeMin, self.listSamples, self.absTol, self.relTol)
 
 		if experiment is not None:
 			CWriterData.__init__(self, [experiment], workingModel=list_of_models[0])
 		else:
 			CWriterData.__init__(self, experiment, workingModel=list_of_models[0])
 
-		self.listSamples = list_samples
 		self.experiment = experiment
-		self.listOfModels = list_of_models
+
+		# print "list of models : %s" % str([model.getNameOrSbmlId() for model in self.listOfModels])
+		# print "list of time_min : %s" % str(self.timeMin)
+		# print "list of samples : %s" % str([list_samples])
+		# print "list of abs tol : %s" % str(self.absTol)
+		# print "list of rel tol : %s" % str(self.relTol)
+
 
 	def writeSimulationFiles(self):
 
@@ -81,7 +81,7 @@ class CWriterSimulation(CWriterModels, CWriterData):
 		copyfile(join(Settings.basePath, "lib/templates/simulation/main.c"), join(self.getTempDirectory(), "src/main.c") )
 
 		for modelInd, model in enumerate(self.listOfModels):
-			model.build(dont_reduce=True, tmin=min(self.listSamples))
+			model.build(dont_reduce=True, tmin=self.timeMin[modelInd])
 
 		start = time()
 		self.writeModelFiles()

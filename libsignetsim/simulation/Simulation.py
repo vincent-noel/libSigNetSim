@@ -23,7 +23,10 @@
 """
 
 from libsignetsim.simulation.CWriterSimulation import CWriterSimulation
-from libsignetsim.simulation.SimulationException import SimulationExecutionException, SimulationCompilationException, SimulationNoDataException
+from libsignetsim.simulation.SimulationException import (
+	SimulationExecutionException, SimulationCompilationException, SimulationNoDataException, SimulationException
+)
+from libsignetsim.model.Model import Model
 from libsignetsim.settings.Settings import Settings
 from time import time, clock
 from os import mkdir, setpgrp, getcwd
@@ -52,13 +55,84 @@ class Simulation(CWriterSimulation):
 		self.sessionId = None
 		self.simulationId = ''.join(choice(ascii_uppercase + ascii_lowercase + digits) for _ in range(12))
 
+
+		if isinstance(list_of_models, list) and isinstance(list_of_models[0], Model):
+			self.listOfModels = list_of_models
+		elif isinstance(list_of_models, Model):
+			self.listOfModels = [list_of_models]
+		else:
+			raise SimulationException("Unknown format for models")
+
+		if isinstance(list_samples, list) and isinstance(list_samples[0], list):
+			self.listSamples = list_samples
+
+		elif isinstance(list_samples, list) and isinstance(list_samples[0], float):
+			self.listSamples = [list_samples]*len(self.listOfModels)
+
+		elif isinstance(list_samples, list) and isinstance(list_samples[0], int):
+			self.listSamples = [list_samples]*len(self.listOfModels)
+
+		else:
+			raise SimulationException("Unknown format for list of samples")
+
+		if time_min is not None:
+			if isinstance(time_min, list):
+				self.timeMin = time_min
+
+			elif isinstance(time_min, float):
+				self.timeMin = [time_min]*len(self.listOfModels)
+
+			elif isinstance(time_min, int):
+				self.timeMin = [time_min]*len(self.listOfModels)
+
+			else:
+				raise SimulationException("Unknown format for minimum time")
+		else:
+			self.timeMin = [Settings.simulationTimeMin]*len(self.listOfModels)
+
+		if abs_tol is not None:
+			if isinstance(abs_tol, list):
+				self.absTol = abs_tol
+
+			elif isinstance(abs_tol, float):
+				self.absTol = [abs_tol]*len(self.listOfModels)
+
+			elif isinstance(abs_tol, int):
+				self.absTol = [abs_tol]*len(self.listOfModels)
+
+			else:
+				raise SimulationException("Unknown format for absolute tolerance")
+		else:
+			self.absTol = [Settings.defaultAbsTol]*len(self.listOfModels)
+
+		if rel_tol is not None:
+			if isinstance(rel_tol, list):
+				self.relRol = rel_tol
+
+			elif isinstance(rel_tol, float):
+				self.relTol = [rel_tol]*len(self.listOfModels)
+
+			elif isinstance(rel_tol, int):
+				self.relTol = [rel_tol] * len(self.listOfModels)
+
+			else:
+				raise SimulationException("Unknown format for relative tolerance")
+		else:
+			self.relTol = [Settings.defaultRelTol]*len(self.listOfModels)
+
+
+
+
+
+
+
 		CWriterSimulation.__init__(self,
-						list_of_models=list_of_models,
-						time_min=time_min,
-						list_samples=list_samples,
+						list_of_models=self.listOfModels,
+						time_min=self.timeMin,
+						list_samples=self.listSamples,
 						experiment=experiment,
-						abs_tol=abs_tol,
-						rel_tol=rel_tol)
+						abs_tol=self.absTol,
+						rel_tol=self.relTol)
 
 		self.listOfModels = list_of_models
 

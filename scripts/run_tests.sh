@@ -27,7 +27,7 @@ if [ $1 = "sbml-test-suite" ]; then
 elif [ $1 = "biomodels" ]; then
     coverage run -a $OMIT -m unittest libsignetsim.tests.biomodels.TestBiomodelsCompatibility
 
-else
+elif [ $1 = "others" ]; then
     coverage run -a $OMIT -m unittest libsignetsim.model.tests.TestFindKineticLaws
     coverage run -a $OMIT -m unittest libsignetsim.model.tests.TestReduceModel
     coverage run -a $OMIT -m unittest libsignetsim.model.tests.TestModelDefinition
@@ -47,5 +47,15 @@ else
     coverage run -a $OMIT -m unittest libsignetsim.combine.tests.TestRunSedmls
     coverage run -a $OMIT -m unittest libsignetsim.combine.tests.TestShowCase
     coverage run -a $OMIT -m unittest libsignetsim.combine.tests.TestNoManifest
+
+elif [ $1 = "simulation" ]; then
+    coverage run -a $OMIT -m unittest libsignetsim.simulation.tests.TestTimeseries
+    coverage run -a $OMIT -m unittest libsignetsim.simulation.tests.TestSteadyStates
+
+elif [ $1 = "combine" ]; then
+    coverage run -a $OMIT -m unittest libsignetsim.combine.tests.TestRunSedmls
+    coverage run -a $OMIT -m unittest libsignetsim.combine.tests.TestShowCase
+    coverage run -a $OMIT -m unittest libsignetsim.combine.tests.TestNoManifest
+
 
 fi
