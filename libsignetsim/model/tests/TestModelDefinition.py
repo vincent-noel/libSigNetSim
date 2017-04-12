@@ -32,11 +32,11 @@ class TestModelDefinition(TestCase):
 	""" Tests high level functions """
 
 
-	def testKineticLaws(self):
+	def testReactions(self):
 
 		model = Model()
 
-		c = model.listOfCompartments.new("c")
+		c = model.listOfCompartments.new("c", value=2)
 
 		s1 = model.listOfSpecies.new("s1")
 		s2 = model.listOfSpecies.new("s2")
@@ -92,7 +92,7 @@ class TestModelDefinition(TestCase):
 			formula_r2_amount.getDeveloppedInternalMathFormula()
 		))
 
-
+		# Reaction 3 : Hill equation, species declared as concentration
 		r3 = model.listOfReactions.new("reaction 3")
 		r3.listOfReactants.add(s1)
 		r3.listOfModifiers.add(s2)
@@ -135,6 +135,36 @@ class TestModelDefinition(TestCase):
 			r4.kineticLaw.getDefinition().getDeveloppedInternalMathFormula(),
 			formula_r4_amount.getDeveloppedInternalMathFormula()
 		))
+
+	def testAssignmentRule(self):
+		model = Model()
+
+		c = model.listOfCompartments.new("c", value=2)
+
+		s1 = model.listOfSpecies.new("s1")
+		s2 = model.listOfSpecies.new("s2")
+		s3 = model.listOfSpecies.new("s3")
+		s4 = model.listOfSpecies.new("s4")
+		s5 = model.listOfSpecies.new("s5")
+
+		p1 = model.listOfParameters.new("p1")
+		p2 = model.listOfParameters.new("p2")
+		p3 = model.listOfParameters.new("p3")
+
+		r1 = model.listOfReactions.new("reaction 1")
+		r1.listOfReactants.add(s1)
+		r1.listOfReactants.add(s2)
+		r1.listOfProducts.add(s3)
+		r1.setKineticLaw(KineticLaw.MASS_ACTION, reversible=True, parameters=[p1, p2])
+
+		a1 = model.listOfRules.newAssignmentRule(s4, "p3*s3", forcedConcentration=True)
+		a2 = model.listOfRules.newAssignmentRule(s5, "c*p3*s3")
+
+		model.build()
+
+
+
+
 
 	def sympyEqual(self, a, b):
 

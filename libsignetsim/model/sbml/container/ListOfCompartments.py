@@ -65,11 +65,11 @@ class ListOfCompartments(ListOf, HasIds, SbmlObject):
 		SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
 
 
-	def new(self, name=None, sbml_id=None, size=1, constant=True, unit=None):
+	def new(self, name=None, sbml_id=None, value=1, constant=True, unit=None):
 		""" Creates a new compartment """
 
 		t_compartment = Compartment(self.__model, self.nextId())
-		t_compartment.new(name, sbml_id, size, constant, unit)
+		t_compartment.new(name, sbml_id, value, constant, unit)
 		ListOf.add(self, t_compartment)
 		return t_compartment
 

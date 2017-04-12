@@ -32,6 +32,7 @@ elif [ $1 = "others" ]; then
     coverage run -a $OMIT -m unittest libsignetsim.model.tests.TestReduceModel || exit 1;
     coverage run -a $OMIT -m unittest libsignetsim.model.tests.TestModelDefinition || exit 1;
     coverage run -a $OMIT -m unittest libsignetsim.model.tests.TestAnnotation || exit 1;
+    coverage run -a $OMIT -m unittest libsignetsim.model.tests.TestRenameSbmlId || exit 1;
 
     coverage run -a $OMIT -m unittest libsignetsim.simulation.tests.TestTimeseries || exit 1;
     coverage run -a $OMIT -m unittest libsignetsim.simulation.tests.TestSteadyStates || exit 1;

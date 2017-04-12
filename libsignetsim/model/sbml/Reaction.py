@@ -322,7 +322,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 
-		print "renaming %s in %s in reaction %d" % (old_sbml_id, new_sbml_id, self.objId)
+		# print "renaming %s in %s in reaction %d" % (old_sbml_id, new_sbml_id, self.objId)
 		if self.kineticLaw is not None:
 			self.kineticLaw.renameSbmlId(old_sbml_id, new_sbml_id)
 

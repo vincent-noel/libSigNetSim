@@ -88,8 +88,8 @@ class AlgebraicRule(Rule):
 	def setDefinition(self, definition):
 		self.__definition = definition
 
-	def setPrettyPrintDefinition(self, definition):
-		self.__definition.setPrettyPrintMathFormula(definition)
+	def setPrettyPrintDefinition(self, definition, forcedConcentration=False):
+		self.__definition.setPrettyPrintMathFormula(definition, forcedConcentration)
 
 	def getPrettyPrintDefinition(self):
 		return self.__definition.getPrettyPrintMathFormula()

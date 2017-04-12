@@ -51,7 +51,7 @@ class Compartment(Variable, SbmlObject, InitiallyAssignedVariable,
 		self.spatialDimensions = None
 
 
-	def new(self, name=None, sbml_id=None, size=1, constant=True, unit=None):
+	def new(self, name=None, sbml_id=None, value=1, constant=True, unit=None):
 		""" Creates new compartment with default options """
 
 		if sbml_id is None:
@@ -60,7 +60,7 @@ class Compartment(Variable, SbmlObject, InitiallyAssignedVariable,
 		SbmlObject.new(self, name)
 		HasUnits.new(self, unit)
 
-		self.setValue(size)
+		self.setValue(value)
 		self.constant = constant
 
 

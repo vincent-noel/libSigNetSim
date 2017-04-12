@@ -172,35 +172,35 @@ class ListOfRules(ListOf, SbmlObject):
 					return True
 		return False
 
-	def newAlgebraicRule(self, expression=None):
-		self.new(Rule.RULE_ALGEBRAIC, expression=expression)
+	def newAlgebraicRule(self, expression=None, forcedConcentration=False):
+		self.new(Rule.RULE_ALGEBRAIC, expression=expression, forcedConcentration=forcedConcentration)
 
-	def newAssignmentRule(self, variable=None, expression=None):
-		self.new(Rule.RULE_ASSIGNMENT, variable=variable, expression=expression)
+	def newAssignmentRule(self, variable=None, expression=None, forcedConcentration=False):
+		self.new(Rule.RULE_ASSIGNMENT, variable=variable, expression=expression, forcedConcentration=forcedConcentration)
 
-	def newRateRule(self, variable=None, expression=None):
-		self.new(Rule.RULE_RATE, variable=variable, expression=expression)
+	def newRateRule(self, variable=None, expression=None, forcedConcentration=False):
+		self.new(Rule.RULE_RATE, variable=variable, expression=expression, forcedConcentration=forcedConcentration)
 
-	def new(self, rule_type, variable=None, expression=None):
+	def new(self, rule_type, variable=None, expression=None, forcedConcentration=False):
 
 		t_rule = None
 
 		if rule_type == Rule.RULE_ALGEBRAIC:
 			t_rule = AlgebraicRule(self.__model, self.nextId())
 			if expression is not None:
-				t_rule.setPrettyPrintDefinition(expression)
+				t_rule.setPrettyPrintDefinition(expression, forcedConcentration)
 
 		elif rule_type == Rule.RULE_ASSIGNMENT:
 			t_rule = AssignmentRule(self.__model, self.nextId())
 			if (variable is not None and expression is not None):
 				t_rule.setVariable(variable)
-				t_rule.setPrettyPrintDefinition(expression)
+				t_rule.setPrettyPrintDefinition(expression, forcedConcentration)
 
 		elif rule_type == Rule.RULE_RATE:
 			t_rule = RateRule(self.__model, self.nextId())
 			if (variable is not None and expression is not None):
 				t_rule.setVariable(variable)
-				t_rule.setPrettyPrintDefinition(expression)
+				t_rule.setPrettyPrintDefinition(expression, forcedConcentration)
 
 
 		ListOf.add(self, t_rule)

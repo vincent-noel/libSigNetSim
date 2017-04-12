@@ -116,16 +116,16 @@ class KineticLaw(KineticLawIdentifier):
 
 	def setPrettyPrintMathFormula(self, definition, forcedConcentration=False):
 
-		if forcedConcentration and len(self.reaction.listOfReactants) > 0:
-			first_reactant = self.reaction.listOfReactants[0].getSpecies()
-			if first_reactant.isConcentration():
-				t_comp = first_reactant.getCompartment()
-				t_math_formula = MathFormula(self.__model, MathFormula.MATH_KINETICLAW)
-				t_math_formula.setPrettyPrintMathFormula(definition, forcedConcentration)
-				self.__definition.setInternalMathFormula(t_math_formula.getInternalMathFormula()*t_comp.symbol.getInternalMathFormula())
+		if (forcedConcentration and len(self.reaction.listOfReactants) > 0
+			and self.reaction.listOfReactants[0].getSpecies().isConcentration()):
+			# if first_reactant.isConcentration():
+			t_comp = self.reaction.listOfReactants[0].getSpecies().getCompartment()
+			t_math_formula = MathFormula(self.__model, MathFormula.MATH_KINETICLAW)
+			t_math_formula.setPrettyPrintMathFormula(definition, forcedConcentration)
+			self.__definition.setInternalMathFormula(t_math_formula.getInternalMathFormula()*t_comp.symbol.getInternalMathFormula())
 
-			else:
-				self.__definition.setPrettyPrintMathFormula(definition, forcedConcentration)
+			# else:
+			# 	self.__definition.setPrettyPrintMathFormula(definition, forcedConcentration)
 
 		else:
 			self.__definition.setPrettyPrintMathFormula(definition, forcedConcentration)
@@ -164,10 +164,10 @@ class KineticLaw(KineticLawIdentifier):
 		t_reactants = 1
 		for reactant in self.reaction.listOfReactants.values():
 
-			t_reactants *= reactant.getSpecies().symbol.getInternalMathFormula(asConcentration=False)
+			t_reactants *= reactant.getSpecies().symbol.getInternalMathFormula(forcedConcentration=False)
 
 			if not reactant.stoichiometry.isOne():
-				t_reactants *= reactant.stoichiometry.getInternalMathFormula(asConcentration=False)
+				t_reactants *= reactant.stoichiometry.getInternalMathFormula(forcedConcentration=False)
 
 		return t_reactants
 
@@ -176,10 +176,10 @@ class KineticLaw(KineticLawIdentifier):
 
 		t_modifiers = 1
 		for modifier in self.reaction.listOfModifiers.values():
-			t_modifiers *= modifier.getSpecies().symbol.getInternalMathFormula(asConcentration=False)
+			t_modifiers *= modifier.getSpecies().symbol.getInternalMathFormula(forcedConcentration=False)
 
 			if not modifier.stoichiometry.isOne():
-				t_modifiers *= modifier.stoichiometry.getInternalMathFormula(asConcentration=False)
+				t_modifiers *= modifier.stoichiometry.getInternalMathFormula(forcedConcentration=False)
 
 		return t_modifiers
 
@@ -188,10 +188,10 @@ class KineticLaw(KineticLawIdentifier):
 
 		t_products = 1
 		for product in self.reaction.listOfProducts.values():
-			t_products *= product.getSpecies().symbol.getInternalMathFormula(asConcentration=False)
+			t_products *= product.getSpecies().symbol.getInternalMathFormula(forcedConcentration=False)
 
 			if not product.stoichiometry.isOne():
-				t_products *= product.stoichiometry.getInternalMathFormula(asConcentration=False)
+				t_products *= product.stoichiometry.getInternalMathFormula(forcedConcentration=False)
 
 		return t_products
 

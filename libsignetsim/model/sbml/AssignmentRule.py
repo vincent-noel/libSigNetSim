@@ -160,16 +160,16 @@ class AssignmentRule(Rule):
 			self.__definition = definition
 
 
-	def setPrettyPrintDefinition(self, definition):
+	def setPrettyPrintDefinition(self, definition, forcedConcentration=False):
 
-		if self.__var.isConcentration():
+		if self.__var.isConcentration() and forcedConcentration:
 			t_comp = self.__var.getCompartment()
 			t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
-			t_math_formula.setPrettyPrintMathFormula(definition)
+			t_math_formula.setPrettyPrintMathFormula(definition, forcedConcentration)
 			self.__definition.setInternalMathFormula(t_math_formula.getInternalMathFormula()*t_comp.symbol.getInternalMathFormula())
 
 		else:
-			self.__definition.setPrettyPrintMathFormula(definition)
+			self.__definition.setPrettyPrintMathFormula(definition, forcedConcentration)
 
 
 	def getPrettyPrintDefinition(self):

@@ -53,6 +53,13 @@ class MathSymbol(MathFormula):
 	def setInternalVariable(self, internal_variable):
 		MathFormula.setInternalMathFormula(self, internal_variable)
 
+	def getInternalMathFormula(self, forcedConcentration=True):
+		if not self.__variable.isConcentration() or (self.__variable.isConcentration() and forcedConcentration):
+			return MathFormula.getInternalMathFormula(self)
+		else:
+			return SympySymbol("_speciesForcedConcentration_%s_" % str(MathFormula.getInternalMathFormula(self)))
+
+
 	def getMathFormulaDerivative(self, math_type):
 
 		if math_type in [MathFormula.MATH_INTERNAL, MathFormula.MATH_DEVINTERNAL, MathFormula.MATH_FINALINTERNAL]:
