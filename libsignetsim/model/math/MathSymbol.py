@@ -43,9 +43,10 @@ from libsignetsim.model.math.sympy_shortcuts import  (
 
 class MathSymbol(MathFormula):
 
-	def __init__(self, model, is_from_reaction=None):
+	def __init__(self, model, variable, is_from_reaction=None):
 
 		self.__model = model
+		self.__variable = variable
 		MathFormula.__init__(self, model, MathFormula.MATH_VARIABLE, isFromReaction=is_from_reaction)
 
 

@@ -52,9 +52,10 @@ class Compartment(Variable, SbmlObject, InitiallyAssignedVariable,
 
 
 	def new(self, name=None, sbml_id=None, size=1, constant=True, unit=None):
-
 		""" Creates new compartment with default options """
 
+		if sbml_id is None:
+			sbml_id = name
 		Variable.new(self, sbml_id, Variable.COMPARTMENT)
 		SbmlObject.new(self, name)
 		HasUnits.new(self, unit)
@@ -64,7 +65,6 @@ class Compartment(Variable, SbmlObject, InitiallyAssignedVariable,
 
 
 	def copy(self, compartment, prefix="", shift=0, subs={}, deletions=[], replacements={}):
-
 
 		SbmlObject.copy(self, compartment, prefix, shift)
 		InitiallyAssignedVariable.copy(self, compartment, prefix, shift)

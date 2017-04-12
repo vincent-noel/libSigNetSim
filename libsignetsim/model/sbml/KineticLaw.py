@@ -88,46 +88,47 @@ class KineticLaw(KineticLawIdentifier):
 	def getDefinition(self, forcedConcentration=False):
 
 		t_formula = MathFormula(self.__model, MathFormula.MATH_KINETICLAW)
-
-		if forcedConcentration and len(self.reaction.listOfReactants) > 0:
-				first_reactant = self.reaction.listOfReactants[0].getSpecies()
-				if first_reactant.isConcentration():
-					t_comp = first_reactant.getCompartment()
-					t_formula.setInternalMathFormula(
-								self.__definition.getInternalMathFormula()
-								/ t_comp.symbol.getInternalMathFormula())
-
-		else:
-			t_formula.setInternalMathFormula(self.__definition.getInternalMathFormula())
-
+		# print "original definition : %s" % str(self.__definition.getInternalMathFormula())
 
 		if forcedConcentration:
-			for species in self.__model.listOfSpecies.values():
-				if species.isConcentration():
-					t_internal = MathFormula.getInternalMathFormula(t_formula)
-					t_fc = SympySymbol("_speciesForcedConcentration_%s_" % str(species.symbol.getInternalMathFormula()))
-					t_species = SympySymbol(species.getSbmlId())
-					t_internal = t_internal.subs({ t_fc : t_species })
-					t_formula.setInternalMathFormula(t_internal)
+			t_comp = self.reaction.listOfReactants[0].getSpecies().getCompartment()
+			# print "symbol compartment : %s" % str(t_comp.symbol.getInternalMathFormula())
+			t_formula.setInternalMathFormula(
+						self.__definition.getInternalMathFormula()
+						/ t_comp.symbol.getInternalMathFormula())
+
+		else:
+			# print "not concentration"
+			t_formula.setInternalMathFormula(self.__definition.getInternalMathFormula())
+		#
+		# # print "adapted for reactant type : %s" % str(t_formula.getInternalMathFormula())
+		# if forcedConcentration:
+		# 	for species in self.__model.listOfSpecies.values():
+		# 		if species.isConcentration():
+		# 			t_internal = MathFormula.getInternalMathFormula(t_formula)
+		# 			t_fc = SympySymbol("_speciesForcedConcentration_%s_" % str(species.symbol.getInternalMathFormula()))
+		# 			t_species = SympySymbol(species.getSbmlId())
+		# 			t_internal = t_internal.subs({ t_fc : t_species })
+		# 			t_formula.setInternalMathFormula(t_internal)
 
 		return t_formula
 
 
-	def setPrettyPrintMathFormula(self, definition):
+	def setPrettyPrintMathFormula(self, definition, forcedConcentration=False):
 
-		if len(self.reaction.listOfReactants) > 0:
+		if forcedConcentration and len(self.reaction.listOfReactants) > 0:
 			first_reactant = self.reaction.listOfReactants[0].getSpecies()
 			if first_reactant.isConcentration():
 				t_comp = first_reactant.getCompartment()
 				t_math_formula = MathFormula(self.__model, MathFormula.MATH_KINETICLAW)
-				t_math_formula.setPrettyPrintMathFormula(definition)
+				t_math_formula.setPrettyPrintMathFormula(definition, forcedConcentration)
 				self.__definition.setInternalMathFormula(t_math_formula.getInternalMathFormula()*t_comp.symbol.getInternalMathFormula())
 
 			else:
-				self.__definition.setPrettyPrintMathFormula(definition)
+				self.__definition.setPrettyPrintMathFormula(definition, forcedConcentration)
 
 		else:
-			MathFormula.setPrettyPrintMathFormula(self, definition)
+			self.__definition.setPrettyPrintMathFormula(definition, forcedConcentration)
 
 		if self.reaction.value is None:
 			self.reaction.value = MathFormula(self.__model)
@@ -163,10 +164,10 @@ class KineticLaw(KineticLawIdentifier):
 		t_reactants = 1
 		for reactant in self.reaction.listOfReactants.values():
 
-			t_reactants *= reactant.getSpecies().symbol.getInternalMathFormula()
+			t_reactants *= reactant.getSpecies().symbol.getInternalMathFormula(asConcentration=False)
 
 			if not reactant.stoichiometry.isOne():
-				t_reactants *= reactant.stoichiometry.getInternalMathFormula()
+				t_reactants *= reactant.stoichiometry.getInternalMathFormula(asConcentration=False)
 
 		return t_reactants
 
@@ -175,10 +176,10 @@ class KineticLaw(KineticLawIdentifier):
 
 		t_modifiers = 1
 		for modifier in self.reaction.listOfModifiers.values():
-			t_modifiers *= modifier.getSpecies().symbol.getInternalMathFormula()
+			t_modifiers *= modifier.getSpecies().symbol.getInternalMathFormula(asConcentration=False)
 
 			if not modifier.stoichiometry.isOne():
-				t_modifiers *= modifier.stoichiometry.getInternalMathFormula()
+				t_modifiers *= modifier.stoichiometry.getInternalMathFormula(asConcentration=False)
 
 		return t_modifiers
 
@@ -187,10 +188,10 @@ class KineticLaw(KineticLawIdentifier):
 
 		t_products = 1
 		for product in self.reaction.listOfProducts.values():
-			t_products *= product.getSpecies().symbol.getInternalMathFormula()
+			t_products *= product.getSpecies().symbol.getInternalMathFormula(asConcentration=False)
 
 			if not product.stoichiometry.isOne():
-				t_products *= product.stoichiometry.getInternalMathFormula()
+				t_products *= product.stoichiometry.getInternalMathFormula(asConcentration=False)
 
 		return t_products
 

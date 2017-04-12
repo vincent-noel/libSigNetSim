@@ -49,7 +49,7 @@ class TestTimeseries(TestCase):
 		r.listOfReactants.add(s)
 		r.listOfModifiers.add(e)
 		r.listOfProducts.add(p)
-		r.kineticLaw.setPrettyPrintMathFormula("vmax*E*S/(km+S)")
+		r.kineticLaw.setPrettyPrintMathFormula("vmax*E*S/(km+S)", forcedConcentration=True)
 
 		e.setValue(10)
 		s.setValue(12)

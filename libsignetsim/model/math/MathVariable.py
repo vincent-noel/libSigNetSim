@@ -44,7 +44,7 @@ class MathVariable(object):
 		self.type = None
 		self.ind = None
 
-		self.symbol = MathSymbol(self.__model, is_from_reaction)
+		self.symbol = MathSymbol(self.__model, self, is_from_reaction)
 
 		self.value = MathFormula(self.__model)
 		self.derivative_value = MathFormula(self.__model)

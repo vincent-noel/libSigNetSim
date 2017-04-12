@@ -25,23 +25,26 @@
 from libsignetsim.LibSigNetSimException import LibSigNetSimException
 
 
-class CannotCreateException(LibSigNetSimException):
+class ModelException(LibSigNetSimException):
+	pass
+
+class CannotCreateException(ModelException):
 
 	pass
 
-class CannotDeleteException(LibSigNetSimException):
+class CannotDeleteException(ModelException):
 
 	pass
 
-class SbmlException(LibSigNetSimException):
+class SbmlException(ModelException):
 
 	pass
 
-class MathException(LibSigNetSimException):
+class MathException(ModelException):
 
 	pass
 
-class FileException(LibSigNetSimException):
+class FileException(ModelException):
 
 	pass
 
@@ -56,7 +59,7 @@ class FileException(LibSigNetSimException):
 # 	def __str__(self):
 # 		return "%d : %s" % (self.value, self.message)
 
-class TagNotImplementedModelException(Exception):
+class TagNotImplementedModelException(ModelException):
 
 
 	def __init__(self, tag):
@@ -65,7 +68,7 @@ class TagNotImplementedModelException(Exception):
 	def __str__(self):
 		return "The sbml tag %s is not implemented in libSigNetSim" % self.tag
 
-class PackageNotImplementedModelException(Exception):
+class PackageNotImplementedModelException(ModelException):
 
 
 	def __init__(self, package):
@@ -74,7 +77,7 @@ class PackageNotImplementedModelException(Exception):
 	def __str__(self):
 		return "The sbml package %s is not implemented in libSigNetSim" % self.package
 
-class MissingModelException(Exception):
+class MissingModelException(ModelException):
 
 	def __init__(self, filename):
 		self.filename = filename
@@ -83,7 +86,7 @@ class MissingModelException(Exception):
 		return self.filename
 
 
-class MissingSubmodelException(Exception):
+class MissingSubmodelException(ModelException):
 
 	def __init__(self, filename):
 		self.filename = filename

@@ -36,9 +36,14 @@ class TestModelDefinition(TestCase):
 
 		model = Model()
 
+		c = model.listOfCompartments.new("c")
+
 		s1 = model.listOfSpecies.new("s1")
 		s2 = model.listOfSpecies.new("s2")
 		s3 = model.listOfSpecies.new("s3")
+		s4 = model.listOfSpecies.new("s4", hasOnlySubstanceUnits=True)
+		s5 = model.listOfSpecies.new("s5", hasOnlySubstanceUnits=True)
+		s6 = model.listOfSpecies.new("s6", hasOnlySubstanceUnits=True)
 
 		p1 = model.listOfParameters.new("p1")
 		p2 = model.listOfParameters.new("p2")
@@ -51,18 +56,21 @@ class TestModelDefinition(TestCase):
 		r1.setKineticLaw(KineticLaw.MASS_ACTION, reversible=True, parameters=[p1,p2])
 
 		formula_r1 = MathFormula(model)
-		formula_r1.setPrettyPrintMathFormula("p1*s1*s2 - p2*s3")
+		formula_r1.setPrettyPrintMathFormula("p1*s1*s2 - p2*s3", forcedConcentration=True)
+
 		self.assertTrue(self.sympyEqual(
 			r1.kineticLaw.getDefinition(forcedConcentration=True).getDeveloppedInternalMathFormula(),
 			formula_r1.getDeveloppedInternalMathFormula()
 		))
 
 		formula_r1_amount = MathFormula(model)
-		formula_r1_amount.setPrettyPrintMathFormula("compartment_0*(p1*s1*s2 - p2*s3)")
+		formula_r1_amount.setPrettyPrintMathFormula("c*(p1*s1*s2 - p2*s3)", forcedConcentration=True)
+
 		self.assertTrue(self.sympyEqual(
 			r1.kineticLaw.getDefinition().getDeveloppedInternalMathFormula(),
 			formula_r1_amount.getDeveloppedInternalMathFormula()
 		))
+
 
 		r2 = model.listOfReactions.new("reaction 2")
 		r2.listOfReactants.add(s1)
@@ -71,18 +79,19 @@ class TestModelDefinition(TestCase):
 		r2.setKineticLaw(KineticLaw.MICHAELIS, reversible=False, parameters=[p1, p2])
 
 		formula_r2 = MathFormula(model)
-		formula_r2.setPrettyPrintMathFormula("p1*s1*s2/(p2+s1)")
+		formula_r2.setPrettyPrintMathFormula("p1*s1*s2/(p2+s1)", forcedConcentration=True)
 		self.assertTrue(self.sympyEqual(
 			r2.kineticLaw.getDefinition(forcedConcentration=True).getDeveloppedInternalMathFormula(),
 			formula_r2.getDeveloppedInternalMathFormula()
 		))
 
 		formula_r2_amount = MathFormula(model)
-		formula_r2_amount.setPrettyPrintMathFormula("compartment_0*p1*s1*s2/(p2+s1)")
+		formula_r2_amount.setPrettyPrintMathFormula("c*(p1*s1*s2/(p2+s1))", forcedConcentration=True)
 		self.assertTrue(self.sympyEqual(
 			r2.kineticLaw.getDefinition().getDeveloppedInternalMathFormula(),
 			formula_r2_amount.getDeveloppedInternalMathFormula()
 		))
+
 
 		r3 = model.listOfReactions.new("reaction 3")
 		r3.listOfReactants.add(s1)
@@ -91,20 +100,44 @@ class TestModelDefinition(TestCase):
 		r3.setKineticLaw(KineticLaw.HILL, reversible=False, parameters=[p1, p2, p3])
 
 		formula_r3 = MathFormula(model)
-		formula_r3.setPrettyPrintMathFormula("p1*s1^p3*s2/(p2+s1^p3)")
+		formula_r3.setPrettyPrintMathFormula("p1*s1^p3*s2/(p2+s1^p3)", forcedConcentration=True)
 		self.assertTrue(self.sympyEqual(
 			r3.kineticLaw.getDefinition(forcedConcentration=True).getDeveloppedInternalMathFormula(),
 			formula_r3.getDeveloppedInternalMathFormula()
 		))
 
 		formula_r3_amount = MathFormula(model)
-		formula_r3_amount.setPrettyPrintMathFormula("compartment_0*p1*s1^p3*s2/(p2+s1^p3)")
+		formula_r3_amount.setPrettyPrintMathFormula("c*(p1*s1^p3*s2/(p2+s1^p3))", forcedConcentration=True)
 		self.assertTrue(self.sympyEqual(
 			r3.kineticLaw.getDefinition().getDeveloppedInternalMathFormula(),
 			formula_r3_amount.getDeveloppedInternalMathFormula()
 		))
 
+		# Reaction 4 : mass action with species declared as substance
+		r4 = model.listOfReactions.new("reaction 4")
+		r4.listOfReactants.add(s4)
+		r4.listOfReactants.add(s5)
+		r4.listOfProducts.add(s6)
+		r4.setKineticLaw(KineticLaw.MASS_ACTION, reversible=True, parameters=[p1, p2])
+
+		formula_r4 = MathFormula(model)
+		formula_r4.setPrettyPrintMathFormula("(p1*s4*s5 - p2*s6)/c", forcedConcentration=True)
+
+		self.assertTrue(self.sympyEqual(
+			r4.kineticLaw.getDefinition(forcedConcentration=True).getDeveloppedInternalMathFormula(),
+			formula_r4.getDeveloppedInternalMathFormula()
+		))
+
+		formula_r4_amount = MathFormula(model)
+		formula_r4_amount.setPrettyPrintMathFormula("p1*s4*s5 - p2*s6", forcedConcentration=True)
+
+		self.assertTrue(self.sympyEqual(
+			r4.kineticLaw.getDefinition().getDeveloppedInternalMathFormula(),
+			formula_r4_amount.getDeveloppedInternalMathFormula()
+		))
+
 	def sympyEqual(self, a, b):
 
+		# print "test %s == %s : %s" % (simplify(a), simplify(b), (simplify(a-b) == 0))
 		# print "test %s == %s : %s" % (a, b, (simplify(a-b) == 0))
 		return simplify(a-b) == 0
