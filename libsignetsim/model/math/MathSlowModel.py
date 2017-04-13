@@ -83,12 +83,12 @@ class MathSlowModel(object):
 		for variable in self.parentModel.listOfVariables.values():
 			new_var = MathVariable(self)
 			new_var.copy(variable)
-			new_var_id = str(new_var.symbol.getInternalMathFormula())
+			new_var_id = str(new_var.symbol.getInternalMathFormula(forcedConcentration=True))
 			self.listOfVariables.update({new_var_id:new_var})
 
 		# Then we copy the solved initial conditions
 		for variable, value in self.parentModel.solvedInitialConditions.items():
-			t_var = self.listOfVariables[str(variable.symbol.getInternalMathFormula())]
+			t_var = self.listOfVariables[str(variable.symbol.getInternalMathFormula(forcedConcentration=True))]
 			self.solvedInitialConditions.update({t_var: value})
 
 
@@ -99,26 +99,26 @@ class MathSlowModel(object):
 
 		self.variablesOdes = []
 		for i, var_ode in enumerate(self.parentModel.variablesOdes):
-			t_var = self.listOfVariables[str(var_ode.symbol.getInternalMathFormula())]
+			t_var = self.listOfVariables[str(var_ode.symbol.getInternalMathFormula(forcedConcentration=True))]
 			self.variablesOdes.append(t_var)
 
 		self.variablesAssignment = []
 		for var_ass in self.parentModel.variablesAssignment:
-			t_var = self.listOfVariables[str(var_ass.symbol.getInternalMathFormula())]
+			t_var = self.listOfVariables[str(var_ass.symbol.getInternalMathFormula(forcedConcentration=True))]
 			self.variablesAssignment.append(t_var)
 
 		self.variablesConstant = []
 		for var_cst in self.parentModel.variablesConstant:
-			t_var = self.listOfVariables[str(var_cst.symbol.getInternalMathFormula())]
+			t_var = self.listOfVariables[str(var_cst.symbol.getInternalMathFormula(forcedConcentration=True))]
 			self.variablesConstant.append(t_var)
 
 		self.variablesAlgebraic = []
 		for var_alg in self.parentModel.variablesAlgebraic:
-			t_var = self.listOfVariables[str(var_alg.symbol.getInternalMathFormula())]
+			t_var = self.listOfVariables[str(var_alg.symbol.getInternalMathFormula(forcedConcentration=True))]
 			self.variablesAlgebraic.append(t_var)
 
 		for cfe in self.parentModel.listOfCFEs:
-			t_var = self.listOfVariables[str(cfe.getVariable().symbol.getInternalMathFormula())]
+			t_var = self.listOfVariables[str(cfe.getVariable().symbol.getInternalMathFormula(forcedConcentration=True))]
 			t_cfe = CFE(self)
 			t_cfe.new(t_var, cfe.getDefinition())
 			self.listOfCFEs.append(t_cfe)
