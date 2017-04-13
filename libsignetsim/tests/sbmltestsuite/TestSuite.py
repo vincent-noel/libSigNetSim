@@ -25,8 +25,6 @@
 from libsignetsim.tests.sbmltestsuite.TestSuiteCase import TestSuiteCase
 from libsignetsim.settings.Settings import Settings
 
-from unittest import TestCase
-from time import time
 from os.path import join, expanduser, exists
 from os import getcwd, mkdir, system
 
@@ -145,23 +143,21 @@ class TestSuite(object):
 
 				print "> Running case %05d (%s)" % (case, str(self.TODO_VERSIONS))
 
-				start = time()
 				level_version = versions.split('.')
 				level = int(level_version[0])
 				version = int(level_version[1])
 
 				nb_cases += 1
 
-				# try:
-				if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
-					print ""
+				try:
+					if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
+						print ""
 
-				test = TestSuiteCase(case, str(level), str(version), test_export=self.testExport)
-				test.run()
-				nb_success += 1
-				# print ">> l%dv%d : OK (%.2gs)" % (level, version, time()-start)
+					test = TestSuiteCase(case, str(level), str(version), test_export=self.testExport)
+					test.run()
+					nb_success += 1
 
-				# except Exception as e:
-				# 	print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
+				except Exception as e:
+					print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
 
 		return nb_success, nb_cases

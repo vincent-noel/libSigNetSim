@@ -54,7 +54,13 @@ class MathSymbol(MathFormula):
 		MathFormula.setInternalMathFormula(self, internal_variable)
 
 	def getInternalMathFormula(self, forcedConcentration=True):
-		if not self.__variable.isConcentration() or (self.__variable.isConcentration() and forcedConcentration):
+
+		from libsignetsim.model.math.MathVariable import MathVariable
+
+		# The if type(var) test is to check is the variable is a copied, simple math variable,
+		# or if it's a more complex type, like species or parameter, which inherit from MathVariable
+		# If it's just a math variable, if has no method isConcentration()
+		if type(self.__variable) == MathVariable or not self.__variable.isConcentration() or (self.__variable.isConcentration() and forcedConcentration):
 			return MathFormula.getInternalMathFormula(self)
 		else:
 			return SympySymbol("_speciesForcedConcentration_%s_" % str(MathFormula.getInternalMathFormula(self)))

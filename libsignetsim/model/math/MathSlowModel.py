@@ -36,7 +36,7 @@ from libsignetsim.model.math.CFE import CFE
 from libsignetsim.model.math.ODE import ODE
 from libsignetsim.model.ListOfVariables import ListOfVariables
 from libsignetsim.model.math.MathVariable import MathVariable
-# from libsignetsim.model.ModelException import ModelException
+from libsignetsim.model.math.MathStoichiometryMatrix import MathStoichiometryMatrix
 
 class MathSlowModel(object):
 	""" Sbml model class """
@@ -68,6 +68,7 @@ class MathSlowModel(object):
 		self.fastLaws = []
 		self.fastLaws_vars = []
 		self.fastStoichiometryMatrix = None
+		# self.fastStoichiometryMatrix_v2 = MathStoichiometryMatrix(self.parentModel)
 		self.fastConservationLaws = []
 		self.hasDAEs = self.parentModel.hasDAEs
 
@@ -83,12 +84,12 @@ class MathSlowModel(object):
 		for variable in self.parentModel.listOfVariables.values():
 			new_var = MathVariable(self)
 			new_var.copy(variable)
-			new_var_id = str(new_var.symbol.getInternalMathFormula(forcedConcentration=True))
+			new_var_id = str(new_var.symbol.getInternalMathFormula())
 			self.listOfVariables.update({new_var_id:new_var})
 
 		# Then we copy the solved initial conditions
 		for variable, value in self.parentModel.solvedInitialConditions.items():
-			t_var = self.listOfVariables[str(variable.symbol.getInternalMathFormula(forcedConcentration=True))]
+			t_var = self.listOfVariables[str(variable.symbol.getInternalMathFormula())]
 			self.solvedInitialConditions.update({t_var: value})
 
 
@@ -99,26 +100,26 @@ class MathSlowModel(object):
 
 		self.variablesOdes = []
 		for i, var_ode in enumerate(self.parentModel.variablesOdes):
-			t_var = self.listOfVariables[str(var_ode.symbol.getInternalMathFormula(forcedConcentration=True))]
+			t_var = self.listOfVariables[str(var_ode.symbol.getInternalMathFormula())]
 			self.variablesOdes.append(t_var)
 
 		self.variablesAssignment = []
 		for var_ass in self.parentModel.variablesAssignment:
-			t_var = self.listOfVariables[str(var_ass.symbol.getInternalMathFormula(forcedConcentration=True))]
+			t_var = self.listOfVariables[str(var_ass.symbol.getInternalMathFormula())]
 			self.variablesAssignment.append(t_var)
 
 		self.variablesConstant = []
 		for var_cst in self.parentModel.variablesConstant:
-			t_var = self.listOfVariables[str(var_cst.symbol.getInternalMathFormula(forcedConcentration=True))]
+			t_var = self.listOfVariables[str(var_cst.symbol.getInternalMathFormula())]
 			self.variablesConstant.append(t_var)
 
 		self.variablesAlgebraic = []
 		for var_alg in self.parentModel.variablesAlgebraic:
-			t_var = self.listOfVariables[str(var_alg.symbol.getInternalMathFormula(forcedConcentration=True))]
+			t_var = self.listOfVariables[str(var_alg.symbol.getInternalMathFormula())]
 			self.variablesAlgebraic.append(t_var)
 
 		for cfe in self.parentModel.listOfCFEs:
-			t_var = self.listOfVariables[str(cfe.getVariable().symbol.getInternalMathFormula(forcedConcentration=True))]
+			t_var = self.listOfVariables[str(cfe.getVariable().symbol.getInternalMathFormula())]
 			t_cfe = CFE(self)
 			t_cfe.new(t_var, cfe.getDefinition())
 			self.listOfCFEs.append(t_cfe)
@@ -136,7 +137,7 @@ class MathSlowModel(object):
 				for product in reaction.listOfProducts.values():
 					self.fastLaws_vars.append(product.getSpecies().symbol.getDeveloppedInternalMathFormula())
 
-				t_sto_matrix = reaction.getStoichiometryMatrix_v2()
+				t_sto_matrix = reaction.getStoichiometryMatrix()
 				# print "Result from getStoichiometryMatrix_v2"
 				# print t_sto_matrix
 				for t_stoi_reaction in t_sto_matrix:
@@ -145,6 +146,8 @@ class MathSlowModel(object):
 						t_reaction[j] = t_formula.getDeveloppedInternalMathFormula()
 						# print t_reaction
 					self.fastStoichiometryMatrix = t_reaction
+
+		# self.fastStoichiometryMatrix_v2.build(including_fast_reactions=None)
 		#
 		# if len(self.fastLaws) > 0:
 		#
@@ -289,9 +292,7 @@ class MathSlowModel(object):
 
 				if not all_true:
 
-
 					(f_system, f_vars) = self.loadKnownInitialValues_v2(f_system, f_vars, exclude_list=f_vars)
-
 
 					solved_variables = self.solveSystem(f_system, self.fast_variables)
 

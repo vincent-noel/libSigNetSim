@@ -43,9 +43,9 @@ class MathStoichiometryMatrix(object):
 			if (not reaction.fast) or including_fast_reactions:
 
 				if matrix is None:
-					matrix = reaction.getStoichiometryMatrix_v2()
+					matrix = reaction.getStoichiometryMatrix()
 				else:
-					matrix  += reaction.getStoichiometryMatrix_v2()
+					matrix  += reaction.getStoichiometryMatrix()
 
 		self.stoichiometryMatrix = matrix
 
@@ -61,10 +61,8 @@ class MathStoichiometryMatrix(object):
 
 				t_reaction = zeros(1,len(self.__model.listOfSpecies))
 
-
 				for j, t_formula in enumerate(reaction):
 					t_reaction[j] = t_formula.getDeveloppedInternalMathFormula()
-
 
 				if matrix is None:
 					matrix = t_reaction
