@@ -84,11 +84,17 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 			dict.__delitem__(self, old_sbml_id)
 			dict.update(self, {new_sbml_id: t_var})
 
+	def containsSymbol(self, symbol):
+
+		for var in dict.values(self):
+			if var.symbol.getSymbol() == symbol:
+				return True
+		return False
 
 	def getBySymbol(self, symbol):
 
 		for var in dict.values(self):
-			if var.symbol.getInternalMathFormula() == symbol:
+			if var.symbol.getSymbol() == symbol:
 				return var
 	#
 	# def subsToFlatten(self):

@@ -50,7 +50,7 @@ class EventAssignment(SbmlObject):
 		""" Reads event assignment from a sbml file """
 
 		SbmlObject.readSbml(self, sbml_event_assignment, sbml_level, sbml_version)
-		self.__var = self.__model.listOfVariables[sbml_event_assignment.getVariable()]
+		self.__var = self.__model.listOfVariables.getBySbmlId(sbml_event_assignment.getVariable())
 		self.__var.addEventAssignmentBy(self.event)
 
 		self.__definition.readSbml(sbml_event_assignment.getMath())
@@ -96,7 +96,7 @@ class EventAssignment(SbmlObject):
 		else:
 			t_sbml_id = prefix+obj.getVariable().getSbmlId()
 
-		self.__var = self.__model.listOfVariables[t_sbml_id]
+		self.__var = self.__model.listOfVariables.getBySymbol(SympySymbol(t_sbml_id))
 		self.__var.addEventAssignmentBy(self.event)
 
 		t_convs = {}

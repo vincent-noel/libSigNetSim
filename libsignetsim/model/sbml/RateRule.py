@@ -52,7 +52,7 @@ class RateRule(Rule):
 		Rule.readSbml(self, rate_rule, sbml_level, sbml_version)
 
 		if self.__model.listOfVariables.containsSbmlId(rate_rule.getVariable()):
-			self.__var = self.__model.listOfVariables[rate_rule.getVariable()]
+			self.__var = self.__model.listOfVariables.getBySbmlId(rate_rule.getVariable())
 			self.__var.setRuledBy(self)
 
 
@@ -99,7 +99,6 @@ class RateRule(Rule):
 		if t_symbol in subs.keys():
 			t_sbml_id = str(subs[t_symbol])
 			tt_symbol = SympySymbol(t_sbml_id)
-
 
 			if tt_symbol in replacements.keys():
 				t_sbml_id = str(replacements[tt_symbol])

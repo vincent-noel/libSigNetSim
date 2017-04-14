@@ -94,7 +94,7 @@ class HasSBaseRef(object):
 				return [self.getIdRef()] + t_sbase_ref
 
 			else:
-				return [t_model.listOfVariables[self.getIdRef()].getMetaId()] + t_sbase_ref
+				return [t_model.listOfVariables.getBySbmlId(self.getIdRef()).getMetaId()] + t_sbase_ref
 
 		elif self.hasMetaIdRef():
 			return [self.getMetaIdRef()] + t_sbase_ref

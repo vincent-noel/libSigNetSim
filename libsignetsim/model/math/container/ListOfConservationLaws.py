@@ -39,11 +39,6 @@ class ListOfConservationLaws(list):
 
 		list.__init__(self)
 		self.__model = model
-		# self.LHSs = []
-		# self.RHSs = []
-		# self.vars = []
-		# #
-		# self.reducibleVariables = []
 
 
 	def hasConservationLaws(self):
@@ -97,48 +92,24 @@ class ListOfConservationLaws(list):
 
 					#If the sum of the two rows doesn't countains negative
 					#values, then it's fixed
-					if not any((sol+nullspace[i]).applyfunc(neg_filter)):
+					if (not any((sol+nullspace[i]).applyfunc(neg_filter)) and sol+nullspace[i] not in fixed):
 						fixed.append(sol+nullspace[i])
 						break
 
 		return fixed
 
 
-	def build(self):
+	def build(self, stoichiometry_matrix=None):
 
 		DEBUG = False
 
 		del self[:]
 
-		t_stoichiometry = self.__model.stoichiometryMatrix.getSimpleStoichiometryMatrix()
+		if stoichiometry_matrix is None:
+			stoichiometry_matrix = self.__model.stoichiometryMatrix
+		if stoichiometry_matrix.hasNullSpace():
 
-		if t_stoichiometry is not None and len(t_stoichiometry) > 0:
-
-			subs = {}
-			for var, value in self.__model.solvedInitialConditions.items():
-				subs.update({var.symbol.getInternalMathFormula(): value.getInternalMathFormula()})
-
-			for i in range(len(t_stoichiometry[:,0])):
-				for j in range(len(t_stoichiometry[0,:])):
-					if len(t_stoichiometry[i,j].atoms(SympySymbol)):
-						t_stoichiometry[i,j] = t_stoichiometry[i,j].subs(subs)
-
-			compatible = True
-			for var in flatten(t_stoichiometry):
-				if var in [SympyInf, -SympyInf, SympyNan]:
-					compatible = False
-
-			if not compatible:
-				return
-
-			t_nullspace = t_stoichiometry.nullspace()
-			t_nullspace2 = self.fixnullspace(t_nullspace)
-			t_nullspace3 = []
-			for t_res in t_nullspace2:
-				if t_res not in t_nullspace3:
-					t_nullspace3.append(t_res)
-
-			for i, t_res in enumerate(t_nullspace3):
+			for i, t_res in enumerate(stoichiometry_matrix.getSimpleNullspace()):
 				t_law = MathFormula.ZERO
 				t_value = MathFormula.ZERO
 
@@ -147,11 +118,17 @@ class ListOfConservationLaws(list):
 
 				for ii, tt_res in enumerate(t_res):
 
-					t_species = self.__model.listOfSpecies.values()[ii]
-					tt_symbol = t_species.symbol.getInternalMathFormula()
+					# t_species = stoichiometry_matrix.listOfSpecies[ii]
+					# tt_symbol = t_species.symbol.getInternalMathFormula()
 
-					if t_species in self.__model.solvedInitialConditions.keys():
-						tt_value = self.__model.solvedInitialConditions[t_species].getDeveloppedInternalMathFormula()
+					tt_symbol = stoichiometry_matrix.listOfSpecies[ii]
+					# tt_symbol = t_species.symbol.getInternalMathFormula()
+
+					# print self.__model.solvedInitialConditions.keys()
+					# print t_species
+
+					if tt_symbol in self.__model.solvedInitialConditions.keys():
+						tt_value = self.__model.solvedInitialConditions[tt_symbol].getDeveloppedInternalMathFormula()
 
 					else:
 						t_unknown = SympySymbol("_%s_0_" % str(tt_symbol))
@@ -178,7 +155,7 @@ class ListOfConservationLaws(list):
 				if t_law.func == SympyAdd:
 					t_vars = []
 					for t_atom in t_law.atoms(SympySymbol):
-						if self.__model.listOfVariables[str(t_atom)].isDerivative():
+						if self.__model.listOfVariables.getBySymbol(t_atom).isDerivative():
 							t_var = MathFormula(self.__model, MathFormula.MATH_VARIABLE)
 							t_var.setInternalMathFormula(t_atom)
 							t_vars.append(t_var)
@@ -192,7 +169,6 @@ class ListOfConservationLaws(list):
 					if DEBUG:
 						print "New conservation law : "
 						print "%s = %s" % (str(t_law), str(t_value))
-						# print t_res
 					t_conservation_law = ConservationLaw(self.__model)
 					t_conservation_law.new(t_lhs, t_rhs, vars)
 					list.append(self, t_conservation_law)
@@ -239,3 +215,9 @@ class ListOfConservationLaws(list):
 	# 		self.reducibleVariables = solutions
 	# 	else:
 	# 		self.reducibleVariables = {}
+
+	def __str__(self):
+		res = ""
+		for law in self:
+			res += "%s\n" % law
+		return res

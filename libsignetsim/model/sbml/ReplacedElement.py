@@ -128,9 +128,7 @@ class ReplacedElement(HasRef):
 					return "%s__%s" % (t_ref, t_object.getMetaId())
 
 				else:
-					# print tt_model.getSbmlId()
-					# print tt_model.listOfVariables.values()
-					t_object = tt_model.listOfVariables[self.getIdRef()]
+					t_object = tt_model.listOfVariables.getBySbmlId(self.getIdRef())
 
 			elif self.hasPortRef():
 				t_object = tt_model.listOfPorts.getBySbmlId(self.getPortRef()).getRefObject()
@@ -146,7 +144,7 @@ class ReplacedElement(HasRef):
 					t_deletion = t_submodel.listOfDeletions.getBySbmlId(self.__deletion)
 
 					if t_deletion.hasIdRef():
-						t_object = tt_model.listOfVariables[t_deletion.getIdRef()]
+						t_object = tt_model.listOfVariables.getBySbmlId(t_deletion.getIdRef())
 
 					elif t_deletion.hasPortRef():
 						t_object = tt_model.listOfPorts.getBySbmlId(t_deletion.getPortRef()).getRefObject()
@@ -185,7 +183,7 @@ class ReplacedElement(HasRef):
 
 				else:
 
-					res = tt_model.listOfVariables[self.getIdRef()]
+					res = tt_model.listOfVariables.getBySbmlId(self.getIdRef())
 
 			elif self.hasPortRef():
 				res = tt_model.listOfPorts.getBySbmlId(self.getPortRef()).getRefObject()
@@ -201,7 +199,7 @@ class ReplacedElement(HasRef):
 					t_deletion = t_submodel.listOfDeletions.getBySbmlId(self.__deletion)
 
 					if t_deletion.hasIdRef():
-						res = tt_model.listOfVariables[t_deletion.getIdRef()]
+						res = tt_model.listOfVariables.getBySbmlId(t_deletion.getIdRef())
 
 					elif t_deletion.hasPortRef():
 						res = tt_model.listOfPorts.getBySbmlId(t_deletion.getPortRef()).getRefObject()
@@ -236,8 +234,7 @@ class ReplacedElement(HasRef):
 					res = ttt_model.listOfSbmlObjects[refs[0]]
 
 				else:
-
-					res = tt_model.listOfVariables[self.getIdRef()]
+					res = tt_model.listOfVariables.getBySbmlId(self.getIdRef())
 
 			elif self.hasPortRef():
 				res = tt_model.listOfPorts.getBySbmlId(self.getPortRef()).getRefObject()
@@ -253,7 +250,7 @@ class ReplacedElement(HasRef):
 					t_deletion = t_submodel.listOfDeletions.getBySbmlId(self.__deletion)
 
 					if t_deletion.hasIdRef():
-						res = tt_model.listOfVariables[t_deletion.getIdRef()]
+						res = tt_model.listOfVariables.getBySbmlId(t_deletion.getIdRef())
 
 					elif t_deletion.hasPortRef():
 						res = tt_model.listOfPorts.getBySbmlId(t_deletion.getPortRef()).getRefObject()

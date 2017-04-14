@@ -111,9 +111,9 @@ class MathModel(CModelWriter):
 
 		print "\n> Full system : "
 
-		self.listOfCFEs.prettyPrint()
-		self.listOfDAEs.prettyPrint()
-		self.listOfODEs.prettyPrint()
+		print self.listOfCFEs
+		print self.listOfDAEs
+		print self.listOfODEs
 		# self.printConservationLaws()
 
 		print "-----------------------------"
@@ -140,7 +140,7 @@ class MathModel(CModelWriter):
 			init_cond = {SympySymbol("_time_"): SympyFloat(tmin)}
 
 		for init_ass in self.listOfInitialAssignments.values():
-			t_var = init_ass.getVariable().symbol.getInternalMathFormula()
+			t_var = init_ass.getVariable().symbol.getSymbol()
 			t_value = init_ass.getDefinition().getDeveloppedInternalMathFormula()
 			init_cond.update({t_var:t_value})
 
@@ -149,8 +149,8 @@ class MathModel(CModelWriter):
 
 		for rule in self.listOfRules.values():
 			if rule.isAssignment():
-				t_var = rule.getVariable().symbol.getInternalMathFormula()
-
+				t_var = rule.getVariable().symbol.getSymbol()
+				# print "Assignment : %s" % str(t_var)
 				if t_var not in init_cond.keys():
 					t_value = rule.getDefinition().getDeveloppedInternalMathFormula()
 					init_cond.update({t_var:t_value})
@@ -159,7 +159,7 @@ class MathModel(CModelWriter):
 			print init_cond
 
 		for var in self.listOfVariables.values():
-			t_var = var.symbol.getInternalMathFormula()
+			t_var = var.symbol.getSymbol()
 
 			if t_var not in init_cond.keys():
 				t_value = var.value.getDeveloppedInternalMathFormula()
@@ -175,27 +175,29 @@ class MathModel(CModelWriter):
 		crossDependencies = True
 		passes = 1
 		while crossDependencies:
+
 			if DEBUG:
 				print "PASS : %d" % passes
+
 			crossDependencies = False
+
 			for t_var in init_cond.keys():
 				t_def = init_cond[t_var]
 				if len(t_def.atoms(SympySymbol).intersection(set(init_cond.keys()))) > 0:
 					crossDependencies = True
+
 					if DEBUG:
 						print "\n> " + str(t_var) + " : " + str(t_def)
-						# raise MathException("Dependencies")
+
 					for match in t_def.atoms(SympySymbol).intersection(set(init_cond.keys())):
 						if match == t_var:
 							raise MathException("Initial values : self dependency is bad")
 						if DEBUG:
 							print ">> " + str(match) + " : " + str(init_cond[match])
 
-						# t_formula = selfMathFormula()
 						t_def = unevaluatedSubs(t_def, {match:init_cond[match]})
 						init_cond.update({t_var:t_def})
-						# t_cfe.setDefinitionMath(t_cfe.getDefinition().getInternalMathFormula().subs(self.getBySymbol(match).getSubs()))
-						# t_subs = {tt_cfe.getVariable().symbol.getInternalMathFormula():tt_cfe.getV
+
 					if DEBUG:
 						if len(t_def.atoms(SympySymbol).intersection(set(init_cond.keys()))) == 0:
 							print "> " + str(t_var) + " : " + str(t_def) + " [OK]"
@@ -213,34 +215,21 @@ class MathModel(CModelWriter):
 			print self.listOfVariables.symbols()
 			print self.listOfVariables.keys()
 
-		# Trying to put zero as default for variables without values (aka biomodels 113)
-		# But we should also replace that value in the initial conds, so prbalbly we should set it to zero
-		# at the very beginning.
-		# TODO this week end !
-		# for var in self.listOfVariables.values():
-		# 	if not var.symbol.getInternalMathFormula() in init_cond.keys() and not var.isAlgebraic():
-		# 		# raise MathException("Lacks an initial condition : %s" % var.getSbmlId())
-		# 		print "Lacks an initial condition : %s. Set it to zero" % var.getSbmlId()
-		# 		init_cond.update({var.symbol.getInternalMathFormula():SympyFloat(0.0)})
-
 		self.solvedInitialConditions = {}
 		for var, value in init_cond.items():
-			t_var = self.listOfVariables.getBySymbol(var)
-			if t_var is not None:
-				t_value = MathFormula(self)
-				t_value.setInternalMathFormula(value.doit())
-				self.solvedInitialConditions.update({t_var:t_value})
+			if var != SympySymbol("_time_"):
+				t_var = self.listOfVariables.getBySymbol(var)
+				if t_var is not None:
+					t_value = MathFormula(self)
+					t_value.setInternalMathFormula(value.doit())
+					self.solvedInitialConditions.update({t_var.symbol.getSymbol():t_value})
 
 
 		for var in self.listOfVariables.values():
-			if not var in self.solvedInitialConditions.keys() and not var.isAlgebraic():
-				# raise MathException("Lacks an initial condition : %s" % var.getSbmlId())
+			if not var.symbol.getSymbol() in self.solvedInitialConditions.keys() and not var.isAlgebraic():
 				print "Lacks an initial condition : %s" % var.getSbmlId()
-				# t_formula = MathFormula(self)
-				# t_formula.setInternalMathFormula(SympyFloat(0.0))
-				# self.solvedInitialConditions.update({var:t_formula})
 
-
+		# print [(key, value.getInternalMathFormula()) for key, value in self.solvedInitialConditions.items()]
 		if Settings.verbose >= 1:
 			print "> Finished calculating initial conditions (%.2gs)" % (time()-t0)
 

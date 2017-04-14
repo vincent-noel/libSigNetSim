@@ -65,6 +65,8 @@ class MathSymbol(MathFormula):
 		else:
 			return SympySymbol("_speciesForcedConcentration_%s_" % str(MathFormula.getInternalMathFormula(self)))
 
+	def getSymbol(self):
+		return MathFormula.getInternalMathFormula(self)
 
 	def getMathFormulaDerivative(self, math_type):
 

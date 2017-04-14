@@ -67,15 +67,10 @@ class MathDevelopper(object):
 	""" Class for handling math formulaes """
 
 
-
-	# unevaluatedSubs = lambda expr, substitutions: crawl(expr, simpleSubs, substitutions)
-
 	def __init__(self, model):
 		""" Constructor """
 
 		self.__model = model
-		# self.custom_subs = lambda expr, substitutions: self.simpleWalk(expr, self.printer, substitutions)
-
 
 	def translateVariableForDeveloppedInternal(self, variable):
 
@@ -84,7 +79,7 @@ class MathDevelopper(object):
 			res_match = match(r"_speciesForcedConcentration_(.*)_", str(variable))
 
 			t_sbml_id = str(res_match.groups()[0])
-			t_species = self.__model.listOfVariables.getBySbmlId(t_sbml_id)
+			t_species = self.__model.listOfVariables.getBySymbol(SympySymbol(t_sbml_id))
 			t_compartment = t_species.getCompartment()
 			#
 			# if (t_species.isRateRuled()

@@ -52,7 +52,7 @@ class AssignmentRule(Rule):
 		Rule.readSbml(self, sbml_rule, sbml_level, sbml_version)
 
 		if self.__model.listOfVariables.containsSbmlId(sbml_rule.getVariable()):
-			self.__var = self.__model.listOfVariables[sbml_rule.getVariable()]
+			self.__var = self.__model.listOfVariables.getBySbmlId(sbml_rule.getVariable())
 			self.__var.setRuledBy(self)
 
 		self.__definition.readSbml(sbml_rule.getMath(), sbml_level, sbml_version)
@@ -62,7 +62,7 @@ class AssignmentRule(Rule):
 					SympyMul(self.__definition.getInternalMathFormula(),
 						self.__var.getCompartment().symbol.getInternalMathFormula()))
 
-
+		# print "var assignment %s" % str(self.__var.symbol.getSymbol())
 	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
 		sbml_rule = sbml_model.createAssignmentRule()

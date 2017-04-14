@@ -42,28 +42,28 @@ class ListOfSbmlVariables(object):
 	def containsName(self, name):
 		""" Test if a name is in the list """
 
-		res = False
 		for obj in dict.values(self):
 			if name == obj.getName():
-				res = True
-		return res
+				return True
+		return False
 
 
 	def getByName(self, name, pos=0):
 		""" Find sbml objects by their name """
 		return [obj for obj in dict.values(self) if obj.getName() == name][pos]
 
-
 	def containsSbmlId(self, sbml_id):
-		""" Test if a name is in the list """
-		return sbml_id in dict.keys(self)
-
+		for var in dict.values(self):
+			# We have a risk of conflict with local parameters, who have a special scope. So we just ignore them here
+			if var.getSbmlId() == sbml_id and not (var.isParameter() and var.isLocalParameter()):
+				return True
+		return False
 
 	def getBySbmlId(self, sbml_id):
-		""" Find sbml objects by their name """
-		return dict.__getitem__(self, sbml_id)
-
-
+		for var in dict.values(self):
+			# We have a risk of conflict with local parameters, who have a special scope. So we just ignore them here
+			if var.getSbmlId() == sbml_id and not (var.isParameter() and var.isLocalParameter()):
+				return var
 
 	def newSbmlId(self, variable, string=None):
 

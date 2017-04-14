@@ -34,9 +34,9 @@ class TestSuite(object):
 
 	TODO_CASES = []
 	TODO_VERSIONS = []
-
-	INCOMPATIBLE_CASES = [987, 988]
-	INCOMPATIBLE_TAGS = ['CSymbolDelay']
+	TODO_TAGS = []
+	INCOMPATIBLE_CASES = []
+	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'FastReaction']
 
 	COMPATIBLE_PACKAGES = ['comp']
 
@@ -112,9 +112,14 @@ class TestSuite(object):
 		for case_id, case_tags in self.testCasesTags.items():
 
 			compatible = True
-
+			if self.TODO_TAGS != []:
+				todo_tag = False
+			else:
+				todo_tag = True
 			for tag in case_tags:
 
+				if tag.strip() in self.TODO_TAGS:
+					todo_tag = True
 
 				if tag.strip() in self.INCOMPATIBLE_TAGS:
 					compatible = False
@@ -123,7 +128,7 @@ class TestSuite(object):
 					  and tag.strip().split(':')[0] not in self.COMPATIBLE_PACKAGES):
 					compatible = False
 
-			if compatible and case_id not in self.INCOMPATIBLE_CASES and (self.TODO_CASES == [] or case_id in self.TODO_CASES):
+			if compatible and case_id not in self.INCOMPATIBLE_CASES and todo_tag and (self.TODO_CASES == [] or case_id in self.TODO_CASES):
 				(t_success, t_cases) = self.runCase(case_id)
 				nb_success += t_success
 				nb_cases += t_cases
@@ -149,15 +154,15 @@ class TestSuite(object):
 
 				nb_cases += 1
 
-				try:
-					if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
-						print ""
+				# try:
+				if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
+					print ""
 
-					test = TestSuiteCase(case, str(level), str(version), test_export=self.testExport)
-					test.run()
-					nb_success += 1
+				test = TestSuiteCase(case, str(level), str(version), test_export=self.testExport)
+				test.run()
+				nb_success += 1
 
-				except Exception as e:
-					print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
+				# except Exception as e:
+				# 	print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
 
 		return nb_success, nb_cases

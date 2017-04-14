@@ -93,7 +93,7 @@ class ReplacedBy(HasRef):
 
 					return "%s__%s" % (t_ref, t_object.getMetaId())
 				else:
-					t_object = tt_model.listOfVariables[self.getIdRef()]
+					t_object = tt_model.listOfVariables.getBySbmlId(self.getIdRef())
 
 
 			elif self.hasPortRef():
@@ -140,7 +140,7 @@ class ReplacedBy(HasRef):
 
 					# return "%s__%s" % (t_ref, t_object.getMetaId())
 				else:
-					res = tt_model.listOfVariables[self.getIdRef()]
+					res = tt_model.listOfVariables.getBySbmlId(self.getIdRef())
 
 
 			elif self.hasPortRef():
@@ -171,7 +171,7 @@ class ReplacedBy(HasRef):
 
 
 			if self.hasIdRef():
-				t_object = tt_model.listOfVariables[self.getIdRef()]
+				t_object = tt_model.listOfVariables.getBySbmlId(self.getIdRef())
 			elif self.hasPortRef():
 				t_object = tt_model.listOfPorts.getBySbmlId(self.getPortRef()).getRefObject()
 

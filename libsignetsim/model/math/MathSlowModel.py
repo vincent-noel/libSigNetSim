@@ -37,7 +37,7 @@ from libsignetsim.model.math.ODE import ODE
 from libsignetsim.model.ListOfVariables import ListOfVariables
 from libsignetsim.model.math.MathVariable import MathVariable
 from libsignetsim.model.math.MathStoichiometryMatrix import MathStoichiometryMatrix
-
+from libsignetsim.model.math.container.ListOfConservationLaws import ListOfConservationLaws
 class MathSlowModel(object):
 	""" Sbml model class """
 
@@ -67,9 +67,9 @@ class MathSlowModel(object):
 
 		self.fastLaws = []
 		self.fastLaws_vars = []
-		self.fastStoichiometryMatrix = None
-		# self.fastStoichiometryMatrix_v2 = MathStoichiometryMatrix(self.parentModel)
+		self.fastStoichiometryMatrix = MathStoichiometryMatrix(self.parentModel)
 		self.fastConservationLaws = []
+		self.fastConservationLaws_v2 = ListOfConservationLaws(self)
 		self.hasDAEs = self.parentModel.hasDAEs
 
 		self.slow_variables = []
@@ -84,13 +84,12 @@ class MathSlowModel(object):
 		for variable in self.parentModel.listOfVariables.values():
 			new_var = MathVariable(self)
 			new_var.copy(variable)
-			new_var_id = str(new_var.symbol.getInternalMathFormula())
+			new_var_id = new_var.symbol.getPrettyPrintMathFormula()
 			self.listOfVariables.update({new_var_id:new_var})
 
 		# Then we copy the solved initial conditions
 		for variable, value in self.parentModel.solvedInitialConditions.items():
-			t_var = self.listOfVariables[str(variable.symbol.getInternalMathFormula())]
-			self.solvedInitialConditions.update({t_var: value})
+			self.solvedInitialConditions.update({variable: value})
 
 
 		self.nbOdes = self.parentModel.nbOdes
@@ -100,26 +99,26 @@ class MathSlowModel(object):
 
 		self.variablesOdes = []
 		for i, var_ode in enumerate(self.parentModel.variablesOdes):
-			t_var = self.listOfVariables[str(var_ode.symbol.getInternalMathFormula())]
+			t_var = self.listOfVariables.getBySymbol(var_ode.symbol.getSymbol())
 			self.variablesOdes.append(t_var)
 
 		self.variablesAssignment = []
 		for var_ass in self.parentModel.variablesAssignment:
-			t_var = self.listOfVariables[str(var_ass.symbol.getInternalMathFormula())]
+			t_var = self.listOfVariables.getBySymbol(var_ass.symbol.getSymbol())
 			self.variablesAssignment.append(t_var)
 
 		self.variablesConstant = []
 		for var_cst in self.parentModel.variablesConstant:
-			t_var = self.listOfVariables[str(var_cst.symbol.getInternalMathFormula())]
+			t_var = self.listOfVariables.getBySymbol(var_cst.symbol.getSymbol())
 			self.variablesConstant.append(t_var)
 
 		self.variablesAlgebraic = []
 		for var_alg in self.parentModel.variablesAlgebraic:
-			t_var = self.listOfVariables[str(var_alg.symbol.getInternalMathFormula())]
+			t_var = self.listOfVariables.getBySymbol(var_alg.symbol.getSymbol())
 			self.variablesAlgebraic.append(t_var)
 
 		for cfe in self.parentModel.listOfCFEs:
-			t_var = self.listOfVariables[str(cfe.getVariable().symbol.getInternalMathFormula())]
+			t_var = self.listOfVariables.getBySymbol(cfe.getVariable().symbol.getSymbol())
 			t_cfe = CFE(self)
 			t_cfe.new(t_var, cfe.getDefinition())
 			self.listOfCFEs.append(t_cfe)
@@ -137,33 +136,12 @@ class MathSlowModel(object):
 				for product in reaction.listOfProducts.values():
 					self.fastLaws_vars.append(product.getSpecies().symbol.getDeveloppedInternalMathFormula())
 
-				t_sto_matrix = reaction.getStoichiometryMatrix()
-				# print "Result from getStoichiometryMatrix_v2"
-				# print t_sto_matrix
-				for t_stoi_reaction in t_sto_matrix:
-					t_reaction = zeros(1,len(self.parentModel.listOfSpecies))
-					for j, t_formula in enumerate(t_stoi_reaction):
-						t_reaction[j] = t_formula.getDeveloppedInternalMathFormula()
-						# print t_reaction
-					self.fastStoichiometryMatrix = t_reaction
 
-		# self.fastStoichiometryMatrix_v2.build(including_fast_reactions=None)
-		#
-		# if len(self.fastLaws) > 0:
-		#
-		# 	print " > Found fast reaction : "
-		# 	for fast_law in self.fastLaws:
-		# 		print " >> " + str(fast_law)
-		#
-		# 	print " > Stoichiometry matrix :"
-		# 	print self.fastStoichiometryMatrix
-		# 	print " > Stoichiometry matrix's nullspace :"
-		# 	print self.fastStoichiometryMatrix.nullspace()
 
 	def findFastConservationLaws(self):
 		""" Finds the conservation laws from the fast reactions """
 
-		for i, t_res in enumerate(self.fastStoichiometryMatrix.nullspace()):
+		for i, t_res in enumerate(self.fastStoichiometryMatrix.getSimpleStoichiometryMatrix().nullspace()):
 
 			# print "Finding conservation law #%d\n" % i
 			# print t_res
@@ -217,7 +195,7 @@ class MathSlowModel(object):
 					t_value += tt_res * tt_value
 
 			if t_law.func == SympyAdd:
-				# print " >> New fast conservation law : %s" % str(SympyEqual(t_law, t_value))
+				print " >> New fast conservation law : %s" % str(SympyEqual(t_law, t_value))
 				self.fastConservationLaws.append(SympyEqual(t_law, t_value))
 
 
@@ -241,7 +219,7 @@ class MathSlowModel(object):
 		for var, value in self.solvedInitialConditions.items():
 			# if len(value.getInternalMathFormula().atoms(SympySymbol)) > 0:
 
-			subs.update({var.symbol.getInternalMathFormula(): value.getInternalMathFormula()})
+			subs.update({var: value.getInternalMathFormula()})
 
 		if not containsBoundaryConditions:
 
@@ -274,7 +252,7 @@ class MathSlowModel(object):
 						t_value = MathFormula(self)
 						t_value.setInternalMathFormula(solved_value.subs(subs))
 
-						self.solvedInitialConditions.update({t_var:t_value})
+						self.solvedInitialConditions.update({solved_variable:t_value})
 				# else:
 				# 	print "All true !"
 		else:
@@ -307,6 +285,10 @@ class MathSlowModel(object):
 	def build(self):
 
 		self.copyVariables()
+		self.fastStoichiometryMatrix.build(including_slow_reactions=False)
+		# print self.fastStoichiometryMatrix.getSimpleStoichiometryMatrix()
+		self.fastConservationLaws_v2.build(self.fastStoichiometryMatrix)
+		print self.fastConservationLaws_v2
 		self.findFastReactions()
 
 		if len(self.fastLaws) > 0:
@@ -323,14 +305,15 @@ class MathSlowModel(object):
 					t_definition = variable.getODE(including_fast_reactions=False)
 
 					if t_definition is not None:
-						self.slow_variables.append(t_var.symbol.getInternalMathFormula())
+						self.slow_variables.append(t_var.symbol.getSymbol())
 
 
 			self.fast_variables = list(set(self.fastLaws_vars) - set(self.slow_variables))
 			self.mixed_variables = list(set(self.fastLaws_vars).intersection(set(self.slow_variables)))
 
-			# print "\n > Mixed variables : %s" % str(self.mixed_variables)
-			# print " > Fast variables : %s" % str(self.fast_variables)
+			print "\n > Slow variables : %s" % str(self.mixed_variables)
+			print " > Mixed variables : %s" % str(self.mixed_variables)
+			print " > Fast variables : %s" % str(self.fast_variables)
 
 			self.fixInitialConditions()
 
@@ -355,7 +338,7 @@ class MathSlowModel(object):
 			# print " > matrix species :"
 			# print matrix_species
 			nullspace_normalized = []
-			nullspace = self.fastStoichiometryMatrix.nullspace()
+			nullspace = self.fastStoichiometryMatrix.getSimpleStoichiometryMatrix().nullspace()
 			# print "> stoichiometry :"
 			# print self.fastStoichiometryMatrix
 
@@ -469,14 +452,14 @@ class MathSlowModel(object):
 		# Substituing known values
 		# We should probably rewrite that and make one big subs call
 		subs = {}
-		for i_variable, variable in enumerate(self.solvedInitialConditions.keys()):
+		for i_variable, t_symbol in enumerate(self.solvedInitialConditions.keys()):
 
 
-			t_symbol = variable.symbol.getInternalMathFormula()
+			# t_symbol = variable.symbol.getInternalMathFormula()
 
-			if variable.symbol.getInternalMathFormula() not in exclude_list:
-				subs.update({t_symbol: self.solvedInitialConditions[variable].getInternalMathFormula()})
-
+			if t_symbol not in exclude_list:
+				subs.update({t_symbol: self.solvedInitialConditions[t_symbol].getInternalMathFormula()})
+			# print subs
 			# print "subs :"
 			# print subs
 			res_system = []

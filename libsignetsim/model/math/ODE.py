@@ -48,3 +48,10 @@ class ODE(object):
 
 	def getDefinition(self):
 		return self.__definition
+
+	def __str__(self):
+
+		return "%s = %s" % (
+			self.__variable.symbol.getDerivative().getDeveloppedInternalMathFormula(),
+			self.__definition.getDeveloppedInternalMathFormula()
+		)

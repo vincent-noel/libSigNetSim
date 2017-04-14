@@ -117,12 +117,12 @@ class ListOfSbmlObjects(ListOf):
 			if not isinstance(obj, ListOfReplacedElements) and obj.hasReplacedElements():
 				for replaced_element in obj.getReplacedElements():
 					if replaced_element.getSubmodelRef() == self.__model.getSbmlId():
-						t_object = self.__model.listOfVariables[replaced_element.getIdRef()]
+						t_object = self.__model.listOfVariables.getBySbmlId(replaced_element.getIdRef())
 						res.append(t_object)
 
 					else:
 						t_model = self.__model.listOfSubmodels.getBySbmlId(replaced_element.getSubmodelRef()).getModelObject()
-						t_object = t_model.listOfVariables[replaced_element.getIdRef()]
+						t_object = t_model.listOfVariables.getBySbmlId(replaced_element.getIdRef())
 						res.append(t_object)
 
 		return res
@@ -134,13 +134,13 @@ class ListOfSbmlObjects(ListOf):
 			if not isinstance(obj, ListOfReplacedElements) and obj.hasReplacedElements():
 				for replaced_element in obj.getReplacedElements():
 					if replaced_element.getSubmodelRef() == self.__model.getSbmlId():
-						t_object = self.__model.listOfVariables[replaced_element.getIdRef()]
+						t_object = self.__model.listOfVariables.getBySbmlId(replaced_element.getIdRef())
 						if t_object == ask_object:
 							return True
 
 					else:
 						t_model = self.__model.listOfSubmodels.getBySbmlId(replaced_element.getSubmodelRef()).getModelObject()
-						t_object = t_model.listOfVariables[replaced_element.getIdRef()]
+						t_object = t_model.listOfVariables.getBySbmlId(replaced_element.getIdRef())
 						if t_object == ask_object:
 							return True
 		return False
@@ -152,13 +152,13 @@ class ListOfSbmlObjects(ListOf):
 			if not isinstance(obj, ListOfReplacedElements) and not isinstance(obj, Model) and obj.hasReplacedElements():
 				for replaced_element in obj.getReplacedElements():
 					if replaced_element.getSubmodelRef() == self.__model.getSbmlId():
-						t_object = self.__model.listOfVariables[replaced_element.getIdRef()]
+						t_object = self.__model.listOfVariables.getBySbmlId(replaced_element.getIdRef())
 						if t_object == ask_object:
 							return obj
 
 					else:
 						t_model = self.__model.listOfSubmodels.getBySbmlId(replaced_element.getSubmodelRef()).getModelObject()
-						t_object = t_model.listOfVariables[replaced_element.getIdRef()]
+						t_object = t_model.listOfVariables.getBySbmlId(replaced_element.getIdRef())
 						if t_object == ask_object:
 							return obj
 

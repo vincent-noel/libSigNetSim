@@ -78,10 +78,6 @@ class SbmlMathReader(object):
 		# Local parameter
 		# If we are within a reaction, we first need to look in the local
 		# scope for the variable identifier
-		#TODO this is called three timed at initialization ??!!
-		# because of the tree versions of the tree (normal, simplified 1 & 2)
-
-		#print "translate variable for interal : %s" % str(variable)
 
 		if self.isFromReaction is not None and self.model.listOfReactions[self.isFromReaction].listOfLocalParameters.containsSbmlId(variable):
 			if simplified:

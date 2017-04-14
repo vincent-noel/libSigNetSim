@@ -87,20 +87,16 @@ class CMathWriter(object):
 	def translateVariableForC(self, variable, derivative=False):
 		""" Translates a Sympy symbol in C """
 
-		#Input is a Sympy symbol, we need to convert to string
-		variable = str(variable)
-
-		# print variable
-		if variable == "_time_":
+		if str(variable) == "_time_":
 			return "t"
 
-		elif variable == "_avogadro_":
+		elif str(variable) == "_avogadro_":
 			return "RT_NA"
 
 		t_var = None
 
-		if variable in self.model.listOfVariables.keys():
-			t_var = self.model.listOfVariables[variable]
+		if self.model.listOfVariables.containsSymbol(variable):
+			t_var = self.model.listOfVariables.getBySymbol(variable)
 		else:
 			print "> Err : %s" % str(variable)
 
@@ -130,10 +126,8 @@ class CMathWriter(object):
 			t_pos = self.model.nbOdes + t_var.ind+1
 
 		else:
-			# print "No clue what this variable is : %s" % t_var.getSbmlId()
-			c_var = "err"
+			raise MathException("Cannot determine the mathematical type of variable %s" % str(variable))
 
-		# print "Variable %s : %s,%s" % (t_var.getSbmlId(), c_var, t_pos)
 		return "Ith(%s,%s)" % (c_var, t_pos)
 
 
@@ -150,15 +144,15 @@ class CMathWriter(object):
 				t_string += ".0"
 			return "RCONST(%s)" % t_string
 		elif tree.func == SympySymbol:
-			return self.translateVariableForC(str(tree))
+			return self.translateVariableForC(tree)
 
-		elif isinstance(tree.func, SympyUndefinedFunction) and tree.args == (SympySymbol("t"),) and str(tree.func) in self.model.listOfVariables.keys():
-			return self.translateVariableForC(str(tree.func))
+		# elif isinstance(tree.func, SympyUndefinedFunction) and tree.args == (SympySymbol("t"),) and str(tree.func) in self.model.listOfVariables.keys():
+		# 	return self.translateVariableForC(str(tree.func))
 
 		elif tree.func == SympyDerivative:
 			# print tree.args[0]
 			# print str(tree.args[0])
-			return self.translateVariableForC(str(tree.args[0]),derivative=True)
+			return self.translateVariableForC(tree.args[0],derivative=True)
 
 		elif tree.func == SympyInteger:
 			return "RCONST(%d.0)" % int(tree)

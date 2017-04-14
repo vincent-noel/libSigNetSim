@@ -191,19 +191,17 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation):
 		if sbml_id is None:
 			self.conversionFactor = None
 
-		elif sbml_id in self.listOfVariables.keys():
+		elif self.listOfVariables.containSbmlId(sbml_id):
 			if self.conversionFactor is None:
 				self.conversionFactor = MathFormula(self)
-			self.conversionFactor.setInternalMathFormula(self.listOfVariables[sbml_id].symbol.getInternalMathFormula())
+			self.conversionFactor.setInternalMathFormula(self.listOfVariables.getBySbmlId(sbml_id).symbol.getSymbol())
 
 
 
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		""" Here we rename the variable in all the math """
-		#
 
-		# self.listOfFunctionDefinitions.renameSbmlId(old_sbml_id, new_sbml_id)
 		self.listOfSpecies.renameSbmlId(old_sbml_id, new_sbml_id)
 		self.listOfInitialAssignments.renameSbmlId(old_sbml_id, new_sbml_id)
 		self.listOfRules.renameSbmlId(old_sbml_id, new_sbml_id)

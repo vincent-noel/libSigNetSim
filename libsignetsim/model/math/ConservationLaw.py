@@ -67,3 +67,10 @@ class ConservationLaw(object):
 								self.RHS.getDeveloppedInternalMathFormula())
 		)
 
+
+	def __str__(self):
+		return ">> %s == %s" % (
+			self.LHS.getDeveloppedInternalMathFormula(),
+			self.RHS.getDeveloppedInternalMathFormula()
+		)
+

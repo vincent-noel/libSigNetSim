@@ -131,8 +131,8 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 						t_expected_value = float(etrajs[t,i_var])
 						var = self.sbmlIdToPlot[i_var]
 
-						if var in self.listOfModels[0].listOfVariables.keys():
-							t_var = self.listOfModels[0].listOfVariables[var]
+						if self.listOfModels[0].listOfVariables.containsSbmlId(var):
+							t_var = self.listOfModels[0].listOfVariables.getBySbmlId(var)
 
 							t_value = None
 							if t_var.isSpecies():
@@ -171,8 +171,8 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 			line = "# ['time'"
 
 			for sbml_id in self.sbmlIdToPlot:
-				if sbml_id in self.listOfModels[0].listOfVariables.keys():
-					t_var = self.listOfModels[0].listOfVariables[sbml_id]
+				if self.listOfModels[0].listOfVariables.containsSbmlId(sbml_id):
+					t_var = self.listOfModels[0].listOfVariables.getBySbmlId(sbml_id)
 					if t_var.isSpecies():
 						line += ",'%s'" % sbml_id
 
@@ -182,8 +182,8 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 				line = "%.14f" % t_time
 
 				for sbml_id in self.sbmlIdToPlot:
-					if sbml_id in self.listOfModels[0].listOfVariables.keys():
-						t_var = self.listOfModels[0].listOfVariables[sbml_id]
+					if self.listOfModels[0].listOfVariables.containsSbmlId(sbml_id):
+						t_var = self.listOfModels[0].listOfVariables.getBySbmlId(sbml_id)
 						if t_var.isSpecies():
 
 							t_compartment = t_var.getCompartment()

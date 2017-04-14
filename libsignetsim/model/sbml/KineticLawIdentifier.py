@@ -375,8 +375,8 @@ class KineticLawIdentifier(object):
 						param_michaelis = t_formula.args[1].args[1].args[0]
 
 
-		param_catalytic = self.model.listOfVariables[str(param_catalytic)]
-		param_michaelis = self.model.listOfVariables[str(param_michaelis)]
+		param_catalytic = self.model.listOfVariables.getBySymbol(param_catalytic)
+		param_michaelis = self.model.listOfVariables.getBySymbol(param_michaelis)
 		return [param_catalytic, param_michaelis]
 
 
@@ -386,7 +386,7 @@ class KineticLawIdentifier(object):
 	def findMassActionParameters(self):
 
 		param = self.removeSpeciesAndCompartmentsFromRate()
-		param = self.model.listOfVariables[str(param)]
+		param = self.model.listOfVariables.getBySymbol(param)
 		return [param]
 
 
@@ -395,9 +395,9 @@ class KineticLawIdentifier(object):
 		self.getReversibleFormulas()
 
 		front_param = self.removeSpeciesAndCompartmentsFromRate(self.forwardMathFormula)
-		front_param = self.model.listOfVariables[str(front_param)]
+		front_param = self.model.listOfVariables.getBySymbol(front_param)
 
 		back_param = self.removeSpeciesAndCompartmentsFromRate(self.backwardMathFormula)
-		back_param = self.model.listOfVariables[str(back_param)]
+		back_param = self.model.listOfVariables.getBySymbol(back_param)
 
 		return [front_param, back_param]

@@ -81,28 +81,28 @@ class CModelWriter(object):
 				f_c.write("  %s.alg_der_variables = (ModelVariable *) malloc(sizeof(ModelVariable) * %s.nb_algebraic_variables);\n" % (variable_name, variable_name))
 
 		for i_var, variable_ode in enumerate(self.getMathModel().variablesOdes):
-			t_value = self.getMathModel().solvedInitialConditions[variable_ode]
+			t_value = self.getMathModel().solvedInitialConditions[variable_ode.symbol.getSymbol()]
 
 			f_c.write("  %s.derivative_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_DERIVATIVE};\n" % (
-							variable_name, i_var, t_value.getCMathFormula(), variable_ode.symbol.getPrettyPrintMathFormula()))
+							variable_name, i_var, t_value.getCMathFormula(), variable_ode.symbol.getInternalMathFormula()))
 
 			if self.getMathModel().hasDAEs:
 				f_c.write("  %s.der_der_variables[%d] = (ModelVariable) {RCONST(0.0), \"%s\", VAR_DER_DER};\n" % (
 								variable_name, i_var, variable_ode.symbol.getPrettyPrintMathFormula()))
 
 		for i_var, variable_ass in enumerate(self.getMathModel().variablesAssignment):
-			t_value = self.getMathModel().solvedInitialConditions[variable_ass]
+			t_value = self.getMathModel().solvedInitialConditions[variable_ass.symbol.getSymbol()]
 			f_c.write("  %s.assignment_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_ASSIGNMENT};\n" % (
 								variable_name, i_var, t_value.getCMathFormula(), variable_ass.symbol.getPrettyPrintMathFormula()))
 
 		for i_var, variable_cst in enumerate(self.getMathModel().variablesConstant):
-			t_value = self.getMathModel().solvedInitialConditions[variable_cst]
+			t_value = self.getMathModel().solvedInitialConditions[variable_cst.symbol.getSymbol()]
 			f_c.write("  %s.constant_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_CONSTANT};\n" % (
 								variable_name, i_var, t_value.getCMathFormula(), variable_cst.symbol.getPrettyPrintMathFormula()))
 
 
 		for i_var, variable_alg in enumerate(self.getMathModel().variablesAlgebraic):
-			t_value = self.getMathModel().solvedInitialConditions[variable_alg]
+			t_value = self.getMathModel().solvedInitialConditions[variable_alg.symbol.getSymbol()]
 			f_c.write("  %s.algebraic_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_ALGEBRAIC};\n" % (
 								variable_name, i_var, t_value.getCMathFormula(), variable_alg.symbol.getPrettyPrintMathFormula()))
 

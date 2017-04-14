@@ -87,64 +87,26 @@ class HasRef(object):
 		self.setUnitRef(obj.getUnitRef(), prefix)
 		self.setMetaIdRef(obj.getMetaIdRef(), prefix)
 
-
 	def getRef(self):
 		if self.hasIdRef():
 			return self.getIdRef()
+
 		elif self.hasPortRef():
 			return self.getPortRef()
+
 		elif self.hasMetaIdRef():
 			return self.getMetaIdRef()
 
-	# def getRefMetaId(self):
-	#
-
-
-
-
 	def getRefMetaId(self):
 
-		print self.__model.getSbmlId()
 		if self.hasIdRef():
-			# if self.hasSBaseRef():
-			#     ttt_model = self.__model.listOfSubmodels.getBySbmlIdRef(self.getIdRef()).getModelObject()
-			#     refs = self.getSBaseRef().getRef(ttt_model)
-			#
-			#     t_ref = self.getIdRef()
-			#     while len(refs) > 1:
-			#         t_ref = "%s__%s" % (t_ref, refs[0])
-			#         ttt_model = ttt_model.listOfSubmodels.getBySbmlIdRef(refs[0]).getModelObject()
-			#         refs = refs[-1:]
-			#
-			#     t_object = ttt_model.listOfSbmlObjects[refs[0]]
-			#     return "%s__%s" % (t_ref, t_object.getMetaId())
-			#
-			# else:
-			return self.__model.listOfVariables[self.getIdRef()].getMetaId()
+			return self.__model.listOfVariables.getBySbmlId(self.getIdRef()).getMetaId()
 
 		elif self.hasPortRef():
 			return self.__model.listOfPorts.getBySbmlId(self.getPortRef()).getRefObject().getMetaId()
 
 		elif self.hasMetaIdRef():
 			return self.__model.listOfSbmlObjects.getByMetaId(self.getMetaIdRef()).getMetaId()
-		#
-		# elif self.__deletion is not None:
-		#     t_submodel = self.__model.listOfSubmodels.getBySbmlIdRef(self.getSubmodelRef())
-		#
-		#     if self.__deletion in t_submodel.listOfDeletions.sbmlIds():
-		#
-		#         t_deletion = t_submodel.listOfDeletions.getBySbmlId(self.__deletion)
-		#
-		#         if t_deletion.hasIdRef():
-		#             t_object = tt_model.listOfVariables[t_deletion.getIdRef()]
-		#
-		#         elif t_deletion.hasPortRef():
-		#             t_object = tt_model.listOfPorts.getBySbmlId(t_deletion.getPortRef()).getRefObject()
-		#
-		#         elif t_deletion.hasMetaIdRef():
-		#             t_object = tt_model.listOfSbmlObjects.getByMetaId(t_deletion.getMetaIdRef())
-
-
 
 	def getRefObject(self):
 
@@ -154,13 +116,12 @@ class HasRef(object):
 				print self.getSBaseRef().getRef()
 
 			if self.getIdRef() in self.__model.listOfVariables.keys():
-				return self.__model.listOfVariables[self.getIdRef()]
+				return self.__model.listOfVariables.getBySbmlId(self.getIdRef())
 			elif self.__model.listOfEvents.containsSbmlId(self.getIdRef()):
 				return self.__model.listOfEvents.getBySbmlId(self.getIdRef())
 
 		elif self.hasPortRef():
 			return self.__model.listOfPorts.getBySbmlId(self.getPortRef()).getRefObject()
-			# return self.getPortRef()
 
 		elif self.hasMetaIdRef():
 			return self.__model.listOfSbmlObjects.getByMetaId(self.getMetaIdRef())

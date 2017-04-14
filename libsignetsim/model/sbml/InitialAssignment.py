@@ -25,7 +25,6 @@
 
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.math.MathSymbol import MathSymbol
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.sympy_shortcuts import  (
 	SympySymbol, SympyInteger, SympyMul, SympyPow)
@@ -50,7 +49,7 @@ class InitialAssignment(SbmlObject):
 		SbmlObject.readSbml(self, initial_assignment, sbml_level, sbml_version)
 
 		if self.__model.listOfVariables.containsSbmlId(initial_assignment.getSymbol()):
-			self.__var = self.__model.listOfVariables[initial_assignment.getSymbol()]
+			self.__var = self.__model.listOfVariables.getBySbmlId(initial_assignment.getSymbol())
 			self.__var.setInitialAssignmentBy(self)
 
 		self.__definition.readSbml(initial_assignment.getMath(), sbml_level, sbml_version)
@@ -77,7 +76,6 @@ class InitialAssignment(SbmlObject):
 				SympyMul(self.__definition.getInternalMathFormula(),
 						SympyPow(self.__var.getCompartment().symbol.getInternalMathFormula(),
 									SympyInteger(-1))))
-
 
 		sbml_initial_assignment.setSymbol(t_variable)
 		sbml_initial_assignment.setMath(t_definition.getSbmlMathFormula(sbml_level, sbml_version))
@@ -121,7 +119,7 @@ class InitialAssignment(SbmlObject):
 		if self.__var is not None:
 			self.__var.unsetInitialAssignmentBy()
 
-		self.__var = var
+		self.__var = variable
 		self.__var.setInitialAssignmentBy(self)
 
 
@@ -159,10 +157,8 @@ class InitialAssignment(SbmlObject):
 
 	def setPrettyPrintDefinition(self, definition):
 
-		variable = self.__model.listOfVariables[str(self.variable.getInternalMathFormula())]
-
-		if variable.isSpecies() and not variable.hasOnlySubstanceUnits:
-			t_comp = variable.getCompartment()
+		if self.__var.isSpecies() and not self.__var.hasOnlySubstanceUnits:
+			t_comp = self.__var.getCompartment()
 			t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
 			t_math_formula.setPrettyPrintMathFormula(definition)
 			self.__definition.setInternalMathFormula(t_math_formula.getInternalMathFormula()*t_comp.symbol.getInternalMathFormula())
@@ -173,10 +169,8 @@ class InitialAssignment(SbmlObject):
 
 	def getPrettyPrintDefinition(self):
 
-		variable = self.__model.listOfVariables[str(self.variable.getInternalMathFormula())]
-
-		if variable.isSpecies() and not variable.hasOnlySubstanceUnits:
-			t_comp = variable.getCompartment()
+		if self.__var.isSpecies() and not self.__var.hasOnlySubstanceUnits:
+			t_comp = self.__var.getCompartment()
 			t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
 			t_math_formula.setInternalMathFormula(self.__definition.getInternalMathFormula()/t_comp.symbol.getInternalMathFormula())
 			return t_math_formula.getPrettyPrintMathFormula()

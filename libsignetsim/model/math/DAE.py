@@ -40,3 +40,6 @@ class DAE(object):
 
 	def getDefinition(self):
 		return self.__definition
+
+	def __str__(self):
+		return "%s = 0" % str(self.__definition.getDeveloppedInternalMathFormula())

@@ -157,7 +157,7 @@ class SubModel(HasId):#, SbmlObject):
 
 				else:
 					if deletion.getIdRef() in self.getModelObject().listOfVariables.keys():
-						deletions.append(self.getModelObject().listOfVariables[deletion.getIdRef()].getMetaId())
+						deletions.append(self.getModelObject().listOfVariables.getBySbmlId(deletion.getIdRef()).getMetaId())
 					elif self.getModelObject().listOfEvents.containsSbmlId(deletion.getIdRef()):
 						deletions.append(self.getModelObject().listOfEvents.getBySbmlId(deletion.getIdRef()).getMetaId())
 

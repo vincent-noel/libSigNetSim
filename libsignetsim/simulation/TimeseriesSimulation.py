@@ -24,6 +24,7 @@
 
 from libsignetsim.simulation.Simulation import Simulation
 from libsignetsim.simulation.SigNetSimFigure import SigNetSimFigure
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol
 from libsignetsim.settings.Settings import Settings
 from matplotlib.pyplot import show
 from numpy import amin, amax, linspace, logspace
@@ -152,7 +153,7 @@ class TimeseriesSimulation(Simulation):
 
 		for i_species, name in enumerate(trajs.keys()):
 
-			t_var = self.listOfModels[0].listOfVariables[name]
+			t_var = self.listOfModels[0].listOfVariables.getBySymbol(SympySymbol(name))
 			if not t_var.isConstant():
 				ax.plot(t, t_trajs[i_species], '-',
 					color=SigNetSimFigure.color_scheme[i_species % len(self.color_scheme)],

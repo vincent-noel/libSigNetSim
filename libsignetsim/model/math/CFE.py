@@ -74,6 +74,7 @@ class CFE(object):
 		#
 		# return {self.__variable.symbol.getInternalMathFormula():simplify(self.__definition.getInternalMathFormula())}
 		return {self.__variable.symbol.getInternalMathFormula():self.__definition.getDeveloppedInternalMathFormula()}
+
 	def __str__(self):
 		return "%s = %s" % (str(self.getVariable().symbol.getDeveloppedInternalMathFormula()),
 							str(self.getDefinition().getDeveloppedInternalMathFormula()))
