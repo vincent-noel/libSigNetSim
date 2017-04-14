@@ -26,7 +26,7 @@ from libsignetsim.model.math.sympy_shortcuts import (
 	SympySymbol, SympyInteger, SympyInf, SympyNan, SympyAdd, SympyEqual, SympyStrictLessThan
 )
 from sympy import simplify, diff, solve, zeros, Lambda, flatten
-
+from time import time
 
 class MathStoichiometryMatrix(object):
 	""" Sbml model class """
@@ -35,7 +35,7 @@ class MathStoichiometryMatrix(object):
 		""" Constructor of model class """
 
 		self.__model = model
-		self.stoichiometryMatrix = None
+		self.stoichiometryMatrix = []
 		self.listOfSpecies = []
 
 	def build(self, including_fast_reactions=True, including_slow_reactions=True):
@@ -59,14 +59,22 @@ class MathStoichiometryMatrix(object):
 		if self.stoichiometryMatrix is None:
 			self.buildStoichiometryMatrix()
 
+
+		# print self.stoichiometryMatrix
+
+		subs = {}
+		for var, value in self.__model.solvedInitialConditions.items():
+			subs.update({var: value.getInternalMathFormula()})
+
 		matrix = None
-		if self.stoichiometryMatrix != None:
+
+		if self.stoichiometryMatrix != []:
 			for i, reaction in enumerate(self.stoichiometryMatrix):
 
 				t_reaction = zeros(1,len(self.__model.listOfSpecies))
 
 				for j, t_formula in enumerate(reaction):
-					t_reaction[j] = t_formula.getDeveloppedInternalMathFormula()
+					t_reaction[j] = t_formula.getDeveloppedInternalMathFormula().subs(subs)
 
 				if matrix is None:
 					matrix = t_reaction
@@ -76,15 +84,39 @@ class MathStoichiometryMatrix(object):
 			return matrix
 
 	def hasNullSpace(self):
-		res = self.stoichiometryMatrix is not None and len(self.stoichiometryMatrix) > 0
+
+		if self.stoichiometryMatrix == []:
+			return False
+		#
+		# subs = {}
+		# for var, value in self.__model.solvedInitialConditions.items():
+		# 	subs.update({var: value.getInternalMathFormula()})
+		#
+		# print self.getSimpleStoichiometryMatrix()
+		# print flatten(self.getSimpleStoichiometryMatrix())
 		for var in flatten(self.getSimpleStoichiometryMatrix()):
 			if var in [SympyInf, -SympyInf, SympyNan]:
-				res = False
-		return res
+				return False
+
+		return True
 
 	def getSimpleNullspace(self):
 
-		return self.fixnullspace(self.getSimpleStoichiometryMatrix().nullspace())
+		# t_matrix =
+		# subs = {}
+		# for var, value in self.__model.solvedInitialConditions.items():
+		# 	subs.update({var: value.getInternalMathFormula()})
+		#
+		# for i in range(len(t_matrix[:, 0])):
+		# 	for j in range(len(t_matrix[0, :])):
+		# 		if len(t_matrix[i, j].atoms(SympySymbol)):
+		# 			t_matrix[i, j] = t_matrix[i, j].subs(subs)
+
+		# print t_matrix
+		t0 = time()
+		res = self.fixnullspace(self.getSimpleStoichiometryMatrix().nullspace())
+		print "nullspace calculated in %.2gs" % (time()-t0)
+		return res
 
 
 	def fixnullspace(self, nullspace):
@@ -96,7 +128,17 @@ class MathStoichiometryMatrix(object):
 			Naive approach, but it seems to work, and hopefully it's not that
 			inefficient.
 		"""
-
+		# print nullspace
+		# subs = {}
+		# for var, value in self.__model.solvedInitialConditions.items():
+		# 	subs.update({var: value.getInternalMathFormula()})
+		#
+		# print subs
+		# for i,line in enumerate(nullspace):
+		# 	for j in range(len(line[0, :])):
+		# 		if len(nullspace[i][j].atoms(SympySymbol)):
+		# 			nullspace[i][j] = nullspace[i][j].subs(subs)
+		# print nullspace
 		# Function returning a boolean if the value is negative
 		neg_filter = Lambda(SympySymbol('x'),
 							SympyStrictLessThan(

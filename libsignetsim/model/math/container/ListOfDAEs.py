@@ -202,6 +202,6 @@ class ListOfDAEs(list):
 
 		res = ""
 		for dae in self:
-			res += dae + "\n"
+			res += str(dae) + "\n"
 
 		return res

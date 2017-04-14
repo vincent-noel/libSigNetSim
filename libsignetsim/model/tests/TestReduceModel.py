@@ -43,4 +43,4 @@ class TestReduceModel(TestCase):
 		sbml_model.build()
 		sbml_model.stoichiometryMatrix.build()
 		sbml_model.listOfConservationLaws.build()
-		print sbml_model.listOfConservationLaws
+		# print sbml_model.listOfConservationLaws

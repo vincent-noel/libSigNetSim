@@ -120,7 +120,7 @@ class ListOfCFEs(list):
 
 		res = ""
 		for t_cfe in self:
-			res += t_cfe + "\n"
+			res += str(t_cfe) + "\n"
 
 		return res
 

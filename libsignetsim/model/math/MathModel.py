@@ -107,6 +107,10 @@ class MathModel(CModelWriter):
 			self.slowModel = MathSlowModel(self)
 			self.slowModel.build()
 
+		# self.stoichiometryMatrix.build()
+		# self.listOfConservationLaws.build()
+		# self.prettyPrint()
+
 	def prettyPrint(self):
 
 		print "\n> Full system : "
@@ -114,7 +118,8 @@ class MathModel(CModelWriter):
 		print self.listOfCFEs
 		print self.listOfDAEs
 		print self.listOfODEs
-		# self.printConservationLaws()
+		print self.listOfConservationLaws
+		# print self.prlisintConservationLaws
 
 		print "-----------------------------"
 

@@ -45,5 +45,5 @@ class ListOfODEs(list):
 
 		res = ""
 		for ode in self:
-			res += ode + "\n"
+			res += str(ode) + "\n"
 		return res

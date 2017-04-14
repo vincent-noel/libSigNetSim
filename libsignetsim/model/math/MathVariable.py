@@ -54,11 +54,15 @@ class MathVariable(object):
 		self.constant = None
 		self.boundaryCondition = False
 		self.is_in_dae = None
-
+		self.isFromReaction = is_from_reaction
 
 	def new(self, string=None):
 
-		self.symbol.setPrettyPrintMathFormula(self.getSbmlId())
+		if self.isFromReaction is not None:
+			self.symbol.setInternalMathFormula(SympySymbol("_local_%d_%s" % (self.isFromReaction.objId, self.getSbmlId())))
+		else:
+			self.symbol.setInternalMathFormula(SympySymbol(self.getSbmlId()))
+
 		self.setValue(0)
 		self.setDerivativeValue(0)
 
