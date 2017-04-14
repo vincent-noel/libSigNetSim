@@ -115,8 +115,9 @@ class HasRef(object):
 			if self.hasSBaseRef():
 				print self.getSBaseRef().getRef()
 
-			if self.getIdRef() in self.__model.listOfVariables.keys():
+			if self.__model.listOfVariables.containsSbmlId(self.getIdRef()):
 				return self.__model.listOfVariables.getBySbmlId(self.getIdRef())
+
 			elif self.__model.listOfEvents.containsSbmlId(self.getIdRef()):
 				return self.__model.listOfEvents.getBySbmlId(self.getIdRef())
 

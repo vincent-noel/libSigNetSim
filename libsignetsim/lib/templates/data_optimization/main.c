@@ -80,14 +80,14 @@ int main(int argc, char **argv )
 	SAType * settings = InitPLSA();
 
 #endif
-	//   // define the optimization settings
-	// SAType * settings = InitPLSA(&nnodes, &myid);
-
+	// define the optimization parameters
 	init_params(working_model);
+
+	// define the optimization settings
+    init_settings(settings);
 
 	settings->scoreFunction = &computeScore;
 	settings->printFunction = &saveBestResult;
-
 	settings->logs->best_score = 1;
 	settings->logs->best_res = 1;
 	settings->logs->params = 1;

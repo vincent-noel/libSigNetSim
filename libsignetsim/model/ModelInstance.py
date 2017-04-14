@@ -200,7 +200,7 @@ class ModelInstance(Model):
 
 		if Settings.verbose >= 2:
 			print "\n > Model's variables : "
-			print self.listOfVariables.keys()
+			print self.listOfVariables.sbmlIds()
 
 			# print "\n > Model's species : "
 			# print self.listOfSpecies.sbmlIds()

@@ -705,4 +705,4 @@ class TestShowCase(TestCase):
 
 				for var, values in self.expected_results.items():
 					for i, value in enumerate(values):
-						self.assertAlmostEqual(data[var][i], value)
+						self.assertAlmostEqual(data[var][i], value, delta=1e-4)

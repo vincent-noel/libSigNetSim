@@ -44,7 +44,6 @@ class SbmlMathWriter(object):
 	def writeSbml(self, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Export math formula to sbml """
 
-
 		formula = self.translateForSbml(self.getInternalMathFormula(), sbml_level, sbml_version)
 		if Settings.verbose >= 2:
 			print "\n> writeSbml"
@@ -52,8 +51,6 @@ class SbmlMathWriter(object):
 			print ">> output : %s" % self.printSbml(formula, sbml_level, sbml_version)
 
 		return formula
-
-
 
 	def printSbml(self, formula, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
@@ -66,8 +63,6 @@ class SbmlMathWriter(object):
 				return libsbml.formulaToL3String(formula)
 		else:
 			return str(formula)
-
-
 
 	def translateVariableForSbml(self, variable, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Translates a Sympy symbol in C """
@@ -124,26 +119,26 @@ class SbmlMathWriter(object):
 	def translateForSbml(self, tree, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Translate a sympy tree into a C string """
 
-		if isinstance(tree, int):
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_INTEGER)
-			t_ast.setValue(tree)
-			return t_ast
+		# if isinstance(tree, int):
+		# 	t_ast = libsbml.ASTNode()
+		# 	t_ast.setType(libsbml.AST_INTEGER)
+		# 	t_ast.setValue(tree)
+		# 	return t_ast
+		#
+		# elif isinstance(tree, float):
+		# 	t_ast = libsbml.ASTNode()
+		# 	t_ast.setType(libsbml.AST_REAL)
+		# 	t_ast.setValue(tree)
+		# 	return t_ast
 
-		elif isinstance(tree, float):
-			t_ast = libsbml.ASTNode()
-			t_ast.setType(libsbml.AST_REAL)
-			t_ast.setValue(tree)
-			return t_ast
+		# elif isinstance(tree, str):
+		# 	return self.translateVariableForSbml(tree, sbml_level, sbml_version)
 
-		elif isinstance(tree, str):
-			return self.translateVariableForSbml(tree, sbml_level, sbml_version)
-
-		elif tree.func == SympySymbol:
+		if tree.func == SympySymbol:
 			return self.translateVariableForSbml(str(tree), sbml_level, sbml_version)
 
-		elif isinstance(tree.func, SympyUndefinedFunction) and tree.args == (SympySymbol("t"),) and str(tree.func) in self.model.listOfVariables.keys():
-			return self.translateVariableForSbml(str(tree.func), sbml_level, sbml_version)
+		# elif isinstance(tree.func, SympyUndefinedFunction) and tree.args == (SympySymbol("t"),) and str(tree.func) in self.model.listOfVariables.keys():
+		# 	return self.translateVariableForSbml(str(tree.func), sbml_level, sbml_version)
 
 		elif tree.func == SympyInteger:
 			t_ast = libsbml.ASTNode()

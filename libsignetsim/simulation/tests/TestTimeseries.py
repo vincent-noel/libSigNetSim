@@ -76,7 +76,7 @@ class TestTimeseries(TestCase):
 		model_data = y['P']
 
 		for i, t_data in enumerate(reference_data):
-			self.assertAlmostEqual(t_data, model_data[i], delta=1e-6)
+			self.assertAlmostEqual(t_data, model_data[i], delta=1e-4)
 
 
 
@@ -96,7 +96,7 @@ class TestTimeseries(TestCase):
 		model_data = y['P']
 
 		for i, t_data in enumerate(reference_data):
-			self.assertAlmostEqual(t_data, model_data[i], delta=1e-6)
+			self.assertAlmostEqual(t_data, model_data[i], delta=1e-4)
 
 
 	def testNonzeroResult(self):
@@ -117,7 +117,7 @@ class TestTimeseries(TestCase):
 		model_data = y['P']
 
 		for i, t_data in enumerate(reference_data):
-			self.assertAlmostEqual(t_data, model_data[i], delta=1e-6)
+			self.assertAlmostEqual(t_data, model_data[i], delta=1e-4)
 
 
 
@@ -143,7 +143,7 @@ class TestTimeseries(TestCase):
 
 		for key, values in reference_data.items():
 			for i, t_data in enumerate(values):
-				self.assertAlmostEqual(t_data, y[key][i], delta=1e-6)
+				self.assertAlmostEqual(t_data, y[key][i], delta=1e-4)
 
 
 
@@ -170,5 +170,5 @@ class TestTimeseries(TestCase):
 
 		for i, (_, y) in enumerate(sim.getRawData()):
 			for j, t_data in enumerate(y['P']):
-				self.assertAlmostEqual(t_data, reference_data[i][j], delta=1e-6)
+				self.assertAlmostEqual(t_data, reference_data[i][j], delta=1e-4)
 

@@ -37,28 +37,8 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 		ListOfMathVariables.__init__(self, model)
 		ListOfSbmlVariables.__init__(self, model)
 		dict.__init__(self)
-		# self.listOfVariables = ListOfSbmlObjects(model)
 
-
-	# Overloading standard methods to get ordering
-	def keys(self):
-		""" Override keys() to sort by id """
-		return sorted(dict.keys(self),
-					  key=lambda sbmlObj: str(dict.__getitem__(self, sbmlObj).symbol.getInternalMathFormula()))
-
-	def items(self):
-		""" Override items() to sort by id """
-		return [(obj, dict.__getitem__(self, obj)) for obj in self.keys()]
-
-	def values(self):
-		""" Override values() to sort by id """
-		return [dict.__getitem__(self, obj) for obj in self.keys()]
-
-	def symbols(self):
-		""" Return a set of ids of the sbml objects """
-		return [obj.symbol.getInternalMathFormula() for obj in self.values()]
-
-
+	# Add/Remove variables
 	def addVariable(self, variable, string=None):
 
 		t_sbmlId = ListOfSbmlVariables.newSbmlId(self, variable, string)
@@ -69,30 +49,28 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 
 		del self[variable.getSbmlId()]
 
-	def renameSbmlId(self, old_sbml_id, new_sbml_id):
-			# print dict.keys(self)
-		if old_sbml_id in dict.keys(self):
-			t_var = dict.__getitem__(self, old_sbml_id)
-			dict.__delitem__(self, old_sbml_id)
-			dict.update(self, {new_sbml_id: t_var})
+	# Symbols
+	def symbols(self):
+		""" Return a set of symbols of the sbml variables """
+		return [obj.symbol.getInternalMathFormula() for obj in self.values()]
 
 	def containsSymbol(self, symbol):
-
+		""" Returns if a symbol is in the list of sbml variables"""
 		for var in dict.values(self):
 			if var.symbol.getSymbol() == symbol:
 				return True
 		return False
 
 	def getBySymbol(self, symbol):
-
+		""" Get a sbml variable by his symbol"""
 		for var in dict.values(self):
 			if var.symbol.getSymbol() == symbol:
 				return var
-	#
-	# def subsToFlatten(self):
-	#
-	# 	res = {}
-	# 	for var in dict.values(self):
-	# 		res.update({var.getSbmlId():var.getTopLevelSbmlId()})
-	#
-	# 	return res
+
+	# Renaming variable
+	def renameSbmlId(self, old_sbml_id, new_sbml_id):
+			# print dict.keys(self)
+		if old_sbml_id in dict.keys(self):
+			t_var = dict.__getitem__(self, old_sbml_id)
+			dict.__delitem__(self, old_sbml_id)
+			dict.update(self, {new_sbml_id: t_var})

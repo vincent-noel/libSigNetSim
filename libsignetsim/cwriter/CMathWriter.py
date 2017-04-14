@@ -128,6 +128,7 @@ class CMathWriter(object):
 		else:
 			raise MathException("Cannot determine the mathematical type of variable %s" % str(variable))
 
+		# print "%s : Ith(%s, %s)" % (str(variable), c_var, str(t_pos-1))
 		return "Ith(%s,%s)" % (c_var, t_pos)
 
 
@@ -220,7 +221,8 @@ class CMathWriter(object):
 
 
 		elif tree.func == SympyMul:
-
+			# if len(tree.args) > 2:
+			# 	print srepr(tree)
 			if len(tree.args) == 2:
 				if tree.args[0].func == SympyNegOne:
 					return "-" + self.translateForC(tree.args[1])
@@ -233,14 +235,16 @@ class CMathWriter(object):
 			t_divider = ""
 			for i_arg, arg in enumerate(tree.args):
 
+				# if len(tree.args) > 2:
+				# 	print arg
 				if arg.func == SympyNegOne:
 					t_mul = "-" + t_mul
 
 				elif arg.func == SympyPow and arg.args[1].func == SympyNegOne:
 					if t_divider == "":
-						t_divider = "(%s)" % self.translateForC(arg.args[0])
+						t_divider = "%s" % self.translateForC(arg.args[0])
 					else:
-						t_divider += "*(%s)" % self.translateForC(arg.args[0])
+						t_divider += "*%s" % self.translateForC(arg.args[0])
 				else:
 					if started:
 						t_mul += "*"
@@ -251,7 +255,9 @@ class CMathWriter(object):
 			if t_divider == "":
 				return t_mul
 			else:
-				return t_mul + "/(%s)" % t_divider
+				# if len(tree.args) > 2:
+				# 	print "(" + t_mul + "/(%s))" % t_divider
+				return "(" + t_mul + "/(%s))" % t_divider
 
 		# AST_FUNCTION_ABS
 		elif tree.func == SympyAbs:

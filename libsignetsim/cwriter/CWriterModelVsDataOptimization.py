@@ -30,7 +30,17 @@ from libsignetsim.cwriter.CWriterOptimization import CWriterOptimization
 
 class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriterData):
 
-	def __init__ (self, workingModel, listOfExperiments=None, mapping=None, parameters_to_fit=None):
+	def __init__(self, workingModel, listOfExperiments=None, mapping=None, parameters_to_fit=None,
+				p_lambda=Settings.defaultPlsaLambda,
+				p_criterion=Settings.defaultPlsaCriterion,
+				p_initial_temperature=Settings.defaultPlsaInitialTemperature,
+				p_gain=Settings.defaultPlsaGainForJumpSizeControl,
+				p_interval=Settings.defaultPlsaInterval,
+				p_mix=Settings.defaultPlsaMixInterval,
+				p_initial_moves=Settings.defaultPlsaInitialMoves,
+				p_tau=Settings.defaultPlsaTau,
+	):
+
 
 		self.listOfExperiments = listOfExperiments
 
@@ -42,7 +52,7 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 
 		CWriterModels.__init__(self, [workingModel], [Settings.simulationTimeMin], [self.listOfSamples], [Settings.defaultAbsTol], [Settings.defaultRelTol])
 		CWriterData.__init__(self, listOfExperiments, mapping, workingModel=workingModel, subdir="src")
-		CWriterOptimization.__init__(self, workingModel, parameters_to_fit)
+		CWriterOptimization.__init__(self, workingModel, parameters_to_fit, p_lambda=p_lambda, p_criterion=p_criterion)
 
 	def findSimulationSettings(self):
 
@@ -74,6 +84,7 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 		self.writeOptimizationGlobals(f_c, f_h)
 		self.writeOptimizationGlobalMethods(f_c, f_h)
 		self.writeOptimizationParameters(f_c, f_h)
+		self.writeOptimizationSettings(f_c, f_h, nb_procs)
 
 		f_c.close()
 		f_h.close()

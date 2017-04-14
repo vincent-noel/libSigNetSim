@@ -110,7 +110,7 @@ class MathModel(CModelWriter):
 		# t0 = time()
 		self.stoichiometryMatrix.build()
 		self.listOfConservationLaws.build()
-		# print self.listOfConservationLaws
+		# self.prettyPrint()
 		# print "> conservation laws found in %.2gs" % (time() -t0)
 
 	def prettyPrint(self):
@@ -121,7 +121,6 @@ class MathModel(CModelWriter):
 		print self.listOfDAEs
 		print self.listOfODEs
 		print self.listOfConservationLaws
-		# print self.prlisintConservationLaws
 
 		print "-----------------------------"
 
@@ -220,7 +219,6 @@ class MathModel(CModelWriter):
 		if DEBUG:
 			print init_cond.keys()
 			print self.listOfVariables.symbols()
-			print self.listOfVariables.keys()
 
 		self.solvedInitialConditions = {}
 		for var, value in init_cond.items():

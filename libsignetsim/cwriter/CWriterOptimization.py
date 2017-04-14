@@ -32,11 +32,27 @@ from random import randrange
 
 class CWriterOptimization(object):
 
-	def __init__ (self, workingModel, parameters):
+	def __init__(self, workingModel, parameters,
+				p_lambda=Settings.defaultPlsaLambda,
+				p_criterion=Settings.defaultPlsaCriterion,
+				p_initial_temperature=Settings.defaultPlsaInitialTemperature,
+				p_gain=Settings.defaultPlsaGainForJumpSizeControl,
+				p_interval=Settings.defaultPlsaInterval,
+				p_mix=Settings.defaultPlsaMixInterval,
+				p_initial_moves=Settings.defaultPlsaInitialMoves,
+				p_tau=Settings.defaultPlsaTau,
+	):
 
 		self.workingModel = workingModel
 		self.parameters = parameters
-
+		self.pLambda = p_lambda
+		self.pCriterion = p_criterion
+		self.pInitialTemp = p_initial_temperature
+		self.pGain = p_gain
+		self.pInterval = p_interval
+		self.pMix = p_mix
+		self.pInitialMoves = p_initial_moves
+		self.pTau = p_tau
 
 	def writeOptimizationFiles(self, nb_procs):
 
@@ -86,16 +102,9 @@ class CWriterOptimization(object):
 	def writeOptimizationGlobals(self, f_c, f_h):
 
 		f_c.write("PArrPtr * my_plist;\n")
-		f_c.write("SAType * settings;\n")
 
 
 	def writeOptimizationGlobalMethods(self, f_c, f_h):
-
-		f_h.write("SAType * getOptimSettings();\n")
-		f_c.write("SAType * getOptimSettings(void)\n")
-		f_c.write("{\n")
-		f_c.write("    return settings;\n")
-		f_c.write("}\n\n")
 
 		f_h.write("PArrPtr * getOptimParameters(void);\n")
 		f_c.write("PArrPtr * getOptimParameters(void)\n")
@@ -115,6 +124,24 @@ class CWriterOptimization(object):
 
 		f_c.write("}")
 
+
+	def writeOptimizationSettings(self, f_c, f_h, nb_procs):
+
+		f_h.write("void init_settings(SAType * settings);\n")
+		f_c.write("void init_settings(SAType * settings)\n{\n")
+
+		f_c.write("\tsettings->seed = %g;\n" % self.randomPlsaSeed())
+		f_c.write("\tsettings->initial_temp = %g;\n" % self.pInitialTemp)
+		f_c.write("\tsettings->gain_for_jump_size_control = %g;\n" % self.pGain)
+		f_c.write("\tsettings->interval = %g;\n" % self.pInterval)
+		f_c.write("\tsettings->initial_moves = %g;\n" % self.pInitialMoves)
+		f_c.write("\tsettings->tau = %g;\n" % self.pTau)
+		f_c.write("#ifdef MPI\n")
+		f_c.write("\tsettings->mix_interval = %g;\n" % self.pMix)
+		f_c.write("#endif\n")
+		f_c.write("\tsettings->lambda = %g;\n" % self.pLambda)
+		f_c.write("\tsettings->criterion = %g;\n" % self.pCriterion)
+		f_c.write("}")
 
 
 	def randomPlsaSeed(self):

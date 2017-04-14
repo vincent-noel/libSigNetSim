@@ -192,7 +192,7 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 
 				else:
 					if sbml_level == 3:
-						if str(self.stoichiometry.getInternalMathFormula()) in self.__model.listOfVariables.keys():
+						if self.__model.listOfVariables.containsSymbol(self.stoichiometry.getInternalMathFormula()):
 							sbml_speciesReference.setId(t_stoichiometry.getName())
 
 						else:

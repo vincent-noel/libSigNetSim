@@ -109,7 +109,7 @@ class ListOfMathVariables(object):
 					or (self.__model.sbmlLevel == 1 and variable.isCompartment() and not variable.isRuled() and not variable.isInAlgebraicRules())
 					or (self.__model.sbmlLevel == 1 and variable.isParameter() and not variable.isRuled() and not variable.isInAlgebraicRules())
 				):
-				# print "Constant variable detected : %s" % variable.getSbmlId()
+				# print "Constant variable detected : %s (%d)" % (variable.getSbmlId(), i_variables_constant)
 				variable.type = MathVariable.VAR_CST
 				variable.ind = i_variables_constant
 				variables_constant.append(variable)

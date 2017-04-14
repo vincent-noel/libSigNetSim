@@ -24,7 +24,7 @@
 
 
 from libsignetsim.model.math.MathFormula import MathFormula
-
+from sympy import srepr
 
 class ODE(object):
 	""" ODE class """
@@ -52,6 +52,6 @@ class ODE(object):
 	def __str__(self):
 
 		return "%s = %s" % (
-			self.__variable.symbol.getDerivative().getDeveloppedInternalMathFormula(),
-			self.__definition.getDeveloppedInternalMathFormula()
+			srepr(self.__variable.symbol.getDerivative().getDeveloppedInternalMathFormula()),
+			srepr(self.__definition.getDeveloppedInternalMathFormula())
 		)

@@ -2033,4 +2033,4 @@ class TestSpecificationL1V2(TestCase):
 
 		for var, values in self.expected_data.items():
 			for i, value in enumerate(values):
-				self.assertAlmostEqual(value, simulated_data[var][i])
+				self.assertAlmostEqual(value, simulated_data[var][i], delta=1e-4)

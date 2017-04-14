@@ -183,7 +183,6 @@ class ListOfDAEs(list):
 			if DEBUG:
 				print init_cond.keys()
 				print self.__model.listOfVariables.symbols()
-				print self.__model.listOfVariables.keys()
 
 			self.__model.solvedInitialConditions = {}
 			for var, value in init_cond.items():

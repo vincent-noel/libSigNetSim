@@ -69,10 +69,10 @@ class Variable(SbmlVariable, MathVariable):
 			if t_sbml_id == self.getSbmlId():
 				pass
 
-			elif not t_sbml_id in self.__model.listOfVariables.keys():
-				old_sbml_id = self.getSbmlId()
+			elif not self.__model.listOfVariables.containsSbmlId(t_sbml_id):
 				SbmlVariable.setSbmlId(self, t_sbml_id, prefix, model_wide)
 				MathVariable.setSbmlId(self, t_sbml_id, prefix)
+
 			else:
 				raise SbmlException("Identifier %s already exist" % sbml_id)
 

@@ -110,7 +110,7 @@ class Settings(object):
 	defaultPlsaInterval = 100
 	# For enzyme, 0.005 is very good (95% of good results)
 	# you can also use 0.01, but that's like 80% good results
-	defaultPlsaLambda = 0.01
+	defaultPlsaLambda = 0.001
 	defaultPlsaLambdaMemU = 200
 	defaultPlsaLambdaMemV = 1000
 	defaultPlsaControl = 1

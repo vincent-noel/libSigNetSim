@@ -36,7 +36,12 @@ from os.path import isfile
 
 class ModelVsTimeseriesOptimization(Optimization, CWriterModelVsDataOptimization, NoiseGenerator):
 
-	def __init__ (self, workingModel, parameters_to_fit=None, list_of_experiments=None, reference_data=None, mapping=None, noise=0, sampling=None, nb_procs=1):
+	def __init__(self, workingModel, parameters_to_fit=None,
+				list_of_experiments=None, reference_data=None,
+				mapping=None, noise=0, sampling=None, nb_procs=1,
+				p_lambda=Settings.defaultPlsaLambda,
+				p_criterion=Settings.defaultPlsaCriterion
+	):
 
 		self.workingModel = workingModel
 
@@ -54,7 +59,7 @@ class ModelVsTimeseriesOptimization(Optimization, CWriterModelVsDataOptimization
 			parameters_to_fit=parameters_to_fit,
 			optimization_type=Optimization.MODEL_VS_DATA)
 
-		CWriterModelVsDataOptimization.__init__(self, workingModel, self.listOfExperiments, mapping, parameters_to_fit)
+		CWriterModelVsDataOptimization.__init__(self, workingModel, self.listOfExperiments, mapping, parameters_to_fit, p_lambda=p_lambda, p_criterion=p_criterion)
 		NoiseGenerator.__init__(self, self.listOfExperiments, noise, sampling)
 
 		self.mapping = mapping
