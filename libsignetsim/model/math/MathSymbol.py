@@ -49,9 +49,11 @@ class MathSymbol(MathFormula):
 		self.__variable = variable
 		MathFormula.__init__(self, model, MathFormula.MATH_VARIABLE, isFromReaction=is_from_reaction)
 
+	def readSbml(self, symbol, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
+		self.setInternalMathFormula(SympySymbol(symbol))
 
-	def setInternalVariable(self, internal_variable):
-		MathFormula.setInternalMathFormula(self, internal_variable)
+	# def setInternalVariable(self, internal_variable):
+	# 	MathFormula.setInternalMathFormula(self, internal_variable)
 
 	def getInternalMathFormula(self, forcedConcentration=True):
 
@@ -68,11 +70,11 @@ class MathSymbol(MathFormula):
 	def getSymbol(self):
 		return MathFormula.getInternalMathFormula(self)
 
-	def getMathFormulaDerivative(self, math_type):
-
-		if math_type in [MathFormula.MATH_INTERNAL, MathFormula.MATH_DEVINTERNAL, MathFormula.MATH_FINALINTERNAL]:
-			f = MathFormula.getMathFormula(self, math_type)
-			return SympyDerivative(f, MathFormula.t)
+	# def getMathFormulaDerivative(self, math_type):
+	#
+	# 	if math_type in [MathFormula.MATH_INTERNAL, MathFormula.MATH_DEVINTERNAL, MathFormula.MATH_FINALINTERNAL]:
+	# 		f = MathFormula.getMathFormula(self, math_type)
+	# 		return SympyDerivative(f, MathFormula.t)
 
 
 	def getDerivative(self):
@@ -82,11 +84,6 @@ class MathSymbol(MathFormula):
 		t_formula.setInternalMathFormula(SympyDerivative(f, MathFormula.t))
 		return t_formula
 
-	def getInternalMathFormulaDerivative(self):
-		return self.getMathFormulaDerivative(MathFormula.MATH_INTERNAL)
-
-	def getSbmlMathFormula(self, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-		return MathFormula.getMathFormula(self, self.MATH_SBML)
 
 	def getFinalMathFormula(self, forcedConcentration=False):
 		if self.isFromReaction is not None:
@@ -99,12 +96,8 @@ class MathSymbol(MathFormula):
 		else:
 			return MathFormula.getFinalMathFormula(self,forcedConcentration=True)
 
-
-	def readUI(self, sbml_id):
-		MathFormula.setValueMathFormula(self, sbml_id)
-
-	def getCMathFormula(self):
-		return self.writeCCode(MathFormula.getInternalMathFormula(self))
+	# def getCMathFormula(self):
+	# 	return self.writeCCode(MathFormula.getInternalMathFormula(self))
 
 	def getPrettyPrintMathFormula(self):
 		return str(MathFormula.getInternalMathFormula(self))

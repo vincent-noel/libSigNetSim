@@ -54,17 +54,9 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 		""" Override values() to sort by id """
 		return [dict.__getitem__(self, obj) for obj in self.keys()]
 
-
-
-	def sbmlIds(self):
-		""" Return a set of ids of the sbml objects """
-		return [obj.getSbmlId() for obj in self.values()]
-
 	def symbols(self):
 		""" Return a set of ids of the sbml objects """
 		return [obj.symbol.getInternalMathFormula() for obj in self.values()]
-
-
 
 
 	def addVariable(self, variable, string=None):

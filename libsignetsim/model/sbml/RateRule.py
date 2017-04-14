@@ -105,7 +105,7 @@ class RateRule(Rule):
 		else:
 			t_sbml_id = prefix+obj.getVariable().getSbmlId()
 
-		self.__var = self.__model.listOfVariables[t_sbml_id]
+		self.__var = self.__model.listOfVariables.getBySbmlId(t_sbml_id)
 		self.__var.setRuledBy(self)
 
 

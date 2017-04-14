@@ -221,12 +221,10 @@ class CModelWriter(object):
 		f_c.write("  IntegrationData * data = (IntegrationData *) user_data;\n")
 		f_c.write("  N_Vector cst = data->constant_variables;\n")
 		f_c.write("  N_Vector ass = data->assignment_variables;\n")
-		# f_c.write("  N_Vector alg = data->algebraic_variables;\n")
 		f_c.write("  compute_rules_%d(t, y, user_data);\n" % model_id)
 
 		i_var = 0
 		for i_ode, t_ode in enumerate(self.getMathModel().listOfODEs):
-			# t_var = self.listOfVariables[str(self.ODE_vars[i_ode].getFinalMathFormula().func)]
 			t_var = t_ode.getVariable()
 			f_c.write("  // ODE\n")
 			f_c.write("  Ith(r, %d) = %s - Ith(ydot, %d);\n\n" % (i_var+1, t_ode.getDefinition().getCMathFormula(), t_var.ind+1))

@@ -50,10 +50,6 @@ class SbmlMathReader(object):
 
 		self.internalTree = self.translateForInternal(formula, sbml_level, sbml_version)
 
-		# if self.isKineticLaw:
-		#     self.simplifiedInternalTree = self.translateForDeveloppedInternal(self.translateForInternal(formula, sbml_level, sbml_version, True))
-		#     self.simplifiedInternalTree_v2 = self.translateForDeveloppedInternal(self.translateForInternal(formula, sbml_level, sbml_version, False, False))
-
 		if Settings.verbose >= 2:
 			print "\n> readSbml : "
 			print ">> input : %s" % self.printSbml(formula)
@@ -78,7 +74,6 @@ class SbmlMathReader(object):
 		# Local parameter
 		# If we are within a reaction, we first need to look in the local
 		# scope for the variable identifier
-
 		if self.isFromReaction is not None and self.model.listOfReactions[self.isFromReaction].listOfLocalParameters.containsSbmlId(variable):
 			if simplified:
 				return SympySymbol("_parameter_")
@@ -91,18 +86,12 @@ class SbmlMathReader(object):
 		elif self.isFunctionDefinition:
 			return SympySymbol(variable)
 
-		# print self.model.listOfVariables.keys()
 		# Finally, we look in our list of variables
-		elif variable in self.model.listOfVariables.keys():
+		elif self.model.listOfVariables.containsSbmlId(variable):
 
-			t_variable = self.model.listOfVariables[variable]
+			t_variable = self.model.listOfVariables.getBySbmlId(variable)
 
-			# If the symbol is not yet initialized,
-			# then it's our job
-			if t_variable.symbol.getInternalMathFormula() is None:
-				return SympySymbol(variable)
-
-			elif t_variable.isStoichiometry():
+			if t_variable.isStoichiometry():
 				if simplified:
 					return SympyInteger(1)
 				else:
@@ -188,9 +177,6 @@ class SbmlMathReader(object):
 			elif isnan(tree):
 				return SympyNan
 
-
-			# print "Float : %s" % str(tree)
-			# print srepr(SympyFloat(tree))
 			return SympyFloat(tree)
 
 		elif isinstance(tree, str):
@@ -250,23 +236,6 @@ class SbmlMathReader(object):
 		elif tree.isOperator():
 
 			if tree.getType() == libsbml.AST_PLUS:
-				# # print libsbml.formulaToString(tree)
-				# if tree.getNumChildren() == 2:
-				# 	return SympyAdd(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
-				# 					self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False)
-				# elif tree.getNumChildren() == 1:
-				# 	return self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop)
-				#
-				# elif tree.getNumChildren() == 0:
-				# 	return SympyInteger(0)
-				#
-				# else:
-				# 	t_tree = SympyAdd(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
-				# 						self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False)
-				# 	for i_arg in range(2,tree.getNumChildren()):
-				# 		t_tree = SympyAdd(t_tree, self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop), evaluate=False)
-				#
-				# 	return t_tree
 
 				if tree.getNumChildren() == 0:
 					return SympyInteger(0)
@@ -301,29 +270,6 @@ class SbmlMathReader(object):
 
 
 			elif tree.getType() == libsbml.AST_TIMES:
-
-
-				# if tree.getNumChildren() == 2:
-				# 	return SympyMul(
-				# 			self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
-				# 			self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False
-				# 	)
-				#
-				# elif tree.getNumChildren() == 1:
-				# 	return self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop)
-				#
-				# elif tree.getNumChildren() == 0:
-				# 	return SympyInteger(1)
-				# else:
-				# 	t_tree = SympyMul(
-				# 				self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
-				# 				self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False
-				# 	)
-				#
-				# 	for i_arg in range(2,tree.getNumChildren()):
-				# 		t_tree = SympyMul(t_tree, self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop), evaluate=False)
-				#
-				# 	return t_tree
 
 				if tree.getNumChildren() == 0:
 					return SympyInteger(1)

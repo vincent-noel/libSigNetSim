@@ -77,7 +77,7 @@ class Parameter(Variable, SbmlObject, InitiallyAssignedVariable,
 						replacements, conversion_factor)
 
 		if self.localParameter:
-			self.symbol.setInternalVariable(
+			self.symbol.setInternalMathFormula(
 				SympySymbol("_local_%d_%s" % (self.reaction.objId, self.getSbmlId())))
 
 

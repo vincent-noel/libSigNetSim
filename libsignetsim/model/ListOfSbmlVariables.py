@@ -25,18 +25,12 @@
 
 from re import sub
 
-from libsignetsim.model.sbml.SbmlVariable import SbmlVariable
-
 class ListOfSbmlVariables(object):
 	""" Parent class for all the ListOf_ containers in a sbml model """
 
 	def __init__ (self, model):
 
 		self.__model = model
-
-	#
-	# def remove(self, variable):
-	#     del self.listOfVariables[variable.getSbmlId()]
 
 
 	def containsName(self, name):
@@ -51,6 +45,12 @@ class ListOfSbmlVariables(object):
 	def getByName(self, name, pos=0):
 		""" Find sbml objects by their name """
 		return [obj for obj in dict.values(self) if obj.getName() == name][pos]
+
+
+	def sbmlIds(self):
+		""" Return a set of ids of the sbml objects """
+		return [obj.getSbmlId() for obj in self.values()]
+
 
 	def containsSbmlId(self, sbml_id):
 		for var in dict.values(self):
@@ -92,9 +92,9 @@ class ListOfSbmlVariables(object):
 
 		# We check if the sbmlId already exist, and if so we add numbers !
 		# THIS SUCKS
-		if t_string in dict.keys(self):
+		if t_string in self.sbmlIds():
 			i = 1
-			while ("%s_%d" % (t_string, i)) in dict.keys(self):
+			while ("%s_%d" % (t_string, i)) in self.sbmlIds():
 				i += 1
 			t_string = "%s_%d" % (t_string, i)
 

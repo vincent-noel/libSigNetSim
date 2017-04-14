@@ -23,22 +23,10 @@
 """
 
 
-from libsignetsim.model.math.sympy_shortcuts import  (
-	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
-	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
-	SympyInf, SympyNan, SympyAdd, SympyMul, SympyPow,
-	SympyFunction, SympyUndefinedFunction, SympyLambda, SympyDerivative,
-	SympyCeiling, SympyFloor, SympyAbs, SympyLog, SympyExp, SympyPiecewise,
-	SympyFactorial, SympyRoot, SympyAcos, SympyAsin, SympyAtan, SympyAcosh,
-	SympyAsinh, SympyAtanh, SympyCos, SympySin, SympyTan, SympyAcot,
-	SympyAcoth, SympyCosh, SympySinh, SympyTanh, SympySec, SympyCsc,
-	SympyCot, SympyCoth, SympyAcsc, SympyAsec,
-	SympyEqual, SympyUnequal, SympyGreaterThan, SympyLessThan,
-	SympyStrictGreaterThan, SympyStrictLessThan,
-	SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
-	SympyMax, SympyMin, SympyExprCondPair, SympyFactorial, SympyITE)
+from libsignetsim.model.math.sympy_shortcuts import (
+	SympySymbol, SympyInteger, SympyFloat, SympyPi, SympyMul, SympyPow, SympyUndefinedFunction,
+	SympyTrue, SympyFalse, SympyExprCondPair, SympyITE)
 from re import match
-from sympy import srepr
 
 
 def unevaluatedSubs(expr, substitutions, *args, **kwargs):
@@ -47,8 +35,6 @@ def unevaluatedSubs(expr, substitutions, *args, **kwargs):
 	if val is not None:
 		return val
 	new_args = (unevaluatedSubs(arg, substitutions, *args, **kwargs) for arg in expr.args)
-
-	res = None
 
 	if expr.func in [SympyExprCondPair, SympyITE]:
 		return expr.func(*new_args)
@@ -59,13 +45,12 @@ def simpleSubs(expr, substitutions, *args, **kwargs):
 	"""Perform expression substitution, ignoring derivatives."""
 	if expr in substitutions:
 		return substitutions[expr]
-	elif not expr.args:# or expr.is_Derivative:
+	elif not expr.args:
 		return expr
 
 
 class MathDevelopper(object):
 	""" Class for handling math formulaes """
-
 
 	def __init__(self, model):
 		""" Constructor """
@@ -75,35 +60,16 @@ class MathDevelopper(object):
 	def translateVariableForDeveloppedInternal(self, variable):
 
 		if str(variable).startswith("_speciesForcedConcentration_"):
-			# print variable
 			res_match = match(r"_speciesForcedConcentration_(.*)_", str(variable))
 
 			t_sbml_id = str(res_match.groups()[0])
 			t_species = self.__model.listOfVariables.getBySymbol(SympySymbol(t_sbml_id))
 			t_compartment = t_species.getCompartment()
-			#
-			# if (t_species.isRateRuled()
-			# 	and not t_species.hasOnlySubstanceUnits
-			# 	and t_species.getCompartment().isRateRuled()):
-			# 	return t_species.symbol.getInternalMathFormula()
-			#
-			# else:
+
 			return SympyMul(t_species.symbol.getInternalMathFormula(),
 							SympyPow(t_compartment.symbol.getInternalMathFormula(),
 										SympyInteger(-1)))
 
-		# elif self.__model.listOfVariables.containsSbmlId(str(variable)):
-		# 	t_sbml_id = str(variable)
-		# 	t_variable = self.__model.listOfVariables.getBySbmlId(t_sbml_id)
-		# 	if (t_variable.isSpecies()
-		# 		and not t_variable.hasOnlySubstanceUnits
-		# 		and t_variable.isRateRuled()
-		# 		and t_variable.getCompartment().isRateRuled()):
-		# 		print "Fuck yeah its a special case"
-		# 		return SympyMul(variable,
-		# 			t_variable.getCompartment().symbol.getInternalMathFormula())
-		# 	else:
-		# 		return variable
 		else:
 			return variable
 
@@ -113,9 +79,10 @@ class MathDevelopper(object):
 		if tree is None:
 			return None
 
-		if tree == True or tree == False:
+		if tree in [True, False]:
 			return tree
-		if tree == SympyTrue or tree == SympyFalse or tree == SympyPi or tree.func == SympyInteger or tree.func == SympyFloat:
+
+		if tree in [SympyTrue, SympyFalse, SympyPi] or tree.func in [SympyInteger, SympyFloat]:
 			return tree
 
 		if isinstance(tree.func, SympyUndefinedFunction) and "_functionDefinition_" in str(tree.func):
@@ -148,24 +115,6 @@ class MathDevelopper(object):
 
 			else:
 				return tree
-
-
-		return tree
-
-
-
-
-	def simpleWalk(self, expr, func, *args, **kwargs):
-
-		"""Crawl the expression tree, and apply func to every node."""
-		val = func(expr, *args, **kwargs)
-
-		print val
-
-		if val is not None:
-			return val
-		new_args = (self.simpleWalk(arg, func, *args, **kwargs) for arg in expr.args)
-		return expr.func(*new_args)
 
 
 	def translateForFinalInternal(self, formula, forcedConcentration=False):
