@@ -30,11 +30,12 @@ from libsignetsim.tests.biomodels.BiomodelsTestCaseSimulation import BiomodelsTe
 
 from unittest import TestCase
 from time import time
-from bioservices import BioModels
-
+from os import walk
 
 class TestBiomodelsCompatibility(TestCase):
 	""" Tests high level functions """
+
+	CASES_PATH = "libsignetsim/tests/biomodels/cases"
 
 	TIME_ECH = 5
 	TIME_MAX = 100
@@ -83,15 +84,15 @@ class TestBiomodelsCompatibility(TestCase):
 
 		result = True
 
-		db = BioModels()
-		curatedModelsIds = db.getAllCuratedModelsId()
+		dirs = [dir[0].split('/')[-1] for dir in walk(self.CASES_PATH)]
+		cases = [case for case in sorted(dirs) if case != "cases"]
 
-		for i_modelId, modelId in enumerate(sorted(curatedModelsIds)):
+		for i_modelId, modelId in enumerate(cases):
 
 			if (
-					(self.START != '' and i_modelId < sorted(curatedModelsIds).index(self.START))
+					(self.START != '' and i_modelId < cases.index(self.START))
 				or
-					(self.STOP != '' and i_modelId > sorted(curatedModelsIds).index(self.STOP))
+					(self.STOP != '' and i_modelId > cases.index(self.STOP))
 			):
 				pass
 

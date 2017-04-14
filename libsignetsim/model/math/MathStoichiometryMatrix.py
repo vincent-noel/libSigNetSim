@@ -36,56 +36,42 @@ class MathStoichiometryMatrix(object):
 
 		self.__model = model
 		self.stoichiometryMatrix = []
+		self.rawStoichiometryMatrix = None
 		self.listOfSpecies = []
 
 	def build(self, including_fast_reactions=True, including_slow_reactions=True):
 
-		matrix = []
-		for i, reaction in enumerate(self.__model.listOfReactions.values()):
-			if (
-				(reaction.fast and including_fast_reactions)
-				or
-				(not reaction.fast and including_slow_reactions)
-			):
-					matrix += reaction.getStoichiometryMatrix()
-
-		self.stoichiometryMatrix = matrix
 		for species in self.__model.listOfSpecies.values():
 			self.listOfSpecies.append(species.symbol.getSymbol())
 
-
-	def getSimpleStoichiometryMatrix(self):
-
-		if self.stoichiometryMatrix is None:
-			self.buildStoichiometryMatrix()
-
+		# t0 = time()
 		subs = {}
 		for var, value in self.__model.solvedInitialConditions.items():
 			subs.update({var: value.getInternalMathFormula()})
 
 		matrix = None
-
-		if self.stoichiometryMatrix != []:
-			for i, reaction in enumerate(self.stoichiometryMatrix):
-
-				t_reaction = zeros(1,len(self.__model.listOfSpecies))
-
-				for j, t_formula in enumerate(reaction):
-					t_reaction[j] = unevaluatedSubs(t_formula.getDeveloppedInternalMathFormula(), subs)
+		for i, reaction in enumerate(self.__model.listOfReactions.values()):
+			if (
+						(reaction.fast and including_fast_reactions)
+					or
+						(not reaction.fast and including_slow_reactions)
+			):
 
 				if matrix is None:
-					matrix = t_reaction
+					matrix = reaction.getRawStoichiometryMatrix(subs)
 				else:
-					matrix = matrix.col_join(t_reaction)
+					matrix = matrix.col_join(reaction.getRawStoichiometryMatrix(subs))
 
-		return matrix
+		self.rawStoichiometryMatrix = matrix
+
+		# print "> generated raw stoichiometry matrix in %.2gs" % (time() -t0)
 
 	def hasNullSpace(self):
 
-		if self.stoichiometryMatrix == []:
+		if self.rawStoichiometryMatrix is None:
 			return False
 
-		for var in flatten(self.getSimpleStoichiometryMatrix()):
+		for var in flatten(self.rawStoichiometryMatrix):
 			if var in [SympyInf, -SympyInf, SympyNan]:
 				return False
 
@@ -93,7 +79,16 @@ class MathStoichiometryMatrix(object):
 
 	def getSimpleNullspace(self):
 
-		res = self.fixnullspace(self.getSimpleStoichiometryMatrix().nullspace())
+		simple_stoichiometry = self.rawStoichiometryMatrix
+
+		# t0 = time()
+		raw_nullspace = simple_stoichiometry.nullspace()
+		# print "> generated raw nullspace in %.2gs" % (time()-t0)
+		# t0 = time()
+		# print raw_nullspace
+		res = self.fixnullspace(raw_nullspace)
+		# print res
+		# print "> generated fixed nullspace in %.2gs" % (time()-t0)
 		return res
 
 

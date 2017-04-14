@@ -46,59 +46,7 @@ class ListOfConservationLaws(list):
 
 	def clear(self):
 		del self[:]
-	# 
-	# def fixnullspace(self, nullspace):
-	# 	"""
-	# 		Here we look for the rows containing negatives values, find a row
-	# 		where there is the complementary of this negative value, and if
-	# 		adding the two rows gives us a row without a negative value then
-	# 		we consider it fixed
-	# 		Naive approach, but it seems to work, and hopefully it's not that
-	# 		inefficient.
-	# 	"""
-	# 
-	# 	# Function returning a boolean if the value is negative
-	# 	neg_filter = Lambda(SympySymbol('x'),
-	# 						SympyStrictLessThan(
-	# 							SympySymbol('x'),
-	# 							SympyInteger(0)
-	# 						)
-	# 				)
-	# 
-	# 	to_fix = []
-	# 	fixed = []
-	# 	for i, sol in enumerate(nullspace):
-	# 
-	# 		#If all positive, it's already fixed
-	# 		if not any(sol.applyfunc(neg_filter)):
-	# 			fixed.append(sol)
-	# 			# This break should work. TODO test
-	# 			#break
-	# 
-	# 		#We look for negative value, and write down the row and column
-	# 		for j, element in enumerate(sol):
-	# 			if element < 0:
-	# 				to_fix.append((i,j))
-	# 
-	# 	# We look at the row, columns pairs which need fixing
-	# 	for i,j in to_fix:
-	# 
-	# 		# We look for a row
-	# 		for i_sol, sol in enumerate(nullspace):
-	# 
-	# 			#Which is not the one to be fixed, and which countains the
-	# 			#complementary of the negative value to fix
-	# 			if i_sol != i and sol[j] == -nullspace[i][j]:
-	# 
-	# 				#If the sum of the two rows doesn't countains negative
-	# 				#values, then it's fixed
-	# 				if (not any((sol+nullspace[i]).applyfunc(neg_filter)) and sol+nullspace[i] not in fixed):
-	# 					fixed.append(sol+nullspace[i])
-	# 					break
-	# 
-	# 	return fixed
-
-
+	
 	def build(self, stoichiometry_matrix=None):
 
 		DEBUG = False

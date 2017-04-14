@@ -107,9 +107,11 @@ class MathModel(CModelWriter):
 			self.slowModel = MathSlowModel(self)
 			self.slowModel.build()
 
+		# t0 = time()
 		self.stoichiometryMatrix.build()
 		self.listOfConservationLaws.build()
-		# self.prettyPrint()
+		# print self.listOfConservationLaws
+		# print "> conservation laws found in %.2gs" % (time() -t0)
 
 	def prettyPrint(self):
 
