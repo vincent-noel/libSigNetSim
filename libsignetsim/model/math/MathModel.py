@@ -107,8 +107,8 @@ class MathModel(CModelWriter):
 			self.slowModel = MathSlowModel(self)
 			self.slowModel.build()
 
-		# self.stoichiometryMatrix.build()
-		# self.listOfConservationLaws.build()
+		self.stoichiometryMatrix.build()
+		self.listOfConservationLaws.build()
 		# self.prettyPrint()
 
 	def prettyPrint(self):

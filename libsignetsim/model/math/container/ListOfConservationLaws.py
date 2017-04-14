@@ -104,7 +104,7 @@ class ListOfConservationLaws(list):
 		DEBUG = False
 
 		del self[:]
-		t0 = time()
+
 		if stoichiometry_matrix is None:
 			stoichiometry_matrix = self.__model.stoichiometryMatrix
 		if stoichiometry_matrix.hasNullSpace():
@@ -165,7 +165,7 @@ class ListOfConservationLaws(list):
 					t_conservation_law = ConservationLaw(self.__model)
 					t_conservation_law.new(t_lhs, t_rhs, vars)
 					list.append(self, t_conservation_law)
-		print "law generated in %.2gs" % (time()-t0)
+		# print "law generated in %.2gs" % (time()-t0)
 	# 
 	# def findReducibleVariables(self, vars_to_keep=[]):
 	# 
