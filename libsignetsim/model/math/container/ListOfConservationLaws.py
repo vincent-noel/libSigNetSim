@@ -93,7 +93,7 @@ class ListOfConservationLaws(list):
 
 					t_vars.append(tt_symbol)
 
-				if t_law.func == SympyAdd:
+				# if t_law.func == SympyAdd:
 					t_vars = []
 					for t_atom in t_law.atoms(SympySymbol):
 						if self.__model.listOfVariables.getBySymbol(t_atom).isDerivative():

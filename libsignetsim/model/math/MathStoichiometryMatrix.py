@@ -84,11 +84,11 @@ class MathStoichiometryMatrix(object):
 		# t0 = time()
 		raw_nullspace = simple_stoichiometry.nullspace()
 		# print "> generated raw nullspace in %.2gs" % (time()-t0)
+
 		# t0 = time()
-		# print raw_nullspace
 		res = self.fixnullspace(raw_nullspace)
-		# print res
 		# print "> generated fixed nullspace in %.2gs" % (time()-t0)
+
 		return res
 
 

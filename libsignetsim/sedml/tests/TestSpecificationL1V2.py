@@ -23,9 +23,11 @@
 """
 
 from libsignetsim.sedml.SedmlDocument import SedmlDocument
+from libsignetsim.settings.Settings import Settings
+
 from unittest import TestCase
-from os.path import join, dirname, isdir
-from os import mkdir
+from os.path import join, dirname
+
 
 class TestSpecificationL1V2(TestCase):
 
@@ -2033,4 +2035,4 @@ class TestSpecificationL1V2(TestCase):
 
 		for var, values in self.expected_data.items():
 			for i, value in enumerate(values):
-				self.assertAlmostEqual(value, simulated_data[var][i], delta=(value*1e-4))
+				self.assertAlmostEqual(value, simulated_data[var][i], delta=(1e-4+value*1e-2))
