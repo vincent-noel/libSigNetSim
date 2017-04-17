@@ -45,7 +45,7 @@ class TestSuite(object):
 	def __init__(self, version):
 
 		self.TODO_VERSIONS.append(version)
-		self.testSuitePath = join(expanduser('~'), ".test-suite/")
+		self.testSuitePath = None
 		self.testCasesPath = None
 		self.testCasesTags = {}
 		self.testCasesVersions = {}

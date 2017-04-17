@@ -286,13 +286,13 @@ class TestModelDefinition(TestCase):
 
 		p1 = model.listOfParameters.new("p1")
 
-		a1 = model.listOfInitialAssignments.newAssignmentRule(s2, "p1*s1")
+		i1 = model.listOfInitialAssignments.new(s2, "p1*s1")
 
 		f1 = MathFormula(model)
 		f1.setPrettyPrintMathFormula("p1*s1", rawFormula=True)
 
 		self.assertTrue(self.sympyEqual(
-			a1.getDefinition().getDeveloppedInternalMathFormula(),
+			i1.getDefinition().getDeveloppedInternalMathFormula(),
 			f1.getDeveloppedInternalMathFormula()
 		))
 
@@ -300,22 +300,22 @@ class TestModelDefinition(TestCase):
 		f2.setPrettyPrintMathFormula("c*(p1/c)*(s1/c)", rawFormula=True)
 
 		self.assertTrue(self.sympyEqual(
-			a1.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
+			i1.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
 			f1.getDeveloppedInternalMathFormula()
 		))
 
-		a2 = model.listOfRules.newAssignmentRule(s4, "p1*s3")
+		i2 = model.listOfInitialAssignments.new(s4, "p1*s3")
 
 		f3 = MathFormula(model)
 		f3.setPrettyPrintMathFormula("p1*s3", rawFormula=True)
 
 		self.assertTrue(self.sympyEqual(
-			a2.getDefinition().getDeveloppedInternalMathFormula(),
+			i2.getDefinition().getDeveloppedInternalMathFormula(),
 			f3.getDeveloppedInternalMathFormula()
 		))
 
 		self.assertTrue(self.sympyEqual(
-			a2.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
+			i2.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
 			f3.getDeveloppedInternalMathFormula()
 		))
 

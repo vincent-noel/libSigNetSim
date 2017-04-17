@@ -39,7 +39,7 @@ from libsbml import UNIT_KIND_AMPERE, UNIT_KIND_AVOGADRO, UNIT_KIND_BECQUEREL,\
 class UnitDefinition(HasId):
 
 
-	def __init__ (self, model, objId):
+	def __init__ (self, model, objId=0):
 
 		self.__model = model
 		self.objId = objId
@@ -175,21 +175,7 @@ class UnitDefinition(HasId):
 			return t_unit
 		else:
 			return "UNDEFINED"
-	#
-	#
-	# def printUnitDefinition(self):
-	#
-	#     if len(self.listOfUnits) > 0:
-	#         t_unit = ""
-	#         for i_unit, unit in enumerate(self.listOfUnits):
-	#
-	#             if i_unit > 0:
-	#                 t_unit += "."
-	#             t_unit += unit.printUnit()
-	#
-	#         return t_unit
-	#     else:
-	#         return "UNDEFINED"
+
 
 
 	def newUnit(self):

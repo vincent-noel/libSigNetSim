@@ -23,11 +23,12 @@
 """
 
 from libsignetsim.model.Model import Model
-from libsignetsim.model.sbml.KineticLaw import KineticLaw
-from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.math.sympy_shortcuts import SympyEqual, SympyZero
+from libsignetsim.model.sbml.UnitDefinition import UnitDefinition, Unit
+
 from unittest import TestCase
-from sympy import simplify
+from libsbml import UNIT_KIND_GRAM, UNIT_KIND_LITRE, UNIT_KIND_MOLE, UNIT_KIND_SECOND
+
+
 class TestUnits(TestCase):
 	""" Tests high level functions """
 
@@ -45,19 +46,32 @@ class TestUnits(TestCase):
 		s1 = model.listOfSpecies.new("s1")
 		s2 = model.listOfSpecies.new("s2", hasOnlySubstanceUnits=True)
 
-		p1 = model.listOfParameters.new("p1")
+		nm = Unit(model)
+		nm.new(UNIT_KIND_MOLE, 1, -9)
+		l = Unit(model)
+		l.new(UNIT_KIND_LITRE, 1, 1)
+		lm1 = Unit(model)
+		lm1.new(UNIT_KIND_LITRE, -1, 1)
+		s = Unit(model)
+		s.new(UNIT_KIND_SECOND, 1, 1)
 
+		ud1 = UnitDefinition(model)
+		ud1.listOfUnits.append(nm)
 
-		print model.getSubstanceUnits()
-		print model.getExtentUnits()
-		print model.getTimeUnits()
-		print c.getUnits()
-		print s1.getUnits()
-		print s2.getUnits()
+		ud2 = UnitDefinition(model)
+		ud2.listOfUnits.append(l)
 
+		ud3 = UnitDefinition(model)
+		ud3.listOfUnits.append(s)
 
-	def sympyEqual(self, a, b):
+		ud4 = UnitDefinition(model)
+		ud4.listOfUnits.append(nm)
+		ud4.listOfUnits.append(lm1)
 
-		# print "test %s == %s : %s" % (simplify(a), simplify(b), (simplify(a-b) == 0))
-		# print "test %s == %s : %s" % (a, b, (simplify(a-b) == 0))
-		return simplify(a-b) == 0
+		self.assertTrue(model.getSubstanceUnits().isEqual(ud1))
+		self.assertTrue(model.getExtentUnits().isEqual(ud1))
+		self.assertTrue(model.getTimeUnits().isEqual(ud3))
+		self.assertTrue(model.getCompartmentUnits().isEqual(ud2))
+		self.assertTrue(c.getUnits().isEqual(ud2))
+		self.assertTrue(s1.getUnits().isEqual(ud4))
+		self.assertTrue(s2.getUnits().isEqual(ud1))
