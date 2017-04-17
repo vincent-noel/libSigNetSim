@@ -68,7 +68,8 @@ class MathVariable(object):
 
 	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversion_factor=None):
 
-		self.symbol.setInternalMathFormula(SympySymbol(prefix + obj.getSbmlId()))
+		# self.symbol.setInternalMathFormula(SympySymbol(prefix + obj.getSbmlId()))
+		self.symbol.setInternalMathFormula(SympySymbol(prefix + str(obj.symbol.getSymbol())))
 
 		if obj.value is not None and obj.value.getInternalMathFormula() is not None:
 			if conversion_factor is None:
@@ -178,25 +179,34 @@ class MathVariable(object):
 			return self.__model.nbOdes + self.__model.nbAlgebraics + self.__model.nbAssignments + self.ind
 
 
-	def getODE(self, including_fast_reactions=None, math_type=MathFormula.MATH_INTERNAL, forcedConcentration=False, symbols=False):
+	# def getODE(self, including_fast_reactions=None, math_type=MathFormula.MATH_INTERNAL, forcedConcentration=False, symbols=False, rawFormula=True):
+	#
+	# 	if self.isRateRuled():
+	# 		return self.isRuledBy().getDefinition(forcedConcentration).getMathFormula(math_type)
+	#
+	# 	else:
+	# 		return MathFormula.ZERO
+	#
+	# def getODE(self, including_fast_reactions=True, forcedConcentration=False):
+	#
+	# 	if self.isRateRuled():
+	# 		return self.isRuledBy().getDefinition(forcedConcentration)
+	#
+	# 	else:
+	# 		t_formula = MathFormula(self.__model)
+	# 		t_formula.setInternalMathFormula(MathFormula.ZERO)
+	# 		return t_formula
+
+
+	def getODE(self, including_fast_reactions=True, rawFormula=False):
 
 		if self.isRateRuled():
-			return self.isRuledBy().getDefinition(forcedConcentration).getMathFormula(math_type)
-
-		else:
-			return MathFormula.ZERO
-
-	def getODE(self, including_fast_reactions=True, forcedConcentration=False):
-
-		if self.isRateRuled():
-			return self.isRuledBy().getDefinition(forcedConcentration)
+			return self.isRuledBy().getDefinition(rawFormula=rawFormula)
 
 		else:
 			t_formula = MathFormula(self.__model)
 			t_formula.setInternalMathFormula(MathFormula.ZERO)
 			return t_formula
-
-
 
 	def setSbmlId(self, sbml_id, prefix=""):
 		self.symbol.setValueMathFormula(prefix+sbml_id)

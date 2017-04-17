@@ -50,7 +50,7 @@ class TestSuite(object):
 		self.testCasesTags = {}
 		self.testCasesVersions = {}
 
-		self.testExport = True
+		self.testExport = False
 		Settings.verbose = 0
 
 	def testSuiteRun(self):
@@ -142,7 +142,6 @@ class TestSuite(object):
 		nb_cases = 0
 		nb_success = 0
 
-
 		for versions in self.testCasesVersions[case]:
 			if self.TODO_VERSIONS == [] or versions in self.TODO_VERSIONS:
 
@@ -154,15 +153,15 @@ class TestSuite(object):
 
 				nb_cases += 1
 
-				# try:
-				if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
-					print ""
+				try:
+					if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
+						print ""
 
-				test = TestSuiteCase(case, str(level), str(version), test_export=self.testExport)
-				test.run()
-				nb_success += 1
+					test = TestSuiteCase(case, str(level), str(version), test_export=self.testExport)
+					if test.run():
+						nb_success += 1
 
-				# except Exception as e:
-				# 	print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
+				except Exception as e:
+					print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
 
 		return nb_success, nb_cases

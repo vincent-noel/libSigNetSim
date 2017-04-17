@@ -263,7 +263,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		return False
 
 
-	def getODE(self, including_fast_reactions=True, forcedConcentration=False, symbols=False):
+	def getODE(self, including_fast_reactions=True, rawFormula=False, symbols=False):
 
 		t_formula = MathFormula(self.__model)
 
@@ -272,7 +272,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			return t_formula
 
 		elif self.isRateRuled():
-			t_rule = self.isRuledBy().getDefinition(forcedConcentration).getInternalMathFormula()
+			t_rule = self.isRuledBy().getDefinition(rawFormula=rawFormula).getInternalMathFormula()
 
 			if self.getCompartment().isRateRuled() and not t_rule == MathFormula.ZERO:
 				""" Then things get complicated. We need to add a term :
@@ -280,7 +280,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 				"""
 				t_formula_corrector = MathFormula(self.__model)
 				t_amount_species = self.symbol.getInternalMathFormula()
-				t_comp_rate = self.getCompartment().isRuledBy().getDefinition(forcedConcentration).getInternalMathFormula()
+				t_comp_rate = self.getCompartment().isRuledBy().getDefinition(rawFormula=rawFormula).getInternalMathFormula()
 				t_comp = self.getCompartment().symbol.getInternalMathFormula()
 
 				t_formula.setInternalMathFormula(t_rule + t_amount_species*t_comp_rate/t_comp)
@@ -295,7 +295,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			if not self.boundaryCondition:
 				for reaction in self.__model.listOfReactions.values():
 					if not reaction.fast or including_fast_reactions:
-						ode += reaction.getODE(self, forcedConcentration, symbols).getInternalMathFormula()
+						ode += reaction.getODE(self, symbols=symbols, rawFormula=rawFormula).getInternalMathFormula()
 
 
 			if self.conversionFactor is not None:
@@ -309,9 +309,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 
 
-	def getMathValue(self, forcedConcentration=False):
+	def getMathValue(self, rawFormula=False):
 
-		if forcedConcentration and (self.isDeclaredConcentration or not self.hasOnlySubstanceUnits):
+		if rawFormula and (self.isDeclaredConcentration or not self.hasOnlySubstanceUnits):
 			t_formula = MathFormula(self.__model)
 			t_formula.setInternalMathFormula(self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula())
 			return t_formula

@@ -45,7 +45,7 @@ class TestSuiteCase(object):
 	def run(self):
 
 		self.document.run()
-		self.checkResults()
+		return self.checkResults()
 
 	def runTestSuiteWraper(self):
 
@@ -146,6 +146,7 @@ class TestSuiteCase(object):
 
 		result = True
 		precisionError = False
+		precisionErrorVariables = []
 
 		for i_timepoint, timepoint in enumerate(timepoints):
 
@@ -162,12 +163,15 @@ class TestSuiteCase(object):
 					if abs(t_value-t_expected_value) > (self.testAbsTol + self.testRelTol*abs(t_expected_value)):
 						result = False
 						precisionError = True
-						print "%.10g, %.10g (%10g, %.2g)" % (t_value, t_expected_value, abs(t_value-t_expected_value), simulated_results['Time'][i_timepoint])
+						if var not in precisionErrorVariables:
+							precisionErrorVariables.append(var)
+						# print "%.10g, %.10g (%10g, %.2g)" % (t_value, t_expected_value, abs(t_value-t_expected_value), simulated_results['Time'][i_timepoint])
 
 
 
 		if precisionError:
-			print "precision error"
+			print "> Precision error in variables : %s" % str(precisionErrorVariables)
+			return False
 
 		return result
 

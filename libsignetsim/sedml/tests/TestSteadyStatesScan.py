@@ -24,6 +24,7 @@
 
 from libsignetsim.model.SbmlDocument import SbmlDocument
 from libsignetsim.sedml.SedmlDocument import SedmlDocument
+from libsignetsim.settings.Settings import Settings
 
 from unittest import TestCase
 from os.path import join, dirname, isdir
@@ -132,7 +133,7 @@ class TestSteadyStatesScan(TestCase):
 		expected_data = [0.0, 20.0, 40.0, 60.0, 80.0, 100.0]
 
 		for i, data in enumerate(expected_data):
-			self.assertAlmostEqual(data, simulated_data[i])
+			self.assertAlmostEqual(data, simulated_data[i], delta=Settings.defaultTestAbsTol+(Settings.defaultTestRelTol*data))
 
 		sedml_doc.writeSedmlToFile(join(testfiles_path, "steadystatesscan.xml"))
 

@@ -74,3 +74,12 @@ class ConservationLaw(object):
 			self.RHS.getDeveloppedInternalMathFormula()
 		)
 
+
+	def getFormula(self):
+		return SympyEqual(
+			self.LHS.getDeveloppedInternalMathFormula(),
+			self.RHS.getDeveloppedInternalMathFormula()
+		)
+
+	def getNbVars(self):
+		return len(self.vars)

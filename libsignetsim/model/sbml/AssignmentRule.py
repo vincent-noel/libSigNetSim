@@ -62,7 +62,7 @@ class AssignmentRule(Rule):
 					SympyMul(self.__definition.getInternalMathFormula(),
 						self.__var.getCompartment().symbol.getInternalMathFormula()))
 
-		# print "var assignment %s" % str(self.__var.symbol.getSymbol())
+		# print "var assignment %s = %s" % (str(self.__var.symbol.getSymbol()), self.__definition.getDeveloppedInternalMathFormula())
 	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
 		sbml_rule = sbml_model.createAssignmentRule()
@@ -132,16 +132,28 @@ class AssignmentRule(Rule):
 		self.__var.setRuledBy(self)
 
 
-	def getDefinition(self, forcedConcentration=False):
+	def getDefinition(self, rawFormula=False):
 
-		if self.__var.isConcentration() and forcedConcentration:
-			t_definition = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
-			t_definition.setInternalMathFormula(
-							self.__definition.getInternalMathFormula()
-							/ self.__var.getCompartment().symbol.getInternalMathFormula())
-			return t_definition
-		else:
-			return self.__definition
+		t_formula = self.getRawDefinition(rawFormula=rawFormula)
+		t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
+		t_math_formula.setInternalMathFormula(t_formula)
+		return t_math_formula
+
+
+	def getRawDefinition(self, rawFormula=False):
+
+		formula = self.__definition.getInternalMathFormula()
+		if self.__var.isConcentration() and not rawFormula:
+			formula /= self.__var.getCompartment().symbol.getInternalMathFormula()
+
+		if not rawFormula:
+			subs = {}
+			for species in self.__model.listOfSpecies.values():
+				if species.isConcentration():
+					subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
+			formula = formula.subs(subs)
+
+		return formula
 
 
 	def setDefinition(self, definition):
@@ -160,16 +172,16 @@ class AssignmentRule(Rule):
 			self.__definition = definition
 
 
-	def setPrettyPrintDefinition(self, definition, forcedConcentration=False):
+	def setPrettyPrintDefinition(self, definition, rawFormula=False):
 
-		if self.__var.isConcentration() and forcedConcentration:
+		if self.__var.isConcentration() and not rawFormula:
 			t_comp = self.__var.getCompartment()
 			t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
-			t_math_formula.setPrettyPrintMathFormula(definition, forcedConcentration)
+			t_math_formula.setPrettyPrintMathFormula(definition, rawFormula=rawFormula)
 			self.__definition.setInternalMathFormula(t_math_formula.getInternalMathFormula()*t_comp.symbol.getInternalMathFormula())
 
 		else:
-			self.__definition.setPrettyPrintMathFormula(definition, forcedConcentration)
+			self.__definition.setPrettyPrintMathFormula(definition, rawFormula=rawFormula)
 
 
 	def getPrettyPrintDefinition(self):

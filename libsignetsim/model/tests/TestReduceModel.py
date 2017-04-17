@@ -41,6 +41,10 @@ class TestReduceModel(TestCase):
 
 		sbml_model = sbml_doc.getModelInstance()
 		sbml_model.build()
-		# sbml_model.stoichiometryMatrix.build()
-		# sbml_model.listOfConservationLaws.build()
+		sbml_model.stoichiometryMatrix.build()
+		sbml_model.listOfConservationLaws.build()
 		# print sbml_model.listOfConservationLaws
+		# print sbml_model.getMathModel().prettyPrint()
+		sbml_model.assymetricModel.build()
+		# print sbml_model.getMathModel().prettyPrint()
+

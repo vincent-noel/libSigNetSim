@@ -39,9 +39,11 @@ class MathStoichiometryMatrix(object):
 		self.rawStoichiometryMatrix = None
 		self.listOfSpecies = []
 
+		self.rawNullspace = None
+
 	def build(self, including_fast_reactions=True, including_slow_reactions=True):
 
-		for species in self.__model.listOfSpecies.values():
+		for species in self.__model.variablesOdes:
 			self.listOfSpecies.append(species.symbol.getSymbol())
 
 		# t0 = time()
@@ -63,7 +65,8 @@ class MathStoichiometryMatrix(object):
 					matrix = matrix.col_join(reaction.getRawStoichiometryMatrix(subs))
 
 		self.rawStoichiometryMatrix = matrix
-
+		if self.rawStoichiometryMatrix is not None:
+			self.getSimpleNullspace()
 		# print "> generated raw stoichiometry matrix in %.2gs" % (time() -t0)
 
 	def hasNullSpace(self):
@@ -77,16 +80,23 @@ class MathStoichiometryMatrix(object):
 
 		return True
 
+	def getRawNullspace(self):
+
+		if self.rawNullspace is None:
+			self.rawNullspace = self.rawStoichiometryMatrix.nullspace()
+		return self.rawNullspace
 	def getSimpleNullspace(self):
 
-		simple_stoichiometry = self.rawStoichiometryMatrix
-
-		# t0 = time()
-		raw_nullspace = simple_stoichiometry.nullspace()
+		# simple_stoichiometry = self.rawStoichiometryMatrix
+		#
+		# # t0 = time()
+		# raw_nullspace = simple_stoichiometry.nullspace()
 		# print "> generated raw nullspace in %.2gs" % (time()-t0)
 
 		# t0 = time()
-		res = self.fixnullspace(raw_nullspace)
+		# return self.getRawNullspace()
+		res = self.fixnullspace(self.getRawNullspace())
+		# res = self.fixnullspace_v2(self.getRawNullspace())
 		# print "> generated fixed nullspace in %.2gs" % (time()-t0)
 
 		return res
@@ -117,8 +127,6 @@ class MathStoichiometryMatrix(object):
 			#If all positive, it's already fixed
 			if not any(sol.applyfunc(neg_filter)):
 				fixed.append(sol)
-				# This break should work. TODO test
-				#break
 
 			#We look for negative value, and write down the row and column
 			for j, element in enumerate(sol):
@@ -140,5 +148,74 @@ class MathStoichiometryMatrix(object):
 					if (not any((sol+nullspace[i]).applyfunc(neg_filter)) and sol+nullspace[i] not in fixed):
 						fixed.append(sol+nullspace[i])
 						break
+
+		return fixed
+
+
+	def fixnullspace_v2(self, nullspace):
+		"""
+			Here we look for the rows containing negatives values, find a row
+			where there is the complementary of this negative value, and if
+			adding the two rows gives us a row without a negative value then
+			we consider it fixed
+			Naive approach, but it seems to work, and hopefully it's not that
+			inefficient.
+		"""
+
+		# Function returning a boolean if the value is negative
+		neg_filter = Lambda(SympySymbol('x'),
+							SympyStrictLessThan(
+								SympySymbol('x'),
+								SympyInteger(0)
+							)
+					)
+		neg_lines = []
+		to_fix = []
+		fixed = []
+		for i, sol in enumerate(nullspace):
+
+			#If all positive, it's already fixed
+			if not any(sol.applyfunc(neg_filter)):
+				fixed.append(sol)
+				# This break should work. TODO test
+				#break
+			else:
+				neg_lines.append(sol)
+			#We look for negative value, and write down the row and column
+			for j, element in enumerate(sol):
+				if element < 0:
+					to_fix.append((i,j))
+
+		full_neg_lines = []
+		for i, line in enumerate(neg_lines):
+			print [int(var) for var in line]
+			full_neg_lines.append(line)
+			for j, line2 in enumerate(neg_lines):
+				if i != j:
+					t_line = line+line2
+					if t_line not in full_neg_lines:
+						full_neg_lines.append(line+line2)
+		print ""
+		for i, line in enumerate(full_neg_lines):
+			print [int(var) for var in line]		# for i in to_fix:
+		# 	sol = nullspace[i]
+
+
+
+		# # We look at the row, columns pairs which need fixing
+		# for i,j in to_fix:
+		#
+		# 	# We look for a row
+		# 	for i_sol, sol in enumerate(nullspace):
+		#
+		# 		#Which is not the one to be fixed, and which countains the
+		# 		#complementary of the negative value to fix
+		# 		if i_sol != i and sol[j] == -nullspace[i][j]:
+		#
+		# 			#If the sum of the two rows doesn't countains negative
+		# 			#values, then it's fixed
+		# 			if (not any((sol+nullspace[i]).applyfunc(neg_filter)) and sol+nullspace[i] not in fixed):
+		# 				fixed.append(sol+nullspace[i])
+		# 				# break
 
 		return fixed

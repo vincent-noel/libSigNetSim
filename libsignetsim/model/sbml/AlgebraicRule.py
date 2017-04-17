@@ -65,31 +65,32 @@ class AlgebraicRule(Rule):
 		t_definition = obj.getDefinition().getInternalMathFormula().subs(subs).subs(replacements)
 		self.__definition.setInternalMathFormula(t_definition)
 
+	def getRawDefinition(self, rawFormula=False):
 
-	def getDefinition(self, forcedConcentration=False):
-
-		if forcedConcentration:
-			t_formula = MathFormula(self.__model)
-			t_formula.setInternalMathFormula(self.__definition.getInternalMathFormula())
-
+		formula = self.__definition.getInternalMathFormula()
+		if not rawFormula:
+			subs = {}
 			for species in self.__model.listOfSpecies.values():
 				if species.isConcentration():
-					t_internal = MathFormula.getInternalMathFormula(t_formula)
-					t_fc = SympySymbol("_speciesForcedConcentration_%s_" % str(species.symbol.getInternalMathFormula()))
-					t_species = SympySymbol(species.getSbmlId())
-					t_internal = t_internal.subs({ t_fc : t_species })
-					t_formula.setInternalMathFormula(t_internal)
+					subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
+			formula = formula.subs(subs)
 
-			return t_formula
-		else:
-			return self.__definition
+		return formula
+
+
+	def getDefinition(self, rawFormula=False):
+
+		math_formula = MathFormula(self.__model)
+		math_formula.setInternalMathFormula(self.getRawDefinition(rawFormula=rawFormula))
+
+		return math_formula
 
 
 	def setDefinition(self, definition):
 		self.__definition = definition
 
-	def setPrettyPrintDefinition(self, definition, forcedConcentration=False):
-		self.__definition.setPrettyPrintMathFormula(definition, forcedConcentration)
+	def setPrettyPrintDefinition(self, definition, rawFormula=False):
+		self.__definition.setPrettyPrintMathFormula(definition, rawFormula=rawFormula)
 
 	def getPrettyPrintDefinition(self):
 		return self.__definition.getPrettyPrintMathFormula()

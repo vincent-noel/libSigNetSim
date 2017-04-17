@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-""" ODE.py
+""" __init__.py
 
 
-	This file ...
+	Initialization of the module SigNetSim/Model/Math/tests
 
 
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
@@ -21,37 +21,3 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
-
-
-from libsignetsim.model.math.MathFormula import MathFormula
-from sympy import srepr
-
-class ODE(object):
-	""" ODE class """
-
-	def __init__ (self, model):
-		""" Constructor of ode class """
-
-		self.__model = model
-		self.__variable = None
-		self.__definition = None
-
-
-	def new(self, variable, definition):
-
-		self.__variable = variable
-		self.__definition = definition
-
-
-	def getVariable(self):
-		return self.__variable
-
-	def getDefinition(self):
-		return self.__definition
-
-	def __str__(self):
-
-		return "%s = %s" % (
-			str(self.__variable.symbol.getDerivative().getDeveloppedInternalMathFormula()),
-			str(self.__definition.getDeveloppedInternalMathFormula())
-		)

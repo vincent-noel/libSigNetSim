@@ -45,7 +45,7 @@ class ListOfCFEs(list):
 		for rule in self.__model.listOfRules.values():
 			if rule.isAssignment():
 				t_cfe = CFE(self.__model, CFE.ASSIGNMENT)
-				t_cfe.new(rule.getVariable(), rule.getDefinition())
+				t_cfe.new(rule.getVariable(), rule.getDefinition(rawFormula=True))
 				list.append(self, t_cfe)
 
 		for reaction in self.__model.listOfReactions.values():

@@ -27,27 +27,16 @@ if [ $1 = "sbml-test-suite" ]; then
 elif [ $1 = "biomodels" ]; then
     coverage run -a $OMIT -m unittest libsignetsim.tests.biomodels.TestBiomodelsCompatibility || exit 1;
 
-elif [ $1 = "others" ]; then
+elif [ $1 = "models" ]; then
     coverage run -a $OMIT -m unittest libsignetsim.model.tests.TestFindKineticLaws || exit 1;
     coverage run -a $OMIT -m unittest libsignetsim.model.tests.TestReduceModel || exit 1;
     coverage run -a $OMIT -m unittest libsignetsim.model.tests.TestModelDefinition || exit 1;
     coverage run -a $OMIT -m unittest libsignetsim.model.tests.TestAnnotation || exit 1;
     coverage run -a $OMIT -m unittest libsignetsim.model.tests.TestRenameSbmlId || exit 1;
-
-    coverage run -a $OMIT -m unittest libsignetsim.simulation.tests.TestTimeseries || exit 1;
-    coverage run -a $OMIT -m unittest libsignetsim.simulation.tests.TestSteadyStates || exit 1;
-
+    coverage run -a $OMIT -m unittest libsignetsim.model.math.tests.TestMath || exit 1;
+elif [ $1 = "optimization" ]; then
     coverage run -a $OMIT -m unittest libsignetsim.optimization.tests.TestOptimization || exit 1;
 
-    coverage run -a $OMIT -m unittest libsignetsim.sedml.tests.TestBiomodelsURI || exit 1;
-    coverage run -a $OMIT -m unittest libsignetsim.sedml.tests.TestSteadyStatesScan || exit 1;
-    coverage run -a $OMIT -m unittest libsignetsim.sedml.tests.TestLogscaleTimeseries || exit 1;
-    coverage run -a $OMIT -m unittest libsignetsim.sedml.tests.TestSpecificationL1V2 || exit 1;
-    coverage run -a $OMIT -m unittest libsignetsim.sedml.tests.TestMath || exit 1;
-
-    coverage run -a $OMIT -m unittest libsignetsim.combine.tests.TestRunSedmls || exit 1;
-    coverage run -a $OMIT -m unittest libsignetsim.combine.tests.TestShowCase || exit 1;
-    coverage run -a $OMIT -m unittest libsignetsim.combine.tests.TestNoManifest || exit 1;
 
 elif [ $1 = "simulation" ]; then
     coverage run -a $OMIT -m unittest libsignetsim.simulation.tests.TestTimeseries || exit 1;
@@ -58,5 +47,18 @@ elif [ $1 = "combine" ]; then
     coverage run -a $OMIT -m unittest libsignetsim.combine.tests.TestShowCase || exit 1;
     coverage run -a $OMIT -m unittest libsignetsim.combine.tests.TestNoManifest || exit 1;
 
+elif [ $1 = "sedml" ]; then
+    coverage run -a $OMIT -m unittest libsignetsim.sedml.tests.TestBiomodelsURI || exit 1;
+    coverage run -a $OMIT -m unittest libsignetsim.sedml.tests.TestSteadyStatesScan || exit 1;
+    coverage run -a $OMIT -m unittest libsignetsim.sedml.tests.TestLogscaleTimeseries || exit 1;
+    coverage run -a $OMIT -m unittest libsignetsim.sedml.tests.TestSpecificationL1V2 || exit 1;
+    coverage run -a $OMIT -m unittest libsignetsim.sedml.tests.TestMath || exit 1;
+
+elif [ $1 = "others" ]; then
+    $0 models || exit 1;
+    $0 timeseries || exit 1;
+    $0 optimization || exit 1;
+    $0 sedml || exit 1;
+    $0 combine || exit 1;
 
 fi

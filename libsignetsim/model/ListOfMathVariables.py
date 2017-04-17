@@ -48,14 +48,14 @@ class ListOfMathVariables(object):
 
 		self.__model = model
 
-		self.amountsToConcentrations = None
-		self.concentrationsToAmounts = None
-
-		self.internalToFinal = None
-		self.finalToInternal = None
-
-		self.internalToFinalWithConcentrations = None
-		self.finalWithConcentrationsToInternal = None
+		# self.amountsToConcentrations = None
+		# self.concentrationsToAmounts = None
+		#
+		# self.internalToFinal = None
+		# self.finalToInternal = None
+		#
+		# self.internalToFinalWithConcentrations = None
+		# self.finalWithConcentrationsToInternal = None
 
 	def isUpToDate(self):
 		return self.__upToDate
@@ -192,118 +192,118 @@ class ListOfMathVariables(object):
 		for i, var in enumerate(self.__model.variablesAlgebraic):
 			var.ind = i
 
-
-
-	def getInternalToFinal(self, forcedConcentration=False):
-		"""
-			Here is's kinda weird. We still cannot pickle Sympy functions
-			so we can't save one within the model object.
-			So this function will only be called on a "as needed" basis
-
-		"""
-
-
-		if forcedConcentration:
-
-			if self.internalToFinalWithConcentrations is None:
-				self.internalToFinalWithConcentrations = {}
-				for var in self.values():
-					if var.isDerivative() or var.isAssignment():
-						t_symbol = var.symbol.getInternalMathFormula()
-						# if var.isConcentration():
-						#     t_function = SympyFunction("[%s]" % str(t_symbol))(MathFormula.t)
-						# else:
-						t_function = SympyFunction(str(t_symbol))(MathFormula.t)
-
-						self.internalToFinalWithConcentrations.update({t_symbol: t_function})
-
-			return self.internalToFinalWithConcentrations
-
-		elif self.internalToFinal is None:
-
-			self.internalToFinal = {}
-			for var in self.values():
-				if var.isDerivative() or var.isAssignment():
-					t_symbol = var.symbol.getInternalMathFormula()
-					t_function = SympyFunction(str(t_symbol))(MathFormula.t)
-					self.internalToFinal.update({t_symbol: t_function})
-
-		return self.internalToFinal
-
-	def getFinalToInternal(self, forcedConcentration=False):
-		"""
-			Here is's kinda weird. We still cannot pickle Sympy functions
-			so we can't save one within the model object.
-			So this function will only be called on a "as needed" basis
-
-		"""
-
-		if forcedConcentration:
-			if self.finalWithConcentrationsToInternal is None:
-
-				self.finalWithConcentrationsToInternal = {}
-				for var in self.values():
-					if var.isDerivative() or var.isAssignment():
-						t_symbol = var.symbol.getInternalMathFormula()
-						# if var.isConcentration():
-						#     t_function = SympyFunction("[%s]" % str(t_symbol))(MathFormula.t)
-						# else:
-						t_function = SympyFunction(str(t_symbol))(MathFormula.t)
-
-						self.finalWithConcentrationsToInternal.update({t_function: t_symbol})
-
-			return self.finalWithConcentrationsToInternal
-
-
-		elif self.finalToInternal is None:
-
-			self.finalToInternal = {}
-			for var in self.values():
-				if var.isDerivative() or var.isAssignment():
-					t_symbol = var.symbol.getInternalMathFormula()
-					t_function = SympyFunction(str(t_symbol))(MathFormula.t)
-					self.finalToInternal.update({t_function: t_symbol})
-
-		return self.finalToInternal
-
-	def cleanFinal(self):
-
-		self.finalToInternal = None
-		self.internalToFinal = None
-		self.finalWithConcentrationsToInternal = None
-		self.internalToFinalWithConcentrations = None
-
-
-	def getAmountsToConcentrations(self):
-
-		if self.amountsToConcentrations is None:
-			self.buildAmountsConcentrationsSubs()
-
-		return self.amountsToConcentrations
-
-
-	def getConcentrationsToAmounts(self):
-
-		"""
-			Building the dict for concentrations to amounts substitutions
-
-			Basically just having key:value = species/compartment:species
-
-		"""
-		if self.concentrationsToAmounts is None:
-			self.buildAmountsConcentrationsSubs()
-
-		return self.concentrationsToAmounts
-
-
-	def buildAmountsConcentrationsSubs(self):
-
-		self.amountsToConcentrations = {}
-		self.concentrationsToAmounts = {}
-		for var in self.values():
-			if var.isSpecies() and not var.hasOnlySubstanceUnits:
-				t_symbol_concentration = var.symbol.getInternalMathFormula()
-				t_symbol_amount = var.symbol.getInternalMathFormula(forcedConcentration=True)
-
-				self.amountsToConcentrations.update({t_symbol_amount: t_symbol_concentration})
-				self.concentrationsToAmounts.update({t_symbol_concentration: t_symbol_amount})
+	# 
+	# 
+	# def getInternalToFinal(self, forcedConcentration=False):
+	# 	"""
+	# 		Here is's kinda weird. We still cannot pickle Sympy functions
+	# 		so we can't save one within the model object.
+	# 		So this function will only be called on a "as needed" basis
+	# 
+	# 	"""
+	# 
+	# 
+	# 	if forcedConcentration:
+	# 
+	# 		if self.internalToFinalWithConcentrations is None:
+	# 			self.internalToFinalWithConcentrations = {}
+	# 			for var in self.values():
+	# 				if var.isDerivative() or var.isAssignment():
+	# 					t_symbol = var.symbol.getInternalMathFormula()
+	# 					# if var.isConcentration():
+	# 					#     t_function = SympyFunction("[%s]" % str(t_symbol))(MathFormula.t)
+	# 					# else:
+	# 					t_function = SympyFunction(str(t_symbol))(MathFormula.t)
+	# 
+	# 					self.internalToFinalWithConcentrations.update({t_symbol: t_function})
+	# 
+	# 		return self.internalToFinalWithConcentrations
+	# 
+	# 	elif self.internalToFinal is None:
+	# 
+	# 		self.internalToFinal = {}
+	# 		for var in self.values():
+	# 			if var.isDerivative() or var.isAssignment():
+	# 				t_symbol = var.symbol.getInternalMathFormula()
+	# 				t_function = SympyFunction(str(t_symbol))(MathFormula.t)
+	# 				self.internalToFinal.update({t_symbol: t_function})
+	# 
+	# 	return self.internalToFinal
+	# 
+	# def getFinalToInternal(self, forcedConcentration=False):
+	# 	"""
+	# 		Here is's kinda weird. We still cannot pickle Sympy functions
+	# 		so we can't save one within the model object.
+	# 		So this function will only be called on a "as needed" basis
+	# 
+	# 	"""
+	# 
+	# 	if forcedConcentration:
+	# 		if self.finalWithConcentrationsToInternal is None:
+	# 
+	# 			self.finalWithConcentrationsToInternal = {}
+	# 			for var in self.values():
+	# 				if var.isDerivative() or var.isAssignment():
+	# 					t_symbol = var.symbol.getInternalMathFormula()
+	# 					# if var.isConcentration():
+	# 					#     t_function = SympyFunction("[%s]" % str(t_symbol))(MathFormula.t)
+	# 					# else:
+	# 					t_function = SympyFunction(str(t_symbol))(MathFormula.t)
+	# 
+	# 					self.finalWithConcentrationsToInternal.update({t_function: t_symbol})
+	# 
+	# 		return self.finalWithConcentrationsToInternal
+	# 
+	# 
+	# 	elif self.finalToInternal is None:
+	# 
+	# 		self.finalToInternal = {}
+	# 		for var in self.values():
+	# 			if var.isDerivative() or var.isAssignment():
+	# 				t_symbol = var.symbol.getInternalMathFormula()
+	# 				t_function = SympyFunction(str(t_symbol))(MathFormula.t)
+	# 				self.finalToInternal.update({t_function: t_symbol})
+	# 
+	# 	return self.finalToInternal
+	# 
+	# def cleanFinal(self):
+	# 
+	# 	self.finalToInternal = None
+	# 	self.internalToFinal = None
+	# 	self.finalWithConcentrationsToInternal = None
+	# 	self.internalToFinalWithConcentrations = None
+	# 
+	# 
+	# def getAmountsToConcentrations(self):
+	# 
+	# 	if self.amountsToConcentrations is None:
+	# 		self.buildAmountsConcentrationsSubs()
+	# 
+	# 	return self.amountsToConcentrations
+	# 
+	# 
+	# def getConcentrationsToAmounts(self):
+	# 
+	# 	"""
+	# 		Building the dict for concentrations to amounts substitutions
+	# 
+	# 		Basically just having key:value = species/compartment:species
+	# 
+	# 	"""
+	# 	if self.concentrationsToAmounts is None:
+	# 		self.buildAmountsConcentrationsSubs()
+	# 
+	# 	return self.concentrationsToAmounts
+	# 
+	# 
+	# def buildAmountsConcentrationsSubs(self):
+	# 
+	# 	self.amountsToConcentrations = {}
+	# 	self.concentrationsToAmounts = {}
+	# 	for var in self.values():
+	# 		if var.isSpecies() and not var.hasOnlySubstanceUnits:
+	# 			t_symbol_concentration = var.symbol.getInternalMathFormula()
+	# 			t_symbol_amount = var.symbol.getInternalMathFormula(forcedConcentration=True)
+	# 
+	# 			self.amountsToConcentrations.update({t_symbol_amount: t_symbol_concentration})
+	# 			self.concentrationsToAmounts.update({t_symbol_concentration: t_symbol_amount})

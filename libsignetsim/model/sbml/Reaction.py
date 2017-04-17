@@ -105,7 +105,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 			self.kineticLaw.copy(obj, prefix, shift, subs, deletions, replacements, conversions, extent_conversion, time_conversion)
 
 			self.value = MathFormula(self.model)
-			t_formula = self.kineticLaw.getDefinition().getInternalMathFormula()
+			t_formula = self.kineticLaw.getDefinition(rawFormula=True).getInternalMathFormula()
 
 			self.value.setInternalMathFormula(t_formula)
 			self.constant = obj.constant
@@ -157,7 +157,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 		# self.isInitialized = True
 		if self.kineticLaw is not None:
-			self.value = self.kineticLaw.getDefinition()
+			self.value = self.kineticLaw.getDefinition(rawFormula=True)
 			self.constant = False
 		else:
 			self.constant = True
@@ -194,7 +194,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 		if self.kineticLaw is not None:
 			kinetic_law = sbml_reaction.createKineticLaw()
-			kinetic_law.setMath(self.kineticLaw.getDefinition().getSbmlMathFormula(sbml_level, sbml_version))
+			kinetic_law.setMath(self.kineticLaw.getDefinition(rawFormula=True).getSbmlMathFormula(sbml_level, sbml_version))
 			self.listOfLocalParameters.writeSbml(kinetic_law, sbml_level, sbml_version)
 
 
@@ -335,7 +335,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 			product.renameSbmlId(old_sbml_id, new_sbml_id)
 
 
-	def getODE(self, species, forcedConcentration=False, symbols=False):
+	def getODE(self, species, rawFormula=False, symbols=False):
 
 		ode = MathFormula.ZERO
 
@@ -348,7 +348,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 				if reactant.getSpecies() == species:
 
 					if not symbols:
-						t_ode -= self.kineticLaw.getDefinition(forcedConcentration).getInternalMathFormula()
+						t_ode -= self.kineticLaw.getDefinition(rawFormula=rawFormula).getInternalMathFormula()
 					else:
 						t_ode -= self.symbol.getInternalMathFormula()
 
@@ -365,7 +365,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 				if product.getSpecies() == species:
 
 					if not symbols:
-						t_ode += self.kineticLaw.getDefinition(forcedConcentration).getInternalMathFormula()
+						t_ode += self.kineticLaw.getDefinition(rawFormula=rawFormula).getInternalMathFormula()
 					else:
 						t_ode += self.symbol.getInternalMathFormula()
 
@@ -443,12 +443,12 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 	def getRawStoichiometryMatrix(self, subs={}):
 
-		front = zeros(1, len(self.model.listOfSpecies))
+		front = zeros(1, self.model.nbOdes)
 
 		if self.listOfReactants:
 			for reactant in self.listOfReactants.values():
 				if not reactant.getSpecies().boundaryCondition:
-					index = self.model.listOfSpecies.values().index(reactant.getSpecies())
+					index = reactant.getSpecies().ind
 					if subs != {}:
 						formula = (
 								- unevaluatedSubs(reactant.stoichiometry.getDeveloppedInternalMathFormula(), subs)
@@ -465,7 +465,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 		if self.listOfProducts:
 			for product in self.listOfProducts.values():
 				if not product.getSpecies().boundaryCondition:
-					index = self.model.listOfSpecies.values().index(product.getSpecies())
+					index = product.getSpecies().ind
 					if subs != {}:
 						formula = (
 							unevaluatedSubs(product.stoichiometry.getDeveloppedInternalMathFormula(), subs)
@@ -482,12 +482,12 @@ class Reaction(Variable, SbmlObject, HasUnits):
 			return front
 
 		else:
-			back = zeros(1, len(self.model.listOfSpecies))
+			back = zeros(1, self.model.nbOdes)
 
 			if self.listOfReactants:
 				for reactant in self.listOfReactants.values():
 					if not reactant.getSpecies().boundaryCondition:
-						index = self.model.listOfSpecies.values().index(reactant.getSpecies())
+						index = reactant.getSpecies().ind
 						if subs != {}:
 							formula = (
 								unevaluatedSubs(reactant.stoichiometry.getDeveloppedInternalMathFormula(), subs)
@@ -504,7 +504,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 			if self.listOfProducts:
 				for product in self.listOfProducts.values():
 					if not product.getSpecies().boundaryCondition:
-						index = self.model.listOfSpecies.values().index(product.getSpecies())
+						index = product.getSpecies().ind
 						if subs != {}:
 							formula = (
 								- unevaluatedSubs(product.stoichiometry.getDeveloppedInternalMathFormula(), subs)
@@ -519,7 +519,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 			return front.col_join(back)
 
-	def getValueMathFormula(self, math_type=MathFormula.MATH_INTERNAL, forcedConcentration=False):
-
-		if self.kineticLaw is not None:
-			return self.kineticLaw.getMathFormula(math_type, forcedConcentration)
+	# def getValueMathFormula(self, math_type=MathFormula.MATH_INTERNAL, forcedConcentration=False):
+	#
+	# 	if self.kineticLaw is not None:
+	# 		return self.kineticLaw.getMathFormula(math_type, forcedConcentration)

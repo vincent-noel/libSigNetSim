@@ -195,7 +195,7 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 	def setFinalMathFormula(self, tree):
 		self.setMathFormula(tree, math_type=self.MATH_FINALINTERNAL)
 
-	def setPrettyPrintMathFormula(self, string, forcedConcentration=False):
+	def setPrettyPrintMathFormula(self, string, rawFormula=False):
 		""" Sets the formula for substance. If forcedConcentration, the species are replaced by their concentration"""
 
 		sbml_formula = parseL3Formula(str(string))
@@ -203,7 +203,7 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 			raise SbmlException("MathFormula : Unable to parse math formula")
 
 		self.readSbml(sbml_formula, self.sbmlLevel, self.sbmlVersion)
-		if forcedConcentration:
+		if not rawFormula:
 			t_subs_mask = {}
 			for t_var in self.__model.listOfSpecies.values():
 				if t_var.isConcentration():

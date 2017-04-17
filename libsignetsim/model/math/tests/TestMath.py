@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" TestRenameSbmlId.py
+""" TestModelDefinition.py
 
 
 	Testing the research for conservation laws, and the subsequent reduction
@@ -28,11 +28,11 @@ from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.sympy_shortcuts import SympyEqual, SympyZero
 from unittest import TestCase
 from sympy import simplify
-class TestRenameSbmlId(TestCase):
+class TestMath(TestCase):
 	""" Tests high level functions """
 
 
-	def testRenameSbmlId(self):
+	def testPrettyPrint(self):
 
 		model = Model()
 
@@ -41,24 +41,34 @@ class TestRenameSbmlId(TestCase):
 		s1 = model.listOfSpecies.new("s1")
 		s2 = model.listOfSpecies.new("s2")
 		s3 = model.listOfSpecies.new("s3")
-		s4 = model.listOfSpecies.new("s4")
-		s5 = model.listOfSpecies.new("s5")
 
-		p1 = model.listOfParameters.new("p1")
-		p2 = model.listOfParameters.new("p2")
-		p3 = model.listOfParameters.new("p3")
-		p4 = model.listOfParameters.new("p4")
+		s4 = model.listOfSpecies.new("s4", hasOnlySubstanceUnits=True)
+		s5 = model.listOfSpecies.new("s5", hasOnlySubstanceUnits=True)
+		s6 = model.listOfSpecies.new("s6", hasOnlySubstanceUnits=True)
 
-		r1 = model.listOfReactions.new("reaction 1")
-		r1.listOfReactants.add(s1)
-		r1.listOfReactants.add(s2)
-		r1.listOfProducts.add(s3)
-		r1.setKineticLaw(KineticLaw.MASS_ACTION, reversible=True, parameters=[p1,p2])
 
-		a1 = model.listOfRules.newAssignmentRule(s4, "p1*s3")
-		r1 = model.listOfRules.newRateRule(s5, "p4*s3")
+		f1 = MathFormula(model)
+		f1.setPrettyPrintMathFormula("s1+s2*s3")
 
-		model.renameSbmlId("s3", "s3_bis")
+		f2 = MathFormula(model)
+		f2.setPrettyPrintMathFormula("s1/c + (s2/c)*(s3/c)", rawFormula=True)
+
+		f3 = MathFormula(model)
+		f3.setPrettyPrintMathFormula("s4+s5*s6")
+
+		f4 = MathFormula(model)
+		f4.setPrettyPrintMathFormula("s4+s5*s6", rawFormula=True)
+
+		self.assertTrue(self.sympyEqual(
+			f1.getDeveloppedInternalMathFormula(),
+			f2.getDeveloppedInternalMathFormula()
+		))
+
+		self.assertTrue(self.sympyEqual(
+			f3.getDeveloppedInternalMathFormula(),
+			f4.getDeveloppedInternalMathFormula()
+		))
+
 	def sympyEqual(self, a, b):
 
 		# print "test %s == %s : %s" % (simplify(a), simplify(b), (simplify(a-b) == 0))

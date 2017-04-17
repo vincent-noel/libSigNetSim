@@ -138,18 +138,18 @@ class RateRule(Rule):
 		self.__var.setRuledBy(self)
 
 
-	def setPrettyPrintDefinition(self, definition, forcedConcentration=False):
+	def setPrettyPrintDefinition(self, definition, rawFormula=False):
 
-		if self.__var.isConcentration() and forcedConcentration:
+		if self.__var.isConcentration() and not rawFormula:
 			t_comp = self.__var.getCompartment()
 			t_math_formula = MathFormula(self.__model, MathFormula.MATH_RATERULE)
-			t_math_formula.setPrettyPrintMathFormula(definition, forcedConcentration)
+			t_math_formula.setPrettyPrintMathFormula(definition, rawFormula=rawFormula)
 			self.__definition.setInternalMathFormula(
 				t_math_formula.getInternalMathFormula()
 				* t_comp.symbol.getInternalMathFormula())
 
 		else:
-			self.__definition.setPrettyPrintMathFormula(definition, forcedConcentration)
+			self.__definition.setPrettyPrintMathFormula(definition, rawFormula=rawFormula)
 
 	def getPrettyPrintDefinition(self):
 
@@ -164,20 +164,28 @@ class RateRule(Rule):
 			return self.__definition.getPrettyPrintMathFormula()
 
 
-	def getDefinition(self, forcedConcentration=False):
+	def getRawDefinition(self, rawFormula=False):
 
-		if self.__var.isConcentration() and forcedConcentration:
-			t_formula = MathFormula(self.__model, MathFormula.MATH_RATERULE)
-			t_formula.setInternalMathFormula(
-						self.__definition.getInternalMathFormula()
-						/ self.__var.getCompartment().symbol.getInternalMathFormula()
-			)
-			return t_formula
-		else:
-			return self.__definition
+		formula = self.__definition.getInternalMathFormula()
 
+		if self.__var.isConcentration() and not rawFormula:
+			formula /= self.__var.getCompartment().symbol.getInternalMathFormula()
 
-	def setDefinition(sef, definition):
+		if not rawFormula:
+			subs = {}
+			for species in self.__model.listOfSpecies.values():
+				if species.isConcentration():
+					subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
+			formula = formula.subs(subs)
+		return formula
+
+	def getDefinition(self, rawFormula=False):
+
+		t_formula = MathFormula(self.__model, MathFormula.MATH_RATERULE)
+		t_formula.setInternalMathFormula(self.getRawDefinition(rawFormula=rawFormula))
+		return t_formula
+
+	def setDefinition(self, definition):
 		self.__definition = definition
 
 

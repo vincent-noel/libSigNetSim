@@ -117,12 +117,12 @@ class MathDevelopper(object):
 				return tree
 
 
-	def translateForFinalInternal(self, formula, forcedConcentration=False):
-
-		if self.__model.isUpToDate():
-			return formula.subs(self.__model.listOfVariables.getInternalToFinal(forcedConcentration))
-
-	def translateFinalForInternal(self, formula, forcedConcentration=False):
-
-		if self.__model.isUpToDate():
-			return formula.subs(self.__model.listOfVariables.getFinalToInternal(forcedConcentration))
+	# def translateForFinalInternal(self, formula, forcedConcentration=False):
+	#
+	# 	if self.__model.isUpToDate():
+	# 		return formula.subs(self.__model.listOfVariables.getInternalToFinal(forcedConcentration))
+	#
+	# def translateFinalForInternal(self, formula, forcedConcentration=False):
+	#
+	# 	if self.__model.isUpToDate():
+	# 		return formula.subs(self.__model.listOfVariables.getFinalToInternal(forcedConcentration))

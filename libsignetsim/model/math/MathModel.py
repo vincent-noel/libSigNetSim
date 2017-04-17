@@ -22,23 +22,25 @@
 
 """
 
-from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 from libsignetsim.cwriter.CModelWriter import CModelWriter
-from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyFloat
 
-
-from libsignetsim.model.ModelException import MathException
-from libsignetsim.model.math.MathStoichiometryMatrix import MathStoichiometryMatrix
-from time import time
-
-
+from libsignetsim.model.math.container.ListOfConservationLaws import ListOfConservationLaws
 from libsignetsim.model.math.container.ListOfODEs import ListOfODEs
 from libsignetsim.model.math.container.ListOfCFEs import ListOfCFEs
 from libsignetsim.model.math.container.ListOfDAEs import ListOfDAEs
+
+from libsignetsim.model.math.MathStoichiometryMatrix import MathStoichiometryMatrix
 from libsignetsim.model.math.MathSlowModel import MathSlowModel
-from libsignetsim.model.math.container.ListOfConservationLaws import ListOfConservationLaws
+from libsignetsim.model.math.MathAsymmetricModel import MathAsymmetricModel
+
+from libsignetsim.model.math.MathFormula import MathFormula
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyFloat
+from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
+from libsignetsim.model.ModelException import MathException
+from libsignetsim.settings.Settings import Settings
+
+from time import time
+
 
 class MathModel(CModelWriter):
 	""" Sbml model class """
@@ -55,7 +57,7 @@ class MathModel(CModelWriter):
 		self.solvedInitialConditions = None
 		self.hasDAEs = False
 		self.slowModel = None
-
+		self.assymetricModel = MathAsymmetricModel(self)
 		self.stoichiometryMatrix = MathStoichiometryMatrix(self)
 		self.listOfConservationLaws = ListOfConservationLaws(self)
 
@@ -83,6 +85,8 @@ class MathModel(CModelWriter):
 		if self.slowModel is not None:
 			return self.slowModel
 
+		elif self.assymetricModel.isUpToDate():
+			return self.assymetricModel
 		else:
 			return self
 
@@ -102,16 +106,22 @@ class MathModel(CModelWriter):
 
 		if len(self.listOfDAEs) > 0:
 			self.listOfDAEs.solveInitialConditions(tmin)
-
-		if self.listOfReactions.hasFastReaction():
-			self.slowModel = MathSlowModel(self)
-			self.slowModel.build()
-
-		# t0 = time()
-		self.stoichiometryMatrix.build()
-		self.listOfConservationLaws.build()
 		# self.prettyPrint()
-		# print "> conservation laws found in %.2gs" % (time() -t0)
+		#
+		# if self.listOfReactions.hasFastReaction():
+		# 	self.slowModel = MathSlowModel(self)
+		# 	self.slowModel.build()
+		# # t0 = time()
+		# self.stoichiometryMatrix.build()
+		# self.listOfConservationLaws.build()
+		# # print self.listOfConservationLaws
+		# if len(self.listOfEvents) == 0:
+		# 	# self.prettyPrint()
+		# 	self.assymetricModel.build()
+		# 	# self.assymetricModel.prettyPrint()
+		#
+		# # if
+		# # print "> conservation laws found in %.2gs" % (time() -t0)
 
 	def prettyPrint(self):
 

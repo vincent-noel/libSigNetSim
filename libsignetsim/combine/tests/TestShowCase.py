@@ -56,7 +56,7 @@ class TestShowCase(TestCase):
 
 				for var, values in self.expected_results.items():
 					for i, value in enumerate(values):
-						self.assertAlmostEqual(data[var][i], value, delta=(Settings.defaultAbsTol+value*Settings.defaultRelTol))
+						self.assertAlmostEqual(data[var][i], value, delta=(Settings.defaultTestAbsTol+value*Settings.defaultTestRelTol))
 
 	def testSaveAndReload(self):
 
@@ -74,4 +74,4 @@ class TestShowCase(TestCase):
 
 				for var, values in self.expected_results.items():
 					for i, value in enumerate(values):
-						self.assertAlmostEqual(data[var][i], value, delta=(Settings.defaultAbsTol+value*Settings.defaultRelTol))
+						self.assertAlmostEqual(data[var][i], value, delta=(Settings.defaultTestAbsTol+value*Settings.defaultTestRelTol))

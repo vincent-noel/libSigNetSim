@@ -38,8 +38,14 @@ class ListOfODEs(list):
 		for variable in self.__model.listOfVariables.values():
 			if variable.isDerivative():
 				t_ode = ODE(self.__model)
-				t_ode.new(variable,	variable.getODE(including_fast_reactions))
+				t_ode.new(variable,	variable.getODE(including_fast_reactions, rawFormula=True))
 				list.append(self, t_ode)
+
+	def getByVariable(self, variable):
+
+		for ode in self:
+			if ode.getVariable() == variable:
+				return ode
 
 	def __str__(self):
 

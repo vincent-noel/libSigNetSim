@@ -55,14 +55,16 @@ class MathSymbol(MathFormula):
 	# def setInternalVariable(self, internal_variable):
 	# 	MathFormula.setInternalMathFormula(self, internal_variable)
 
-	def getInternalMathFormula(self, forcedConcentration=True):
+	def getInternalMathFormula(self, rawFormula=False):
 
 		from libsignetsim.model.math.MathVariable import MathVariable
 
 		# The if type(var) test is to check is the variable is a copied, simple math variable,
 		# or if it's a more complex type, like species or parameter, which inherit from MathVariable
 		# If it's just a math variable, if has no method isConcentration()
-		if type(self.__variable) == MathVariable or not self.__variable.isConcentration() or (self.__variable.isConcentration() and forcedConcentration):
+		if (type(self.__variable) == MathVariable
+			or not self.__variable.isConcentration()
+			or (self.__variable.isConcentration() and not rawFormula)):
 			return MathFormula.getInternalMathFormula(self)
 		else:
 			return SympySymbol("_speciesForcedConcentration_%s_" % str(MathFormula.getInternalMathFormula(self)))
@@ -85,19 +87,19 @@ class MathSymbol(MathFormula):
 		return t_formula
 
 
-	def getFinalMathFormula(self, forcedConcentration=False):
-		if self.isFromReaction is not None:
-			t_formula = MathFormula.getInternalMathFormula(self)
-			t_math = MathFormula(self.__model)
-			t_symbol = MathFormula.getInternalMathFormula(self)
-			t_new_symbol = SympySymbol(MathFormula.getSbmlMathFormula(self).getName())
-			t_math.setInternalMathFormula(t_formula.subs({t_symbol: t_new_symbol}))
-			return t_math.getFinalMathFormula(forcedConcentration=True)
-		else:
-			return MathFormula.getFinalMathFormula(self,forcedConcentration=True)
+	# def getFinalMathFormula(self, forcedConcentration=False):
+	# 	if self.isFromReaction is not None:
+	# 		t_formula = MathFormula.getInternalMathFormula(self)
+	# 		t_math = MathFormula(self.__model)
+	# 		t_symbol = MathFormula.getInternalMathFormula(self)
+	# 		t_new_symbol = SympySymbol(MathFormula.getSbmlMathFormula(self).getName())
+	# 		t_math.setInternalMathFormula(t_formula.subs({t_symbol: t_new_symbol}))
+	# 		return t_math.getFinalMathFormula(forcedConcentration=True)
+	# 	else:
+	# 		return MathFormula.getFinalMathFormula(self,forcedConcentration=True)
 
 	# def getCMathFormula(self):
 	# 	return self.writeCCode(MathFormula.getInternalMathFormula(self))
 
-	def getPrettyPrintMathFormula(self):
-		return str(MathFormula.getInternalMathFormula(self))
+	def getPrettyPrintMathFormula(self, rawFormula=False):
+		return str(self.getInternalMathFormula(rawFormula=rawFormula))

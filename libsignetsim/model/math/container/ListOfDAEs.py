@@ -46,7 +46,7 @@ class ListOfDAEs(list):
 			if rule.isAlgebraic():
 				self.__model.hasDAEs = True
 				t_dae = DAE(self.__model)
-				t_dae.new(rule.getDefinition())
+				t_dae.new(rule.getDefinition(rawFormula=True))
 				list.append(self, t_dae)
 
 

@@ -33,6 +33,9 @@ class TestModelDefinition(TestCase):
 
 
 	def testReactions(self):
+		""" First three test to check the definition of mass action, michaelis and hill kinetics, the last one
+			just to check mass action for species defined as substance. All check the option rawFormula, which 
+		"""
 
 		model = Model()
 
@@ -56,18 +59,18 @@ class TestModelDefinition(TestCase):
 		r1.setKineticLaw(KineticLaw.MASS_ACTION, reversible=True, parameters=[p1,p2])
 
 		formula_r1 = MathFormula(model)
-		formula_r1.setPrettyPrintMathFormula("p1*s1*s2 - p2*s3", forcedConcentration=True)
+		formula_r1.setPrettyPrintMathFormula("p1*s1*s2 - p2*s3", rawFormula=True)
 
 		self.assertTrue(self.sympyEqual(
-			r1.kineticLaw.getDefinition(forcedConcentration=True).getDeveloppedInternalMathFormula(),
+			r1.kineticLaw.getDefinition().getDeveloppedInternalMathFormula(),
 			formula_r1.getDeveloppedInternalMathFormula()
 		))
 
 		formula_r1_amount = MathFormula(model)
-		formula_r1_amount.setPrettyPrintMathFormula("c*(p1*s1*s2 - p2*s3)", forcedConcentration=True)
+		formula_r1_amount.setPrettyPrintMathFormula("c*(p1*s1/c*s2/c - p2*s3/c)", rawFormula=True)
 
 		self.assertTrue(self.sympyEqual(
-			r1.kineticLaw.getDefinition().getDeveloppedInternalMathFormula(),
+			r1.kineticLaw.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
 			formula_r1_amount.getDeveloppedInternalMathFormula()
 		))
 
@@ -79,16 +82,16 @@ class TestModelDefinition(TestCase):
 		r2.setKineticLaw(KineticLaw.MICHAELIS, reversible=False, parameters=[p1, p2])
 
 		formula_r2 = MathFormula(model)
-		formula_r2.setPrettyPrintMathFormula("p1*s1*s2/(p2+s1)", forcedConcentration=True)
+		formula_r2.setPrettyPrintMathFormula("p1*s1*s2/(p2+s1)", rawFormula=True)
 		self.assertTrue(self.sympyEqual(
-			r2.kineticLaw.getDefinition(forcedConcentration=True).getDeveloppedInternalMathFormula(),
+			r2.kineticLaw.getDefinition().getDeveloppedInternalMathFormula(),
 			formula_r2.getDeveloppedInternalMathFormula()
 		))
 
 		formula_r2_amount = MathFormula(model)
-		formula_r2_amount.setPrettyPrintMathFormula("c*(p1*s1*s2/(p2+s1))", forcedConcentration=True)
+		formula_r2_amount.setPrettyPrintMathFormula("c*(p1*s1/c*s2/c/(p2+s1/c))", rawFormula=True)
 		self.assertTrue(self.sympyEqual(
-			r2.kineticLaw.getDefinition().getDeveloppedInternalMathFormula(),
+			r2.kineticLaw.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
 			formula_r2_amount.getDeveloppedInternalMathFormula()
 		))
 
@@ -100,16 +103,16 @@ class TestModelDefinition(TestCase):
 		r3.setKineticLaw(KineticLaw.HILL, reversible=False, parameters=[p1, p2, p3])
 
 		formula_r3 = MathFormula(model)
-		formula_r3.setPrettyPrintMathFormula("p1*s1^p3*s2/(p2+s1^p3)", forcedConcentration=True)
+		formula_r3.setPrettyPrintMathFormula("p1*s1^p3*s2/(p2+s1^p3)", rawFormula=True)
 		self.assertTrue(self.sympyEqual(
-			r3.kineticLaw.getDefinition(forcedConcentration=True).getDeveloppedInternalMathFormula(),
+			r3.kineticLaw.getDefinition().getDeveloppedInternalMathFormula(),
 			formula_r3.getDeveloppedInternalMathFormula()
 		))
 
 		formula_r3_amount = MathFormula(model)
-		formula_r3_amount.setPrettyPrintMathFormula("c*(p1*s1^p3*s2/(p2+s1^p3))", forcedConcentration=True)
+		formula_r3_amount.setPrettyPrintMathFormula("c*(p1*(s1/c)^p3*(s2/c)/(p2+(s1/c)^p3))", rawFormula=True)
 		self.assertTrue(self.sympyEqual(
-			r3.kineticLaw.getDefinition().getDeveloppedInternalMathFormula(),
+			r3.kineticLaw.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
 			formula_r3_amount.getDeveloppedInternalMathFormula()
 		))
 
@@ -121,19 +124,16 @@ class TestModelDefinition(TestCase):
 		r4.setKineticLaw(KineticLaw.MASS_ACTION, reversible=True, parameters=[p1, p2])
 
 		formula_r4 = MathFormula(model)
-		formula_r4.setPrettyPrintMathFormula("(p1*s4*s5 - p2*s6)/c", forcedConcentration=True)
-
-		self.assertTrue(self.sympyEqual(
-			r4.kineticLaw.getDefinition(forcedConcentration=True).getDeveloppedInternalMathFormula(),
-			formula_r4.getDeveloppedInternalMathFormula()
-		))
-
-		formula_r4_amount = MathFormula(model)
-		formula_r4_amount.setPrettyPrintMathFormula("p1*s4*s5 - p2*s6", forcedConcentration=True)
+		formula_r4.setPrettyPrintMathFormula("(p1*s4*s5 - p2*s6)", rawFormula=True)
 
 		self.assertTrue(self.sympyEqual(
 			r4.kineticLaw.getDefinition().getDeveloppedInternalMathFormula(),
-			formula_r4_amount.getDeveloppedInternalMathFormula()
+			formula_r4.getDeveloppedInternalMathFormula()
+		))
+
+		self.assertTrue(self.sympyEqual(
+			r4.kineticLaw.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
+			formula_r4.getDeveloppedInternalMathFormula()
 		))
 
 	def testAssignmentRule(self):
@@ -143,28 +143,135 @@ class TestModelDefinition(TestCase):
 
 		s1 = model.listOfSpecies.new("s1")
 		s2 = model.listOfSpecies.new("s2")
-		s3 = model.listOfSpecies.new("s3")
-		s4 = model.listOfSpecies.new("s4")
-		s5 = model.listOfSpecies.new("s5")
+		s3 = model.listOfSpecies.new("s3", hasOnlySubstanceUnits=True)
+		s4 = model.listOfSpecies.new("s4", hasOnlySubstanceUnits=True)
 
 		p1 = model.listOfParameters.new("p1")
-		p2 = model.listOfParameters.new("p2")
-		p3 = model.listOfParameters.new("p3")
 
-		r1 = model.listOfReactions.new("reaction 1")
-		r1.listOfReactants.add(s1)
-		r1.listOfReactants.add(s2)
-		r1.listOfProducts.add(s3)
-		r1.setKineticLaw(KineticLaw.MASS_ACTION, reversible=True, parameters=[p1, p2])
+		a1 = model.listOfRules.newAssignmentRule(s2, "p1*s1")
 
-		a1 = model.listOfRules.newAssignmentRule(s4, "p3*s3", forcedConcentration=True)
-		a2 = model.listOfRules.newAssignmentRule(s5, "c*p3*s3")
+		f1 = MathFormula(model)
+		f1.setPrettyPrintMathFormula("p1*s1", rawFormula=True)
 
-		model.build()
+		self.assertTrue(self.sympyEqual(
+			a1.getDefinition().getDeveloppedInternalMathFormula(),
+			f1.getDeveloppedInternalMathFormula()
+		))
+
+		f2 = MathFormula(model)
+		f2.setPrettyPrintMathFormula("c*(p1/c)*(s1/c)", rawFormula=True)
+
+		self.assertTrue(self.sympyEqual(
+			a1.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
+			f1.getDeveloppedInternalMathFormula()
+		))
+
+		a2 = model.listOfRules.newAssignmentRule(s4, "p1*s3")
+
+		f3 = MathFormula(model)
+		f3.setPrettyPrintMathFormula("p1*s3", rawFormula=True)
+
+		self.assertTrue(self.sympyEqual(
+			a2.getDefinition().getDeveloppedInternalMathFormula(),
+			f3.getDeveloppedInternalMathFormula()
+		))
+
+		self.assertTrue(self.sympyEqual(
+			a2.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
+			f3.getDeveloppedInternalMathFormula()
+		))
 
 
+	def testRateRule(self):
+		model = Model()
+
+		c = model.listOfCompartments.new("c", value=2)
+
+		s1 = model.listOfSpecies.new("s1")
+		s2 = model.listOfSpecies.new("s2")
+		s3 = model.listOfSpecies.new("s3", hasOnlySubstanceUnits=True)
+		s4 = model.listOfSpecies.new("s4", hasOnlySubstanceUnits=True)
+
+		p1 = model.listOfParameters.new("p1")
+
+		r1 = model.listOfRules.newRateRule(s2, "p1*s1")
+
+		f1 = MathFormula(model)
+		f1.setPrettyPrintMathFormula("p1*s1", rawFormula=True)
+
+		self.assertTrue(self.sympyEqual(
+			r1.getDefinition().getDeveloppedInternalMathFormula(),
+			f1.getDeveloppedInternalMathFormula()
+		))
+
+		f2 = MathFormula(model)
+		f2.setPrettyPrintMathFormula("c*(p1/c)*(s1/c)", rawFormula=True)
+
+		self.assertTrue(self.sympyEqual(
+			r1.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
+			f1.getDeveloppedInternalMathFormula()
+		))
+
+		r2 = model.listOfRules.newRateRule(s4, "p1*s3")
+
+		f3 = MathFormula(model)
+		f3.setPrettyPrintMathFormula("p1*s3", rawFormula=True)
+
+		self.assertTrue(self.sympyEqual(
+			r2.getDefinition().getDeveloppedInternalMathFormula(),
+			f3.getDeveloppedInternalMathFormula()
+		))
+
+		self.assertTrue(self.sympyEqual(
+			r2.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
+			f3.getDeveloppedInternalMathFormula()
+		))
 
 
+	def testAlgebraicRule(self):
+		model = Model()
+
+		c = model.listOfCompartments.new("c", value=2)
+
+		s1 = model.listOfSpecies.new("s1")
+		s2 = model.listOfSpecies.new("s2")
+		s3 = model.listOfSpecies.new("s3", hasOnlySubstanceUnits=True)
+		s4 = model.listOfSpecies.new("s4", hasOnlySubstanceUnits=True)
+
+		p1 = model.listOfParameters.new("p1")
+
+		a1 = model.listOfRules.newAlgebraicRule("s2 - p1*s1")
+
+		f1 = MathFormula(model)
+		f1.setPrettyPrintMathFormula("s2 - p1*s1", rawFormula=True)
+
+		self.assertTrue(self.sympyEqual(
+			a1.getDefinition().getDeveloppedInternalMathFormula(),
+			f1.getDeveloppedInternalMathFormula()
+		))
+
+		f2 = MathFormula(model)
+		f2.setPrettyPrintMathFormula("s2/c - p1*(s1/c)", rawFormula=True)
+
+		self.assertTrue(self.sympyEqual(
+			a1.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
+			f2.getDeveloppedInternalMathFormula()
+		))
+
+		a2 = model.listOfRules.newAlgebraicRule("s3 - p1*s4")
+
+		f3 = MathFormula(model)
+		f3.setPrettyPrintMathFormula("s3 - p1*s4", rawFormula=True)
+
+		self.assertTrue(self.sympyEqual(
+			a2.getDefinition().getDeveloppedInternalMathFormula(),
+			f3.getDeveloppedInternalMathFormula()
+		))
+
+		self.assertTrue(self.sympyEqual(
+			a2.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
+			f3.getDeveloppedInternalMathFormula()
+		))
 
 	def sympyEqual(self, a, b):
 
