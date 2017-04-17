@@ -139,8 +139,8 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 	def getDeveloppedInternalMathFormula(self):
 		return MathFormula.getMathFormula(self, MathFormula.MATH_DEVINTERNAL)
 
-	def getFinalMathFormula(self, forcedConcentration=False):
-		return MathFormula.getMathFormula(self, MathFormula.MATH_FINALINTERNAL, forcedConcentration=forcedConcentration)
+	# def getFinalMathFormula(self, forcedConcentration=False):
+	# 	return MathFormula.getMathFormula(self, MathFormula.MATH_FINALINTERNAL, forcedConcentration=forcedConcentration)
 
 	def getCMathFormula(self):
 		return MathFormula.getMathFormula(self, MathFormula.MATH_C)
@@ -150,7 +150,11 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 		return float(MathFormula.getMathFormula(self, MathFormula.MATH_INTERNAL))
 
 
-	def getMathFormula(self, math_type=MATH_DEVINTERNAL, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion, forcedConcentration=False):
+	def getMathFormula(self,
+						math_type=MATH_DEVINTERNAL,
+						sbml_level=Settings.defaultSbmlLevel,
+						sbml_version=Settings.defaultSbmlVersion
+	):
 
 		if math_type == self.MATH_SBML:
 			return self.writeSbml(sbml_level, sbml_version)
@@ -164,9 +168,9 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 		elif math_type == self.MATH_DEVINTERNAL:
 			return self.translateForDeveloppedInternal(MathFormula.getMathFormula(self, self.MATH_INTERNAL))
 
-		elif math_type == self.MATH_FINALINTERNAL:
-			# print self.getInternalMathFormula()
-			return self.translateForFinalInternal(MathFormula.getMathFormula(self, self.MATH_DEVINTERNAL), forcedConcentration)
+		# elif math_type == self.MATH_FINALINTERNAL:
+		# 	# print self.getInternalMathFormula()
+		# 	return self.translateForFinalInternal(MathFormula.getMathFormula(self, self.MATH_DEVINTERNAL), forcedConcentration)
 
 		elif math_type == self.MATH_C:
 			if MathFormula.getInternalMathFormula(self) is None:
@@ -192,8 +196,8 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 		else:
 			self.internalTree = SympySymbol(value)
 
-	def setFinalMathFormula(self, tree):
-		self.setMathFormula(tree, math_type=self.MATH_FINALINTERNAL)
+	# def setFinalMathFormula(self, tree):
+	# 	self.setMathFormula(tree, math_type=self.MATH_FINALINTERNAL)
 
 	def setPrettyPrintMathFormula(self, string, rawFormula=False):
 		""" Sets the formula for substance. If forcedConcentration, the species are replaced by their concentration"""

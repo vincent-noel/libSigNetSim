@@ -149,7 +149,7 @@ class UnitDefinition(HasId):
 			unit.writeSbml(t_unitDefinition, sbml_level, sbml_version)
 
 
-	def prettyPrint(self):
+	def __str__(self):
 
 		return self.getName() + " (" + self.printUnitDefinition() + ")"
 
@@ -162,14 +162,14 @@ class UnitDefinition(HasId):
 				if unit.exponent > 0:
 					if i_unit > 0:
 						t_unit += "."
-					t_unit += unit.printUnit()
+					t_unit += str(unit)
 					i_unit += 1
 
 			for unit in self.listOfUnits:
 				if unit.exponent < 0:
 					if i_unit > 0:
 						t_unit += "."
-					t_unit += unit.printUnit()
+					t_unit += str(unit)
 					i_unit += 1
 
 			return t_unit
@@ -314,7 +314,7 @@ class Unit():
 		self.scale = scale
 
 
-	def printUnit(self):
+	def __str__(self):
 		t_str = ""
 		if self.multiplier != 1:
 			t_str += "(%g." % self.multiplier

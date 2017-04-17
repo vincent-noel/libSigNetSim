@@ -122,50 +122,59 @@ class InitialAssignment(SbmlObject):
 		self.__var = variable
 		self.__var.setInitialAssignmentBy(self)
 
+	def getRawDefinition(self, rawFormula=False):
 
-	def getDefinition(self, forcedConcentration=False):
+		formula = self.__definition.getInternalMathFormula()
 
-		if self.__var.isConcentration() and forcedConcentration:
-			t_definition = MathFormula(self.__model, MathFormula.MATH_RATERULE)
-			t_definition.setInternalMathFormula(
-							self.__definition.getInternalMathFormula()
-							/ self.__var.getCompartment().symbol.getInternalMathFormula())
-			return t_definition
-		else:
-			return self.__definition
+		if self.__var.isConcentration() and not rawFormula:
+			formula /= self.__var.getCompartment().symbol.getInternalMathFormula()
 
+		if not rawFormula:
+			subs = {}
+			for species in self.__model.listOfSpecies.values():
+				if species.isConcentration():
+					subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
+			formula = formula.subs(subs)
 
+		return formula
 
-	def setDefinition(self, definition):
+	def getDefinition(self, rawFormula=False):
 
-		if self.__var.isConcentration():
-			t_comp = self.__var.getCompartment()
-			t_math_formula = MathFormula(self.__model, MathFormula.MATH_RATERULE)
-			t_math_formula.setInternalMathFormula(
-						definition.getInternalMathFormula()
-						* t_comp.symbol.getInternalMathFormula()
-			)
+		math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
+		math_formula.setInternalMathFormula(self.getRawDefinition(rawFormula=rawFormula))
 
-			self.__definition = t_math_formula
+		return math_formula
 
-		else:
-			self.__definition = definition
+	# def setDefinition(self, definition):
+	#
+	# 	if self.__var.isConcentration():
+	# 		t_comp = self.__var.getCompartment()
+	# 		t_math_formula = MathFormula(self.__model, MathFormula.MATH_RATERULE)
+	# 		t_math_formula.setInternalMathFormula(
+	# 					definition.getInternalMathFormula()
+	# 					* t_comp.symbol.getInternalMathFormula()
+	# 		)
+	#
+	# 		self.__definition = t_math_formula
+	#
+	# 	else:
+	# 		self.__definition = definition
 
 
 	def getRuleTypeDescription(self):
 		return "Initial assignment"
 
-	def setPrettyPrintDefinition(self, definition):
+	def setPrettyPrintDefinition(self, definition, rawFormula=False):
 
-		if self.__var.isSpecies() and not self.__var.hasOnlySubstanceUnits:
+		if self.__var.isConcentration() and not rawFormula:
 			t_comp = self.__var.getCompartment()
 			t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
-			t_math_formula.setPrettyPrintMathFormula(definition)
-			self.__definition.setInternalMathFormula(t_math_formula.getInternalMathFormula()*t_comp.symbol.getInternalMathFormula())
+			t_math_formula.setPrettyPrintMathFormula(definition, rawFormula=rawFormula)
+			self.__definition.setInternalMathFormula(
+				t_math_formula.getInternalMathFormula() * t_comp.symbol.getInternalMathFormula())
 
 		else:
-			self.__definition.setPrettyPrintMathFormula(definition)
-
+			self.__definition.setPrettyPrintMathFormula(definition, rawFormula=rawFormula)
 
 	def getPrettyPrintDefinition(self):
 

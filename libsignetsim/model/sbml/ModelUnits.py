@@ -84,7 +84,7 @@ class ModelUnits(object):
 		self.compartmentUnits = self.listOfUnitDefinitions.new()
 		self.compartmentUnits.defaultCompartmentUnits()
 
-		self.defaultCompartment.setUnits(self.compartmentUnits)
+		# self.defaultCompartment.setUnits(self.compartmentUnits)
 
 	def readSbml(self, sbmlModel,
 					sbml_level=Settings.defaultSbmlLevel,
@@ -197,3 +197,5 @@ class ModelUnits(object):
 			self.extentUnits = self.listOfUnitDefinitions.getBySbmlId(unit_sbml_id)
 
 
+	def getCompartmentUnits(self):
+		return self.compartmentUnits

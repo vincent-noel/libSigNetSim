@@ -58,8 +58,11 @@ class HasUnits(object):
 
 	def new(self, unit=None):
 
-		self.setUnits(unit)
-
+		if unit is None:
+			self.setUnits(unit)
+		elif self.__model.getSubstanceUnits() == self.__model.getDefaultSubstanceUnits():
+			self.setDefaultSubstanceUnits()
+			
 
 	def setUnits(self, unit, prefix=""):
 		if unit is not None:

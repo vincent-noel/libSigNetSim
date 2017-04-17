@@ -62,6 +62,7 @@ class Compartment(Variable, SbmlObject, InitiallyAssignedVariable,
 
 		self.setValue(value)
 		self.constant = constant
+		self.setUnits(self.model.getCompartmentUnits())
 
 
 	def copy(self, compartment, prefix="", shift=0, subs={}, deletions=[], replacements={}):

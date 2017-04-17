@@ -33,6 +33,7 @@ elif [ $1 = "models" ]; then
     coverage run -a $OMIT -m unittest libsignetsim.model.tests.TestModelDefinition || exit 1;
     coverage run -a $OMIT -m unittest libsignetsim.model.tests.TestAnnotation || exit 1;
     coverage run -a $OMIT -m unittest libsignetsim.model.tests.TestRenameSbmlId || exit 1;
+    coverage run -a $OMIT -m unittest libsignetsim.model.tests.TestUnits || exit 1;
     coverage run -a $OMIT -m unittest libsignetsim.model.math.tests.TestMath || exit 1;
 elif [ $1 = "optimization" ]; then
     coverage run -a $OMIT -m unittest libsignetsim.optimization.tests.TestOptimization || exit 1;

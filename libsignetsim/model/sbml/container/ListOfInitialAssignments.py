@@ -64,13 +64,13 @@ class ListOfInitialAssignments(ListOf, SbmlObject):
 		SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
 
 
-	def new(self, variable=None, expression=None):
+	def new(self, variable=None, expression=None, rawFormula=False):
 
 		t_initial_assignment = InitialAssignment(self.__model, self.nextId())
 		if (variable is not None and expression is not None):
-			t_initial_assignment.readUI(variable, expression)
-
-		ListOf.add(self, t_initial_assignment)
+			t_initial_assignment.setVariable(variable)
+			t_initial_assignment.setPrettyPrintDefinition(expression, rawFormula=rawFormula)
+			ListOf.add(self, t_initial_assignment)
 
 
 	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}):

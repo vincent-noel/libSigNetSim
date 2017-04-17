@@ -124,7 +124,7 @@ class ListOfUnitDefinitions(ListOf, HasIds, SbmlObject):
 
 	def getConcentrationUnit(self, unit, compartment_unit):
 
-		print "> Computing concetration units..."
+		# print "> Computing concetration units..."
 		new_unit = deepcopy(unit)
 		new_comp_unit = deepcopy(compartment_unit)
 		new_comp_unit.listOfUnits[0].exponent = new_comp_unit.listOfUnits[0].exponent * -1

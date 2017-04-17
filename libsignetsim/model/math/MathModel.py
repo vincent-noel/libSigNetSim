@@ -157,7 +157,7 @@ class MathModel(CModelWriter):
 
 		for init_ass in self.listOfInitialAssignments.values():
 			t_var = init_ass.getVariable().symbol.getSymbol()
-			t_value = init_ass.getDefinition().getDeveloppedInternalMathFormula()
+			t_value = init_ass.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula()
 			init_cond.update({t_var:t_value})
 
 		if DEBUG:
@@ -168,7 +168,7 @@ class MathModel(CModelWriter):
 				t_var = rule.getVariable().symbol.getSymbol()
 				# print "Assignment : %s" % str(t_var)
 				if t_var not in init_cond.keys():
-					t_value = rule.getDefinition().getDeveloppedInternalMathFormula()
+					t_value = rule.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula()
 					init_cond.update({t_var:t_value})
 
 		if DEBUG:

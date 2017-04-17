@@ -83,7 +83,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		self.constant = constant
 		self.boundaryCondition = boundaryCondition
 		self.hasOnlySubstanceUnits = hasOnlySubstanceUnits
-		self.setUnits(self.__model.substanceUnits)
+		self.setUnits(self.__model.getSubstanceUnits())
 
 
 
@@ -358,7 +358,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 	def getUnits(self):
 
 		if self.hasOnlySubstanceUnits:
-			return self.unit
+			return HasUnits.getUnits(self)
 		else:
 			if self.concentrationUnit is None:
 				if HasUnits.getUnits(self) is not None and self.getCompartment().getUnits() is not None:

@@ -273,6 +273,53 @@ class TestModelDefinition(TestCase):
 			f3.getDeveloppedInternalMathFormula()
 		))
 
+
+	def testInitialAssignment(self):
+		model = Model()
+
+		c = model.listOfCompartments.new("c", value=2)
+
+		s1 = model.listOfSpecies.new("s1")
+		s2 = model.listOfSpecies.new("s2")
+		s3 = model.listOfSpecies.new("s3", hasOnlySubstanceUnits=True)
+		s4 = model.listOfSpecies.new("s4", hasOnlySubstanceUnits=True)
+
+		p1 = model.listOfParameters.new("p1")
+
+		a1 = model.listOfInitialAssignments.newAssignmentRule(s2, "p1*s1")
+
+		f1 = MathFormula(model)
+		f1.setPrettyPrintMathFormula("p1*s1", rawFormula=True)
+
+		self.assertTrue(self.sympyEqual(
+			a1.getDefinition().getDeveloppedInternalMathFormula(),
+			f1.getDeveloppedInternalMathFormula()
+		))
+
+		f2 = MathFormula(model)
+		f2.setPrettyPrintMathFormula("c*(p1/c)*(s1/c)", rawFormula=True)
+
+		self.assertTrue(self.sympyEqual(
+			a1.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
+			f1.getDeveloppedInternalMathFormula()
+		))
+
+		a2 = model.listOfRules.newAssignmentRule(s4, "p1*s3")
+
+		f3 = MathFormula(model)
+		f3.setPrettyPrintMathFormula("p1*s3", rawFormula=True)
+
+		self.assertTrue(self.sympyEqual(
+			a2.getDefinition().getDeveloppedInternalMathFormula(),
+			f3.getDeveloppedInternalMathFormula()
+		))
+
+		self.assertTrue(self.sympyEqual(
+			a2.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
+			f3.getDeveloppedInternalMathFormula()
+		))
+
+
 	def sympyEqual(self, a, b):
 
 		# print "test %s == %s : %s" % (simplify(a), simplify(b), (simplify(a-b) == 0))

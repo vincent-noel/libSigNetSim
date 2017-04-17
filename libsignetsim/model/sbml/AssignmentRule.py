@@ -156,20 +156,20 @@ class AssignmentRule(Rule):
 		return formula
 
 
-	def setDefinition(self, definition):
-
-		if self.__var.isConcentration():
-			t_comp = self.__var.getCompartment()
-			t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
-			t_math_formula.setInternalMathFormula(
-						definition.getInternalMathFormula()
-						* t_comp.symbol.getInternalMathFormula()
-			)
-
-			self.__definition = t_math_formula
-
-		else:
-			self.__definition = definition
+	# def setDefinition(self, definition):
+	# 
+	# 	if self.__var.isConcentration():
+	# 		t_comp = self.__var.getCompartment()
+	# 		t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
+	# 		t_math_formula.setInternalMathFormula(
+	# 					definition.getInternalMathFormula()
+	# 					* t_comp.symbol.getInternalMathFormula()
+	# 		)
+	# 
+	# 		self.__definition = t_math_formula
+	# 
+	# 	else:
+	# 		self.__definition = definition
 
 
 	def setPrettyPrintDefinition(self, definition, rawFormula=False):

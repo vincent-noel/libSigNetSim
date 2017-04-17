@@ -50,7 +50,7 @@ class TestSuite(object):
 		self.testCasesTags = {}
 		self.testCasesVersions = {}
 
-		self.testExport = False
+		self.testExport = True
 		Settings.verbose = 0
 
 	def testSuiteRun(self):
@@ -61,7 +61,9 @@ class TestSuite(object):
 			mkdir(join(self.testSuitePath, "test-suite-results"))
 		if not exists(join(self.testSuitePath, "cases")):
 			present_dir = getcwd()
-			cmd = "cd %s; wget %s -O temp.zip; unzip -nq temp.zip; rm temp.zip; cd %s" % (Settings.tempDirectory, self.SEMANTIC_CASES_LINK, present_dir)
+			cmd = "cd %s; wget %s -O temp.zip; unzip -nq temp.zip; rm temp.zip; cd %s" % (
+				Settings.tempDirectory, self.SEMANTIC_CASES_LINK, present_dir
+			)
 			system(cmd)
 
 		self.loadTestCasesInfo()
@@ -128,7 +130,11 @@ class TestSuite(object):
 					  and tag.strip().split(':')[0] not in self.COMPATIBLE_PACKAGES):
 					compatible = False
 
-			if compatible and case_id not in self.INCOMPATIBLE_CASES and todo_tag and (self.TODO_CASES == [] or case_id in self.TODO_CASES):
+			if (compatible
+				and case_id not in self.INCOMPATIBLE_CASES
+				and todo_tag
+				and (self.TODO_CASES == [] or case_id in self.TODO_CASES)
+			):
 				(t_success, t_cases) = self.runCase(case_id)
 				nb_success += t_success
 				nb_cases += t_cases
