@@ -55,7 +55,7 @@ class MathModel(CModelWriter):
 		self.listOfDAEs = ListOfDAEs(self)
 
 		self.solvedInitialConditions = None
-		self.hasDAEs = False
+		# self.hasDAEs = False
 		self.slowModel = None
 		self.assymetricModel = MathAsymmetricModel(self)
 		self.stoichiometryMatrix = MathStoichiometryMatrix(self)
@@ -100,26 +100,27 @@ class MathModel(CModelWriter):
 		self.listOfODEs.build()
 		# print "Building DAEss"
 		self.listOfDAEs.build()
-
+		# self.prettyPrint()
 		# self.solveInitialConditions(tmin)
 		self.solveSimpleInitialConditions(tmin)
 
 		if len(self.listOfDAEs) > 0:
 			self.listOfDAEs.solveInitialConditions(tmin)
+			self.listOfDAEs.solveDAEs()
 		# self.prettyPrint()
 		#
 		# if self.listOfReactions.hasFastReaction():
 		# 	self.slowModel = MathSlowModel(self)
 		# 	self.slowModel.build()
 		# # t0 = time()
-		# self.stoichiometryMatrix.build()
-		# self.listOfConservationLaws.build()
-		# # print self.listOfConservationLaws
-		# if len(self.listOfEvents) == 0:
-		# 	# self.prettyPrint()
-		# 	self.assymetricModel.build()
-		# 	# self.assymetricModel.prettyPrint()
-		#
+		self.stoichiometryMatrix.build()
+		self.listOfConservationLaws.build()
+		# print self.listOfConservationLaws
+		if len(self.listOfEvents) == 0:
+			self.prettyPrint()
+			self.assymetricModel.build()
+			self.assymetricModel.prettyPrint()
+
 		# # if
 		# # print "> conservation laws found in %.2gs" % (time() -t0)
 

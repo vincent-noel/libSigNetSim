@@ -66,15 +66,17 @@ class Settings(object):
 	defaultTestAbsTol = 1e-7
 	defaultTestRelTol = 1e-4
 
-	defaultAbsTol = 1e-12
-	defaultRelTol = 1e-6
+	# defaultAbsTol = 1e-12
+	# defaultRelTol = 1e-6
+	defaultAbsTol = 1e-20
+	defaultRelTol = 1e-10
 
 	simulationTimeMin = 0
 	simulationTimeMax = 4000
 	simulationLogScale = False
 	simulationTimeEch = None
 	simulationNbSamples = 101
-	simulationKeepFiles = False
+	simulationKeepFiles = True
 
 	steadyStatesMaxTime = 100000
 	defaultMaxProcNumbers = 4

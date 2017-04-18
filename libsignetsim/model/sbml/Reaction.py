@@ -519,6 +519,10 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 			return front.col_join(back)
 
+
+	def hasVariableStoichiometry(self):
+
+		return self.listOfReactants.hasVariableStoichiometry() or self.listOfProducts.hasVariableStoichiometry()
 	# def getValueMathFormula(self, math_type=MathFormula.MATH_INTERNAL, forcedConcentration=False):
 	#
 	# 	if self.kineticLaw is not None:

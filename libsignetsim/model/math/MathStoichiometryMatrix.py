@@ -41,7 +41,7 @@ class MathStoichiometryMatrix(object):
 
 		self.rawNullspace = None
 
-	def build(self, including_fast_reactions=True, including_slow_reactions=True):
+	def build(self, including_fast_reactions=True, including_slow_reactions=True, include_variable_stoichiometry=False):
 
 		for species in self.__model.variablesOdes:
 			self.listOfSpecies.append(species.symbol.getSymbol())
@@ -54,10 +54,12 @@ class MathStoichiometryMatrix(object):
 		matrix = None
 		for i, reaction in enumerate(self.__model.listOfReactions.values()):
 			if (
+						not reaction.hasVariableStoichiometry() or include_variable_stoichiometry
+			and (
 						(reaction.fast and including_fast_reactions)
 					or
 						(not reaction.fast and including_slow_reactions)
-			):
+			)):
 
 				if matrix is None:
 					matrix = reaction.getRawStoichiometryMatrix(subs)
@@ -94,8 +96,8 @@ class MathStoichiometryMatrix(object):
 		# print "> generated raw nullspace in %.2gs" % (time()-t0)
 
 		# t0 = time()
-		# return self.getRawNullspace()
-		res = self.fixnullspace(self.getRawNullspace())
+		return self.getRawNullspace()
+		# res = self.fixnullspace(self.getRawNullspace())
 		# res = self.fixnullspace_v2(self.getRawNullspace())
 		# print "> generated fixed nullspace in %.2gs" % (time()-t0)
 

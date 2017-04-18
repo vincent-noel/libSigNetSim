@@ -62,7 +62,7 @@ class MathAsymmetricModel(object):
 		self.variablesConstant = None
 		self.variablesAlgebraic = None
 
-		self.hasDAEs = self.parentModel.hasDAEs
+		# self.hasDAEs = self.parentModel.hasDAEs
 		self.__upToDate = False
 
 
@@ -82,11 +82,6 @@ class MathAsymmetricModel(object):
 			new_var_id = new_var.symbol.getPrettyPrintMathFormula()
 			self.listOfVariables.update({new_var_id:new_var})
 
-
-		# print self.parentModel.listOfVariables.symbols()
-		# print self.listOfVariables.symbols()
-		# Then we copy the solved initial conditions
-		# print self.parentModel.solvedInitialConditions.items()
 		for variable, value in self.parentModel.solvedInitialConditions.items():
 			t_value = MathFormula(self)
 			t_value.setInternalMathFormula(value.getInternalMathFormula())
@@ -122,16 +117,24 @@ class MathAsymmetricModel(object):
 
 		for cfe in self.parentModel.listOfCFEs:
 			t_var = self.listOfVariables.getBySymbol(cfe.getVariable().symbol.getSymbol())
+			t_cfe_formula = MathFormula(self)
+			t_cfe_formula.setInternalMathFormula(cfe.getDefinition().getDeveloppedInternalMathFormula())
 			t_cfe = CFE(self)
-			t_cfe.new(t_var, cfe.getDefinition())
+			t_cfe.new(t_var, t_cfe_formula)
 			self.listOfCFEs.append(t_cfe)
 
 		for dae in self.parentModel.listOfDAEs:
+			t_dae_formula = MathFormula(self)
+			t_dae_formula.setInternalMathFormula(dae.getDefinition().getDeveloppedInternalMathFormula())
 			t_dae = DAE(self)
-			t_dae.new(dae.getDefinition())
+			t_dae.new(t_dae_formula)
 			self.listOfDAEs.append(t_dae)
 
 	def build(self):
+		# print "-" * 75
+		# print self.parentModel.listOfCFEs
+		# print "-" * 75
+
 		# self.copyVariables()
 		if self.parentModel.stoichiometryMatrix.hasNullSpace():
 			nullspace = self.parentModel.stoichiometryMatrix.getSimpleNullspace()
@@ -207,13 +210,15 @@ class MathAsymmetricModel(object):
 					self.listOfODEs.append(t_ode)
 
 			self.__upToDate = True
+			# print "-" * 75
+			# print self.listOfCFEs
+			# print "-" * 75
+
 			self.listOfCFEs.developCFEs()
 			# self.listOfCFEs.developCFEs()
 			# print [species.getSbmlId() for species in independent_species]
 			# print [formula for formula in independent_species_formula]
 			# print len(independent_species)
-
-
 
 	def prettyPrint(self):
 

@@ -234,8 +234,8 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 		if isinstance(stoichiometry, int) or isinstance(stoichiometry, float):
 			self.stoichiometry.setValueMathFormula(stoichiometry)
 
-		elif isinstance(stoichiometry, float):
-			self.stoichiometry = setPrettyPrintMathFormula(stoichiometry)
+		# elif isinstance(stoichiometry, float):
+		# 	self.stoichiometry = setPrettyPrintMathFormula(stoichiometry)
 
 
 	def getStoichiometry(self):
@@ -245,6 +245,11 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 	def getStoichiometryMath(self):
 
 		return self.stoichiometry
+
+	def isVariableStoichiometry(self):
+		# if self.__hasId and not self.constant:
+		# 	print "%s is a variable stoichiometry" % self.getSbmlId()
+		return self.__hasId and not self.constant
 
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):

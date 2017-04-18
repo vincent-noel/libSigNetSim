@@ -40,8 +40,8 @@ class TestBiomodelsCompatibility(TestCase):
 	TIME_ECH = 5
 	TIME_MAX = 100
 
-	ABS_TOL = 1e-35
-	REL_TOL = 1e-8
+	ABS_TOL = 1e-20
+	REL_TOL = 1e-6
 
 	KEEP_FILES = True
 	TEST_EXPORT = False

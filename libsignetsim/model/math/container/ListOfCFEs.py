@@ -71,6 +71,8 @@ class ListOfCFEs(list):
 			for t_cfe in self:
 				cfe_vars.append(t_cfe.getVariable().symbol.getInternalMathFormula())
 
+			if DEBUG:
+				print cfe_vars
 			crossDependencies = True
 			passes = 1
 
@@ -81,7 +83,9 @@ class ListOfCFEs(list):
 
 				crossDependencies = False
 				for t_cfe in self:
-					t_def = t_cfe.getDefinition().getInternalMathFormula()
+					t_def = t_cfe.getDefinition().getDeveloppedInternalMathFormula()
+					if DEBUG:
+						print t_def
 					if len(t_def.atoms(SympySymbol).intersection(set(cfe_vars))) > 0:
 
 						crossDependencies = True
@@ -99,7 +103,7 @@ class ListOfCFEs(list):
 							t_cfe.setDefinitionMath(t_cfe.getDefinition().simpleSubsDevelopped(self.getBySymbol(match).getSubs()))
 
 						if DEBUG:
-							if len(t_cfe.getDefinition().getInternalMathFormula().atoms(SympySymbol).intersection(set(cfe_vars))) == 0:
+							if len(t_cfe.getDefinition().getDeveloppedInternalMathFormula().atoms(SympySymbol).intersection(set(cfe_vars))) == 0:
 								print "> " + str(t_cfe) + " [OK]"
 
 							else:

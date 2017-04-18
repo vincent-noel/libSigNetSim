@@ -39,7 +39,7 @@ class CFE(object):
 		self.__model = model
 		self.__type = cfe_type
 		self.__variable = None
-		self.__definition = None
+		self.__definition = MathFormula(self.__model)
 
 	def new(self, variable, definition):
 		self.__variable = variable
@@ -57,6 +57,9 @@ class CFE(object):
 	def isReaction(self):
 		return self.__type == self.REACTION
 
+	def setVariable(self, variable):
+		self.__variable = variable
+
 	def setDefinition(self, definition):
 		self.__definition = definition
 
@@ -67,5 +70,7 @@ class CFE(object):
 		return {self.__variable.symbol.getInternalMathFormula():self.__definition.getDeveloppedInternalMathFormula()}
 
 	def __str__(self):
-		return "%s = %s" % (str(self.getVariable().symbol.getDeveloppedInternalMathFormula()),
-							str(self.getDefinition().getDeveloppedInternalMathFormula()))
+		return "%s = %s" % (
+			str(self.getVariable().symbol.getDeveloppedInternalMathFormula()),
+			str(self.getDefinition().getDeveloppedInternalMathFormula())
+		)

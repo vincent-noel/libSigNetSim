@@ -23,7 +23,7 @@
 """
 
 from libsignetsim.settings.Settings import Settings
-
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol
 class CWriterData(object):
 
 	def __init__ (self, listOfExperiments=None, mapping=None, workingModel=None, interpolate=False, subdir=None):
@@ -162,12 +162,18 @@ class CWriterData(object):
 
 							t_variable = None
 
-							if self.workingModel.listOfSpecies.containsName(treatment.name):
-								t_variable = self.workingModel.listOfSpecies.getByName(treatment.name)
-							elif self.workingModel.listOfParameters.containsName(treatment.name):
-								t_variable = self.workingModel.listOfParameters.getByName(treatment.name)
-							elif self.workingModel.listOfCompartments.containsName(treatment.name):
-								t_variable = self.workingModel.listOfCompartments.getByName(treatment.name)
+							# if self.workingModel.listOfSpecies.containsName(treatment.name):
+							# 	t_variable = self.workingModel.listOfSpecies.getByName(treatment.name)
+							# elif self.workingModel.listOfParameters.containsName(treatment.name):
+							# 	t_variable = self.workingModel.listOfParameters.getByName(treatment.name)
+							# elif self.workingModel.listOfCompartments.containsName(treatment.name):
+							# 	t_variable = self.workingModel.listOfCompartments.getByName(treatment.name)
+
+
+
+							if self.workingModel.getMathModel().listOfVariables.containsSymbol(SympySymbol(treatment.name)):
+								t_variable = self.workingModel.getMathModel().listOfVariables.getBySymbol(SympySymbol(treatment.name))
+
 
 							if t_variable is not None:
 
@@ -186,12 +192,8 @@ class CWriterData(object):
 						# print "Observed values %d" % k
 
 						t_variable = None
-						if self.workingModel.listOfSpecies.containsName(observed_value.name):
-							t_variable = self.workingModel.listOfSpecies.getByName(observed_value.name)
-						elif self.workingModel.listOfParameters.containsName(observed_value.name):
-							t_variable = self.workingModel.listOfParameters.getByName(observed_value.name)
-						elif self.workingModel.listOfCompartments.containsName(observed_value.name):
-							t_variable = self.workingModel.listOfCompartments.getByName(observed_value.name)
+						if self.workingModel.getMathModel().listOfVariables.containsSymbol(SympySymbol(observed_value.name)):
+							t_variable = self.workingModel.getMathModel().listOfVariables.getBySymbol(SympySymbol(observed_value.name))
 
 						if t_variable not in vars_observed.keys():
 							vars_observed.update({t_variable: len(vars_observed.keys()) })

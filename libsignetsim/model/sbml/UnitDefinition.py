@@ -299,7 +299,6 @@ class Unit():
 	def setScale(self, scale):
 		self.scale = scale
 
-
 	def __str__(self):
 		t_str = ""
 		if self.multiplier != 1:

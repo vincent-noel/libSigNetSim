@@ -105,3 +105,10 @@ class ListOfSpeciesReference(ListOf, HasIds, SbmlObject):
 						t_sr.setSbmlId(speciesReference.getSbmlId(), model_wide=False)
 
 					ListOf.add(self, t_sr)
+
+	def hasVariableStoichiometry(self):
+
+		for sr in self.values():
+			if sr.isVariableStoichiometry():
+				return True
+		return False

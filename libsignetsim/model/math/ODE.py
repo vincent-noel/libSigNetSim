@@ -34,7 +34,7 @@ class ODE(object):
 
 		self.__model = model
 		self.__variable = None
-		self.__definition = None
+		self.__definition = MathFormula(self.__model)
 
 
 	def new(self, variable, definition):
@@ -48,6 +48,13 @@ class ODE(object):
 
 	def getDefinition(self):
 		return self.__definition
+
+	def setVariable(self, variable):
+		self.__variable = variable
+
+	def setDefinitionMath(self, definition):
+		self.__definition.setInternalMathFormula(definition)
+
 
 	def __str__(self):
 

@@ -38,7 +38,7 @@ class CModelWriter(object):
 		self.writeSimulationInitialization(f_h, f_c, i_model, time_min, list_samples, abs_tol, rel_tol)
 		self.writeSimulationFinalization(f_h, f_c, i_model)
 
-		if self.getMathModel().hasDAEs:
+		if len(self.getMathModel().listOfDAEs) > 0:
 			self.writeIdaSimulationFunction(f_h, f_c, i_model)
 		else:
 			self.writeCVodeSimulationFunction(f_h, f_c, i_model)
@@ -74,7 +74,7 @@ class CModelWriter(object):
 		if self.getMathModel().nbAlgebraics > 0:
 			f_c.write("  %s.algebraic_variables = (ModelVariable *) malloc(sizeof(ModelVariable) * %s.nb_algebraic_variables);\n" % (variable_name, variable_name))
 
-		if self.getMathModel().hasDAEs:
+		if len(self.getMathModel().listOfDAEs) > 0:
 			if self.getMathModel().nbOdes > 0:
 				f_c.write("  %s.der_der_variables = (ModelVariable *) malloc(sizeof(ModelVariable) * %s.nb_derivative_variables);\n" % (variable_name, variable_name))
 			if self.getMathModel().nbAlgebraics > 0:
@@ -86,7 +86,7 @@ class CModelWriter(object):
 			f_c.write("  %s.derivative_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_DERIVATIVE};\n" % (
 							variable_name, i_var, t_value.getCMathFormula(), variable_ode.symbol.getInternalMathFormula()))
 
-			if self.getMathModel().hasDAEs:
+			if len(self.getMathModel().listOfDAEs) > 0:
 				f_c.write("  %s.der_der_variables[%d] = (ModelVariable) {RCONST(0.0), \"%s\", VAR_DER_DER};\n" % (
 								variable_name, i_var, variable_ode.symbol.getPrettyPrintMathFormula()))
 
@@ -107,7 +107,7 @@ class CModelWriter(object):
 								variable_name, i_var, t_value.getCMathFormula(), variable_alg.symbol.getPrettyPrintMathFormula()))
 
 
-			if self.getMathModel().hasDAEs:
+			if len(self.getMathModel().listOfDAEs) > 0:
 				f_c.write("  %s.alg_der_variables[%d] = (ModelVariable) {RCONST(0.0), \"%s\", VAR_ALG_DER};\n" % (
 								variable_name, i_var, variable_alg.symbol.getPrettyPrintMathFormula()))
 
@@ -148,7 +148,7 @@ class CModelWriter(object):
 
 		f_c.write("  %s.integration_functions = malloc(sizeof(IntegrationFunctions));\n" % variable_name)
 
-		if self.getMathModel().hasDAEs:
+		if len(self.getMathModel().listOfDAEs) > 0:
 			f_c.write("  %s.integration_functions->funcIdaPtr = &func_ida_%d;\n" % (variable_name, model_id))
 			f_c.write("  %s.integration_functions->isDAE = 1;\n" % variable_name)
 			f_c.write("  %s.integration_functions->init_conditions_solved = 0;\n" % (variable_name))
@@ -159,7 +159,7 @@ class CModelWriter(object):
 		f_c.write("  %s.integration_functions->assPtr = &compute_rules_%d;\n" % (variable_name, model_id))
 		f_c.write("  %s.integration_functions->hasJacobian = 0;\n" % variable_name)
 
-		if self.getMathModel().hasDAEs:
+		if len(self.getMathModel().listOfDAEs) > 0:
 			f_c.write("  %s.integration_functions->rootsEventsIDAPtr = &roots_events_%d;\n" % (variable_name, model_id))
 		else:
 			f_c.write("  %s.integration_functions->rootsEventsPtr = &roots_events_%d;\n" % (variable_name, model_id))
@@ -191,7 +191,7 @@ class CModelWriter(object):
 		if self.getMathModel().nbConstants > 0:
 			f_c.write("  free(%s.constant_variables);\n" % variable_name)
 
-		if self.getMathModel().hasDAEs and self.getMathModel().nbOdes > 0:
+		if len(self.getMathModel().listOfDAEs) > 0 and self.getMathModel().nbOdes > 0:
 			f_c.write("  free(%s.der_der_variables);\n" % variable_name)
 
 
@@ -327,7 +327,7 @@ class CModelWriter(object):
 
 		variable_name="model_%d" % model_id
 
-		if self.getMathModel().hasDAEs:
+		if len(self.getMathModel().listOfDAEs) > 0:
 			f_h.write("int roots_events_%d(realtype t, N_Vector y, N_Vector yp, realtype *gout,void *user_data);\n" % model_id)
 			f_c.write("int roots_events_%d(realtype t, N_Vector y, N_Vector yp, realtype *gout,void *user_data)\n{\n" % model_id)
 		else:

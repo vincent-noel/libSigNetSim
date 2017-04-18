@@ -146,9 +146,8 @@ class ListOfMathVariables(object):
 
 	def changeVariableType(self, variable, new_type):
 
-		# print "Changing variable %s to type %d" % (str(variable.symbol.getInternalMathFormula), new_type)
-
 		if variable.isDerivative():
+			# print ">> was an ODE"
 			self.__model.variablesOdes.remove(variable)
 			self.__model.nbOdes -= 1
 
@@ -163,7 +162,6 @@ class ListOfMathVariables(object):
 		elif variable.isAlgebraic():
 			self.__model.variablesAlgebraic.remove(variable)
 			self.__model.nbAlgebraics -= 1
-
 
 		if new_type == MathVariable.VAR_ODE:
 			self.__model.variablesOdes.append(variable)

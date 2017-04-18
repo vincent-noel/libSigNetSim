@@ -24,7 +24,9 @@
 
 
 from libsignetsim.model.math.MathFormula import MathFormula
+from libsignetsim.model.math.MathVariable import MathVariable
 from libsignetsim.model.math.DAE import DAE
+from libsignetsim.model.math.CFE import CFE
 from libsignetsim.model.math.sympy_shortcuts import SympyEqual, SympyInteger, SympySymbol, SympyFloat
 from libsignetsim.model.ModelException import MathException
 from sympy import solve
@@ -44,7 +46,7 @@ class ListOfDAEs(list):
 
 		for rule in self.__model.listOfRules.values():
 			if rule.isAlgebraic():
-				self.__model.hasDAEs = True
+				# self.__model.hasDAEs = True
 				t_dae = DAE(self.__model)
 				t_dae.new(rule.getDefinition(rawFormula=True))
 				list.append(self, t_dae)
@@ -196,6 +198,21 @@ class ListOfDAEs(list):
 				if not var.symbol.getSymbol() in self.__model.solvedInitialConditions.keys():
 					print "Lacks an initial condition : %s" % var.getSbmlId()
 
+	def solveDAEs(self):
+
+		for i, dae in enumerate(self):
+			var, res = dae.solve()
+			if len(res) > 0:
+				t_var = self.__model.listOfVariables.getBySymbol(var)
+				t_formula = MathFormula(self.__model)
+				t_formula.setInternalMathFormula(res[0])
+
+				cfe = CFE(self.__model)
+				cfe.new(t_var, t_formula)
+				self.__model.listOfCFEs.append(cfe)
+				self.__model.listOfVariables.changeVariableType(t_var, MathVariable.VAR_ASS)
+				list.__delitem__(self, i)
+		self.__model.listOfCFEs.developCFEs()
 
 	def __str__(self):
 
