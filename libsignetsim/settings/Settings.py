@@ -63,11 +63,11 @@ class Settings(object):
 	defaultSedmlVersion = 2
 
 	# Test settings
-	defaultTestAbsTol = 1e-7
-	defaultTestRelTol = 1e-4
+	defaultTestAbsTol = 1e-6
+	defaultTestRelTol = 1e-3
 
-	defaultAbsTol = 1e-12
-	defaultRelTol = 1e-7
+	defaultAbsTol = 1e-16
+	defaultRelTol = 1e-10
 
 	simulationTimeMin = 0
 	simulationTimeMax = 4000
