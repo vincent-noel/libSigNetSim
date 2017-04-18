@@ -132,6 +132,10 @@ class TestSteadyStatesScan(TestCase):
 		simulated_data = sedml_doc.listOfOutputs.getReports()[0].getData()["P"]
 		expected_data = [0.0, 20.0, 40.0, 60.0, 80.0, 100.0]
 
+		# print "Expected data : %s" % str(expected_data)
+		# print "Simulated data : %s" % str(simulated_data)
+
+
 		for i, data in enumerate(expected_data):
 			self.assertAlmostEqual(data, simulated_data[i], delta=Settings.defaultTestAbsTol+(Settings.defaultTestRelTol*data))
 

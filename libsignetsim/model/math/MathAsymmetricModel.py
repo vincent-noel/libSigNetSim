@@ -31,6 +31,7 @@ from libsignetsim.model.math.ODE import ODE
 from libsignetsim.model.ListOfVariables import ListOfVariables
 from libsignetsim.model.math.MathVariable import MathVariable
 from libsignetsim.model.math.MathFormula import MathFormula
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol
 from libsignetsim.model.math.MathStoichiometryMatrix import MathStoichiometryMatrix
 from libsignetsim.model.math.container.ListOfConservationLaws import ListOfConservationLaws
 from sympy import solve
@@ -130,62 +131,45 @@ class MathAsymmetricModel(object):
 			t_dae.new(t_dae_formula)
 			self.listOfDAEs.append(t_dae)
 
-	def build(self):
-		# print "-" * 75
-		# print self.parentModel.listOfCFEs
-		# print "-" * 75
+	def build(self, treated_variables=[]):
 
-		# self.copyVariables()
 		if self.parentModel.stoichiometryMatrix.hasNullSpace():
 			nullspace = self.parentModel.stoichiometryMatrix.getSimpleNullspace()
-			# for line in nullspace:
-			# 	print ["%.2d" % int(val) for val in line]
-
-			# print "> Nb species : %d" % self.parentModel.nbOdes
-			# print "> Independant variables : %d" % len(nullspace)
-			# print "> Dependant variables : %d" % (self.parentModel.nbOdes-len(nullspace))
-			# for i, species in enumerate(self.parentModel.variablesOdes):
-			# 	rows = [int(val[species.ind]) for val in nullspace]
-			# 	print "> %s : species %s, %d" % (str(rows), species.getSbmlId(), sum([abs(val) for val in rows]))
 
 			independent_species = []
 			independent_species_formula = []
 			for i_cons, cons in enumerate(nullspace):
-				for i, species in enumerate(self.parentModel.variablesOdes):
-					if (
-						cons[i] == 1
-						and species.symbol.getSymbol() not in independent_species
-						and self.parentModel.listOfConservationLaws[i_cons].getNbVars() > 1
 
-					):# and not species.hasEventAssignment():
-						independent_species.append(species.symbol.getSymbol())
-						independent_species_formula.append(
-							solve(
-								self.parentModel.listOfConservationLaws[i_cons].getFormula(),
-								species.symbol.getSymbol()
+				cons_law = self.parentModel.listOfConservationLaws[i_cons]
+
+				can_reduce = True
+				for var in treated_variables:
+					if SympySymbol(var) in cons_law.getFormula().atoms(SympySymbol):
+						can_reduce = False
+						# print "Refused conservation law : %s" % cons_law
+
+				if can_reduce:
+					for i, species in enumerate(self.parentModel.variablesOdes):
+						if (
+							cons[i] == 1
+							and species.symbol.getSymbol() not in independent_species
+							and cons_law.getNbVars() > 1
+
+						):
+							independent_species.append(species.symbol.getSymbol())
+							independent_species_formula.append(
+								solve(
+									cons_law.getFormula(),
+									species.symbol.getSymbol()
+								)
 							)
-						)
-						break
-
-			# print "\n\n>> New independant species "
-			# for i, species in enumerate(independent_species):
-			# 	print "%s = %s" % (
-			# 		species,
-			# 		independent_species_formula[i][0]
-			# 	)
-			# print "\n"
+							break
 
 			self.copyVariables()
-			# print [var.symbol.getSymbol() for var in self.variablesOdes]
+
 			for var in self.parentModel.variablesOdes:
 				new_var = self.listOfVariables.getBySymbol(var.symbol.getSymbol())
-				# print ""
-				# print var.symbol.getSymbol()
-				# print independent_species
-				# print var.symbol.getSymbol() in independent_species
-				# print "\n"
 				if var.symbol.getSymbol() in independent_species:
-
 
 					t_formula = MathFormula(self)
 
@@ -210,23 +194,12 @@ class MathAsymmetricModel(object):
 					self.listOfODEs.append(t_ode)
 
 			self.__upToDate = True
-			# print "-" * 75
-			# print self.listOfCFEs
-			# print "-" * 75
-
 			self.listOfCFEs.developCFEs()
-			# self.listOfCFEs.developCFEs()
-			# print [species.getSbmlId() for species in independent_species]
-			# print [formula for formula in independent_species_formula]
-			# print len(independent_species)
 
 	def prettyPrint(self):
 
 		print "\n> Full system : "
-
 		print self.listOfCFEs
 		print self.listOfDAEs
 		print self.listOfODEs
-		# print self.listOfConservationLaws
-
 		print "-----------------------------"

@@ -49,7 +49,7 @@ class TestSteadyStatesScan(TestCase):
 		simulation.setOutputEndTime(100)
 		simulation.setNumberOfPoints(5)
 		simulation.getAlgorithm().setCVODE()
-		simulation.getAlgorithm().listOfAlgorithmParameters.setRelTol(1e-6)
+		simulation.getAlgorithm().listOfAlgorithmParameters.setRelTol(1e-7)
 		simulation.getAlgorithm().listOfAlgorithmParameters.setAbsTol(1e-30)
 
 		model = sedml_doc.listOfModels.createModel()

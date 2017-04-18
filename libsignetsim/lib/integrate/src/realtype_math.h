@@ -49,9 +49,9 @@ int rt_gt(realtype x, realtype y);
 int rt_leq(realtype x, realtype y);
 int rt_geq(realtype x, realtype y);
 
-int rt_factorial(int n);
-int rt_ceil(realtype n);
-int rt_floor(realtype n);
+realtype rt_factorial(realtype n);
+realtype rt_ceil(realtype n);
+realtype rt_floor(realtype n);
 
 realtype rt_pow(realtype x, realtype n);
 realtype rt_exp(realtype x);

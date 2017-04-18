@@ -54,13 +54,6 @@ class CWriterSimulation(CWriterModels, CWriterData):
 
 		self.experiment = experiment
 
-		# print "list of models : %s" % str([model.getNameOrSbmlId() for model in self.listOfModels])
-		# print "list of time_min : %s" % str(self.timeMin)
-		# print "list of samples : %s" % str([list_samples])
-		# print "list of abs tol : %s" % str(self.absTol)
-		# print "list of rel tol : %s" % str(self.relTol)
-
-
 	def writeSimulationFiles(self):
 
 		mkdir(join(self.getTempDirectory(), "src"))
@@ -80,8 +73,13 @@ class CWriterSimulation(CWriterModels, CWriterData):
 		copyfile(join(Settings.basePath, "lib/templates/simulation/Makefile"), join(self.getTempDirectory(), "Makefile") )
 		copyfile(join(Settings.basePath, "lib/templates/simulation/main.c"), join(self.getTempDirectory(), "src/main.c") )
 
+		treated_variables = []
+		if self.experiment is not None:
+			treated_variables = self.experiment.getTreatedVariables()
+			# print "Treated variables : %s" % treated_variables
+
 		for modelInd, model in enumerate(self.listOfModels):
-			model.build(dont_reduce=True, tmin=self.timeMin[modelInd])
+			model.build(vars_to_keep=treated_variables, tmin=self.timeMin[modelInd])
 
 		start = time()
 		self.writeModelFiles()

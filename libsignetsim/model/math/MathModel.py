@@ -113,13 +113,14 @@ class MathModel(CModelWriter):
 		# 	self.slowModel = MathSlowModel(self)
 		# 	self.slowModel.build()
 		# # t0 = time()
-		self.stoichiometryMatrix.build()
-		self.listOfConservationLaws.build()
+
 		# print self.listOfConservationLaws
-		if len(self.listOfEvents) == 0:
-			self.prettyPrint()
-			self.assymetricModel.build()
-			self.assymetricModel.prettyPrint()
+		# if not dont_reduce and len(self.listOfEvents) == 0:
+		# 	self.stoichiometryMatrix.build()
+		# 	self.listOfConservationLaws.build()
+		# 	# self.prettyPrint()
+		# 	self.assymetricModel.build(treated_variables=vars_to_keep)
+			# self.assymetricModel.prettyPrint()
 
 		# # if
 		# # print "> conservation laws found in %.2gs" % (time() -t0)

@@ -174,12 +174,14 @@ class CWriterData(object):
 							if self.workingModel.getMathModel().listOfVariables.containsSymbol(SympySymbol(treatment.name)):
 								t_variable = self.workingModel.getMathModel().listOfVariables.getBySymbol(SympySymbol(treatment.name))
 
-
+							# else:
+							# 	print "WTF"
 							if t_variable is not None:
 
 								f_c.write("  experiments[%d].conditions[%d].timed_treatments[%d].treatments[%d] = (Treatment) {%g, %d, %d};\n" % (
 												i, j, k, l, treatment.value, t_variable.type, t_variable.ind))
-
+							else:
+								print "> ERROR: Couldn't find variable %s" % observed_value.name
 
 					 # Observed_values
 					f_c.write("    experiments[%d].conditions[%d].nb_observed_values = %d;\n" % (i, j, len(condition.listOfExperimentalData.keys())))
@@ -195,6 +197,8 @@ class CWriterData(object):
 						if self.workingModel.getMathModel().listOfVariables.containsSymbol(SympySymbol(observed_value.name)):
 							t_variable = self.workingModel.getMathModel().listOfVariables.getBySymbol(SympySymbol(observed_value.name))
 
+						# else:
+						# 	print "WTF"
 						if t_variable not in vars_observed.keys():
 							vars_observed.update({t_variable: len(vars_observed.keys()) })
 

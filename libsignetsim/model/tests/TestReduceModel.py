@@ -46,7 +46,7 @@ class TestReduceModel(TestCase):
 		sbml_model.listOfConservationLaws.build()
 		sbml_model.assymetricModel.build()
 
-		print sbml_model.listOfConservationLaws
-		print sbml_model.prettyPrint()
-		print sbml_model.assymetricModel.prettyPrint()
+		# print sbml_model.listOfConservationLaws
+		# print sbml_model.prettyPrint()
+		# print sbml_model.assymetricModel.prettyPrint()
 

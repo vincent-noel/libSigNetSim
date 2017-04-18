@@ -128,7 +128,6 @@ class CMathWriter(object):
 		else:
 			raise MathException("Cannot determine the mathematical type of variable %s" % str(variable))
 
-		# print "%s : Ith(%s, %s)" % (str(variable), c_var, str(t_pos-1))
 		return "Ith(%s,%s)" % (c_var, t_pos)
 
 
@@ -139,31 +138,26 @@ class CMathWriter(object):
 			return "RCONST(%d.0)" % tree
 
 		elif isinstance(tree, float):
-			# print srepr(tree)
 			t_string = "%.16g" % tree
 			if "." not in t_string and "e" not in t_string:
 				t_string += ".0"
+
 			return "RCONST(%s)" % t_string
+
 		elif tree.func == SympySymbol:
 			return self.translateVariableForC(tree)
 
-		# elif isinstance(tree.func, SympyUndefinedFunction) and tree.args == (SympySymbol("t"),) and str(tree.func) in self.model.listOfVariables.keys():
-		# 	return self.translateVariableForC(str(tree.func))
-
 		elif tree.func == SympyDerivative:
-			# print tree.args[0]
-			# print str(tree.args[0])
 			return self.translateVariableForC(tree.args[0],derivative=True)
 
 		elif tree.func == SympyInteger:
 			return "RCONST(%d.0)" % int(tree)
 
 		elif tree.func == SympyFloat:
-			# print srepr(tree)
-
 			t_string = "%.16g" % float(tree)
 			if "." not in t_string and "e" not in t_string:
 				t_string += ".0"
+
 			return "RCONST(%s)" % t_string
 
 		elif tree.func == SympyRational:
@@ -231,6 +225,7 @@ class CMathWriter(object):
 
 
 			started = False
+			t_minus = ""
 			t_mul = ""
 			t_divider = ""
 			for i_arg, arg in enumerate(tree.args):
@@ -257,7 +252,7 @@ class CMathWriter(object):
 			else:
 				# if len(tree.args) > 2:
 				# 	print "(" + t_mul + "/(%s))" % t_divider
-				return "(" + t_mul + "/(%s))" % t_divider
+				return t_minus + "(" + t_mul + "/(%s))" % t_divider
 
 		# AST_FUNCTION_ABS
 		elif tree.func == SympyAbs:
@@ -335,7 +330,7 @@ class CMathWriter(object):
 
 		# AST_FUNCTION_FACTORIAL
 		elif tree.func == SympyFactorial:
-			return "((realtype) rt_factorial(%s))" % self.translateForC(tree.args[0])
+			return "rt_factorial(%s)" % self.translateForC(tree.args[0])
 
 		# AST_FUNCTION_FLOOR
 		elif tree.func == SympyFloor:
@@ -390,7 +385,7 @@ class CMathWriter(object):
 
 		# AST_FUNCTION_ROOT
 		elif tree.func == SympyRoot:
-			return "rt_pow(%s,((realtype)1)/%s)" % (self.translateForC(tree.args[0]), self.translateForC(tree.args[1]))
+			return "rt_pow(%s,(RCONST(1.0)/%s)" % (self.translateForC(tree.args[0]), self.translateForC(tree.args[1]))
 
 		# AST_FUNCTION_SEC
 		elif tree.func == SympySec:

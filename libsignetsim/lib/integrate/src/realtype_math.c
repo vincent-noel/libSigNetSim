@@ -87,19 +87,25 @@ int rt_geq(realtype x, realtype y)
 	return (rt_eq(x,y) || (x > y));
 }
 
-int rt_factorial(int n)
+int rt_rec_factorial(int n)
 {
-  return (n <= RCONST(1.0))?RCONST(1.0):rt_factorial(n-RCONST(1.0))*n;
+    if (n <= 1) return 1;
+    else return n*rt_rec_factorial(n-1);
 }
 
-int rt_ceil(realtype n)
+realtype rt_factorial(realtype n)
 {
-	return RCONST((double) ceilf((double) n));
+  return RCONST(rt_rec_factorial((int) n));
 }
 
-int rt_floor(realtype n)
+realtype rt_ceil(realtype n)
 {
-	return RCONST((double) floorf((double) n));
+	return (realtype) ceil(n);
+}
+
+realtype rt_floor(realtype n)
+{
+	return (realtype) floor(n);
 }
 
 realtype rt_pow(realtype x, realtype n)
