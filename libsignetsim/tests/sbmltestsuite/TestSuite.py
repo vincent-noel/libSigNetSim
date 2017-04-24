@@ -32,11 +32,11 @@ from os import getcwd, mkdir, system
 class TestSuite(object):
 	""" Tests SED-ML semantic test cases """
 
-	TODO_CASES = []
+	TODO_CASES = [197]
 	TODO_VERSIONS = []
 	TODO_TAGS = []
 	INCOMPATIBLE_CASES = []
-	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'FastReaction']
+	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'FastReactions']
 
 	COMPATIBLE_PACKAGES = ['comp']
 

@@ -23,7 +23,7 @@
 """
 
 
-from sympy import simplify
+from sympy import simplify, expand
 from libsignetsim.model.math.sympy_shortcuts import  (
 	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
 	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
@@ -214,6 +214,7 @@ class KineticLawIdentifier(object):
 
 	def isReversible(self, formula):
 
+		formula = expand(formula)
 		# If we had an addition
 		if formula.func == SympyAdd:
 
@@ -234,6 +235,7 @@ class KineticLawIdentifier(object):
 
 		t_forward = None
 		t_backward = None
+		formula = expand(formula)
 		# If we had an addition
 		if formula.func == SympyAdd:
 
@@ -245,11 +247,11 @@ class KineticLawIdentifier(object):
 					if (arg.args[0] == SympyInteger(-1)
 						or arg.args[1] == SympyInteger(-1)):
 						t_backward = arg*SympyInteger(-1)
-
+		else:
+			return (formula,SympyInteger(0))
 		t_forward = SympyAdd(formula, t_backward)
 
 		return (t_forward, t_backward)
-
 
 
 	def findKineticLaw(self):

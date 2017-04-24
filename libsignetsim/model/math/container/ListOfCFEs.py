@@ -139,3 +139,9 @@ class ListOfCFEs(list):
 		for cfe in self:
 			if symbol == cfe.getVariable().symbol.getInternalMathFormula():
 				return cfe
+
+	def getSubs(self):
+		res = {}
+		for cfe in self:
+			res.update(cfe.getSubs())
+		return res

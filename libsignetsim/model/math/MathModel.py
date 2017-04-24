@@ -31,6 +31,7 @@ from libsignetsim.model.math.container.ListOfDAEs import ListOfDAEs
 
 from libsignetsim.model.math.MathStoichiometryMatrix import MathStoichiometryMatrix
 from libsignetsim.model.math.MathSlowModel import MathSlowModel
+from libsignetsim.model.math.MathSlowModel_v2 import MathSlowModel_v2
 from libsignetsim.model.math.MathAsymmetricModel import MathAsymmetricModel
 
 from libsignetsim.model.math.MathFormula import MathFormula
@@ -60,6 +61,7 @@ class MathModel(CModelWriter):
 		self.assymetricModel = MathAsymmetricModel(self)
 		self.stoichiometryMatrix = MathStoichiometryMatrix(self)
 		self.listOfConservationLaws = ListOfConservationLaws(self)
+		self.slowModel_v2 = MathSlowModel_v2(self, self.assymetricModel)
 
 		self.nbOdes = None
 		self.nbAssignments = None
@@ -82,8 +84,8 @@ class MathModel(CModelWriter):
 
 	def getMathModel(self):
 
-		if self.slowModel is not None:
-			return self.slowModel
+		if self.slowModel_v2.isUpToDate():
+			return self.slowModel_v2
 
 		elif self.assymetricModel.isUpToDate():
 			return self.assymetricModel
@@ -115,12 +117,21 @@ class MathModel(CModelWriter):
 		# # t0 = time()
 
 		# print self.listOfConservationLaws
-		# if not dont_reduce and len(self.listOfEvents) == 0:
-		# 	self.stoichiometryMatrix.build()
-		# 	self.listOfConservationLaws.build()
-		# 	# self.prettyPrint()
-		# 	self.assymetricModel.build(treated_variables=vars_to_keep)
-			# self.assymetricModel.prettyPrint()
+		if not dont_reduce and not len(self.listOfEvents) > 0:
+			# self.stoichiometryMatrix.build()
+			# self.listOfConservationLaws.build()
+			# self.prettyPrint()
+
+			self.assymetricModel.build(treated_variables=vars_to_keep)
+			# print self.listOfConservationLaws
+
+			# self.getMathModel().prettyPrint()
+			# if self.listOfReactions.hasFastReaction():
+			#
+			# 	# self.slowModel_v2.build()
+			# 	# self.slowModel_v2.buildFromReduced()
+			# 	self.slowModel_v2.build()
+			# 	self.getMathModel().prettyPrint()
 
 		# # if
 		# # print "> conservation laws found in %.2gs" % (time() -t0)

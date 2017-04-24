@@ -66,8 +66,8 @@ class Settings(object):
 	defaultTestAbsTol = 1e-6
 	defaultTestRelTol = 1e-3
 
-	defaultAbsTol = 1e-16
-	defaultRelTol = 1e-10
+	defaultAbsTol = 1e-12
+	defaultRelTol = 1e-8
 
 	simulationTimeMin = 0
 	simulationTimeMax = 4000

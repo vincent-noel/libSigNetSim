@@ -441,65 +441,33 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 
 
-	def getRawStoichiometryMatrix(self, subs={}):
+	def getRawStoichiometryMatrix(self, subs={}, including_fast_reactions=True, including_slow_reactions=True, include_variable_stoichiometry=False):
 
 		front = zeros(1, self.model.nbOdes)
 
-		if self.listOfReactants:
-			for reactant in self.listOfReactants.values():
-				if not reactant.getSpecies().boundaryCondition:
-					index = reactant.getSpecies().ind
-					if subs != {}:
-						formula = (
-								- unevaluatedSubs(reactant.stoichiometry.getDeveloppedInternalMathFormula(), subs)
-								+ front[index]
-						)
-					else:
-						formula = (
-							- reactant.stoichiometry.getDeveloppedInternalMathFormula()
-							+ front[index]
-						)
-					front[index] = formula
-
-
-		if self.listOfProducts:
-			for product in self.listOfProducts.values():
-				if not product.getSpecies().boundaryCondition:
-					index = product.getSpecies().ind
-					if subs != {}:
-						formula = (
-							unevaluatedSubs(product.stoichiometry.getDeveloppedInternalMathFormula(), subs)
-							+ front[index]
-						)
-					else:
-						formula = (
-								product.stoichiometry.getDeveloppedInternalMathFormula()
-								+ front[index]
-						)
-					front[index] = formula
-
-		if not self.reversible:
-			return front
-
-		else:
-			back = zeros(1, self.model.nbOdes)
-
+		if (
+						not self.hasVariableStoichiometry() or include_variable_stoichiometry
+			) and (
+					(self.fast and including_fast_reactions)
+				or
+					((not self.fast) and including_slow_reactions)
+			):
 			if self.listOfReactants:
 				for reactant in self.listOfReactants.values():
 					if not reactant.getSpecies().boundaryCondition:
 						index = reactant.getSpecies().ind
 						if subs != {}:
 							formula = (
-								unevaluatedSubs(reactant.stoichiometry.getDeveloppedInternalMathFormula(), subs)
-								+ back[index]
+									- unevaluatedSubs(reactant.stoichiometry.getDeveloppedInternalMathFormula(), subs)
+									+ front[index]
 							)
 						else:
 							formula = (
-								reactant.stoichiometry.getDeveloppedInternalMathFormula()
-								+ back[index]
+								- reactant.stoichiometry.getDeveloppedInternalMathFormula()
+								+ front[index]
 							)
+						front[index] = formula
 
-						back[index] = formula
 
 			if self.listOfProducts:
 				for product in self.listOfProducts.values():
@@ -507,23 +475,80 @@ class Reaction(Variable, SbmlObject, HasUnits):
 						index = product.getSpecies().ind
 						if subs != {}:
 							formula = (
-								- unevaluatedSubs(product.stoichiometry.getDeveloppedInternalMathFormula(), subs)
-								+ back[index]
+								unevaluatedSubs(product.stoichiometry.getDeveloppedInternalMathFormula(), subs)
+								+ front[index]
 							)
 						else:
 							formula = (
-								- product.stoichiometry.getDeveloppedInternalMathFormula()
-								+ back[index]
+									product.stoichiometry.getDeveloppedInternalMathFormula()
+									+ front[index]
 							)
-						back[index] = formula
+						front[index] = formula
+
+		if not self.kineticLaw.isReversible(self.kineticLaw.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula()):
+			return front
+
+		else:
+			back = zeros(1, self.model.nbOdes)
+			if (
+				not self.hasVariableStoichiometry() or include_variable_stoichiometry
+			) and (
+				(self.fast and including_fast_reactions)
+				or
+				((not self.fast) and including_slow_reactions)
+			):
+				if self.listOfReactants:
+					for reactant in self.listOfReactants.values():
+						if not reactant.getSpecies().boundaryCondition:
+							index = reactant.getSpecies().ind
+							if subs != {}:
+								formula = (
+									unevaluatedSubs(reactant.stoichiometry.getDeveloppedInternalMathFormula(), subs)
+									+ back[index]
+								)
+							else:
+								formula = (
+									reactant.stoichiometry.getDeveloppedInternalMathFormula()
+									+ back[index]
+								)
+
+							back[index] = formula
+
+				if self.listOfProducts:
+					for product in self.listOfProducts.values():
+						if not product.getSpecies().boundaryCondition:
+							index = product.getSpecies().ind
+							if subs != {}:
+								formula = (
+									- unevaluatedSubs(product.stoichiometry.getDeveloppedInternalMathFormula(), subs)
+									+ back[index]
+								)
+							else:
+								formula = (
+									- product.stoichiometry.getDeveloppedInternalMathFormula()
+									+ back[index]
+								)
+							back[index] = formula
 
 			return front.col_join(back)
 
 
-	def hasVariableStoichiometry(self):
 
+	def hasVariableStoichiometry(self):
 		return self.listOfReactants.hasVariableStoichiometry() or self.listOfProducts.hasVariableStoichiometry()
-	# def getValueMathFormula(self, math_type=MathFormula.MATH_INTERNAL, forcedConcentration=False):
-	#
-	# 	if self.kineticLaw is not None:
-	# 		return self.kineticLaw.getMathFormula(math_type, forcedConcentration)
+
+	def isReactant(self, species):
+
+		for reactant in self.listOfReactants.values():
+			if reactant.getSpecies() == species:
+				return True
+
+		return False
+
+	def isProduct(self, species):
+
+		for product in self.listOfProducts.values():
+			if product.getSpecies() == species:
+				return True
+
+		return False

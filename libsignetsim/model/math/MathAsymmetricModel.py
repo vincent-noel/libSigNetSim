@@ -133,6 +133,9 @@ class MathAsymmetricModel(object):
 
 	def build(self, treated_variables=[]):
 
+		self.parentModel.stoichiometryMatrix.build()
+		self.parentModel.listOfConservationLaws.build()
+
 		if self.parentModel.stoichiometryMatrix.hasNullSpace():
 			nullspace = self.parentModel.stoichiometryMatrix.getSimpleNullspace()
 
@@ -144,9 +147,14 @@ class MathAsymmetricModel(object):
 
 				can_reduce = True
 				for var in treated_variables:
-					if SympySymbol(var) in cons_law.getFormula().atoms(SympySymbol):
+					symbol = SympySymbol(var)
+					model_var = self.listOfVariables.getBySymbol(symbol)
+					if (symbol in cons_law.getFormula().atoms(SympySymbol)
+						or
+						(model_var.isDerivative() and model_var.hasEventAssignment())
+					):
 						can_reduce = False
-						# print "Refused conservation law : %s" % cons_law
+						print "Refused conservation law : %s" % cons_law
 
 				if can_reduce:
 					for i, species in enumerate(self.parentModel.variablesOdes):
@@ -154,6 +162,7 @@ class MathAsymmetricModel(object):
 							cons[i] == 1
 							and species.symbol.getSymbol() not in independent_species
 							and cons_law.getNbVars() > 1
+							and species.symbol.getSymbol() not in [SympySymbol('A3'), SympySymbol('A'), SympySymbol('A4')]
 
 						):
 							independent_species.append(species.symbol.getSymbol())

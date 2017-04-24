@@ -40,18 +40,12 @@
 realtype abs_tol = RCONST(DBL_EPSILON);
 realtype rel_tol = RCONST(DBL_EPSILON);
 
-//realtype rt_get_precision(realtype x)
-// {
-// 	 return abs_tol+x*rel_tol;
-// }
 
 void rt_set_precision(realtype abs_tol, realtype rel_tol)
 {
 	abs_tol = abs_tol;
 	rel_tol = rel_tol;
 }
-
-
 
 int rt_eq(realtype x, realtype y)
 {
@@ -95,17 +89,17 @@ int rt_rec_factorial(int n)
 
 realtype rt_factorial(realtype n)
 {
-  return RCONST(rt_rec_factorial((int) n));
+  return RCONST((double) rt_rec_factorial((int) n));
 }
 
 realtype rt_ceil(realtype n)
 {
-	return (realtype) ceil(n);
+	return RCONST(ceil((double) n));
 }
 
 realtype rt_floor(realtype n)
 {
-	return (realtype) floor(n);
+	return RCONST(floor((double) n));
 }
 
 realtype rt_pow(realtype x, realtype n)
@@ -155,26 +149,26 @@ realtype rt_tan(realtype x)
 
 realtype rt_tanh(realtype x)
 {
-	return (realtype) tanh((double) x);
+	return RCONST(tanh((double) x));
 }
 realtype rt_acos(realtype x)
 {
-	return (realtype) acos((double) x);
+	return RCONST(acos((double) x));
 }
 
 realtype rt_acosh(realtype x)
 {
-	return (realtype) acosh((double) x);
+	return RCONST(acosh((double) x));
 }
 
 realtype rt_asin(realtype x)
 {
-	return (realtype) asin((double) x);
+	return RCONST(asin((double) x));
 }
 
 realtype rt_asinh(realtype x)
 {
-	return (realtype) asinh((double) x);
+	return RCONST(asinh((double) x));
 }
 
 realtype rt_atan(realtype x)

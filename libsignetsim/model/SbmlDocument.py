@@ -127,9 +127,8 @@ class SbmlDocument(object):
 
 			sbmlCompPlugin = sbmlDoc.getPlugin("comp")
 
-			self.loadExternalDocumentDependencies(sbmlDoc)
-
 			try:
+				self.loadExternalDocumentDependencies(sbmlDoc)
 				self.listOfModelDefinitions.readSbml(sbmlCompPlugin.getListOfModelDefinitions(), self.sbmlLevel, self.sbmlVersion)
 				self.listOfExternalModelDefinitions.readSbml(sbmlCompPlugin.getListOfExternalModelDefinitions(), self.sbmlLevel, self.sbmlVersion)
 
@@ -139,7 +138,6 @@ class SbmlDocument(object):
 
 	def readSbmlFromFile(self, sbml_filename):
 		# print "> Opening SBML file : %s" % sbml_filename
-
 		t0 = time()
 
 		if self.documentPath is None and dirname(sbml_filename) != "":
@@ -150,7 +148,6 @@ class SbmlDocument(object):
 		t_filename = sbml_filename
 		if dirname(sbml_filename) == "" and self.documentPath is not None:
 			t_filename = join(self.documentPath, sbml_filename)
-
 
 		if not isfile(t_filename):
 			raise MissingModelException(t_filename)

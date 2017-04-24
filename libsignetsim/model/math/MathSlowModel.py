@@ -41,7 +41,7 @@ from libsignetsim.model.math.container.ListOfConservationLaws import ListOfConse
 class MathSlowModel(object):
 	""" Sbml model class """
 
-	def __init__ (self, parent_model=None):
+	def __init__ (self, parent_model=None, reduced_model=None):
 		""" Constructor of model class """
 
 		# MathModel.__init__(self)

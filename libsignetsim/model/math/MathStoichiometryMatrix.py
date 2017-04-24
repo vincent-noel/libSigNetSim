@@ -23,10 +23,10 @@
 """
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 from libsignetsim.model.math.sympy_shortcuts import (
-	SympySymbol, SympyInteger, SympyInf, SympyNan, SympyAdd, SympyEqual, SympyStrictLessThan
+	SympySymbol, SympyInteger, SympyInf, SympyNan, SympyAdd, SympyEqual, SympyUnequal, SympyStrictLessThan
 )
-from sympy import simplify, diff, solve, zeros, Lambda, flatten
-from time import time
+from sympy import simplify, diff, solve, zeros, Lambda, flatten, pprint
+
 
 class MathStoichiometryMatrix(object):
 	""" Sbml model class """
@@ -36,40 +36,65 @@ class MathStoichiometryMatrix(object):
 
 		self.__model = model
 		self.stoichiometryMatrix = []
+
 		self.rawStoichiometryMatrix = None
 		self.listOfSpecies = []
+		#
+		# self.rawFastStoichiometryMatrix = None
+		# self.listOfFastSpecies = []
+		#
+		# self.rawSlowStoichiometryMatrix = None
+		# self.listOfSlowSpecies = []
 
 		self.rawNullspace = None
 
+		# Function returning a boolean if the value is not zero
+		self.notZeroFilter = Lambda(
+			SympySymbol('x'),
+			SympyUnequal(
+				SympySymbol('x'),
+				SympyInteger(0)
+			)
+		)
+
 	def build(self, including_fast_reactions=True, including_slow_reactions=True, include_variable_stoichiometry=False):
 
-		for species in self.__model.variablesOdes:
-			self.listOfSpecies.append(species.symbol.getSymbol())
 
-		# t0 = time()
 		subs = {}
 		for var, value in self.__model.solvedInitialConditions.items():
 			subs.update({var: value.getInternalMathFormula()})
 
 		matrix = None
 		for i, reaction in enumerate(self.__model.listOfReactions.values()):
-			if (
-						not reaction.hasVariableStoichiometry() or include_variable_stoichiometry
-			and (
-						(reaction.fast and including_fast_reactions)
-					or
-						(not reaction.fast and including_slow_reactions)
-			)):
+			# if (
+			# 			not reaction.hasVariableStoichiometry() or include_variable_stoichiometry
+			# ) and (
+			# 		(reaction.fast and including_fast_reactions)
+			# 	or
+			# 		((not reaction.fast) and including_slow_reactions)
+			# ):
 
-				if matrix is None:
-					matrix = reaction.getRawStoichiometryMatrix(subs)
-				else:
-					matrix = matrix.col_join(reaction.getRawStoichiometryMatrix(subs))
+			reaction_matrix = reaction.getRawStoichiometryMatrix(subs,
+					including_fast_reactions=including_fast_reactions,
+					including_slow_reactions=including_slow_reactions,
+					include_variable_stoichiometry=include_variable_stoichiometry
+			)
+
+			if matrix is None:
+				matrix = reaction_matrix
+			else:
+				matrix = matrix.col_join(reaction_matrix)
 
 		self.rawStoichiometryMatrix = matrix
+
+		for i, species in enumerate(self.__model.variablesOdes):
+			# if all(self.rawStoichiometryMatrix[:,i].applyfunc(self.notZeroFilter)):
+				self.listOfSpecies.append(species.symbol.getSymbol())
+
+
+
 		if self.rawStoichiometryMatrix is not None:
 			self.getSimpleNullspace()
-		# print "> generated raw stoichiometry matrix in %.2gs" % (time() -t0)
 
 	def hasNullSpace(self):
 
@@ -96,6 +121,7 @@ class MathStoichiometryMatrix(object):
 		# print "> generated raw nullspace in %.2gs" % (time()-t0)
 
 		# t0 = time()
+		# print self.getRawNullspace()
 		return self.getRawNullspace()
 		# res = self.fixnullspace(self.getRawNullspace())
 		# res = self.fixnullspace_v2(self.getRawNullspace())
