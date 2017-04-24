@@ -42,6 +42,9 @@ class SbmlAnnotation(object):
 		for cvterm in sbml_object.getCVTerms():
 			t_cvterm = CVTerm(self.__model)
 			t_cvterm.readSbml(cvterm, sbml_level, sbml_version)
+			if self == self.__model:
+				print t_cvterm
+				print t_cvterm.isIsVersionOf()
 			self.__cvTerms.append(t_cvterm)
 
 		if sbml_object.isSetSBOTerm():
@@ -63,3 +66,140 @@ class SbmlAnnotation(object):
 
 	def setSBOTerm(self, sbo_term):
 		self.__sboTerm = sbo_term
+
+	def getCVTerms(self):
+		return self.__cvTerms
+
+
+	def getHasTaxon(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isHasTaxon():
+				res += cv_term.getURIs()
+		return res
+
+	def getHasPart(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isHasPart():
+				res += cv_term.getURIs()
+		return res
+
+	def getHasProperty(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isHasProperty():
+				res += cv_term.getURIs()
+		return res
+
+	def getHasVersion(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isHasVersion():
+				res += cv_term.getURIs()
+		return res
+	
+	def getIs(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isIs():
+				res += cv_term.getURIs()
+		return res
+
+	def getIsDescribedBy(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isIsDescribedBy():
+				res += cv_term.getURIs()
+		return res
+
+	def getIsEncodedBy(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isIsEncodedBy():
+				res += cv_term.getURIs()
+		return res
+
+	def getIsHomologTo(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isIsHomologTo():
+				res += cv_term.getURIs()
+		return res
+
+	def getIsPartOf(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isIsPartOf():
+				res += cv_term.getURIs()
+		return res
+
+	def getIsPropertyOf(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isIsPropertyOf():
+				res += cv_term.getURIs()
+		return res
+
+	def getIsVersionOf(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isIsVersionOf():
+				res += cv_term.getURIs()
+		return res
+
+	def getOccursIn(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isOccursIn():
+				res += cv_term.getURIs()
+		return res
+
+	def getUnknown(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isUnknown():
+				res += cv_term.getURIs()
+		return res
+
+	def getModelHasInstance(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isModelHasInstance():
+				res += cv_term.getURIs()
+		return res
+
+	def getModelIs(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isModelIs():
+				res += cv_term.getURIs()
+		return res
+
+	def getModelIsDerivedFrom(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isModelIsDerivedFrom():
+				res += cv_term.getURIs()
+		return res
+
+	def getModelIsDescribedBy(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isModelIsDescribedBy():
+				res += cv_term.getURIs()
+		return res
+
+	def getModelIsInstanceOf(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isModelIsInstanceOf():
+				res += cv_term.getURIs()
+		return res
+
+	def getModelUnknown(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isModelUnknown():
+				res += cv_term.getURIs()
+		return res

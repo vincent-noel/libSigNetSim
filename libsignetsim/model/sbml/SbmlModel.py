@@ -210,19 +210,19 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation):
 		self.listOfEvents.renameSbmlId(old_sbml_id, new_sbml_id)
 		self.listOfVariables.renameSbmlId(old_sbml_id, new_sbml_id)
 
-
-	def getLevels(self):
-		return [1,2,3]
-
-	def getVersions(self):
-		if self.sbmlLevel == 1:
-			return [2]
-		elif self.sbmlLevel == 2:
-			return [1,2,3,4,5]
-		elif self.sbmlLevel == 3:
-			return [1]
-		else:
-			return []
+	# 
+	# def getLevels(self):
+	# 	return [1,2,3]
+	# 
+	# def getVersions(self):
+	# 	if self.sbmlLevel == 1:
+	# 		return [2]
+	# 	elif self.sbmlLevel == 2:
+	# 		return [1,2,3,4,5]
+	# 	elif self.sbmlLevel == 3:
+	# 		return [1]
+	# 	else:
+	# 		return []
 
 
 	def setSbmlLevel(self, level):

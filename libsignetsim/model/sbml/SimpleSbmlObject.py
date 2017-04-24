@@ -28,15 +28,15 @@ from libsbml import SyntaxChecker
 from libsbml import XMLNode
 from libsignetsim.model.ModelException import CannotCreateException
 
-class SimpleSbmlObject(SbmlAnnotation):
+class SimpleSbmlObject(object):
 
 	def __init__(self, model):
 
-		SbmlAnnotation.__init__(self, model)
+		# SbmlAnnotation.__init__(self, model)
 		self.__model = model
 		self.__metaId = None#self.newMetaId()
 		self.__notes = None
-		# self.__annotation = SbmlAnnotation(self)
+		self.__annotation = SbmlAnnotation(self)
 
 	def new(self, notes=None):
 
@@ -70,7 +70,7 @@ class SimpleSbmlObject(SbmlAnnotation):
 				self.__notes += t_notes.getChild(note).toXMLString()
 
 		if sbml_object.isSetAnnotation():
-			SbmlAnnotation.readSbml(self, sbml_object, sbml_level, sbml_version)
+			self.__annotation.readSbml(sbml_object, sbml_level, sbml_version)
 
 	def writeSbml(self, sbml_object,
 					sbml_level=Settings.defaultSbmlLevel,
@@ -83,7 +83,7 @@ class SimpleSbmlObject(SbmlAnnotation):
 		if self.__notes is not None and self.__notes != "":
 			sbml_object.setNotes(self.buildNotes(self.__notes))
 
-		SbmlAnnotation.writeSbml(self, sbml_object, sbml_level, sbml_version)
+		self.__annotation.writeSbml(sbml_object, sbml_level, sbml_version)
 
 	def newMetaId(self):
 		self.__metaId = self.__model.listOfSbmlObjects.nextMetaId()
@@ -134,3 +134,6 @@ class SimpleSbmlObject(SbmlAnnotation):
 					+ "</body></notes>")
 
 		return XMLNode.convertStringToXMLNode(t_string)
+
+	def getAnnotation(self):
+		return self.__annotation

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-""" SbmlModelAnnotation.py
+""" __init__.py
 
 
-	This file ...
+	Initialization of the module URIs
 
 
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
@@ -21,25 +21,3 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
-
-from libsignetsim.model.sbml.SbmlModelHistory import SbmlModelHistory
-
-from libsignetsim.settings.Settings import Settings
-class SbmlModelAnnotation(object):
-
-
-	def __init__(self):
-
-		self.modelHistory = SbmlModelHistory(self)
-
-	def readSbml(self, sbml_model,
-					sbml_level=Settings.defaultSbmlLevel,
-					sbml_version=Settings.defaultSbmlVersion):
-
-		self.modelHistory.readSbml(sbml_model, self.sbmlLevel, self.sbmlVersion)
-
-
-	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-		self.modelHistory.writeSbml(sbml_model, self.sbmlLevel, self.sbmlVersion)
-
-

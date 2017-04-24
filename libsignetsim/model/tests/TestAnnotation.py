@@ -24,6 +24,7 @@
 """
 
 from libsignetsim.model.SbmlDocument import SbmlDocument
+from libsignetsim.uris.URI import URI
 from unittest import TestCase
 from os.path import join, dirname, isdir
 from os import mkdir, getcwd
@@ -34,19 +35,64 @@ class TestAnnotation(TestCase):
 	""" Tests high level functions """
 
 
-	def testReadWriteModelHistory(self):
+	def testReadWriteModel(self):
 
 		testfiles_path = join(join(getcwd(), dirname(__file__)), "files")
 		sbml_doc = SbmlDocument()
 		sbml_doc.readSbmlFromFile(join(testfiles_path, "BIOMD0000000001.xml"))
+		sbml_doc.writeSbmlToFile(join(Settings.tempDirectory, "BIOMD0000000001.xml"))
+		sbml_doc.readSbmlFromFile(join(testfiles_path, "BIOMD0000000001.xml"))
+
 		sbml_model = sbml_doc.getModelInstance()
 
 		self.assertEqual(sbml_model.modelHistory.getDateCreated(), "2005-02-02T14:56:11Z")
-		self.assertEqual(sbml_model.modelHistory.getListOfCreators()[0].getEmail(), "lenov@ebi.ac.uk")
-		self.assertEqual(sbml_model.modelHistory.getListOfCreators()[0].getGivenName(), "Nicolas")
-		self.assertEqual(sbml_model.modelHistory.getListOfCreators()[0].getFamilyName(), "Le Novère")
-		sbml_doc.writeSbmlToFile(join(Settings.tempDirectory, "BIOMD0000000001.xml"))
+		creator = sbml_model.modelHistory.getListOfCreators()[0]
+		self.assertEqual(creator.getEmail(), "lenov@ebi.ac.uk")
+		self.assertEqual(creator.getGivenName(), "Nicolas")
+		self.assertEqual(creator.getFamilyName(), "Le Novère")
 
 
+		taxon_uri = URI()
+		taxon_uri.setTaxonomy('7787')
+		self.assertEqual(sbml_model.getAnnotation().getHasTaxon()[0], taxon_uri)
 
+		self.assertEqual(sbml_model.getAnnotation().getHasProperty(), [])
+		self.assertEqual(sbml_model.getAnnotation().getHasPart(), [])
+		self.assertEqual(sbml_model.getAnnotation().getHasVersion(), [])
+		self.assertEqual(sbml_model.getAnnotation().getIs(), [])
+		self.assertEqual(sbml_model.getAnnotation().getIsDescribedBy(), [])
+		self.assertEqual(sbml_model.getAnnotation().getIsEncodedBy(), [])
+		self.assertEqual(sbml_model.getAnnotation().getIsHomologTo(), [])
+		self.assertEqual(sbml_model.getAnnotation().getIsPartOf(), [])
+		self.assertEqual(sbml_model.getAnnotation().getIsPropertyOf(), [])
 
+		go_process1_uri = URI()
+		go_process1_uri.setGO('GO:0007274')
+		go_process2_uri = URI()
+		go_process2_uri.setGO('GO:0007166')
+		go_process3_uri = URI()
+		go_process3_uri.setGO('GO:0019226')
+		self.assertEqual(sbml_model.getAnnotation().getIsVersionOf()[0], go_process1_uri)
+		self.assertEqual(sbml_model.getAnnotation().getIsVersionOf()[1], go_process2_uri)
+		self.assertEqual(sbml_model.getAnnotation().getIsVersionOf()[2], go_process3_uri)
+
+		self.assertEqual(sbml_model.getAnnotation().getOccursIn(), [])
+		self.assertEqual(sbml_model.getAnnotation().getUnknown(), [])
+		self.assertEqual(sbml_model.getAnnotation().getModelHasInstance(), [])
+
+		biomodels_ref1_uri = URI()
+		biomodels_ref1_uri.setBiomodels('MODEL6613849442')
+		biomodels_ref2_uri = URI()
+		biomodels_ref2_uri.setBiomodels('BIOMD0000000001')
+
+		self.assertEqual(sbml_model.getAnnotation().getModelIs()[0], biomodels_ref1_uri)
+		self.assertEqual(sbml_model.getAnnotation().getModelIs()[1], biomodels_ref2_uri)
+
+		self.assertEqual(sbml_model.getAnnotation().getModelIsDerivedFrom(), [])
+
+		publication_uri = URI()
+		publication_uri.setPubmed('8983160')
+		self.assertEqual(sbml_model.getAnnotation().getModelIsDescribedBy()[0], publication_uri)
+
+		self.assertEqual(sbml_model.getAnnotation().getModelIsInstanceOf(), [])
+		self.assertEqual(sbml_model.getAnnotation().getModelUnknown(), [])
