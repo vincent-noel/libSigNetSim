@@ -70,7 +70,6 @@ class SbmlDocument(object):
 			self.sbmlLevel = model.sbmlLevel
 			self.sbmlVersion = model.sbmlVersion
 
-
 		self.listOfModelDefinitions = ListOfModelDefinitions(self.model)
 		self.listOfExternalModelDefinitions = ListOfExternalModelDefinitions(self.model)
 

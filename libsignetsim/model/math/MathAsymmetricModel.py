@@ -136,9 +136,15 @@ class MathAsymmetricModel(object):
 		self.parentModel.stoichiometryMatrix.build()
 		self.parentModel.listOfConservationLaws.build()
 
+		forbidden_variables = []
+		for species in self.parentModel.variablesOdes:
+			if (str(species.symbol.getSymbol) in treated_variables) or (species.hasEventAssignment()):
+				forbidden_variables.append(species.symbol.getSymbol())
+			# print "%s : %s" % (species.getNameOrSbmlId(), species.hasEventAssignment())
+
 		if self.parentModel.stoichiometryMatrix.hasNullSpace():
 			nullspace = self.parentModel.stoichiometryMatrix.getSimpleNullspace()
-
+			# print self.parentModel.listOfConservationLaws
 			independent_species = []
 			independent_species_formula = []
 			for i_cons, cons in enumerate(nullspace):
@@ -146,15 +152,12 @@ class MathAsymmetricModel(object):
 				cons_law = self.parentModel.listOfConservationLaws[i_cons]
 
 				can_reduce = True
-				for var in treated_variables:
-					symbol = SympySymbol(var)
-					model_var = self.listOfVariables.getBySymbol(symbol)
-					if (symbol in cons_law.getFormula().atoms(SympySymbol)
-						or
-						(model_var.isDerivative() and model_var.hasEventAssignment())
-					):
+				for var in forbidden_variables:
+					# symbol = SympySymbol(var)
+					# model_var = self.listOfVariables.getBySymbol(symbol)
+					if var in cons_law.getFormula().atoms(SympySymbol):
 						can_reduce = False
-						print "Refused conservation law : %s" % cons_law
+						# print "Refused conservation law : %s" % cons_law
 
 				if can_reduce:
 					for i, species in enumerate(self.parentModel.variablesOdes):
@@ -162,9 +165,10 @@ class MathAsymmetricModel(object):
 							cons[i] == 1
 							and species.symbol.getSymbol() not in independent_species
 							and cons_law.getNbVars() > 1
-							and species.symbol.getSymbol() not in [SympySymbol('A3'), SympySymbol('A'), SympySymbol('A4')]
-
+							# and species.symbol.getSymbol() not in [SympySymbol('A3'), SympySymbol('A'), SympySymbol('A4')]
+							and not (species.isDerivative() and species.hasEventAssignment())
 						):
+							# print species.hasEventAssignment()
 							independent_species.append(species.symbol.getSymbol())
 							independent_species_formula.append(
 								solve(
@@ -174,36 +178,38 @@ class MathAsymmetricModel(object):
 							)
 							break
 
-			self.copyVariables()
+			if len(independent_species) > 0:
+				# print "we can reduce !"
+				self.copyVariables()
 
-			for var in self.parentModel.variablesOdes:
-				new_var = self.listOfVariables.getBySymbol(var.symbol.getSymbol())
-				if var.symbol.getSymbol() in independent_species:
+				for var in self.parentModel.variablesOdes:
+					new_var = self.listOfVariables.getBySymbol(var.symbol.getSymbol())
+					if var.symbol.getSymbol() in independent_species:
 
-					t_formula = MathFormula(self)
+						t_formula = MathFormula(self)
 
-					t_formula.setInternalMathFormula(
-						independent_species_formula[independent_species.index(var.symbol.getSymbol())][0]
-					)
+						t_formula.setInternalMathFormula(
+							independent_species_formula[independent_species.index(var.symbol.getSymbol())][0]
+						)
 
-					t_cfe = CFE(self)
-					t_cfe.new(new_var, t_formula)
-					self.listOfCFEs.append(t_cfe)
-					self.listOfVariables.changeVariableType(new_var, MathVariable.VAR_ASS)
+						t_cfe = CFE(self)
+						t_cfe.new(new_var, t_formula)
+						self.listOfCFEs.append(t_cfe)
+						self.listOfVariables.changeVariableType(new_var, MathVariable.VAR_ASS)
 
-				else:
+					else:
 
-					t_formula = MathFormula(self)
-					t_formula.setInternalMathFormula(
-						self.parentModel.listOfODEs.getByVariable(var).getDefinition().getDeveloppedInternalMathFormula()
-					)
+						t_formula = MathFormula(self)
+						t_formula.setInternalMathFormula(
+							self.parentModel.listOfODEs.getByVariable(var).getDefinition().getDeveloppedInternalMathFormula()
+						)
 
-					t_ode = ODE(self)
-					t_ode.new(new_var, t_formula)
-					self.listOfODEs.append(t_ode)
+						t_ode = ODE(self)
+						t_ode.new(new_var, t_formula)
+						self.listOfODEs.append(t_ode)
 
-			self.__upToDate = True
-			self.listOfCFEs.developCFEs()
+				self.__upToDate = True
+				self.listOfCFEs.developCFEs()
 
 	def prettyPrint(self):
 
