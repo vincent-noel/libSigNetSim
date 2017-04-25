@@ -117,7 +117,7 @@ class HasId(object):
 		t_sbml_id = prefix + sbml_id.strip()
 		if self.__sbmlId is not None and self.__sbmlId != t_sbml_id:
 			if model_wide:
-				print "renaming model wide : %s to %s" % (self.__sbmlId, t_sbml_id)
+				# print "renaming model wide : %s to %s" % (self.__sbmlId, t_sbml_id)
 				self.__model.renameSbmlId(self.__sbmlId, t_sbml_id)
 			else:
 				self.__model.listOfVariables.renameSbmlId(self.__sbmlId, t_sbml_id)

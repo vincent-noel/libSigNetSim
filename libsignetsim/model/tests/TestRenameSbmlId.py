@@ -59,8 +59,7 @@ class TestRenameSbmlId(TestCase):
 		r1 = model.listOfRules.newRateRule(s5, "p4*s3")
 
 		model.renameSbmlId("s3", "s3_bis")
+
 	def sympyEqual(self, a, b):
 
-		# print "test %s == %s : %s" % (simplify(a), simplify(b), (simplify(a-b) == 0))
-		# print "test %s == %s : %s" % (a, b, (simplify(a-b) == 0))
 		return simplify(a-b) == 0

@@ -552,3 +552,9 @@ class Reaction(Variable, SbmlObject, HasUnits):
 				return True
 
 		return False
+
+	def containsVariable(self, variable):
+
+		return (
+			variable.symbol.getInternalMathFormula() in self.kineticLaw.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula().atoms()
+		)

@@ -116,6 +116,12 @@ class ListOfReactions(ListOf, HasIds, SbmlObject):
 		ListOf.remove(self, reaction)
 
 
+	def containsVariable(self, variable):
+		for reaction in ListOf.values(self):
+			if reaction.containsVariable(variable):
+				return True
+		return False
+
 	def containsLocalParameterSbmlId(self, sbml_id):
 
 		for reaction in ListOf.values(self):

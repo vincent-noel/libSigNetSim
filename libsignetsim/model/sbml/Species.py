@@ -29,8 +29,7 @@ from libsignetsim.model.Variable import Variable
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.sbml.HasUnits import HasUnits
 from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.math.MathSymbol import MathSymbol
-from libsignetsim.model.math.sympy_shortcuts import *
+from libsignetsim.model.math.MathVariable import MathVariable
 from libsignetsim.settings.Settings import Settings
 
 from libsbml import formulaToL3String
@@ -234,7 +233,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 						if product.getSpecies() == self:
 							return True
 
-		return False
+		return MathVariable.isInReactions(self)
 
 
 	def isInFastReactions(self):

@@ -215,9 +215,10 @@ class MathVariable(object):
 		self.value.renameSbmlId(old_sbml_id, new_sbml_id)
 
 	def isInRules(self):
-
 		return self.__model.listOfRules.containsVariable(self)
 
+	def isInReactions(self):
+		return self.__model.listOfReactions.containsVariable(self)
 
 	def isConcentration(self):
 		""" There *IS* a case where a species doesn't have compartment I guess,

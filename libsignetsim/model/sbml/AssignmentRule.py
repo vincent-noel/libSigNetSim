@@ -197,13 +197,20 @@ class AssignmentRule(Rule):
 
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
+
 		old_symbol = SympySymbol(old_sbml_id)
+		old_symbol_concentration = SympySymbol("_speciesForcedConcentration_%s_" % old_sbml_id)
+		# if self.__var.symbol.getInternalMathFormula() == old_symbol:
+		# 	self.__var.symbol.setInternalMathFormula(SympySymbol(new_sbml_id))
 
-		if self.__var.symbol.getInternalMathFormula() == old_symbol:
-			self.__var.symbol.setInternalMathFormula(SympySymbol(new_sbml_id))
-
-		if old_symbol in self.__definition.getInternalMathFormula().atoms():
-			self.__definition.setInternalMathFormula(self.__definition.getInternalMathFormula().subs(old_symbol, SympySymbol(new_sbml_id)))
+		if (
+			old_symbol in self.__definition.getInternalMathFormula().atoms()
+			or old_symbol_concentration in self.__definition.getInternalMathFormula().atoms()
+		):
+			self.__definition.setInternalMathFormula(self.__definition.getInternalMathFormula().subs({
+				old_symbol: SympySymbol(new_sbml_id),
+				old_symbol_concentration: SympySymbol("_speciesForcedConcentration_%s_" % new_sbml_id)
+			}))
 
 
 	def containsVariable(self, variable):
