@@ -103,4 +103,21 @@ class TestAnnotation(TestCase):
 		self.assertEqual(sbml_model.getAnnotation().getModelIsInstanceOf(), [])
 		self.assertEqual(sbml_model.getAnnotation().getModelUnknown(), [])
 
-		# print sbml_model.getListOfSBOTermsDescriptions()
+		descriptions = [
+			'physical compartment', 'protein complex', 'protein complex', 'protein complex',
+			'multimer of macromolecules', 'protein complex', 'multimer of macromolecules', 'protein complex',
+			'multimer of macromolecules', 'protein complex', 'protein complex', 'multimer of macromolecules',
+			'protein complex', 'non-covalent binding', 'non-covalent binding', 'conformational transition',
+			'non-covalent binding', 'non-covalent binding', 'conformational transition', 'conformational transition',
+			'non-covalent binding', 'non-covalent binding', 'conformational transition', 'conformational transition',
+			'conformational transition', 'non-covalent binding', 'non-covalent binding', 'protein complex',
+			'multimer of macromolecules', 'protein complex', 'multimer of macromolecules', 'protein complex',
+			'multimer of macromolecules', 'protein complex', 'protein complex', 'multimer of macromolecules',
+			'protein complex', 'non-covalent binding', 'non-covalent binding', 'conformational transition',
+			'non-covalent binding', 'non-covalent binding', 'conformational transition', 'conformational transition',
+			'non-covalent binding', 'non-covalent binding', 'conformational transition', 'conformational transition',
+			'conformational transition', 'non-covalent binding', 'non-covalent binding', 'physical compartment',
+			'protein complex', 'protein complex'
+		]
+
+		self.assertEqual(sbml_model.getListOfSBOTermsDescriptions(), descriptions)
