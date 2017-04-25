@@ -233,8 +233,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 						if product.getSpecies() == self:
 							return True
 
-		return MathVariable.isInReactions(self)
-
+		return False
 
 	def isInFastReactions(self):
 		""" The purpose of this function is to test is the species's amount

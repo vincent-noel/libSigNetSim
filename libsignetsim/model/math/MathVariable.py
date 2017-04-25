@@ -217,7 +217,7 @@ class MathVariable(object):
 	def isInRules(self):
 		return self.__model.listOfRules.containsVariable(self)
 
-	def isInReactions(self):
+	def isInReactionsRates(self):
 		return self.__model.listOfReactions.containsVariable(self)
 
 	def isConcentration(self):

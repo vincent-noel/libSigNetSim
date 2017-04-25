@@ -117,7 +117,7 @@ class ListOfParameters(ListOf, HasIds, SbmlObject):
 		if parameter.isInRules():
 			raise CannotDeleteException("Parameter in used in rules")
 
-		if parameter.isInReactions():
+		if parameter.isInReactionsRates():
 			raise CannotDeleteException("Parameter in used in reactions")
 
 		self.__model.listOfVariables.removeVariable(parameter)
