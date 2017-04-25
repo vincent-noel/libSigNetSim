@@ -55,6 +55,7 @@ class TestAnnotation(TestCase):
 		taxon_uri = URI()
 		taxon_uri.setTaxonomy('7787')
 		self.assertEqual(sbml_model.getAnnotation().getHasTaxon()[0], taxon_uri)
+		self.assertEqual(sbml_model.getAnnotation().getHasTaxon()[0].getName(), "Tetronarce californica")
 
 		self.assertEqual(sbml_model.getAnnotation().getHasProperty(), [])
 		self.assertEqual(sbml_model.getAnnotation().getHasPart(), [])
@@ -93,6 +94,13 @@ class TestAnnotation(TestCase):
 		publication_uri = URI()
 		publication_uri.setPubmed('8983160')
 		self.assertEqual(sbml_model.getAnnotation().getModelIsDescribedBy()[0], publication_uri)
-
+		self.assertEqual(
+			sbml_model.getAnnotation().getModelIsDescribedBy()[0].getName(),
+			("Edelstein SJ(1), Schaad O, Henry E, Bertrand D, Changeux JP., "
+				+ "A kinetic mechanism for nicotinic acetylcholine receptors based on multiple allosteric transitions., "
+				+ "1. Biol Cybern. 1996 Nov;75(5):361-79.")
+		)
 		self.assertEqual(sbml_model.getAnnotation().getModelIsInstanceOf(), [])
 		self.assertEqual(sbml_model.getAnnotation().getModelUnknown(), [])
+
+		# print sbml_model.getListOfSBOTermsDescriptions()

@@ -25,7 +25,11 @@
 
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.sbml.CVTerm import CVTerm
+from libsignetsim.uris.URI import URI
 from libsbml import CVTerm as LibsbmlCVTerm
+from libsbml import SBO
+
+
 class SbmlAnnotation(object):
 
 
@@ -34,6 +38,7 @@ class SbmlAnnotation(object):
 		self.__model = model
 		self.__cvTerms = []
 		self.__sboTerm = None
+		self.__sboURI = None
 
 	def readSbml(self, sbml_object,
 					sbml_level=Settings.defaultSbmlLevel,
@@ -42,19 +47,18 @@ class SbmlAnnotation(object):
 		for cvterm in sbml_object.getCVTerms():
 			t_cvterm = CVTerm(self.__model)
 			t_cvterm.readSbml(cvterm, sbml_level, sbml_version)
-			if self == self.__model:
-				print t_cvterm
-				print t_cvterm.isIsVersionOf()
 			self.__cvTerms.append(t_cvterm)
 
 		if sbml_object.isSetSBOTerm():
-			self.__sboTerm = sbml_object.getSBOTerm()
+			self.__sboTerm = int(sbml_object.getSBOTerm())
+			self.__sboURI = URI()
+			self.__sboURI.setSBO(self.__sboTerm)
 
 
 	def writeSbml(self, sbml_object, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
 		if self.__sboTerm is not None:
-			sbml_object.setSBOTerm(self.__sboTerm)
+			sbml_object.setSBOTerm(str(self.__sboTerm))
 
 		for cv_term in self.__cvTerms:
 			t_cvterm = LibsbmlCVTerm()
@@ -63,6 +67,10 @@ class SbmlAnnotation(object):
 
 	def getSBOTerm(self):
 		return self.__sboTerm
+
+	def getSBOTermDescription(self):
+		if self.__sboURI is not None:
+			return self.__sboURI.getName()
 
 	def setSBOTerm(self, sbo_term):
 		self.__sboTerm = sbo_term
@@ -203,3 +211,5 @@ class SbmlAnnotation(object):
 			if cv_term.isModelUnknown():
 				res += cv_term.getURIs()
 		return res
+
+

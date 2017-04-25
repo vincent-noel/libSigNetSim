@@ -22,18 +22,24 @@
 
 """
 
+from libsignetsim.uris.NCBITaxonomyResolver import NCBITaxonomyResolver
+from libsignetsim.uris.SBOResolver import SBOResolver
+from libsignetsim.uris.GoResolver import GoResolver
+from libsignetsim.uris.PubmedResolver import PubmedResolver
 class URI(object):
 
 	GO = 0
 	TAXONOMY = 1
 	BIOMODELS = 2
 	PUBMED = 3
+	SBO = 4
 
 	IDENTIFIERS = {
 		GO: 'http://identifiers.org/go/',
 		TAXONOMY: 'http://identifiers.org/taxonomy/',
 		BIOMODELS: 'http://identifiers.org/biomodels.db/',
-		PUBMED: 'http://identifiers.org/pubmed/'
+		PUBMED: 'http://identifiers.org/pubmed/',
+		SBO: 'http://biomodels.net/SBO/'
 	}
 
 	def __init__(self):
@@ -112,3 +118,28 @@ class URI(object):
 
 	def isPubmed(self):
 		return self.__identifier == self.PUBMED
+
+	def setSBO(self, sbo_id):
+		self.__identifier = self.SBO
+		self.__id = "SBO_%.7d" % sbo_id
+
+	def isSBO(self):
+		return self.__identifier == self.SBO
+
+	def getName(self):
+
+		resolver = None
+
+		if self.isTaxonomy():
+			resolver = NCBITaxonomyResolver(self.__id)
+		elif self.isGO():
+			resolver = GoResolver(self.__id)
+		elif self.isSBO():
+			resolver = SBOResolver(self.__id)
+		elif self.isPubmed():
+			resolver = PubmedResolver(self.__id)
+
+
+		resolver.lookup()
+
+		return resolver.getName()

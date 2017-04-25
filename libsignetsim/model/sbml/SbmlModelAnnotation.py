@@ -42,4 +42,12 @@ class SbmlModelAnnotation(object):
 	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		self.modelHistory.writeSbml(sbml_model, self.sbmlLevel, self.sbmlVersion)
 
+	def getListOfSBOTermsDescriptions(self):
 
+		res = []
+		for object in self.listOfSbmlObjects.values():
+			t_description = object.getAnnotation().getSBOTermDescription()
+			if t_description is not None:
+				res.append(t_description)
+
+		return res
