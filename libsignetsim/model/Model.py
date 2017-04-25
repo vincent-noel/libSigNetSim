@@ -55,4 +55,5 @@ class Model(SbmlModel, MathModel):
 			print ">> Model built in %.2gs" % (time()-t0)
 
 	def cleanBeforePickle(self):
-		self.listOfVariables.cleanFinal()
+		# self.listOfVariables.cleanFinal()
+		pass

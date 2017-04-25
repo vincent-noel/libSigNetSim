@@ -55,11 +55,15 @@ elif [ $1 = "sedml" ]; then
     coverage run -a $OMIT -m unittest libsignetsim.sedml.tests.TestSpecificationL1V2 || exit 1;
     coverage run -a $OMIT -m unittest libsignetsim.sedml.tests.TestMath || exit 1;
 
+elif [ $1 = "uris" ]; then
+    coverage run -a $OMIT -m unittest libsignetsim.uris.tests.TestGOResolver || exit 1;
+
 elif [ $1 = "others" ]; then
     $0 models || exit 1;
     $0 timeseries || exit 1;
     $0 optimization || exit 1;
     $0 sedml || exit 1;
     $0 combine || exit 1;
+    $0 uris || exit 1;
 
 fi

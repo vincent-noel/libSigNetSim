@@ -117,6 +117,7 @@ class MathModel(CModelWriter):
 		# # t0 = time()
 
 		# print self.listOfConservationLaws
+
 		if not dont_reduce and not len(self.listOfEvents) > 0:
 			# self.stoichiometryMatrix.build()
 			# self.listOfConservationLaws.build()

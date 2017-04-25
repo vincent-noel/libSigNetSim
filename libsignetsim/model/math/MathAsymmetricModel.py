@@ -138,9 +138,10 @@ class MathAsymmetricModel(object):
 
 		forbidden_variables = []
 		for species in self.parentModel.variablesOdes:
-			if (str(species.symbol.getSymbol) in treated_variables) or (species.hasEventAssignment()):
+			if (str(species.symbol.getSymbol()) in treated_variables) or (species.hasEventAssignment()):
 				forbidden_variables.append(species.symbol.getSymbol())
-			# print "%s : %s" % (species.getNameOrSbmlId(), species.hasEventAssignment())
+				# print "%s : %s" % (species.getNameOrSbmlId(), species.hasEventAssignment())
+
 
 		if self.parentModel.stoichiometryMatrix.hasNullSpace():
 			nullspace = self.parentModel.stoichiometryMatrix.getSimpleNullspace()

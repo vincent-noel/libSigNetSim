@@ -21,8 +21,6 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
-from libsignetsim.settings.Settings import Settings
-
 
 class URI(object):
 
