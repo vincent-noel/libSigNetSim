@@ -115,7 +115,8 @@ class ListOfUnitDefinitions(ListOf, HasIds, SbmlObject):
 
 
 		if not self.containsUnits(new_unit):
-			return ListOf.add(self, new_unit)
+			ListOf.add(self, new_unit)
+			return new_unit
 		else:
 
 			return self.getExistingUnits(new_unit)
@@ -124,15 +125,16 @@ class ListOfUnitDefinitions(ListOf, HasIds, SbmlObject):
 
 	def getConcentrationUnit(self, unit, compartment_unit):
 
-		# print "> Computing concetration units..."
 		new_unit = deepcopy(unit)
 		new_comp_unit = deepcopy(compartment_unit)
 		new_comp_unit.listOfUnits[0].exponent = new_comp_unit.listOfUnits[0].exponent * -1
 		new_unit.listOfUnits = new_unit.listOfUnits + new_comp_unit.listOfUnits
 
 		if not self.containsUnits(new_unit):
-			return self.addSbmlObject(new_unit)
+			ListOf.add(self, new_unit)
+			return new_unit
 		else:
+			# We return the one already in the list, not the computed one
 			return self.getExistingUnits(new_unit)
 
 
