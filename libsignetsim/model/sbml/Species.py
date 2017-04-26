@@ -33,7 +33,7 @@ from libsignetsim.model.math.MathVariable import MathVariable
 from libsignetsim.settings.Settings import Settings
 
 from libsbml import formulaToL3String
-from sympy import Symbol
+from sympy import Symbol, srepr
 
 class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 						RuledVariable, EventAssignedVariable, HasUnits):
@@ -179,6 +179,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		if self.isInitialized:
 			t_value = self.value.getSbmlMathFormula(sbml_level, sbml_version)
 			if not self.isDeclaredConcentration:
+				print self.getSbmlId()
+				print t_value.getInternalMathFormula()
+				print t_value.getValue()
 				sbml_sp.setInitialAmount(t_value.getValue())
 			else:
 				t_formula = MathFormula(self.__model)
@@ -319,19 +322,25 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 	def getValue(self):
 
-		if self.isDeclaredConcentration:
-			return float(self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula())
-		else:
-			return Variable.getValue(self)
+		if self.isInitialized:
+			if self.isDeclaredConcentration:
+				return float(self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula())
+			else:
+				return Variable.getValue(self)
 
 
 	def setValue(self, value):
-		self.isInitialized = True
 
-		if self.isDeclaredConcentration:
-			self.value.setInternalMathFormula(value*self.getCompartment().symbol.getInternalMathFormula())
+		if value is None:
+			self.isInitialized = False
+			self.value.setInternalMathFormula(None)
+
 		else:
-			Variable.setValue(self, value)
+			self.isInitialized = True
+			if self.isDeclaredConcentration:
+				self.value.setInternalMathFormula(value*self.getCompartment().symbol.getInternalMathFormula())
+			else:
+				Variable.setValue(self, value)
 
 
 	def hasUnits(self):

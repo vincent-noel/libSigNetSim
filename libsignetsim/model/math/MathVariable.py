@@ -101,18 +101,22 @@ class MathVariable(object):
 
 
 	def getValue(self):
-		if self.value.getInternalMathFormula() is not None:
+		if self.isInitialized:
 			return self.value.getValueMathFormula()
 
 
-
 	def setValue(self, value):
-		if isinstance(value, int) or isinstance(value, float):
-			self.isInitialized = True
-			self.value.setValueMathFormula(value)
-		elif isinstance(value, str):
-			self.isInitialized = True
-			self.value.setPrettyPrintMathFormula(value)
+		if value is None:
+			self.isInitialized = False
+			self.value.setInternalMathFormula(None)
+
+		else:
+			if isinstance(value, int) or isinstance(value, float):
+				self.isInitialized = True
+				self.value.setValueMathFormula(value)
+			elif isinstance(value, str):
+				self.isInitialized = True
+				self.value.setPrettyPrintMathFormula(value)
 
 	def setDerivativeValue(self, value):
 		if isinstance(value, int) or isinstance(value, float):
