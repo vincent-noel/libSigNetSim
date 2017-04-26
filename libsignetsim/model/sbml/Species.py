@@ -179,9 +179,6 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		if self.isInitialized:
 			t_value = self.value.getSbmlMathFormula(sbml_level, sbml_version)
 			if not self.isDeclaredConcentration:
-				print self.getSbmlId()
-				print t_value.getInternalMathFormula()
-				print t_value.getValue()
 				sbml_sp.setInitialAmount(t_value.getValue())
 			else:
 				t_formula = MathFormula(self.__model)
