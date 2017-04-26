@@ -310,6 +310,8 @@ class SbmlDocument(object):
 				self.getExternalDocumentDependencies(sbml_doc)
 
 			self.documentDependencies = []
+			# print self.documentDependenciesPaths
+			# print self.documentPath
 			for path in self.documentDependenciesPaths:
 				t_document = SbmlDocument()
 				t_document.readSbmlFromFile(join(self.documentPath, path))

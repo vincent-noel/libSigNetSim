@@ -1,47 +1,28 @@
-# libSigNetSim [![Build Status](https://travis-ci.org/vincent-noel/libSigNetSim.svg?branch=master)](https://travis-ci.org/vincent-noel/libSigNetSim) [![Coverage Status](https://coveralls.io/repos/github/vincent-noel/libSigNetSim/badge.svg?branch=develop)](https://coveralls.io/github/vincent-noel/libSigNetSim?branch=develop)
-Python library designed for building, adjusting and analyzing quantitative biological models.
+# libSigNetSim, Python library designed for building, adjusting and analyzing quantitative biological models.
+[![Build Status](https://travis-ci.org/vincent-noel/libSigNetSim.svg?branch=master)](https://travis-ci.org/vincent-noel/libSigNetSim) [![Coverage Status](https://coveralls.io/repos/github/vincent-noel/libSigNetSim/badge.svg?branch=develop)](https://coveralls.io/github/vincent-noel/libSigNetSim?branch=develop)
 
 
 
-##Non-Python Dependencies
-You will need MPI libraries to execute C code in parallel
+## Non-Python Dependencies
 
-	libopenmpi-dev openmpi-bin
-
-
-You will need Sundials library to perform numerical integration (which needs Lapack, Atlas and Blas libraries)
-
-	libsundials-serial-dev libsundials-serial liblapack-dev libblas-dev libatlas-base-dev
+    bash scripts/install_dep.sh
 
 
-You will need Git to download the non-linear optimization library, and Pip to download python dependencies
 
-	git python-pip
-
-
-And some other packages that you might need, depending on your actual install (mainly used to build python dependencies)
-
-	python-dev python-setuptools subversion libfreetype6-dev libpng12-dev gfortran g++ gcc make pkg-config
-
-
-##Python dependencies
+## Python dependencies
 
 	pip install -r requirements.txt
 
 
 
-##Installation
-For now it should work just with
-
-	pip install .
-
-or
+## Installation
 
 	python setup.py install
 
 
 
-##Jupyter notebook with libSigNetSim
+## Jupyter notebook with libSigNetSim
+
 You can run a Jupyter notebook, in a virtual environment, using
 
 	scripts/run_notebook.sh
@@ -50,11 +31,11 @@ You can also run a notebook in a docker, using
 
 	scripts/run_docker_notebook.sh
 
-Both will start you the notebook on localhost:8888
+Both will start the notebook on localhost:8888
+For the docker, password is the name of this repository
+Some examples, using combine archives, are available in the notebooks folder
 
-
-
-##License
+## License
 	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
 
 	libSigNetSim is free software: you can redistribute it and/or modify
