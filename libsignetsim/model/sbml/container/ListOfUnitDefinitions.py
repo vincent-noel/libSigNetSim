@@ -154,4 +154,4 @@ class ListOfUnitDefinitions(ListOf, HasIds, SbmlObject):
 		return False
 
 	def isUnitIdAvailable(self, unit_id):
-		return unit_id not in ListOf.keys(self)
+		return unit_id not in HasIds.sbmlIds(self)
