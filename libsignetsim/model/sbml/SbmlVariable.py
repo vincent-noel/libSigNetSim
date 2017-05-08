@@ -113,8 +113,10 @@ class SbmlVariable(HasId):
 
 	def setSbmlId(self, sbml_id, prefix="", model_wide=True):
 
+		# print "Inside setSbmlId"
 		if self.isParameter() and self.isLocalParameter():
-			self.reaction.renameSbmlId(self.getSbmlId(), prefix+sbml_id)
-			self.sbmlId = prefix+sbml_id
+			# print "is local parameter"
+			self.reaction.renameSbmlId(self.getSbmlId(), sbml_id)
+			HasId.setSbmlId(self, sbml_id)
 		else:
 			HasId.setSbmlId(self, sbml_id, prefix, model_wide)

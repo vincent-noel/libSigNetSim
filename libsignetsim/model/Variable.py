@@ -69,7 +69,7 @@ class Variable(SbmlVariable, MathVariable):
 			if t_sbml_id == self.getSbmlId():
 				pass
 
-			elif not self.__model.listOfVariables.containsSbmlId(t_sbml_id):
+			elif not self.__model.listOfVariables.containsSbmlId(t_sbml_id) or (self.isParameter() and self.isLocalParameter()):
 				SbmlVariable.setSbmlId(self, t_sbml_id, prefix, model_wide)
 				MathVariable.setSbmlId(self, t_sbml_id, prefix)
 

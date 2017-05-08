@@ -41,13 +41,17 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 	# Add/Remove variables
 	def addVariable(self, variable, string=None):
 
+		# print variable
+		# print string
 		t_sbmlId = ListOfSbmlVariables.newSbmlId(self, variable, string)
+		# print t_sbmlId
 		dict.update(self, {t_sbmlId: variable})
 		return t_sbmlId
 
 	def removeVariable(self, variable):
 
-		del self[variable.getSbmlId()]
+		# del self[variable.getSbmlId()]
+		del variable
 
 	# Symbols
 	def symbols(self):
