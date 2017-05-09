@@ -103,3 +103,5 @@ class MathSymbol(MathFormula):
 
 	def getPrettyPrintMathFormula(self, rawFormula=False):
 		return str(self.getInternalMathFormula(rawFormula=rawFormula))
+
+	# def renameSbmlId(self, old_sbml_id, new_sbml_id):

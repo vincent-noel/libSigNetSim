@@ -74,6 +74,7 @@ class SbmlMathReader(object):
 		# Local parameter
 		# If we are within a reaction, we first need to look in the local
 		# scope for the variable identifier
+
 		if self.isFromReaction is not None and self.model.listOfReactions[self.isFromReaction].listOfLocalParameters.containsSbmlId(variable):
 			if simplified:
 				return SympySymbol("_parameter_")

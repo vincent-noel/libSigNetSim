@@ -81,6 +81,7 @@ class Variable(SbmlVariable, MathVariable):
 			in the variable, aka in the value
 		"""
 		MathVariable.renameSbmlId(self, old_sbml_id, new_sbml_id)
+		SbmlVariable.renameSbmlId(self, new_sbml_id)
 
 	def isInAlgebraicRules(self):
 		return self.__model.listOfRules.algebraicContainsVariable(self)

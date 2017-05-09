@@ -209,7 +209,6 @@ class ListOfRules(ListOf, SbmlObject):
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		for rule in ListOf.values(self):
-			# if rule.rule_type == Rule.RULE_RATE:
 			rule.renameSbmlId(old_sbml_id, new_sbml_id)
 
 

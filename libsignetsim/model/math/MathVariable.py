@@ -221,6 +221,7 @@ class MathVariable(object):
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		self.value.renameSbmlId(old_sbml_id, new_sbml_id)
+		self.symbol.renameSbmlId(old_sbml_id, new_sbml_id)
 
 	def isInRules(self):
 		return self.__model.listOfRules.containsVariable(self)

@@ -139,6 +139,5 @@ class ListOfSpecies(ListOf, HasIds, SbmlObject):
 		self.remove(self.getById(species_obj_id))
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
-
 		for obj in ListOf.values(self):
 			obj.renameSbmlId(old_sbml_id, new_sbml_id)
