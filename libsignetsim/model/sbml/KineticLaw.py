@@ -42,6 +42,7 @@ from libsignetsim.model.sbml.KineticLawIdentifier import KineticLawIdentifier
 from libsignetsim.settings.Settings import Settings
 
 from sympy import simplify, srepr, diff, zeros
+from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 
 class KineticLaw(KineticLawIdentifier):
 
@@ -49,12 +50,7 @@ class KineticLaw(KineticLawIdentifier):
 
 		self.__model = model
 		self.__definition = MathFormula(model, MathFormula.MATH_KINETICLAW, isFromReaction)
-		# MathFormula.__init__(self, model,
-		# 						MathFormula.MATH_KINETICLAW, isFromReaction)
 		KineticLawIdentifier.__init__(self, model, isFromReaction)
-
-
-
 
 	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[],
 				replacements={}, conversions={},
@@ -64,7 +60,9 @@ class KineticLaw(KineticLawIdentifier):
 		for var, conversion in conversions.items():
 			t_convs.update({var:var/conversion})
 
-		t_formula = obj.kineticLaw.getDefinition().getInternalMathFormula().subs(subs).subs(replacements).subs(t_convs)
+		t_formula = unevaluatedSubs(obj.kineticLaw.getDefinition().getInternalMathFormula(), subs)
+		t_formula = unevaluatedSubs(t_formula, replacements)
+		t_formula = unevaluatedSubs(t_formula, t_convs)
 
 		if extent_conversion is not None:
 			t_formula *= extent_conversion.getInternalMathFormula()
@@ -98,7 +96,7 @@ class KineticLaw(KineticLawIdentifier):
 			for species in self.__model.listOfSpecies.values():
 				if species.isConcentration():
 					subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
-			formula = formula.subs(subs)
+			formula = unevaluatedSubs(formula, subs)
 		return formula
 
 
@@ -368,16 +366,8 @@ class KineticLaw(KineticLawIdentifier):
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 
-		t_symbol = SympySymbol(old_sbml_id)
-		t_local_symbol = SympySymbol("_local_%d_%s" % (self.reaction.objId, old_sbml_id))
-		t_concentration_symbol = SympySymbol("_speciesForcedConcentration_%s_" % old_sbml_id)
-		if t_symbol in self.__definition.getInternalMathFormula().atoms():
-			self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
-		elif t_local_symbol in self.__definition.getInternalMathFormula().atoms():
-			self.__definition.setInternalMathFormula(
-				self.__definition.getInternalMathFormula().subs(t_local_symbol,
-					SympySymbol("_local_%d_%s" % (self.reaction.objId, new_sbml_id))))
-		elif t_concentration_symbol in self.__definition.getInternalMathFormula().atoms():
-			self.__definition.setInternalMathFormula(
-				self.__definition.getInternalMathFormula().subs(
-					t_concentration_symbol, SympySymbol("_speciesForcedConcentration_%s_" % new_sbml_id)))
+		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
+		self.__definition.renameSbmlId(
+			"_local_%d_%s" % (self.reaction.objId, old_sbml_id),
+			"_local_%d_%s" % (self.reaction.objId, new_sbml_id)
+		)

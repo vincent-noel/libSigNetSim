@@ -29,8 +29,8 @@ from libsignetsim.model.sbml.HasId import HasId
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.math.sympy_shortcuts import (
-	SympySymbol, SympyInteger, SympyMul, SympyPow)
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyMul, SympyPow
+from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 
 
 class EventAssignment(SbmlObject):
@@ -103,9 +103,13 @@ class EventAssignment(SbmlObject):
 		for var, conversion in conversions.items():
 			t_convs.update({var:var/conversion})
 
-		t_definition = obj.getDefinition().getInternalMathFormula().subs(subs).subs(replacements).subs(t_convs)
+		t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(), subs)
+		t_definition = unevaluatedSubs(t_definition, replacements)
+		t_definition = unevaluatedSubs(t_definition, t_convs)
 
-		t_var_symbol = obj.getVariable().symbol.getInternalMathFormula().subs(subs).subs(replacements)
+		t_var_symbol = unevaluatedSubs(obj.getVariable().symbol.getInternalMathFormula(), subs)
+		t_var_symbol = unevaluatedSubs(t_var_symbol, replacements)
+
 		if t_var_symbol in conversions:
 			t_definition *= conversions[t_var_symbol]
 
@@ -145,11 +149,12 @@ class EventAssignment(SbmlObject):
 		return self.__definition
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
-		old_symbol = SympySymbol(old_sbml_id)
-
-		if old_symbol in self.__definition.getInternalMathFormula().atoms():
-			t_definition = self.__definition.getInternalMathFormula.subs(
-												old_symbol,
-												SympySymbol(new_sbml_id)
-			)
-			self.__definition.setInternalMathFormula(t_definition)
+		# old_symbol = SympySymbol(old_sbml_id)
+		#
+		# if old_symbol in self.__definition.getInternalMathFormula().atoms():
+		# 	# t_definition = self.__definition.getInternalMathFormula.subs(
+		# 	# 									old_symbol,
+		# 	# 									SympySymbol(new_sbml_id)
+		# 	# )
+		# 	# self.__definition.setInternalMathFormula(t_definition)
+		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)

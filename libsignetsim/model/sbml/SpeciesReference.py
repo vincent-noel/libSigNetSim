@@ -32,6 +32,7 @@ from libsignetsim.model.math.sympy_shortcuts import *
 from libsignetsim.settings.Settings import Settings
 
 from libsbml import AST_REAL, AST_INTEGER, AST_RATIONAL, formulaToString
+from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 from sympy import Symbol, sympify, srepr, simplify, expand, factor, nsimplify
 
 class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
@@ -76,7 +77,9 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 			EventAssignedVariable.copy(self, obj, prefix, shift)
 			self.constant = obj.constant
 
-		self.stoichiometry.setInternalMathFormula(obj.stoichiometry.getInternalMathFormula().subs(subs).subs(replacements))
+		t_stoichiometry = unevaluatedSubs(obj.stoichiometry.getInternalMathFormula(), subs)
+		t_stoichiometry = unevaluatedSubs(t_stoichiometry, replacements)
+		self.stoichiometry.setInternalMathFormula(t_stoichiometry)
 
 		t_symbol = Symbol(obj.getSpecies().getSbmlId())
 		if t_symbol in subs.keys():

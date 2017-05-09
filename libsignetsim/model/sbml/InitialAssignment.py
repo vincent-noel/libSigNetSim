@@ -26,8 +26,8 @@
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.math.sympy_shortcuts import  (
-	SympySymbol, SympyInteger, SympyMul, SympyPow)
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyMul, SympyPow
+from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 
 
 class InitialAssignment(SbmlObject):
@@ -101,9 +101,13 @@ class InitialAssignment(SbmlObject):
 		for var, conversion in conversions.items():
 			t_convs.update({var:var/conversion})
 
-		t_definition = obj.getDefinition().getInternalMathFormula().subs(subs).subs(replacements).subs(t_convs)
+		t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(), subs)
+		t_definition = unevaluatedSubs(t_definition, replacements)
+		t_definition = unevaluatedSubs(t_definition, t_convs)
 
-		t_var_symbol = obj.getVariable().symbol.getInternalMathFormula().subs(subs).subs(replacements)
+		t_var_symbol = unevaluatedSubs(obj.getVariable().symbol.getInternalMathFormula(), subs)
+		t_var_symbol = unevaluatedSubs(t_var_symbol, replacements)
+
 		if t_var_symbol in conversions:
 			t_definition *= conversions[t_var_symbol]
 
@@ -134,7 +138,7 @@ class InitialAssignment(SbmlObject):
 			for species in self.__model.listOfSpecies.values():
 				if species.isConcentration():
 					subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
-			formula = formula.subs(subs)
+			formula = unevaluatedSubs(formula, subs)
 
 		return formula
 
@@ -189,11 +193,7 @@ class InitialAssignment(SbmlObject):
 
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
-		old_symbol = SympySymbol(old_sbml_id)
-
-		if old_symbol in self.__definition.getInternalMathFormula().atoms():
-			self.__definition.setInternalMathFormula(self.__definition.getInternalMathFormula.subs(old_symbol, SympySymbol(new_sbml_id)))
-
+		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
 
 	def containsVariable(self, variable):
 		return (variable.symbol.getInternalMathFormula() in self.__definition.getInternalMathFormula().atoms()

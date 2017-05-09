@@ -29,21 +29,15 @@ from libsignetsim.model.math.MathSymbol import MathSymbol
 from libsignetsim.model.sbml.HasId import HasId
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.math.sympy_shortcuts import  (
-	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
-	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
-	SympyInf, SympyNan, SympyAdd, SympyMul, SympyPow,
-	SympyFunction, SympyUndefinedFunction, SympyLambda, SympyDerivative,
-	SympyCeiling, SympyFloor, SympyAbs, SympyLog, SympyExp, SympyPiecewise,
-	SympyFactorial, SympyRoot, SympyAcos, SympyAsin, SympyAtan, SympyAcosh,
-	SympyAsinh, SympyAtanh, SympyCos, SympySin, SympyTan, SympyAcot,
-	SympyAcoth, SympyCosh, SympySinh, SympyTanh, SympySec, SympyCsc,
-	SympyCot, SympyCoth, SympyAcsc, SympyAsec,
-	SympyEqual, SympyUnequal, SympyGreaterThan, SympyLessThan,
-	SympyStrictGreaterThan, SympyStrictLessThan,
-	SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
-	SympyMax, SympyMin)
+from libsignetsim.model.math.sympy_shortcuts import (
+	SympySymbol, SympyEqual, SympyUnequal, SympyGreaterThan, SympyLessThan,
+	SympyStrictGreaterThan, SympyStrictLessThan, SympyAnd, SympyOr, SympyXor
+)
+
+from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
+
 from sympy import srepr
+
 class EventTrigger(MathFormula):
 	""" Events definition """
 
@@ -86,7 +80,10 @@ class EventTrigger(MathFormula):
 		for var, conversion in conversions.items():
 			t_convs.update({var:var/conversion})
 
-		MathFormula.setInternalMathFormula(self, obj.getInternalMathFormula().subs(subs).subs(replacements).subs(t_convs))
+		t_formula = unevaluatedSubs(obj.getInternalMathFormula(), subs)
+		t_formula = unevaluatedSubs(t_formula, replacements)
+		t_formula = unevaluatedSubs(t_formula, t_convs)
+		MathFormula.setInternalMathFormula(self, t_formula)
 
 		self.initialValue = obj.initialValue
 		self.isPersistent = obj.isPersistent
@@ -94,15 +91,15 @@ class EventTrigger(MathFormula):
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 
-		old_symbol = SympySymbol(old_sbml_id)
-		if old_symbol in MathFormula.getInternalMathFormula(self).atoms():
-			MathFormula.setInternalMathFormula(self,
-				MathFormula.getInternalMathFormula(self).subs(
-					old_symbol,
-					SympySymbol(new_sbml_id)
-				)
-			)
-
+		# old_symbol = SympySymbol(old_sbml_id)
+		# if old_symbol in MathFormula.getInternalMathFormula(self).atoms():
+		# 	MathFormula.setInternalMathFormula(self,
+		# 		MathFormula.getInternalMathFormula(self).subs(
+		# 			old_symbol,
+		# 			SympySymbol(new_sbml_id)
+		# 		)
+		# 	)
+		MathFormula.renameSbmlId(self, old_sbml_id, new_sbml_id)
 
 	def setPrettyPrintMathFormula(self, trigger):
 
@@ -114,7 +111,7 @@ class EventTrigger(MathFormula):
 			if t_var.isConcentration():
 				t_subs_mask.update({t_var.symbol.getInternalMathFormula():SympySymbol("_speciesForcedConcentration_%s_" % str(t_var.symbol.getInternalMathFormula()))})
 
-		MathFormula.setInternalMathFormula(self, t_trigger.getInternalMathFormula().subs(t_subs_mask))
+		MathFormula.setInternalMathFormula(self, unevaluatedSubs(t_trigger.getInternalMathFormula(), t_subs_mask))
 
 
 	def getRootsFunctions(self):

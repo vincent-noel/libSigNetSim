@@ -31,8 +31,8 @@ from libsbml import SBML_SPECIES_CONCENTRATION_RULE,\
 					SBML_PARAMETER_RULE,\
 					SBML_COMPARTMENT_VOLUME_RULE
 
-from libsignetsim.model.math.sympy_shortcuts import  (
-	SympySymbol, SympyInteger, SympyMul, SympyPow)
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyMul, SympyPow
+from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 
 
 class RateRule(Rule):
@@ -112,9 +112,13 @@ class RateRule(Rule):
 		t_convs = {}
 		for var, conversion in conversions.items():
 			t_convs.update({var:var/conversion})
-		t_var_symbol = obj.getVariable().symbol.getInternalMathFormula().subs(subs).subs(replacements)
 
-		t_definition = obj.getDefinition().getInternalMathFormula().subs(subs).subs(replacements).subs(t_convs)
+		t_var_symbol = unevaluatedSubs(obj.getVariable().symbol.getInternalMathFormula(), subs)
+		t_var_symbol = unevaluatedSubs(t_var_symbol, replacements)
+
+		t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(), subs)
+		t_definition = unevaluatedSubs(t_definition, replacements)
+		t_definition = unevaluatedSubs(t_definition, t_convs)
 
 		if t_var_symbol in conversions:
 			t_definition *= conversions[t_var_symbol]
@@ -176,7 +180,7 @@ class RateRule(Rule):
 			for species in self.__model.listOfSpecies.values():
 				if species.isConcentration():
 					subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
-			formula = formula.subs(subs)
+			formula = unevaluatedSubs(formula, subs)
 		return formula
 
 	def getDefinition(self, rawFormula=False):
@@ -190,14 +194,17 @@ class RateRule(Rule):
 
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
-		old_symbol = SympySymbol(old_sbml_id)
-
-		if old_symbol in self.__definition.getInternalMathFormula().atoms():
-
-			t_definition = self.__definition.getInternalMathFormula()
-			t_definition = t_definition.subs(old_symbol, SympySymbol(new_sbml_id))
-
-			self.__definition.setInternalMathFormula(t_definition)
+		# old_symbol = SympySymbol(old_sbml_id)
+		#
+		# if old_symbol in self.__definition.getInternalMathFormula().atoms():
+		#
+		# 	t_definition = unevaluatedSubs(
+		# 		self.__definition.getInternalMathFormula(),
+		# 		{old_symbol: SympySymbol(new_sbml_id)}
+		# 	)
+		#
+		# 	self.__definition.setInternalMathFormula(t_definition)
+		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
 
 	def containsVariable(self, variable):
 		return (variable.symbol.getInternalMathFormula() in self.__definition.getInternalMathFormula().atoms()

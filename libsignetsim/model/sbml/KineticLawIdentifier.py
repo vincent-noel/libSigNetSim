@@ -23,7 +23,7 @@
 """
 
 
-from sympy import simplify, expand
+from sympy import simplify, expand, srepr
 from libsignetsim.model.math.sympy_shortcuts import  (
 	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
 	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
@@ -235,10 +235,11 @@ class KineticLawIdentifier(object):
 
 		t_forward = None
 		t_backward = None
-		formula = expand(formula)
+		formula = simplify(formula)
+		# print formula
 		# If we had an addition
 		if formula.func == SympyAdd:
-
+			# print srepr(formula)
 			# And one of the terms
 			for arg in formula.args:
 
@@ -249,6 +250,7 @@ class KineticLawIdentifier(object):
 						t_backward = arg*SympyInteger(-1)
 		else:
 			return (formula,SympyInteger(0))
+
 		t_forward = SympyAdd(formula, t_backward)
 
 		return (t_forward, t_backward)

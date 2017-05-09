@@ -41,7 +41,7 @@ def unevaluatedSubs(expr, substitutions, *args, **kwargs):
 	else:
 		return expr.func(*new_args, evaluate=False)
 
-def simpleSubs(expr, substitutions, *args, **kwargs):
+def simpleSubs(expr, substitutions, *args, **kwarg):
 	"""Perform expression substitution, ignoring derivatives."""
 	if expr in substitutions:
 		return substitutions[expr]

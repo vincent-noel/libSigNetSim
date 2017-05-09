@@ -28,6 +28,7 @@ from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.MathFormula import MathFormula
 
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyEqual
+from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 
 class AlgebraicRule(Rule):
 	""" Class for rate rules """
@@ -62,7 +63,10 @@ class AlgebraicRule(Rule):
 				replacements={}, conversions={}, time_conversion=None):
 
 		Rule.copy(self, obj, prefix, shift)
-		t_definition = obj.getDefinition().getInternalMathFormula().subs(subs).subs(replacements)
+
+		t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(), subs)
+		t_definition = unevaluatedSubs(t_definition, replacements)
+
 		self.__definition.setInternalMathFormula(t_definition)
 
 	def getRawDefinition(self, rawFormula=False):
@@ -73,7 +77,7 @@ class AlgebraicRule(Rule):
 			for species in self.__model.listOfSpecies.values():
 				if species.isConcentration():
 					subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
-			formula = formula.subs(subs)
+			formula = unevaluatedSubs(formula, subs)
 
 		return formula
 
@@ -97,12 +101,12 @@ class AlgebraicRule(Rule):
 
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
-		old_symbol = SympySymbol(old_sbml_id)
-
-		if old_symbol in self.__definition.getInternalMathFormula().atoms():
-			t_definition = MathFormula(self.__model, MathFormula.MATH_ALGEBRAICRULE)
-			t_definition.setInternalMathFormula(self.__definition.getInternalMathFormula.subs(old_symbol, SympySymbol(new_sbml_id)))
-
+		# old_symbol = SympySymbol(old_sbml_id)
+		#
+		# if old_symbol in self.__definition.getInternalMathFormula().atoms():
+		# 	# t_definition = MathFormula(self.__model, MathFormula.MATH_ALGEBRAICRULE)
+		# 	# t_definition.setInternalMathFormula(self.__definition.getInternalMathFormula.subs(old_symbol, SympySymbol(new_sbml_id)))
+		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
 
 	def containsVariable(self, variable):
 		return (variable.symbol.getInternalMathFormula() in self.__definition.getInternalMathFormula().atoms()

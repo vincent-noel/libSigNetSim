@@ -22,8 +22,6 @@
 
 """
 
-
-# from libsignetsim.model.sbml.container.ListOfSbmlObjects import ListOfSbmlObjects
 from libsignetsim.model.ListOfMathVariables import ListOfMathVariables
 from libsignetsim.model.ListOfSbmlVariables import ListOfSbmlVariables
 
@@ -41,16 +39,12 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 	# Add/Remove variables
 	def addVariable(self, variable, string=None):
 
-		# print variable
-		# print string
 		t_sbmlId = ListOfSbmlVariables.newSbmlId(self, variable, string)
-		# print t_sbmlId
 		dict.update(self, {t_sbmlId: variable})
+
 		return t_sbmlId
 
 	def removeVariable(self, variable):
-
-		# del self[variable.getSbmlId()]
 		del variable
 
 	# Symbols
@@ -73,7 +67,6 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 
 	# Renaming variable
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
-			# print dict.keys(self)
 		if old_sbml_id in dict.keys(self):
 			t_var = dict.__getitem__(self, old_sbml_id)
 			dict.__delitem__(self, old_sbml_id)

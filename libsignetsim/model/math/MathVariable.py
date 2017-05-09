@@ -27,6 +27,7 @@ from libsignetsim.model.math.MathSymbol import MathSymbol
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol
+from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 
 
 class MathVariable(object):
@@ -72,10 +73,13 @@ class MathVariable(object):
 		self.symbol.setInternalMathFormula(SympySymbol(prefix + str(obj.symbol.getSymbol())))
 
 		if obj.value is not None and obj.value.getInternalMathFormula() is not None:
-			if conversion_factor is None:
-				self.value.setInternalMathFormula(obj.value.getInternalMathFormula().subs(subs).subs(replacements))
-			else:
-				self.value.setInternalMathFormula(obj.value.getInternalMathFormula().subs(subs).subs(replacements)*conversion_factor)
+			t_formula = unevaluatedSubs(obj.value.getInternalMathFormula(), subs)
+			t_formula = unevaluatedSubs(t_formula, replacements)
+
+			if conversion_factor is not None:
+				t_formula *= conversion_factor
+				# self.value.setInternalMathFormula(obj.value.getInternalMathFormula().subs(subs).subs(replacements)*conversion_factor)
+			self.value.setInternalMathFormula(t_formula)
 
 		if obj.derivative_value is not None and obj.derivative_value.getInternalMathFormula() is not None:
 			if conversion_factor is None:

@@ -26,6 +26,8 @@
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.sbml.SimpleSbmlObject import SimpleSbmlObject
 from libsignetsim.settings.Settings import Settings
+from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol
 
 class EventPriority(SimpleSbmlObject, MathFormula):
 	""" Events priority's definition """
@@ -63,16 +65,20 @@ class EventPriority(SimpleSbmlObject, MathFormula):
 		for var, conversion in conversions.items():
 			t_convs.update({var:var/conversion})
 
-		MathFormula.setInternalMathFormula(self, obj.getInternalMathFormula().subs(subs).subs(replacements).subs(t_convs))
+		t_formula = unevaluatedSubs(obj.getInternalMathFormula(), subs)
+		t_formula = unevaluatedSubs(t_formula, replacements)
+		t_formula = unevaluatedSubs(t_formula, t_convs)
+		MathFormula.setInternalMathFormula(self, t_formula)
 
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 
-		old_symbol = SympySymbol(old_sbml_id)
-		if old_symbol in self.getInternalMathFormula().atoms():
-			self.setInternalMathFormula(
-				self.getInternalMathFormula().subs(
-					old_symbol,
-					SympySymbol(new_sbml_id)
-				)
-			)
+		# old_symbol = SympySymbol(old_sbml_id)
+		# if old_symbol in self.getInternalMathFormula().atoms():
+		# 	self.setInternalMathFormula(
+		# 		unevaluatedSubs(
+		# 			self.getInternalMathFormula(),
+		# 			{old_symbol:  SympySymbol(new_sbml_id)}
+		# 		)
+		# 	)
+		MathFormula.renameSbmlId(self, old_sbml_id, new_sbml_id)

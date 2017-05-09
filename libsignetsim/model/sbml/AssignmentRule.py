@@ -27,8 +27,8 @@ from libsignetsim.model.sbml.Rule import Rule
 from libsignetsim.model.math.MathSymbol import MathSymbol
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.math.sympy_shortcuts import  (
-SympySymbol, SympyInteger, SympyMul, SympyPow)
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyMul, SympyPow
+from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 
 from libsbml import SBML_SPECIES_CONCENTRATION_RULE, \
 					SBML_PARAMETER_RULE, \
@@ -62,7 +62,6 @@ class AssignmentRule(Rule):
 					SympyMul(self.__definition.getInternalMathFormula(),
 						self.__var.getCompartment().symbol.getInternalMathFormula()))
 
-		# print "var assignment %s = %s" % (str(self.__var.symbol.getSymbol()), self.__definition.getDeveloppedInternalMathFormula())
 	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
 		sbml_rule = sbml_model.createAssignmentRule()
@@ -89,7 +88,6 @@ class AssignmentRule(Rule):
 		sbml_rule.setVariable(t_variable)
 		sbml_rule.setMath(t_definition.getSbmlMathFormula(sbml_level, sbml_version))
 
-
 	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):
 
 		Rule.copy(self, obj, prefix, shift)
@@ -110,9 +108,13 @@ class AssignmentRule(Rule):
 		for var, conversion in conversions.items():
 			t_convs.update({var:var/conversion})
 
-		t_definition = obj.getDefinition().getInternalMathFormula().subs(subs).subs(replacements).subs(t_convs)
+		t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(), subs)
+		t_definition = unevaluatedSubs(t_definition, replacements)
+		t_definition = unevaluatedSubs(t_definition, t_convs)
 
-		t_var_symbol = obj.getVariable().symbol.getInternalMathFormula().subs(subs).subs(replacements)
+		t_var_symbol = unevaluatedSubs(obj.getVariable().symbol.getInternalMathFormula(), subs)
+		t_var_symbol = unevaluatedSubs(t_var_symbol, replacements)
+
 		if t_var_symbol in conversions:
 			t_definition *= conversions[t_var_symbol]
 
@@ -151,7 +153,7 @@ class AssignmentRule(Rule):
 			for species in self.__model.listOfSpecies.values():
 				if species.isConcentration():
 					subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
-			formula = formula.subs(subs)
+			formula = unevaluatedSubs(formula, subs)
 
 		return formula
 
@@ -198,19 +200,7 @@ class AssignmentRule(Rule):
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 
-		old_symbol = SympySymbol(old_sbml_id)
-		old_symbol_concentration = SympySymbol("_speciesForcedConcentration_%s_" % old_sbml_id)
-		# if self.__var.symbol.getInternalMathFormula() == old_symbol:
-		# 	self.__var.symbol.setInternalMathFormula(SympySymbol(new_sbml_id))
-
-		if (
-			old_symbol in self.__definition.getInternalMathFormula().atoms()
-			or old_symbol_concentration in self.__definition.getInternalMathFormula().atoms()
-		):
-			self.__definition.setInternalMathFormula(self.__definition.getInternalMathFormula().subs({
-				old_symbol: SympySymbol(new_sbml_id),
-				old_symbol_concentration: SympySymbol("_speciesForcedConcentration_%s_" % new_sbml_id)
-			}))
+		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
 
 
 	def containsVariable(self, variable):

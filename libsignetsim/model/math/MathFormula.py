@@ -238,10 +238,22 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 			return self.writeCCode(t_derivative)
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
-
 		old_symbol = SympySymbol(old_sbml_id)
+		old_symbol_concentration = SympySymbol("_speciesForcedConcentration_%s_" % old_sbml_id)
+
+
 		if old_symbol in self.getInternalMathFormula().atoms():
-			self.setInternalMathFormula(self.getInternalMathFormula().subs(old_symbol, SympySymbol(new_sbml_id)))
+			self.setInternalMathFormula(unevaluatedSubs(
+				self.internalTree,
+				{old_symbol: SympySymbol(new_sbml_id)}
+			))
+
+		if old_symbol_concentration in self.getInternalMathFormula().atoms():
+			self.setInternalMathFormula(unevaluatedSubs(
+				self.internalTree,
+				{old_symbol_concentration: SympySymbol("_speciesForcedConcentration_%s_" % new_sbml_id)}
+			))
+
 
 	def subs(self, substitutions):
 		self.internalTree = self.internalTree.subs(substitutions)
