@@ -53,13 +53,14 @@ class TestRenameSbmlId(TestCase):
 		r1.listOfReactants.add(s1)
 		r1.listOfReactants.add(s2)
 		r1.listOfProducts.add(s3)
-		r1.setKineticLaw(KineticLaw.MASS_ACTION, reversible=True, parameters=[p1,p2])
+		r1.setKineticLaw(KineticLaw.MASS_ACTION, reversible=True, parameters=[p1, p2])
 
 		a1 = model.listOfRules.newAssignmentRule(s4, "p1*s3")
 		rate1 = model.listOfRules.newRateRule(s5, "p4*s3")
 		alg1 = model.listOfRules.newAlgebraicRule("p4*s3-p3")
 
 		model.renameSbmlId("s3", "s3_bis")
+
 
 		fr1 = MathFormula(model)
 		fr1.setPrettyPrintMathFormula("c * (p1 * (s1 / c) * (s2 / c) - p2 * s3_bis / c)", rawFormula=True)
@@ -89,7 +90,6 @@ class TestRenameSbmlId(TestCase):
 			falg1.getDeveloppedInternalMathFormula()
 		))
 
-		
 	def sympyEqual(self, a, b):
 
 		return simplify(a-b) == 0
