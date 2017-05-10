@@ -59,7 +59,8 @@ class ListOf(dict):
 		""" Override values() to sort by id """
 		return [dict.__getitem__(self, obj) for obj in self.keys()]
 
-
+	def index(self, object):
+		return self.values().index(object)
 
 	def ids(self):
 		""" Return a set of ids of the sbml objects """

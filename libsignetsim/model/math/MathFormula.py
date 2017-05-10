@@ -122,14 +122,17 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 		return MathFormula.getMathFormula(self, MathFormula.MATH_SBML, sbml_level, sbml_version)
 
 
-	def getPrettyPrintMathFormula(self):
+	def getPrettyPrintMathFormula(self, rawFormula=False):
 
-		t_math_formula = str(MathFormula.getInternalMathFormula(self))
-		for species in self.__model.listOfSpecies.values():
-			if species.isConcentration():
-				t_math_formula = t_math_formula.replace(("_speciesForcedConcentration_%s_" % str(species.symbol.getInternalMathFormula())), species.getSbmlId())
-
-		return t_math_formula
+		if not rawFormula:
+			t_subs_mask = {}
+			for t_var in self.__model.listOfSpecies.values():
+				if t_var.isConcentration():
+					t_subs_mask.update({SympySymbol(
+						"_speciesForcedConcentration_%s_" % str(t_var.symbol.getInternalMathFormula())):t_var.symbol.getInternalMathFormula()})
+			return str(simplify(unevaluatedSubs(MathFormula.getInternalMathFormula(self), t_subs_mask)))
+		else:
+			return simplify(MathFormula.getDeveloppedInternalMathFormula(self))
 
 
 	def getInternalMathFormula(self):
@@ -138,9 +141,6 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 
 	def getDeveloppedInternalMathFormula(self):
 		return MathFormula.getMathFormula(self, MathFormula.MATH_DEVINTERNAL)
-
-	# def getFinalMathFormula(self, forcedConcentration=False):
-	# 	return MathFormula.getMathFormula(self, MathFormula.MATH_FINALINTERNAL, forcedConcentration=forcedConcentration)
 
 	def getCMathFormula(self):
 		return MathFormula.getMathFormula(self, MathFormula.MATH_C)
@@ -200,7 +200,7 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 	# 	self.setMathFormula(tree, math_type=self.MATH_FINALINTERNAL)
 
 	def setPrettyPrintMathFormula(self, string, rawFormula=False):
-		""" Sets the formula for substance. If forcedConcentration, the species are replaced by their concentration"""
+		""" Sets the formula for substance. If not rawFormula, the species are replaced by their concentration"""
 
 		sbml_formula = parseL3Formula(str(string))
 		if sbml_formula is None:
