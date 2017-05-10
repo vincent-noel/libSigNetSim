@@ -132,7 +132,7 @@ class EventAssignment(SbmlObject):
 		self.__var.addEventAssignmentBy(self.event)
 
 
-	def getAssignment(self):
+	def getPrettyPrintAssignment(self):
 
 		return self.__definition.getPrettyPrintMathFormula()
 
@@ -140,21 +140,13 @@ class EventAssignment(SbmlObject):
 
 		return self.__definition
 
-	def setAssignment(self, value):
+	def setPrettyPrintAssignment(self, value, rawFormula=False):
 
-		self.__definition.setPrettyPrintMathFormula(str(value))
+		self.__definition.setPrettyPrintMathFormula(str(value), rawFormula)
 
 	def getDefinition(self):
 
 		return self.__definition
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
-		# old_symbol = SympySymbol(old_sbml_id)
-		#
-		# if old_symbol in self.__definition.getInternalMathFormula().atoms():
-		# 	# t_definition = self.__definition.getInternalMathFormula.subs(
-		# 	# 									old_symbol,
-		# 	# 									SympySymbol(new_sbml_id)
-		# 	# )
-		# 	# self.__definition.setInternalMathFormula(t_definition)
 		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)

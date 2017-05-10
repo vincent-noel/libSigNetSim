@@ -69,16 +69,3 @@ class EventPriority(SimpleSbmlObject, MathFormula):
 		t_formula = unevaluatedSubs(t_formula, replacements)
 		t_formula = unevaluatedSubs(t_formula, t_convs)
 		MathFormula.setInternalMathFormula(self, t_formula)
-
-
-	def renameSbmlId(self, old_sbml_id, new_sbml_id):
-
-		# old_symbol = SympySymbol(old_sbml_id)
-		# if old_symbol in self.getInternalMathFormula().atoms():
-		# 	self.setInternalMathFormula(
-		# 		unevaluatedSubs(
-		# 			self.getInternalMathFormula(),
-		# 			{old_symbol:  SympySymbol(new_sbml_id)}
-		# 		)
-		# 	)
-		MathFormula.renameSbmlId(self, old_sbml_id, new_sbml_id)

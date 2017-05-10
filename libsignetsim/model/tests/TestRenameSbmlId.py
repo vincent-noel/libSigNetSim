@@ -59,6 +59,11 @@ class TestRenameSbmlId(TestCase):
 		rate1 = model.listOfRules.newRateRule(s5, "p4*s3")
 		alg1 = model.listOfRules.newAlgebraicRule("p4*s3-p3")
 
+		e1 = model.listOfEvents.new()
+		e1.setTrigger("p2/s1 > p4/s3")
+		e_ass = e1.addEventAssignment(s3, "p3*s3")
+
+
 		model.renameSbmlId("s3", "s3_bis")
 
 
@@ -88,6 +93,20 @@ class TestRenameSbmlId(TestCase):
 		self.assertTrue(self.sympyEqual(
 			alg1.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
 			falg1.getDeveloppedInternalMathFormula()
+		))
+
+		fe_trigger = MathFormula(model)
+		fe_trigger.setPrettyPrintMathFormula("p2/(s1/c) > p4/(s3_bis/c)", rawFormula=True)
+		self.assertTrue(self.sympyEqual(
+			e1.trigger.getDeveloppedInternalMathFormula(),
+			fe_trigger.getDeveloppedInternalMathFormula()
+		))
+
+		fe_ass = MathFormula(model)
+		fe_ass.setPrettyPrintMathFormula("p3*(s3_bis/c)", rawFormula=True)
+		self.assertTrue(self.sympyEqual(
+			e_ass.getDefinition().getDeveloppedInternalMathFormula(),
+			fe_ass.getDeveloppedInternalMathFormula()
 		))
 
 	def sympyEqual(self, a, b):

@@ -24,10 +24,7 @@
 
 
 from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.sbml.EventAssignment import EventAssignment
-from libsignetsim.model.math.MathSymbol import MathSymbol
-from libsignetsim.model.sbml.HasId import HasId
-from libsignetsim.model.sbml.SbmlObject import SbmlObject
+from libsignetsim.model.ModelException import MathException, SbmlException
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.sympy_shortcuts import (
 	SympySymbol, SympyEqual, SympyUnequal, SympyGreaterThan, SympyLessThan,
@@ -36,8 +33,7 @@ from libsignetsim.model.math.sympy_shortcuts import (
 
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 
-from sympy import srepr
-
+from libsbml import parseL3Formula
 class EventTrigger(MathFormula):
 	""" Events definition """
 
@@ -88,31 +84,21 @@ class EventTrigger(MathFormula):
 		self.initialValue = obj.initialValue
 		self.isPersistent = obj.isPersistent
 
+	def setPrettyPrintMathFormula(self, string, rawFormula=False):
+		""" Sets the formula for substance. If forcedConcentration, the species are replaced by their concentration"""
 
-	def renameSbmlId(self, old_sbml_id, new_sbml_id):
+		sbml_formula = parseL3Formula(str(string))
+		if sbml_formula is None:
+			raise SbmlException("MathFormula : Unable to parse math formula")
 
-		# old_symbol = SympySymbol(old_sbml_id)
-		# if old_symbol in MathFormula.getInternalMathFormula(self).atoms():
-		# 	MathFormula.setInternalMathFormula(self,
-		# 		MathFormula.getInternalMathFormula(self).subs(
-		# 			old_symbol,
-		# 			SympySymbol(new_sbml_id)
-		# 		)
-		# 	)
-		MathFormula.renameSbmlId(self, old_sbml_id, new_sbml_id)
+		MathFormula.readSbml(self, sbml_formula, self.sbmlLevel, self.sbmlVersion)
+		if not rawFormula:
+			t_subs_mask = {}
+			for t_var in self.__model.listOfSpecies.values():
+				if t_var.isConcentration():
+					t_subs_mask.update({t_var.symbol.getInternalMathFormula():SympySymbol("_speciesForcedConcentration_%s_" % str(t_var.symbol.getInternalMathFormula()))})
 
-	def setPrettyPrintMathFormula(self, trigger):
-
-		t_trigger = MathFormula(self.__model)
-		t_trigger.readSbml(parseL3Formula(trigger), self.__model.sbmlLevel, self.__model.sbmlVersion)
-
-		t_subs_mask = {}
-		for t_var in self.__model.listOfSpecies.values():
-			if t_var.isConcentration():
-				t_subs_mask.update({t_var.symbol.getInternalMathFormula():SympySymbol("_speciesForcedConcentration_%s_" % str(t_var.symbol.getInternalMathFormula()))})
-
-		MathFormula.setInternalMathFormula(self, unevaluatedSubs(t_trigger.getInternalMathFormula(), t_subs_mask))
-
+			MathFormula.setInternalMathFormula(self, MathFormula.getInternalMathFormula(self).subs(t_subs_mask))
 
 	def getRootsFunctions(self):
 		return self.generateRootsFunctions(MathFormula.getDeveloppedInternalMathFormula(self))

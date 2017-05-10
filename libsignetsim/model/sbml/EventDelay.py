@@ -78,17 +78,3 @@ class EventDelay(SbmlObject, MathFormula):
 
 		self.setInternalMathFormula(t_formula)
 
-
-	def renameSbmlId(self, old_sbml_id, new_sbml_id):
-
-		# old_symbol = SympySymbol(old_sbml_id)
-		# if old_symbol in self.getInternalMathFormula().atoms():
-		# self.renameSbmlId(old_symbol, SympySymbol(new_sbml_id))
-			# self.setInternalMathFormula(
-			# 	self.getInternalMathFormula().subs(
-			# 		old_symbol,
-			# 		SympySymbol(new_sbml_id)
-			# 	)
-			# )
-		MathFormula.renameSbmlId(self, old_sbml_id, new_sbml_id)
-

@@ -139,7 +139,7 @@ class Event(HasId, SbmlObject):
 	def setTrigger(self, trigger):
 
 		if self.trigger is None:
-			self.trigger = MathEventTrigger(self.__model)
+			self.trigger = EventTrigger(self.__model)
 
 		self.trigger.setPrettyPrintMathFormula(trigger)
 
@@ -218,10 +218,13 @@ class Event(HasId, SbmlObject):
 
 		return self.priority
 
-	def addEventAssignment(self):
+	def addEventAssignment(self, variable=None, definition=None):
 
 		t_assignment = EventAssignment(self.__model, len(self.listOfEventAssignments), self)
 		self.listOfEventAssignments.append(t_assignment)
+		if variable is not None and definition is not None:
+			t_assignment.setVariable(variable)
+			t_assignment.setPrettyPrintAssignment(definition)
 		return t_assignment
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
@@ -231,6 +234,11 @@ class Event(HasId, SbmlObject):
 		for event_assignment in self.listOfEventAssignments:
 			event_assignment.renameSbmlId(old_sbml_id, new_sbml_id)
 
+		if self.delay is not None:
+			self.delay.renameSbmlId(old_sbml_id, new_sbml_id)
+
+		if self.priority is not None:
+			self.priority.renameSbmlId(old_sbml_id, new_sbml_id)
 
 	def memorySize(self):
 
