@@ -24,7 +24,7 @@
 
 from libsignetsim.model.ListOfMathVariables import ListOfMathVariables
 from libsignetsim.model.ListOfSbmlVariables import ListOfSbmlVariables
-
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol
 
 class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 	""" Parent class for all the ListOf_ containers in a sbml model """
@@ -67,8 +67,9 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 
 	# Renaming variable
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
-		if old_sbml_id in dict.keys(self):
-			t_var = dict.__getitem__(self, old_sbml_id)
+		old_symbol = SympySymbol(old_sbml_id)
+		if old_symbol in self.symbols():
+			t_var = self.getBySymbol(old_symbol)
 			t_var.renameSbmlId(old_sbml_id, new_sbml_id)
 			dict.__delitem__(self, old_sbml_id)
 			dict.update(self, {new_sbml_id: t_var})
