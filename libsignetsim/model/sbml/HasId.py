@@ -112,14 +112,14 @@ class HasId(object):
 	def getName(self):
 		return self.__name
 
-	def setSbmlId(self, sbml_id, prefix="", model_wide=True):
+	def setSbmlId(self, sbml_id, prefix="", model_wide=True, list_of_var=True):
 
 		t_sbml_id = prefix + sbml_id.strip()
 		if self.__sbmlId is not None and self.__sbmlId != t_sbml_id:
 			if model_wide:
 				# print "renaming model wide : %s to %s" % (self.__sbmlId, t_sbml_id)
 				self.__model.renameSbmlId(self.__sbmlId, t_sbml_id)
-			else:
+			elif list_of_var:
 				self.__model.listOfVariables.renameSbmlId(self.__sbmlId, t_sbml_id)
 
 		self.__sbmlId = t_sbml_id

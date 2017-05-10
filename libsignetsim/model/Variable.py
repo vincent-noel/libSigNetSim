@@ -80,6 +80,7 @@ class Variable(SbmlVariable, MathVariable):
 		""" Function to rename a sbml id which could be countained
 			in the variable, aka in the value
 		"""
+		SbmlVariable.renameSbmlId(self, new_sbml_id)
 		MathVariable.renameSbmlId(self, old_sbml_id, new_sbml_id)
 
 	def isInAlgebraicRules(self):

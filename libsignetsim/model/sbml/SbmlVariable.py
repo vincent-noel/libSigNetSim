@@ -120,3 +120,9 @@ class SbmlVariable(HasId):
 			HasId.setSbmlId(self, sbml_id)
 		else:
 			HasId.setSbmlId(self, sbml_id, prefix, model_wide)
+
+
+	def renameSbmlId(self, sbml_id):
+		# pass
+		HasId.setSbmlId(self, sbml_id, model_wide=False, list_of_var=False)
+	# 	self.setSbmlId(sbml_id, model_wide=False)

@@ -69,5 +69,6 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		if old_sbml_id in dict.keys(self):
 			t_var = dict.__getitem__(self, old_sbml_id)
+			t_var.renameSbmlId(old_sbml_id, new_sbml_id)
 			dict.__delitem__(self, old_sbml_id)
 			dict.update(self, {new_sbml_id: t_var})

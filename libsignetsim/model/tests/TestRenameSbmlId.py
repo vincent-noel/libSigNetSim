@@ -53,12 +53,45 @@ class TestRenameSbmlId(TestCase):
 		r1.listOfReactants.add(s1)
 		r1.listOfReactants.add(s2)
 		r1.listOfProducts.add(s3)
-		r1.setKineticLaw(KineticLaw.MASS_ACTION, reversible=True, parameters=[p1,p2])
+		r1.setKineticLaw(KineticLaw.MASS_ACTION, reversible=True, parameters=[p1, p2])
 
 		a1 = model.listOfRules.newAssignmentRule(s4, "p1*s3")
-		r1 = model.listOfRules.newRateRule(s5, "p4*s3")
-
+		rate1 = model.listOfRules.newRateRule(s5, "p4*s3")
+		alg1 = model.listOfRules.newAlgebraicRule("p4*s3-p3")
 		model.renameSbmlId("s3", "s3_bis")
+
+
+		# print model.listOfVariables.sbmlIds()
+		# print model.listOfVariables.symbols()
+		# print model.listOfVariables.keys()
+		fr1 = MathFormula(model)
+		fr1.setPrettyPrintMathFormula("c * (p1 * (s1 / c) * (s2 / c) - p2 * s3_bis / c)", rawFormula=True)
+		self.assertTrue(self.sympyEqual(
+			r1.kineticLaw.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
+			fr1.getDeveloppedInternalMathFormula()
+		))
+
+		fa1 = MathFormula(model)
+		fa1.setPrettyPrintMathFormula("c * p1 * (s3_bis / c)", rawFormula=True)
+		self.assertTrue(self.sympyEqual(
+			a1.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
+			fa1.getDeveloppedInternalMathFormula()
+		))
+
+		frate1 = MathFormula(model)
+		frate1.setPrettyPrintMathFormula("c * p4 * (s3_bis / c)", rawFormula=True)
+		self.assertTrue(self.sympyEqual(
+			rate1.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
+			frate1.getDeveloppedInternalMathFormula()
+		))
+
+		falg1 = MathFormula(model)
+		falg1.setPrettyPrintMathFormula("-p3 + p4 * (s3_bis / c)", rawFormula=True)
+		self.assertTrue(self.sympyEqual(
+			alg1.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula(),
+			falg1.getDeveloppedInternalMathFormula()
+		))
+
 
 	def sympyEqual(self, a, b):
 
