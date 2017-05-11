@@ -255,6 +255,7 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 		return self.__hasId and not self.constant
 
 
-	def renameSbmlId(self, old_sbml_id, new_sbml_id):
-		if self.__hasId:
-			Variable.renameSbmlId(old_sbml_id, new_sbml_id)
+	# #In this case, it should be in the list of variables. So it should be useless
+	# def renameSbmlId(self, old_sbml_id, new_sbml_id):
+	# 	if self.__hasId:
+	# 		Variable.renameSbmlId(old_sbml_id, new_sbml_id)

@@ -67,6 +67,9 @@ class TestRenameSbmlId(TestCase):
 		model.renameSbmlId("s3", "s3_bis")
 
 
+		print model.listOfVariables.sbmlIds()
+		print model.listOfVariables.symbols()
+		print model.listOfVariables.keys()
 		fr1 = MathFormula(model)
 		fr1.setPrettyPrintMathFormula("c * (p1 * (s1 / c) * (s2 / c) - p2 * s3_bis / c)", rawFormula=True)
 		self.assertTrue(self.sympyEqual(

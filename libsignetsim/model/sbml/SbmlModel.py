@@ -203,7 +203,6 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation):
 		""" Here we rename the variable in all the math """
 
 		self.listOfVariables.renameSbmlId(old_sbml_id, new_sbml_id)
-
 		self.listOfInitialAssignments.renameSbmlId(old_sbml_id, new_sbml_id)
 		self.listOfRules.renameSbmlId(old_sbml_id, new_sbml_id)
 		self.listOfReactions.renameSbmlId(old_sbml_id, new_sbml_id)

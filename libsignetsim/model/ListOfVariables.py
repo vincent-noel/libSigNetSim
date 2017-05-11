@@ -70,6 +70,9 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 		old_symbol = SympySymbol(old_sbml_id)
 		if old_symbol in self.symbols():
 			t_var = self.getBySymbol(old_symbol)
-			t_var.renameSbmlId(old_sbml_id, new_sbml_id)
+			t_var.renameSymbol(old_sbml_id, new_sbml_id)
 			dict.__delitem__(self, old_sbml_id)
 			dict.update(self, {new_sbml_id: t_var})
+
+		for var in dict.values(self):
+			var.renameSbmlIdInValue(old_sbml_id, new_sbml_id)

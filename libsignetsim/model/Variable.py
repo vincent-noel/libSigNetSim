@@ -83,5 +83,9 @@ class Variable(SbmlVariable, MathVariable):
 		SbmlVariable.renameSbmlId(self, new_sbml_id)
 		MathVariable.renameSbmlId(self, old_sbml_id, new_sbml_id)
 
+	def renameSymbol(self, old_sbml_id, new_sbml_id):
+		SbmlVariable.renameSbmlId(self, new_sbml_id)
+		MathVariable.renameSymbol(self, old_sbml_id, new_sbml_id)
+
 	def isInAlgebraicRules(self):
 		return self.__model.listOfRules.algebraicContainsVariable(self)

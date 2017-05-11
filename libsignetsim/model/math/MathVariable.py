@@ -219,6 +219,12 @@ class MathVariable(object):
 	def setSbmlId(self, sbml_id, prefix=""):
 		self.symbol.setValueMathFormula(prefix+sbml_id)
 
+	def renameSymbol(self, old_sbml_id, new_sbml_id):
+		self.symbol.renameSbmlId(old_sbml_id, new_sbml_id)
+
+	def renameSbmlIdInValue(self, old_sbml_id, new_sbml_id):
+		self.value.renameSbmlId(old_sbml_id, new_sbml_id)
+
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		self.value.renameSbmlId(old_sbml_id, new_sbml_id)
 		self.symbol.renameSbmlId(old_sbml_id, new_sbml_id)
