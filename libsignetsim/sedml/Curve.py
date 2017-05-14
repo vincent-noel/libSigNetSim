@@ -79,6 +79,23 @@ class Curve(SedBase, HasId):
 	def getYDataReference(self):
 		return self.__yDataReference
 
+	def getXData(self):
+		data_x = self.__document.listOfDataGenerators.getDataGenerator(self.__xDataReference)
+		return data_x.getData()
+
+	def getYData(self):
+		data_y = self.__document.listOfDataGenerators.getDataGenerator(self.__yDataReference)
+		return data_y.getData()
+
+	def getData(self):
+		xs = self.getXData()
+		ys = self.getYData()
+
+		data = []
+		for i, x in enumerate(xs):
+			data.append((x, ys[i]))
+		return data
+
 	def getLogX(self):
 		return self.__logX
 
@@ -121,6 +138,7 @@ class Curve(SedBase, HasId):
 			fig.plot(plot, curve_id, data_x.getData(), data_y.getData())
 		else:
 			fig.plot(plot, curve_id, data_x.getData(), data_y.getData(), y_name=self.getYAxisTitle())
+
 
 	def getXAxisTitle(self):
 		return self.__document.listOfDataGenerators.getDataGenerator(self.__xDataReference).getName()

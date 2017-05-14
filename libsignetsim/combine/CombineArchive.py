@@ -33,7 +33,8 @@ from libsignetsim.settings.Settings import Settings
 from zipfile import is_zipfile, ZipFile
 from random import choice
 from string import ascii_uppercase, ascii_lowercase, digits
-from os.path import exists, join
+from os.path import exists, join, isdir
+from os import mkdir
 
 class CombineArchive(object):
 
@@ -62,6 +63,8 @@ class CombineArchive(object):
 		self.__file = None
 		self.__listOfFiles = ListOfFiles(self)
 		self.__path = Settings.tempDirectory + ''.join(choice(ascii_uppercase + ascii_lowercase + digits) for _ in range(12))
+		if not isdir(self.__path):
+			mkdir(self.__path)
 		self.__extension = None
 
 	def readArchive(self, file):
@@ -83,7 +86,6 @@ class CombineArchive(object):
 		return self.__listOfFiles
 
 	def extractArchive(self):
-
 		self.__file.extractall(self.__path)
 
 	def writeArchive(self, filename):
@@ -96,10 +98,10 @@ class CombineArchive(object):
 		self.__file.write(join(self.__path, "manifest.xml"), "manifest.xml")
 
 		for file in self.__listOfFiles.writeListOfFiles():
+
 			self.__file.write(join(self.__path, file), file)
 
 		self.__file.close()
-
 
 	def getMasterSedml(self):
 
@@ -112,8 +114,7 @@ class CombineArchive(object):
 	def getAllSedmls(self):
 
 		all_sedmls = self.__listOfFiles.getAllSedmls()
-		if len(all_sedmls) > 0:
-			return [join(self.__path, sedml.getFilename()) for sedml in all_sedmls]
+		return [join(self.__path, sedml.getFilename()) for sedml in all_sedmls]
 
 	def runMasterSedml(self):
 
@@ -159,6 +160,13 @@ class CombineArchive(object):
 		return sedml_doc
 
 
+	def getAllSbmls(self):
+
+		all_sbmls = self.__listOfFiles.getAllSbmls()
+		return [join(self.__path, sbml.getFilename()) for sbml in all_sbmls]
+
+
+
 	def getPath(self):
 		return self.__path
 
@@ -182,3 +190,7 @@ class CombineArchive(object):
 
 	def isSBOLArchive(self):
 		return self.__extension in self.ARCHIVE_EXTENSIONS and self.ARCHIVE_EXTENSIONS[self.__extension] == self.SBOX
+
+	def addFile(self, filename):
+
+		self.__listOfFiles.addFile(filename)

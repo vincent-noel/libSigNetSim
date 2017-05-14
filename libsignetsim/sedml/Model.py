@@ -120,3 +120,10 @@ class Model(SedBase, HasId):
 
 	def getSource(self):
 		return self.__source
+
+	def removePaths(self):
+		self.__source.removePaths()
+
+	def makeLocalSource(self):
+		return self.__source.makeLocalSource()
+

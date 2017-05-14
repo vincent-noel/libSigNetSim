@@ -68,6 +68,8 @@ class Plot2D(Output):
 
 		subplot.set_title(self.getName())
 
+
 	def getDataToGenerate(self):
 
 		return self.listOfCurves.getDataToGenerate()
+

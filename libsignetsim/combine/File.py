@@ -31,6 +31,8 @@ from libsbml import SBMLReader
 import libsbml
 from libsedml import readSedMLFromString
 reload(libsbml)
+from shutil import copy
+
 
 class File(object):
 
@@ -94,6 +96,25 @@ class File(object):
 		elif self.__manifest.getFormat(self.getFilename()) is None:
 			self.__manifest.setFormat(self.getFilename(), self.__format)
 
+	def newFile(self, filename):
+
+		self.__filename = basename(filename)
+		self.__extension = self.__filename.split('.')[-1]
+
+		if self.__extension in self.KNOWN_FORMATS:
+			self.__format = self.KNOWN_FORMATS[self.__extension]
+			if self.__format == self.XML:
+				self.__format = self.guessXML(open(filename, 'r').read())
+
+		else:
+			self.__format = "http://purl.org/NET/mediatypes/%s" % guess_type(filename)[0]
+
+		if self.__format is None:
+			self.__format = self.UNKNOWN
+
+		copy(filename, join(self.__archive.getPath(), self.__filename))
+		self.__manifest.addInManifest(self.__filename, self.__format)
+
 
 	def isMaster(self):
 		return self.__manifest.isInManifest(self.getFilename()) and self.__manifest.isMaster(self.getFilename())
@@ -107,8 +128,16 @@ class File(object):
 				and self.__manifest.getFormat(self.getFilename()).startswith(self.SEDML)
 		)
 
+	def isSbml(self):
+		return (self.__manifest.isInManifest(self.getFilename())
+				and self.__manifest.getFormat(self.getFilename()).startswith(self.SBML)
+		)
+
 	def getFilename(self):
-		return join(self.__path, self.__filename)
+		if self.__path is not None:
+			return join(self.__path, self.__filename)
+		else:
+			return self.__filename
 
 	def getFormat(self):
 		return self.__format

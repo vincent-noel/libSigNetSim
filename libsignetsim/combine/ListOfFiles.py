@@ -60,6 +60,12 @@ class ListOfFiles(list):
 
 
 
+	def addFile(self, filename):
+
+		file = File(self.__archive, self.__manifest)
+		file.newFile(filename)
+		list.append(self, file)
+
 	def writeManifest(self):
 		return self.__manifest.writeManifest()
 
@@ -81,3 +87,11 @@ class ListOfFiles(list):
 			if file.isSedml():
 				sedmls.append(file)
 		return sedmls
+
+
+	def getAllSbmls(self):
+		sbmls = []
+		for file in self:
+			if file.isSbml():
+				sbmls.append(file)
+		return sbmls

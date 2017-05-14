@@ -25,7 +25,7 @@ from libsignetsim.sedml.URI import URI
 from libsignetsim.sedml.SedmlException import SedmlFileNotFound
 from libsignetsim.settings.Settings import Settings
 from urllib import URLopener
-from os.path import join, exists, isabs, relpath, commonprefix
+from os.path import join, exists, isabs, relpath, commonprefix, basename
 from os import getcwd
 
 class Source(object):
@@ -60,6 +60,7 @@ class Source(object):
 			self.__filename = join(Settings.tempDirectory, source.split('/')[-1])
 
 		elif source.startswith("urn:"):
+
 			self.__sourceType = self.URN
 			self.__uri.setURI(source)
 			if self.__uri.getURL():
@@ -125,7 +126,23 @@ class Source(object):
 	def makeRelativePath(self, path):
 
 		if self.__sourceType == self.LOCAL and (isabs(self.__source) or commonprefix([self.__source, path]) != ""):
-				self.__source = relpath(self.__source, path)
+			self.__source = relpath(self.__source, path)
 
 	def getSourceType(self):
 		return self.__sourceType
+
+	def removePaths(self):
+
+		if self.__sourceType == self.LOCAL:
+			self.__filename = basename(self.__filename)
+			self.__source = basename(self.__source)
+
+	def makeLocalSource(self):
+
+		if self.__sourceType in [self.URN, self.DISTANT]:
+
+			t_filename = self.getFilename()
+			self.__sourceType = self.LOCAL
+			self.__filename = t_filename.split('/')[-1]
+			self.__sourceAvailable = True
+			return t_filename

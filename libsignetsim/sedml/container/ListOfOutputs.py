@@ -118,6 +118,14 @@ class ListOfOutputs(ListOf):
 
 		return nb
 
+	def getPlots2D(self):
+
+		plot = []
+		for output in self:
+			if isinstance(output, Plot2D):
+				plot.append(output)
+		return plot
+
 	def getReports(self):
 
 		reports = []

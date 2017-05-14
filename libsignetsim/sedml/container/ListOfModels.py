@@ -98,3 +98,17 @@ class ListOfModels(ListOf):
 
 		for model in self:
 			model.writeSbmlModelToPath(path)
+
+	def removePaths(self):
+
+		for model in self:
+			model.removePaths()
+
+	def makeLocalSources(self):
+		filenames = []
+		for model in self:
+			t_filename = model.makeLocalSource()
+			if t_filename is not None:
+				filenames.append(t_filename)
+
+		return filenames
