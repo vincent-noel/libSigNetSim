@@ -162,20 +162,17 @@ class CWriterData(object):
 
 							t_variable = None
 
-							# if self.workingModel.listOfSpecies.containsName(treatment.name):
-							# 	t_variable = self.workingModel.listOfSpecies.getByName(treatment.name)
-							# elif self.workingModel.listOfParameters.containsName(treatment.name):
-							# 	t_variable = self.workingModel.listOfParameters.getByName(treatment.name)
-							# elif self.workingModel.listOfCompartments.containsName(treatment.name):
-							# 	t_variable = self.workingModel.listOfCompartments.getByName(treatment.name)
+							treatment_name = None
+							if self.workingModel.listOfSpecies.containsName(treatment.name):
+								treatment_name = self.workingModel.listOfSpecies.getByName(treatment.name).getSbmlId()
+							elif self.workingModel.listOfParameters.containsName(treatment.name):
+								treatment_name = self.workingModel.listOfParameters.getByName(treatment.name).getSbmlId()
+							elif self.workingModel.listOfCompartments.containsName(treatment.name):
+								treatment_name = self.workingModel.listOfCompartments.getByName(treatment.name).getSbmlId()
 
+							if self.workingModel.getMathModel().listOfVariables.containsSymbol(SympySymbol(treatment_name)):
+								t_variable = self.workingModel.getMathModel().listOfVariables.getBySymbol(SympySymbol(treatment_name))
 
-
-							if self.workingModel.getMathModel().listOfVariables.containsSymbol(SympySymbol(treatment.name)):
-								t_variable = self.workingModel.getMathModel().listOfVariables.getBySymbol(SympySymbol(treatment.name))
-
-							# else:
-							# 	print "WTF"
 							if t_variable is not None:
 
 								f_c.write("  experiments[%d].conditions[%d].timed_treatments[%d].treatments[%d] = (Treatment) {%g, %d, %d};\n" % (
@@ -192,13 +189,19 @@ class CWriterData(object):
 					for k, observed_value in enumerate(condition.listOfExperimentalData.values()):
 
 						# print "Observed values %d" % k
+						observed_name = None
+						if self.workingModel.listOfSpecies.containsName(observed_value.name):
+							observed_name = self.workingModel.listOfSpecies.getByName(observed_value.name).getSbmlId()
+						elif self.workingModel.listOfParameters.containsName(observed_value.name):
+							observed_name = self.workingModel.listOfParameters.getByName(observed_value.name).getSbmlId()
+						elif self.workingModel.listOfCompartments.containsName(observed_value.name):
+							observed_name = self.workingModel.listOfCompartments.getByName(observed_value.name).getSbmlId()
 
 						t_variable = None
-						if self.workingModel.getMathModel().listOfVariables.containsSymbol(SympySymbol(observed_value.name)):
-							t_variable = self.workingModel.getMathModel().listOfVariables.getBySymbol(SympySymbol(observed_value.name))
+						if self.workingModel.getMathModel().listOfVariables.containsSymbol(SympySymbol(observed_name)):
+							t_variable = self.workingModel.getMathModel().listOfVariables.getBySymbol(SympySymbol(observed_name))
 
-						# else:
-						# 	print "WTF"
+
 						if t_variable not in vars_observed.keys():
 							vars_observed.update({t_variable: len(vars_observed.keys()) })
 

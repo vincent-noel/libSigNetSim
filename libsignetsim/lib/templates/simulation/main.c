@@ -274,10 +274,10 @@ int simulate_model(int model_id, char * folder)
           {
               char out_name[200];
               if (folder != NULL)
-                sprintf(out_name, "%s/results/results_%d", folder, model_id);
+                sprintf(out_name, "%s/results/results_0_%d", folder, model_id);
 
               else
-                sprintf(out_name, "results/results_%d", model_id);
+                sprintf(out_name, "results/results_0_%d", model_id);
 
               WriteTrajectories(result, out_name);
               return_code &= result->return_code;

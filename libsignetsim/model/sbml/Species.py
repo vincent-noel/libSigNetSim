@@ -31,7 +31,7 @@ from libsignetsim.model.sbml.HasUnits import HasUnits
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.MathVariable import MathVariable
 from libsignetsim.settings.Settings import Settings
-
+from libsignetsim.model.math.sympy_shortcuts import SympyFloat
 from libsbml import formulaToL3String
 from sympy import Symbol, srepr
 
@@ -335,7 +335,8 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		else:
 			self.isInitialized = True
 			if self.isDeclaredConcentration:
-				self.value.setInternalMathFormula(value*self.getCompartment().symbol.getInternalMathFormula())
+
+				self.value.setInternalMathFormula(SympyFloat(value)*self.getCompartment().symbol.getInternalMathFormula())
 			else:
 				Variable.setValue(self, value)
 

@@ -73,12 +73,23 @@ class CWriterSimulation(CWriterModels, CWriterData):
 		copyfile(join(Settings.basePath, "lib/templates/simulation/Makefile"), join(self.getTempDirectory(), "Makefile") )
 		copyfile(join(Settings.basePath, "lib/templates/simulation/main.c"), join(self.getTempDirectory(), "src/main.c") )
 
-		treated_variables = []
+		treated_variables_names = []
 		if self.experiment is not None:
-			treated_variables = self.experiment.getTreatedVariables()
-			# print "Treated variables : %s" % treated_variables
+			treated_variables_names = self.experiment.getTreatedVariables()
+
+
+
 
 		for modelInd, model in enumerate(self.listOfModels):
+			treated_variables = []
+			for name in treated_variables_names:
+				if self.workingModel.listOfSpecies.containsName(name):
+					treated_variables.append(self.workingModel.listOfSpecies.getByName(name).getSbmlId())
+				elif self.workingModel.listOfParameters.containsName(name):
+					treated_variables.append(self.workingModel.listOfParameters.getByName(name).getSbmlId())
+				elif self.workingModel.listOfCompartments.containsName(name):
+					treated_variables.append(self.workingModel.listOfCompartments.getByName(name).getSbmlId())
+
 			model.build(vars_to_keep=treated_variables, tmin=self.timeMin[modelInd])
 
 		start = time()

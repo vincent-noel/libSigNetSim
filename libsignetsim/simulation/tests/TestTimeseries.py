@@ -25,7 +25,7 @@
 from libsignetsim.model.Model import Model
 from libsignetsim.model.SbmlDocument import SbmlDocument
 from libsignetsim.simulation.TimeseriesSimulation import TimeseriesSimulation
-
+from libsignetsim.settings.Settings import Settings
 from unittest import TestCase
 from os.path import exists
 
@@ -143,7 +143,7 @@ class TestTimeseries(TestCase):
 
 		for key, values in reference_data.items():
 			for i, t_data in enumerate(values):
-				self.assertAlmostEqual(t_data, y[key][i], delta=1e-4)
+				self.assertAlmostEqual(t_data, y[key][i], delta=(Settings.defaultTestAbsTol+t_data*Settings.defaultTestRelTol))
 
 
 

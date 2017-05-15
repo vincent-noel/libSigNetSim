@@ -91,7 +91,7 @@ class Model(SedBase, HasId):
 			if len(self.listOfChanges) > 0:
 				self.listOfChanges.applyChanges(self.__sbmlModel)
 				self.__changesApplied = True
-
+				# print "Applied changes to id %s" % self.getId()
 		return self.__sbmlModel
 
 	def __loadModel(self):

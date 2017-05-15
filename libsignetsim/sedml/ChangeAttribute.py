@@ -56,5 +56,4 @@ class ChangeAttribute(Change):
 	def applyChange(self, sbml_model):
 
 		object = self.getTarget().getModelObject(sbml_model)
-		if self.getTarget().getAttribute() == XPath.VALUE:
-			object.setValue(self.__newValue)
+		object.setValue(self.__newValue)

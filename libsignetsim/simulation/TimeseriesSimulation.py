@@ -81,14 +81,14 @@ class TimeseriesSimulation(Simulation):
 			self.cleanTempDirectory()
 
 	def loadSimulationResults(self):
-
 		self.rawData = []
-		t_filename = self.getTempDirectory() + Settings.C_simulationResultsDirectory + "results"
+		t_filename = self.getTempDirectory() + Settings.C_simulationResultsDirectory + "results_0"
 		ind = 0
 		while(isfile(t_filename + ("_%d" % ind))):
 			(t, y) = self.readResultFile(t_filename + ("_%d" % ind))
 			self.rawData.append((t,y))
 			ind += 1
+
 
 	def readResultFile(self, filename):
 
