@@ -61,7 +61,7 @@ class SbmlModelCreator(object):
 
 		# if creator.isSetName():
 		# 	self.__name = creator.getName()
-
+		print self
 	def writeSbml(self, creator, level=Settings.defaultSbmlLevel, version=Settings.defaultSbmlVersion):
 
 		if self.__familyName is not None:
@@ -93,6 +93,19 @@ class SbmlModelCreator(object):
 
 	def getName(self):
 		return self.__name
+
+	def setFamilyName(self, family_name):
+		self.__familyName = family_name
+
+	def setGivenName(self, given_name):
+		self.__givenName = given_name
+
+	def setEmail(self, email):
+		self.__email = email
+
+	def setOrganization(self, organisation):
+		self.__organisation = organisation
+
 
 	def __str__(self):
 

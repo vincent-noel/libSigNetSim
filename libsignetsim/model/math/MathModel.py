@@ -104,8 +104,9 @@ class MathModel(CModelWriter):
 		self.listOfDAEs.build()
 		# self.prettyPrint()
 		# self.solveInitialConditions(tmin)
+		# t0 = time()
 		self.solveSimpleInitialConditions(tmin)
-
+		# print "Initial condition solved in %.2gs" % (time()-t0)
 		if len(self.listOfDAEs) > 0:
 			self.listOfDAEs.solveInitialConditions(tmin)
 			self.listOfDAEs.solveDAEs()
@@ -118,12 +119,12 @@ class MathModel(CModelWriter):
 
 		# print self.listOfConservationLaws
 
-		if not dont_reduce and not len(self.listOfEvents) > 0:
-			# self.stoichiometryMatrix.build()
-			# self.listOfConservationLaws.build()
-			# self.prettyPrint()
-
-			self.assymetricModel.build(treated_variables=vars_to_keep)
+		# if not dont_reduce and not len(self.listOfEvents) > 0:
+		# 	# self.stoichiometryMatrix.build()
+		# 	# self.listOfConservationLaws.build()
+		# 	# self.prettyPrint()
+		#
+		# 	self.assymetricModel.build(treated_variables=vars_to_keep)
 			# print self.listOfConservationLaws
 
 			# self.getMathModel().prettyPrint()

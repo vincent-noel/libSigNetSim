@@ -62,7 +62,7 @@ class ListOfCompartments(ListOf, HasIds, SbmlObject):
 		for compartment in ListOf.values(self):
 			compartment.writeSbml(sbml_model, sbml_level, sbml_version)
 
-		SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
+		SbmlObject.writeSbml(self, sbml_model.getListOfCompartments(), sbml_level, sbml_version)
 
 
 	def new(self, name=None, sbml_id=None, value=1, constant=True, unit=None):

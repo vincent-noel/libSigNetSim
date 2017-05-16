@@ -38,7 +38,6 @@ class SbmlModelAnnotation(object):
 
 		self.modelHistory.readSbml(sbml_model, self.sbmlLevel, self.sbmlVersion)
 
-
 	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		self.modelHistory.writeSbml(sbml_model, self.sbmlLevel, self.sbmlVersion)
 

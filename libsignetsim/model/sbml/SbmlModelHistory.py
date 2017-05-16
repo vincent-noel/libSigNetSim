@@ -60,7 +60,8 @@ class SbmlModelHistory(object):
 
 			for modified_date in history.getListModifiedDates():
 				self.__listOfModifiedDates.append(modified_date.getDateAsString())
-
+		# else:
+		# 	print "fuck you"
 	def writeSbml(self, model, level=Settings.defaultSbmlLevel, version=Settings.defaultSbmlVersion):
 
 		if len(self.__listOfCreators) > 0 and len(self.__listOfModifiedDates) > 0 and self.__createdDate is not None:
@@ -82,9 +83,16 @@ class SbmlModelHistory(object):
 				history.addModifiedDate(t_date)
 
 			model.setModelHistory(history)
+			# print model.getAnnotation().getNumChildren()
+			# print model.getAnnotation().getChild(0).getChild(0).toString()
+			# print model.getAnnotation().getChild(0).getChild(0).getAttrValue(0)
+
 
 	def getListOfCreators(self):
 		return self.__listOfCreators
+
+	def getListOfCreatorsEmails(self):
+		return [creator.getEmail() for creator in self.__listOfCreators]
 
 	def getDateCreated(self):
 		return self.__createdDate
@@ -106,3 +114,13 @@ class SbmlModelHistory(object):
 
 		return res
 
+	def createCreator(self):
+		t_creator = SbmlModelCreator()
+		self.__listOfCreators.append(t_creator)
+		return t_creator
+
+	def setDateCreated(self, date):
+		self.__createdDate = date.getDateAsString()
+
+	def addModifiedDate(self, date):
+		self.__listOfModifiedDates.append(date.getDateAsString())

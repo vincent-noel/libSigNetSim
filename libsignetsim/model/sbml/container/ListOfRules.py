@@ -82,7 +82,7 @@ class ListOfRules(ListOf, SbmlObject):
 		for rule in ListOf.values(self):
 			rule.writeSbml(sbml_model, sbml_level, sbml_version)
 
-		SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
+		SbmlObject.writeSbml(self, sbml_model.getListOfRules(), sbml_level, sbml_version)
 
 
 	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):

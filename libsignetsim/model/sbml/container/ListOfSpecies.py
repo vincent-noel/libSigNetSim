@@ -61,7 +61,7 @@ class ListOfSpecies(ListOf, HasIds, SbmlObject):
 		for species in ListOf.values(self):
 			species.writeSbml(sbml_model, sbml_level, sbml_version)
 
-		SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
+		SbmlObject.writeSbml(self, sbml_model.getListOfSpecies(), sbml_level, sbml_version)
 
 
 	def new(self, name=None, compartment=None, value=0, unit=None,

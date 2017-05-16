@@ -60,7 +60,7 @@ class ListOfEvents(ListOf, SbmlObject):
 		for event in ListOf.values(self):
 			event.writeSbml(sbmlModel, sbmlLevel, sbmlVersion)
 
-		SbmlObject.writeSbml(self, sbmlModel, sbmlLevel, sbmlVersion)
+		SbmlObject.writeSbml(self, sbmlModel.getListOfEvents(), sbmlLevel, sbmlVersion)
 
 
 	def new(self):

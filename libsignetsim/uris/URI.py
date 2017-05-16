@@ -33,9 +33,11 @@ class URI(object):
 	BIOMODELS = 2
 	PUBMED = 3
 	SBO = 4
+	GO_bis = 5
 
 	IDENTIFIERS = {
 		GO: 'http://identifiers.org/go/',
+		GO_bis: 'http://identifiers.org/obo.go/',
 		TAXONOMY: 'http://identifiers.org/taxonomy/',
 		BIOMODELS: 'http://identifiers.org/biomodels.db/',
 		PUBMED: 'http://identifiers.org/pubmed/',
@@ -93,7 +95,7 @@ class URI(object):
 		self.__id = go_id
 
 	def isGO(self):
-		return self.__identifier == self.GO
+		return self.__identifier == self.GO or self.__identifier == self.GO_bis
 
 
 	def setBiomodels(self, biomodels_id):

@@ -191,13 +191,13 @@ class SbmlDocument(object):
 			sbmlDoc.setPackageRequired("comp", True)
 
 		sbmlModel = sbmlDoc.createModel()
+
 		self.model.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
 
 		if self.sbmlLevel == 3 and self.useCompPackage:
 			self.saveExternalDocumentDependencies(self.documentPath)
 			self.listOfModelDefinitions.writeSbml(sbmlDoc.getPlugin("comp"), self.sbmlLevel, self.sbmlVersion)
 			self.listOfExternalModelDefinitions.writeSbml(sbmlDoc.getPlugin("comp"), self.sbmlLevel, self.sbmlVersion)
-
 
 
 		if Settings.showSbmlErrors:
@@ -236,6 +236,7 @@ class SbmlDocument(object):
 		# Writing the final file
 
 		result = writeSBMLToFile(sbmlDoc, join(self.documentPath, self.documentFilename))
+
 		if result == 1:
 			return True
 		else:

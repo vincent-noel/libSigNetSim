@@ -61,7 +61,7 @@ class ListOfInitialAssignments(ListOf, SbmlObject):
 		for initial_assignment in ListOf.values(self):
 			initial_assignment.writeSbml(sbml_model, sbml_level, sbml_version)
 
-		SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
+		SbmlObject.writeSbml(self, sbml_model.getListOfInitialAssignments(), sbml_level, sbml_version)
 
 
 	def new(self, variable=None, expression=None, rawFormula=False):

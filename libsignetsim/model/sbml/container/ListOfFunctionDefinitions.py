@@ -63,7 +63,7 @@ class ListOfFunctionDefinitions(ListOf, HasIds, SbmlObject):
 		for function_definition in ListOf.values(self):
 			function_definition.writeSbml(sbml_model, sbml_level, sbml_version)
 
-		SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
+		SbmlObject.writeSbml(self, sbml_model.getListOfFunctionDefinitions(), sbml_level, sbml_version)
 
 
 	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[]):

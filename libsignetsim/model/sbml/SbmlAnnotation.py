@@ -71,6 +71,10 @@ class SbmlAnnotation(object):
 	def getSBOTermDescription(self):
 		if self.__sboURI is not None:
 			return self.__sboURI.getName()
+		elif self.__sboTerm is not None:
+			self.__sboURI = URI()
+			self.__sboURI.setSBO(self.__sboTerm)
+			return self.__sboURI.getName()
 
 	def setSBOTerm(self, sbo_term):
 		self.__sboTerm = sbo_term
@@ -120,6 +124,18 @@ class SbmlAnnotation(object):
 			if cv_term.isIsDescribedBy():
 				res += cv_term.getURIs()
 		return res
+
+	def addIsDesribedBy(self, uri):
+		t_cv_term = CVTerm(self.__model)
+		t_cv_term.setIsDescribedBy()
+		t_cv_term.addURI(uri)
+		self.__cvTerms.append(t_cv_term)
+
+	def clearIsDescribedBy(self):
+		res = []
+		for cv_term in self.__cvTerms:
+			if cv_term.isIsDescribedBy():
+				self.__cvTerms.remove(cv_term)
 
 	def getIsEncodedBy(self):
 		res = []

@@ -98,7 +98,7 @@ class Settings(object):
 
 	verbose = 0
 	verboseTiming = 0
-	showSbmlErrors = False
+	showSbmlErrors = True
 
 	sbmlTestCasesPath = join(expanduser('~'),".test-suite/")
 	sbmlTestResultsPath = join('/tmp',"test-suite-results/")

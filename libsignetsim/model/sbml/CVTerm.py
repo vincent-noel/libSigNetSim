@@ -98,7 +98,8 @@ class CVTerm(object):
 			cv_term.setQualifierType(self.__qualifierType)
 			cv_term.setBiologicalQualifierType(self.__qualifier)
 			for uri in self.__resources:
-					cv_term.addResource(uri.writeURI())
+				print uri.writeURI()
+				cv_term.addResource(str(uri.writeURI()))
 
 	def __str__(self):
 
@@ -118,6 +119,9 @@ class CVTerm(object):
 	def getURIs(self):
 		return self.__resources
 
+	def addURI(self, uri):
+		self.__resources.append(uri)
+
 	def isHasPart(self):
 		return self.__qualifierType == BIOLOGICAL_QUALIFIER and self.biological_qualifiers.keys()[self.__qualifier] == BQB_HAS_PART
 
@@ -135,6 +139,11 @@ class CVTerm(object):
 
 	def isIsDescribedBy(self):
 		return self.__qualifierType == BIOLOGICAL_QUALIFIER and self.biological_qualifiers.keys()[self.__qualifier] == BQB_IS_DESCRIBED_BY
+
+	def setIsDescribedBy(self):
+
+		self.__qualifierType = BIOLOGICAL_QUALIFIER
+		self.__qualifier = BQB_IS_DESCRIBED_BY
 
 	def isIsEncodedBy(self):
 		return self.__qualifierType == BIOLOGICAL_QUALIFIER and self.biological_qualifiers.keys()[self.__qualifier] == BQB_IS_ENCODED_BY
