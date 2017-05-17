@@ -153,32 +153,19 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation):
 
 		SbmlObject.writeSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
 		HasId.writeSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
-		# print self.getMetaId()
 		SbmlModelAnnotation.writeSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
-		# print self.getMetaId()
-		print sbmlModel.getMetaId()
 
 		self.listOfUnitDefinitions.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
-		print sbmlModel.getMetaId()
 		self.listOfFunctionDefinitions.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
-		print sbmlModel.getMetaId()
 		self.listOfCompartments.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
-		print sbmlModel.getMetaId()
 		self.listOfSpecies.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
-		print sbmlModel.getMetaId()
 		self.listOfParameters.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
-		print sbmlModel.getMetaId()
 		self.listOfInitialAssignments.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
-		print sbmlModel.getMetaId()
 		self.listOfRules.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
-		print sbmlModel.getMetaId()
 		self.listOfConstraints.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
-		print sbmlModel.getMetaId()
 		self.listOfReactions.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
-		print sbmlModel.getMetaId()
 		self.listOfEvents.writeSbml(sbmlModel, self.sbmlLevel, self.sbmlVersion)
 		ModelUnits.writeSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
-		print sbmlModel.getMetaId()
 
 		if self.sbmlLevel >= 3:
 			if self.conversionFactor is not None:

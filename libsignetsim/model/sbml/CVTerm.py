@@ -98,7 +98,6 @@ class CVTerm(object):
 			cv_term.setQualifierType(self.__qualifierType)
 			cv_term.setBiologicalQualifierType(self.__qualifier)
 			for uri in self.__resources:
-				print uri.writeURI()
 				cv_term.addResource(str(uri.writeURI()))
 
 	def __str__(self):
