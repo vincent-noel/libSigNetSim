@@ -31,6 +31,9 @@ from re import match
 
 def unevaluatedSubs(expr, substitutions, *args, **kwargs):
 	"""Crawl the expression tree, and apply func to every node."""
+	if len(substitutions) == 0:
+		return expr
+
 	val = simpleSubs(expr, substitutions, *args, **kwargs)
 	if val is not None:
 		return val

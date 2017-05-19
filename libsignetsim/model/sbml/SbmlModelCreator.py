@@ -59,9 +59,6 @@ class SbmlModelCreator(object):
 		if creator.isSetOrganisation():
 			self.__organisation = creator.getOrganisation()
 
-		# if creator.isSetName():
-		# 	self.__name = creator.getName()
-		print self
 	def writeSbml(self, creator, level=Settings.defaultSbmlLevel, version=Settings.defaultSbmlVersion):
 
 		if self.__familyName is not None:
@@ -75,9 +72,6 @@ class SbmlModelCreator(object):
 
 		if self.__organisation is not None:
 			creator.setOrganisation(self.__organisation)
-
-		# if self.__name is not None:
-		# 	creator.setName(self.__name)
 
 	def getFamilyName(self):
 		return self.__familyName

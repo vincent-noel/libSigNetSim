@@ -132,11 +132,21 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 						"_speciesForcedConcentration_%s_" % str(t_var.symbol.getInternalMathFormula())):t_var.symbol.getInternalMathFormula()})
 			return str(simplify(unevaluatedSubs(MathFormula.getInternalMathFormula(self), t_subs_mask)))
 		else:
-			return simplify(MathFormula.getDeveloppedInternalMathFormula(self))
+			return str(simplify(MathFormula.getDeveloppedInternalMathFormula(self)))
 
 
-	def getInternalMathFormula(self):
-		return MathFormula.getMathFormula(self, MathFormula.MATH_INTERNAL)
+	def getInternalMathFormula(self, rawFormula=True):
+
+		if not rawFormula:
+			t_subs_mask = {}
+			for t_var in self.__model.listOfSpecies.values():
+				if t_var.isConcentration():
+					t_subs_mask.update({SympySymbol(
+						"_speciesForcedConcentration_%s_" % str(
+							t_var.symbol.getInternalMathFormula())): t_var.symbol.getInternalMathFormula(rawFormula=rawFormula)})
+			return simplify(unevaluatedSubs(MathFormula.getInternalMathFormula(self), t_subs_mask))
+		else:
+			return MathFormula.getMathFormula(self, MathFormula.MATH_INTERNAL)
 
 
 	def getDeveloppedInternalMathFormula(self):

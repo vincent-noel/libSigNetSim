@@ -116,7 +116,10 @@ class MathModel(CModelWriter):
 		# 	self.slowModel = MathSlowModel(self)
 		# 	self.slowModel.build()
 		# # t0 = time()
+		self.stoichiometryMatrix.build()
+		self.listOfConservationLaws.build()
 
+		#
 		# print self.listOfConservationLaws
 
 		# if not dont_reduce and not len(self.listOfEvents) > 0:
@@ -137,6 +140,14 @@ class MathModel(CModelWriter):
 
 		# # if
 		# # print "> conservation laws found in %.2gs" % (time() -t0)
+
+	def buildReducedModel(self):
+
+		if not len(self.listOfEvents) > 0:
+			self.stoichiometryMatrix.build()
+			self.listOfConservationLaws.build()
+			self.assymetricModel.build()
+
 
 	def prettyPrint(self):
 

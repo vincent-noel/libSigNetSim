@@ -39,7 +39,7 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 	def keys(self):
 		""" Override keys() to sort by id """
 		return sorted(dict.keys(self),
-					  key=lambda sbmlObj: dict.__getitem__(self, sbmlObj).getSbmlId())
+					  key=lambda sbmlObj: str(dict.__getitem__(self, sbmlObj).symbol.getInternalMathFormula()))
 	def values(self):
 		""" Override values() to sort by id """
 		return [dict.__getitem__(self, obj) for obj in self.keys()]

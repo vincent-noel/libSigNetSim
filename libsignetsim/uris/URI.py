@@ -141,7 +141,8 @@ class URI(object):
 		elif self.isPubmed():
 			resolver = PubmedResolver(self.__id)
 
-
-		resolver.lookup()
-
+		try:
+			resolver.lookup()
+		except:
+			return ""
 		return resolver.getName()

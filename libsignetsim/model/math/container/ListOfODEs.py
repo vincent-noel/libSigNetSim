@@ -35,6 +35,7 @@ class ListOfODEs(list):
 
 	def build(self, including_fast_reactions=True):
 
+		self[:] = []
 		for variable in self.__model.listOfVariables.values():
 			if variable.isDerivative():
 				t_ode = ODE(self.__model)

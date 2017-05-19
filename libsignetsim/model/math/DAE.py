@@ -24,7 +24,7 @@
 
 
 from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.math.sympy_shortcuts import SympySymbol
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyEqual, SympyInteger
 from sympy import solve
 
 class DAE(object):
@@ -38,9 +38,15 @@ class DAE(object):
 	def new(self, definition):
 		self.__definition = definition
 
-
 	def getDefinition(self):
 		return self.__definition
+
+	def getFormula(self, rawFormula=True):
+
+		return SympyEqual(
+			self.__definition.getInternalMathFormula(rawFormula=rawFormula),
+			SympyInteger(0)
+		)
 
 	def __str__(self):
 		return "%s = 0" % str(self.__definition.getDeveloppedInternalMathFormula())

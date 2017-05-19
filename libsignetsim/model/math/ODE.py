@@ -24,6 +24,7 @@
 
 
 from libsignetsim.model.math.MathFormula import MathFormula
+from libsignetsim.model.math.sympy_shortcuts import SympyEqual
 from sympy import srepr
 
 class ODE(object):
@@ -54,6 +55,19 @@ class ODE(object):
 
 	def setDefinitionMath(self, definition):
 		self.__definition.setInternalMathFormula(definition)
+
+	def getFormula(self, rawFormula=True):
+
+		t_definition = self.__definition.getInternalMathFormula(rawFormula=rawFormula)
+
+		if not rawFormula and self.__variable.isSpecies() and self.__variable.isConcentration():
+			t_definition /= self.__variable.getCompartment().symbol.getInternalMathFormula()
+
+		return SympyEqual(
+			self.__variable.symbol.getDerivative().getInternalMathFormula(rawFormula=rawFormula),
+			t_definition
+		)
+
 
 
 	def __str__(self):

@@ -57,6 +57,10 @@ class MathVariable(object):
 		self.is_in_dae = None
 		self.isFromReaction = is_from_reaction
 
+		# self.mathVariable = False
+		# self.mathIsConcentration = None
+		# self.mathCompartment = None
+
 	def new(self, string=None):
 
 		if self.isFromReaction is not None:
@@ -67,9 +71,8 @@ class MathVariable(object):
 		self.setValue(0)
 		self.setDerivativeValue(0)
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversion_factor=None):
+	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversion_factor=None, pure_math_variable=False):
 
-		# self.symbol.setInternalMathFormula(SympySymbol(prefix + obj.getSbmlId()))
 		self.symbol.setInternalMathFormula(SympySymbol(prefix + str(obj.symbol.getSymbol())))
 
 		if obj.value is not None and obj.value.getInternalMathFormula() is not None:
@@ -78,7 +81,6 @@ class MathVariable(object):
 
 			if conversion_factor is not None:
 				t_formula *= conversion_factor
-				# self.value.setInternalMathFormula(obj.value.getInternalMathFormula().subs(subs).subs(replacements)*conversion_factor)
 			self.value.setInternalMathFormula(t_formula)
 
 		if obj.derivative_value is not None and obj.derivative_value.getInternalMathFormula() is not None:
@@ -87,7 +89,6 @@ class MathVariable(object):
 			else:
 				self.derivative_value.setInternalMathFormula(obj.derivative_value.getInternalMathFormula().subs(subs).subs(replacements)*conversion_factor)
 
-
 		self.isInitialized = obj.isInitialized
 		self.isDerivativeInitialized = obj.isDerivativeInitialized
 		self.constant = obj.constant
@@ -95,6 +96,16 @@ class MathVariable(object):
 		self.boundaryCondition = obj.boundaryCondition
 		self.ind = obj.ind
 		self.type = obj.type
+
+		# if pure_math_variable:
+		# 	self.mathVariable = True
+		# 	if not obj.mathVariable:
+		# 		if obj.isSpecies() and obj.isConcentration():
+		# 			self.mathIsConcentration = True
+		# 			self.mathCompartment = obj.getCompartment().symbol.getInternalMathFormula()
+		# 	else:
+		# 		self.mathIsConcentration = obj.mathIsConcentration
+		# 		self.mathCompartment = obj.mathCompartment
 
 	def readSbml(self, sbml_variable, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		self.readSbmlVariable(sbml_variable, sbml_level, sbml_version)

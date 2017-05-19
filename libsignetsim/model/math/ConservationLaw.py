@@ -24,7 +24,8 @@
 
 
 # from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.math.sympy_shortcuts import SympyEqual
+from libsignetsim.model.math.sympy_shortcuts import SympyEqual, SympyInteger
+from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 # from libsignetsim.model.math.sympy_shortcuts import  (
 # 	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
 # 	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
@@ -75,11 +76,23 @@ class ConservationLaw(object):
 		)
 
 
-	def getFormula(self):
-		return SympyEqual(
-			self.LHS.getDeveloppedInternalMathFormula(),
-			self.RHS.getDeveloppedInternalMathFormula()
-		)
+	def getFormula(self, rawFormula=True):
+
+		if not rawFormula:
+
+			comp_symbols = {}
+			for comp in self.__model.listOfCompartments.values():
+				comp_symbols.update({comp.symbol.getInternalMathFormula():SympyInteger(1)})
+
+			return SympyEqual(
+				unevaluatedSubs(self.LHS.getInternalMathFormula(), comp_symbols),
+				unevaluatedSubs(self.RHS.getInternalMathFormula(), comp_symbols)
+			)
+		else:
+			return SympyEqual(
+				self.LHS.getDeveloppedInternalMathFormula(),
+				self.RHS.getDeveloppedInternalMathFormula()
+			)
 
 	def getNbVars(self):
 		return len(self.vars)

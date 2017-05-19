@@ -24,6 +24,7 @@
 
 
 from libsignetsim.model.math.MathFormula import MathFormula
+from libsignetsim.model.math.sympy_shortcuts import SympyEqual
 from sympy import simplify, srepr
 
 class CFE(object):
@@ -73,4 +74,19 @@ class CFE(object):
 		return "%s = %s" % (
 			str(self.getVariable().symbol.getDeveloppedInternalMathFormula()),
 			str(self.getDefinition().getDeveloppedInternalMathFormula())
+		)
+
+	def getFormula(self, rawFormula=True):
+
+		t_definition = self.__definition.getInternalMathFormula(rawFormula=rawFormula)
+
+		if not rawFormula:
+			if self.__variable.isSpecies() and self.__variable.isConcentration():
+				t_definition /= self.__variable.getCompartment().symbol.getInternalMathFormula()
+			elif self.__variable.isReaction() and len(self.__variable.listOfReactants) > 0:
+				t_definition /= self.__variable.listOfReactants[0].getSpecies().getCompartment().symbol.getInternalMathFormula()
+
+		return SympyEqual(
+			self.__variable.symbol.getInternalMathFormula(rawFormula=rawFormula),
+			t_definition
 		)

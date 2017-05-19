@@ -42,6 +42,8 @@ class ListOfCFEs(list):
 
 	def build(self):
 
+		self[:] = []
+
 		for rule in self.__model.listOfRules.values():
 			if rule.isAssignment():
 				t_cfe = CFE(self.__model, CFE.ASSIGNMENT)
