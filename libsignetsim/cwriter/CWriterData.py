@@ -24,6 +24,9 @@
 
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol
+
+from libsignetsim.LibSigNetSimException import UnknownObservationException, UnknownTreatmentException
+
 class CWriterData(object):
 
 	def __init__ (self, listOfExperiments=None, mapping=None, workingModel=None, interpolate=False, subdir=None):
@@ -169,6 +172,10 @@ class CWriterData(object):
 								treatment_name = self.workingModel.listOfParameters.getByName(treatment.name).getSbmlId()
 							elif self.workingModel.listOfCompartments.containsName(treatment.name):
 								treatment_name = self.workingModel.listOfCompartments.getByName(treatment.name).getSbmlId()
+							else:
+								raise UnknownTreatmentException("Cannot find a variable called %s" % treatment.name)
+								# print "Cannot find treatment with a name : %s" % treatment.name
+
 
 							if self.workingModel.getMathModel().listOfVariables.containsSymbol(SympySymbol(treatment_name)):
 								t_variable = self.workingModel.getMathModel().listOfVariables.getBySymbol(SympySymbol(treatment_name))
@@ -177,8 +184,8 @@ class CWriterData(object):
 
 								f_c.write("  experiments[%d].conditions[%d].timed_treatments[%d].treatments[%d] = (Treatment) {%g, %d, %d};\n" % (
 												i, j, k, l, treatment.value, t_variable.type, t_variable.ind))
-							else:
-								print "> ERROR: Couldn't find variable %s" % observed_value.name
+							# else:
+							# 	print "> ERROR: Couldn't find variable %s" % observed_value.name
 
 					 # Observed_values
 					f_c.write("    experiments[%d].conditions[%d].nb_observed_values = %d;\n" % (i, j, len(condition.listOfExperimentalData.keys())))
@@ -188,6 +195,7 @@ class CWriterData(object):
 
 					for k, observed_value in enumerate(condition.listOfExperimentalData.values()):
 
+
 						# print "Observed values %d" % k
 						observed_name = None
 						if self.workingModel.listOfSpecies.containsName(observed_value.name):
@@ -196,6 +204,9 @@ class CWriterData(object):
 							observed_name = self.workingModel.listOfParameters.getByName(observed_value.name).getSbmlId()
 						elif self.workingModel.listOfCompartments.containsName(observed_value.name):
 							observed_name = self.workingModel.listOfCompartments.getByName(observed_value.name).getSbmlId()
+						else:
+							raise UnknownObservationException("Cannot find a variable called %s" % observed_value.name)
+
 
 						t_variable = None
 						if self.workingModel.getMathModel().listOfVariables.containsSymbol(SympySymbol(observed_name)):

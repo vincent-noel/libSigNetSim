@@ -29,3 +29,9 @@ class LibSigNetSimException(Exception):
 
 	def __str__(self):
 		return self.message
+
+class UnknownTreatmentException(LibSigNetSimException):
+	pass
+
+class UnknownObservationException(LibSigNetSimException):
+	pass

@@ -51,6 +51,8 @@ class MathAsymmetricModel(object):
 		self.listOfDAEs = ListOfDAEs(self)
 		self.listOfVariables = ListOfVariables(self)
 
+		self.listOfConservationLaws = ListOfConservationLaws(self)
+
 		self.solvedInitialConditions = {}
 
 		self.nbOdes = None
