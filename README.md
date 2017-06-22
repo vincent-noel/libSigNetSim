@@ -50,3 +50,21 @@ Some examples, using combine archives, are available in the notebooks folder
 
 	You should have received a copy of the GNU General Public License
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+## Financial support
+
+	This program was developed within the CeTICS project, at the Butantan Institute.
+
+<p align="center">
+	<a href="http://cetics.butantan.gov.br"><img src="docs/logos/cetics.png" align="middle" hspace="50"></a>
+	<a href="http://www.butantan.gov.br"><img src="docs/logos/butantan.png" width="300" align="middle" hspace="50"></a>
+</p>
+
+	The work was supported by grants #12/20186-9, #13/07467-1, and #13/24212-7
+	of the São Paulo Research Foundation (FAPESP) and fellowships from CNPq.
+
+
+<p align="center">
+	<a href="http://www.fapesp.br"><img src="docs/logos/FAPESP.jpg" width="300" align="middle" hspace="50"></a>
+	<a href="http://cnpq.br"><img src="docs/logos/CNPq.jpg" width="175" align="middle" hspace="50"></a>
+</p>
