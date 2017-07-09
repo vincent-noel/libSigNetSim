@@ -32,6 +32,6 @@ setup(name='libsignetsim',
 	  url='',
 	  packages=find_packages(),
 	  include_package_data=True,
-	  install_requires=['matplotlib', 'python-libsbml', 'sympy', 'numpy', 'pydstool', 'mpld3', "python-libsedml"],
+	  install_requires=['matplotlib', 'python-libsbml', 'sympy', 'numpy', 'pydstool', 'mpld3', "python-libsedml", 'bioservices', 'pandas', 'lxml', 'coveralls'],
 	  cmdclass={'install': MyInstall}
 )

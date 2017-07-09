@@ -3,9 +3,9 @@ mpld3
 numpy
 PyDSTool
 python-libsbml
-scipy
 sympy
 python-libsedml
 bioservices
 pandas
 lxml
+coveralls
