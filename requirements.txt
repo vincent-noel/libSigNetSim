@@ -9,3 +9,4 @@ bioservices
 pandas
 lxml
 coveralls
+jinja2
