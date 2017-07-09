@@ -15,11 +15,11 @@ class MyInstall(install):
 		#Compiling the numerical integration code
 		subprocess.call(['make', '-C', 'libsignetsim/lib/integrate'])
 
-		#Some old installs need to update distribute to install (at least) matplotlib
-		subprocess.call(['easy_install', '-U', 'distribute'])
-
-		#Installing the python dependencies
-		subprocess.call(['pip', 'install', '-r', 'requirements.txt'])
+		# #Some old installs need to update distribute to install (at least) matplotlib
+		# subprocess.call(['easy_install', '-U', 'distribute'])
+		#
+		# #Installing the python dependencies
+		# subprocess.call(['pip', 'install', '-r', 'requirements.txt'])
 
 		install.do_egg_install(self)
 
@@ -32,6 +32,19 @@ setup(name='libsignetsim',
 	  url='',
 	  packages=find_packages(),
 	  include_package_data=True,
-	  install_requires=['matplotlib', 'python-libsbml', 'sympy', 'numpy', 'pydstool', 'mpld3', "python-libsedml", 'bioservices', 'pandas', 'lxml', 'coveralls'],
+	  install_requires=[
+		  'matplotlib',
+		  'python-libsbml',
+		  'sympy',
+		  'numpy',
+		  'pydstool',
+		  'mpld3',
+		  'jinja2',
+		  'python-libsedml',
+		  'bioservices',
+		  'pandas',
+		  'lxml',
+		  'coveralls'
+	  ],
 	  cmdclass={'install': MyInstall}
 )
