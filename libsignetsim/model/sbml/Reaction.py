@@ -77,10 +77,10 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 
 	def new(self, name=None):
-		# self.setName(name)
-		# print "Name is none : %s" % str(name == None)
+
 		Variable.new(self, name, Variable.REACTION)
 		self.kineticLaw = KineticLaw(self.model, self)
+		SbmlObject.new(self)
 
 	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[],
 				replacements={}, conversions={},

@@ -204,6 +204,7 @@ class ListOfRules(ListOf, SbmlObject):
 
 
 		ListOf.add(self, t_rule)
+		SbmlObject.new(t_rule)
 		return t_rule
 
 
