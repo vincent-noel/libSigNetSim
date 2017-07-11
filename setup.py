@@ -19,7 +19,7 @@ class MyInstall(install):
 
 
 setup(name='libsignetsim',
-	  version='0.1',
+	  version=open('VERSION').read(),
 	  description='An e-Science framework for mathematical modeling and computational simulation of molecular signaling networks',
 	  author='Vincent Noel',
 	  author_email='vincent-noel@butantan.gov.br',
