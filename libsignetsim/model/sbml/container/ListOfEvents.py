@@ -66,6 +66,7 @@ class ListOfEvents(ListOf, SbmlObject):
 	def new(self):
 		event = Event(self.__model, self.nextId())
 		ListOf.add(self, event)
+		SbmlObject.new(event)
 		return event
 
 

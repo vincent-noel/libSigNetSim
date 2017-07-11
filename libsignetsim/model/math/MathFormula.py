@@ -44,7 +44,7 @@ from libsignetsim.model.math.SbmlMathWriter import SbmlMathWriter
 from libsignetsim.model.math.MathDevelopper import MathDevelopper
 from libsignetsim.model.ModelException import SbmlException
 
-from libsbml import parseL3Formula
+from libsbml import parseL3Formula, formulaToL3String
 from sympy import simplify
 
 from MathDevelopper import unevaluatedSubs
@@ -130,9 +130,10 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 				if t_var.isConcentration():
 					t_subs_mask.update({SympySymbol(
 						"_speciesForcedConcentration_%s_" % str(t_var.symbol.getInternalMathFormula())):t_var.symbol.getInternalMathFormula()})
-			return str(simplify(unevaluatedSubs(MathFormula.getInternalMathFormula(self), t_subs_mask)))
+			return formulaToL3String(self.translateForSbml(simplify(unevaluatedSubs(MathFormula.getInternalMathFormula(self), t_subs_mask))))
+			# return str(simplify(unevaluatedSubs(MathFormula.getInternalMathFormula(self), t_subs_mask)))
 		else:
-			return str(simplify(MathFormula.getDeveloppedInternalMathFormula(self)))
+			return formulaToL3String(self.translateForSbml(simplify(MathFormula.getDeveloppedInternalMathFormula(self))))
 
 
 	def getInternalMathFormula(self, rawFormula=True):
