@@ -7,7 +7,8 @@ apt-get install -y libopenmpi-dev openmpi-bin \
                     subversion \
                     cmake swig \
                     zlib1g-dev libxml2-dev libbz2-dev \
-                    libcurl4-openssl-dev
+                    libcurl4-openssl-dev \
+                    libxslt1-dev
 
 pip install pip --upgrade
 if [ ! -f /usr/bin/pip ]

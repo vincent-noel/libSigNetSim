@@ -2,9 +2,7 @@ matplotlib
 mpld3
 numpy
 PyDSTool
-python-libsbml
 sympy
-python-libsedml
 bioservices
 pandas
 lxml

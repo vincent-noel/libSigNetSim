@@ -17,7 +17,6 @@ class MyInstall(install):
 
 		install.do_egg_install(self)
 
-
 setup(name='libsignetsim',
 	  version=open(join(dirname(__file__), 'VERSION')).read(),
 	  description='An e-Science framework for mathematical modeling and computational simulation of molecular signaling networks',
