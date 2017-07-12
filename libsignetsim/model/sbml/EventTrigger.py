@@ -43,7 +43,7 @@ class EventTrigger(MathFormula):
 
 		MathFormula.__init__(self, model, MathFormula.MATH_EQUATION)
 
-		self.initialValue = True
+		self.initialValue = False
 		self.isPersistent = True
 
 
