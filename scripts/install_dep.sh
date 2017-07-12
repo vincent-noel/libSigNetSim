@@ -1,3 +1,4 @@
+apt-get update -qq
 apt-get install -y libopenmpi-dev openmpi-bin \
                     libsundials-serial-dev libsundials-serial \
                     liblapack-dev libblas-dev libatlas-dev libatlas-base-dev \
