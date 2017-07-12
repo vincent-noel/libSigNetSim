@@ -2,8 +2,8 @@
 
 from setuptools import setup, find_packages
 from setuptools.command.install import install
+from os.path import dirname, join
 import subprocess
-
 
 class MyInstall(install):
 
@@ -19,7 +19,7 @@ class MyInstall(install):
 
 
 setup(name='libsignetsim',
-	  version=open('VERSION').read(),
+	  version=open(join(dirname(__file__), 'VERSION')).read(),
 	  description='An e-Science framework for mathematical modeling and computational simulation of molecular signaling networks',
 	  author='Vincent Noel',
 	  author_email='vincent-noel@butantan.gov.br',
