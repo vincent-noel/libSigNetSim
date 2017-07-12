@@ -5,9 +5,8 @@ INSTALL_DIR=`dirname $DIR`
 
 
 
-$DIR/install_dep.sh
 
-CD /root
+cd /root
 
 svn checkout http://svn.code.sf.net/p/sbml/code/trunk/libsbml/ libsbml
 cd libsbml
