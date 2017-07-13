@@ -7,4 +7,3 @@ INSTALL_DIR=`dirname $DIR`
 pip install -r $INSTALL_DIR/requirements.txt
 
 python $INSTALL_DIR/setup.py install
-#python $INSTALL_DIR/fix_libsedml_addChild.py;
