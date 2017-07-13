@@ -40,7 +40,7 @@ setup(name='libsignetsim',
 		  'coveralls'
 	  ],
 	  dependency_links=[
-		  'git+ssh://git@github.com/vincent-noel/python-libsedml.git#egg=python-libsedml'
+		  'git+https://github.com/vincent-noel/python-libsedml.git@develop#egg=python-libsedml'
 	  ],
 	  cmdclass={'install': MyInstall}
 )
