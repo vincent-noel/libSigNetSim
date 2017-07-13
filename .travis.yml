@@ -18,10 +18,10 @@ env:
 
 before_install:
 - pip install coveralls
-- docker pull ubuntu:xenial
+- docker pull signetsim/signetsim:xenial
 
 install:
-- docker run -di --name test_env -v $(pwd):/home/travis/build/vincent-noel/libSigNetSim ubuntu:xenial bash
+- docker run -di --name test_env -v $(pwd):/home/travis/build/vincent-noel/libSigNetSim signetsim/signetsim:xenial bash
 - docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; bash scripts/install_dep.sh"
 - docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; bash scripts/install.sh"
 
