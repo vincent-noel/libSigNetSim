@@ -1,5 +1,7 @@
 matplotlib
 mpld3
+python-libsbml
+git+ssh://git@github.com/vincent-noel/python-libsedml.git
 numpy
 PyDSTool
 sympy

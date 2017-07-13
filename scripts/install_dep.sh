@@ -3,12 +3,7 @@ apt-get install -y libopenmpi-dev openmpi-bin \
                     libsundials-serial-dev libsundials-serial \
                     liblapack-dev libblas-dev libatlas-dev libatlas-base-dev \
                     python-dev python-pip \
-                    git g++ gcc make unzip wget \
-                    subversion \
-                    cmake swig \
-                    zlib1g-dev libxml2-dev libbz2-dev \
-                    libcurl4-openssl-dev \
-                    libxslt1-dev
+                    git g++ gcc make unzip wget 
 
 pip install pip --upgrade
 if [ ! -f /usr/bin/pip ]
