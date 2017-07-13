@@ -33,14 +33,14 @@ setup(name='libsignetsim',
 		  'pydstool',
 		  'mpld3',
 		  'jinja2',
-		  'python-libsedml',
+		  'python-libsedml==0.4.2',
 		  'bioservices',
 		  'pandas',
 		  'lxml',
 		  'coveralls'
 	  ],
 	  dependency_links=[
-		  'git+https://github.com/vincent-noel/python-libsedml.git@develop#egg=python-libsedml'
+		  'git+https://github.com/vincent-noel/python-libsedml.git#egg=python-libsedml'
 	  ],
 	  cmdclass={'install': MyInstall}
 )
