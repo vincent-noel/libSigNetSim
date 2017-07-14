@@ -5,21 +5,13 @@ apt-get install -y libopenmpi-dev openmpi-bin \
                     python-dev python-pip \
                     git g++ gcc make unzip wget curl
 
-
-
-# Installing pip update if pip version < 9.0.1
-currentver="$(pip --version | cut -d" " -f2)"
-requiredver="9.0.1"
-if [ "$(printf "$requiredver\n$currentver" | sort -V | head -n1)" == "$requiredver" ]; then
-    pip install pip --upgrade
-    if [ ! -f /usr/bin/pip ]
-    then
-        ln -s /usr/local/bin/pip /usr/bin/pip
-    fi
+pip install pip --upgrade
+if [ ! -f /usr/bin/pip ]
+then
+    ln -s /usr/local/bin/pip /usr/bin/pip
 fi
-
 
 easy_install -U distribute
 
 # Installing dependencies for python-libsedml
-curl -sL https://raw.githubusercontent.com/vincent-noel/python-libsedml/develop/scripts/install_dep.sh | bash -
+curl -sL https://raw.githubusercontent.com/vincent-noel/python-libsedml/master/scripts/install_dep.sh | bash -
