@@ -90,9 +90,19 @@ class ListOfSbmlObjects(ListOf):
 		return res
 
 
-
-
 	def getListOfSubstitutions(self):
+
+		res = []
+		for obj in ListOf.values(self):
+			if obj.hasReplacedElements():
+				res += obj.getReplacedElements()
+
+			if obj.isReplaced():
+				res.append(obj.getReplacedBy())
+
+		return res
+
+	def getListOfSubstitutions_old(self):
 
 		res = []
 		type_substitutions = []
