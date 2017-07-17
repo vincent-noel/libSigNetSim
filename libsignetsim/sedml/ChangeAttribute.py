@@ -24,7 +24,7 @@
 from libsignetsim.sedml.Change import Change
 from libsignetsim.sedml.XPath import XPath
 from libsignetsim.settings.Settings import Settings
-
+from libsignetsim.sedml.SedmlException import SedmlModelObjectNotFound
 
 class ChangeAttribute(Change):
 
@@ -56,4 +56,8 @@ class ChangeAttribute(Change):
 	def applyChange(self, sbml_model):
 
 		object = self.getTarget().getModelObject(sbml_model)
-		object.setValue(self.__newValue)
+
+		if object is None:
+			raise SedmlModelObjectNotFound("Model object %s not found" % self.getTarget().getTargetName())
+		else:
+			object.setValue(self.__newValue)

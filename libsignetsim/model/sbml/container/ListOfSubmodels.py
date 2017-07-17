@@ -26,7 +26,7 @@
 from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.model.sbml.container.HasIds import HasIds
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
-
+from libsignetsim.model.ModelException import CannotDeleteException
 from libsignetsim.model.sbml.SubModel import SubModel
 from libsignetsim.settings.Settings import Settings
 
@@ -75,6 +75,12 @@ class ListOfSubmodels(ListOf, HasIds):#, SbmlObject):
 
 	def remove(self, sbml_obj):
 		""" Remove an object from the list """
+
+		for object in self.__model.listOfSbmlObjects.values():
+			if object.hasReplacedElements() and object.getListOfReplacedElements().containsSubmodel(sbml_obj.getSbmlId()):
+				raise CannotDeleteException("Submodel %s is used. Please remove the substitutions first" % sbml_obj.getNameOrSbmlId())
+
+
 
 		# ListOf.remove(self, comp)
 		dict.__delitem__(self, sbml_obj.objId)

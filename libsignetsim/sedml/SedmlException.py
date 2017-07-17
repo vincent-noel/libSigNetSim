@@ -60,3 +60,6 @@ class SedmlMixedSubtasks(SedmlNotImplemented):
 
 class SedmlMultipleModels(SedmlNotImplemented):
 	pass
+
+class SedmlModelObjectNotFound(SedmlException):
+	pass

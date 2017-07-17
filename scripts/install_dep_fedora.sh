@@ -2,7 +2,7 @@ dnf -y update
 dnf -y install openmpi-devel openmpi \
                 sundials sundials-devel \
                 lapack-devel blas-devel atlas-devel atlas-static \
-                python2-pip python2-devel \
+                python2-pip python2-devel redhat-rpm-config \
                 git gcc gcc-c++ make unzip wget curl
 
 pip install pip --upgrade

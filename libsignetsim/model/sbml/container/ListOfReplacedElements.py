@@ -95,3 +95,11 @@ class ListOfReplacedElements(ListOf):#, SimpleSbmlObject):
 		for replacement_element in ListOf.values(self):
 			if replacement_element.getReplacedElementObject() == re_object:
 				return replacement_element
+
+	def containsSubmodel(self, submodel_ref):
+
+		for replaced_element in ListOf.values(self):
+			if replaced_element.getSubmodelRef() == submodel_ref:
+				return True
+
+		return False

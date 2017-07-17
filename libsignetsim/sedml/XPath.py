@@ -200,3 +200,6 @@ class XPath(object):
 
 	def getAttribute(self):
 		return self.__attribute
+
+	def getTargetName(self):
+		return self.__ref

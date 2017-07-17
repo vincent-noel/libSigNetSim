@@ -58,3 +58,5 @@ class Change(SedBase, HasId):
 
 	def setTarget(self, target):
 		self.__target.setModelObject(target)
+
+
