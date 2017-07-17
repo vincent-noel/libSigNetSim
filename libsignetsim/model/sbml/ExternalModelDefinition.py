@@ -58,7 +58,6 @@ class ExternalModelDefinition(HasId, SbmlObject):
 		t_id_dep = self.__model.parentDoc.documentDependenciesPaths.index(self.__source)
 		t_document = self.__model.parentDoc.documentDependencies[t_id_dep]
 
-
 		if self.__modelRef is not None:
 			self.modelDefinition = t_document.getSubmodel(self.__modelRef).modelDefinition
 		else:
@@ -86,6 +85,7 @@ class ExternalModelDefinition(HasId, SbmlObject):
 
 	def setSource(self, source):
 		self.__source = source
+		self.updateModelDefinition()
 
 
 	def hasModelRef(self):
@@ -96,3 +96,18 @@ class ExternalModelDefinition(HasId, SbmlObject):
 
 	def setModelRef(self, model_ref):
 		self.__modelRef = model_ref
+		self.updateModelDefinition()
+
+
+	def updateModelDefinition(self):
+
+		self.__model.parentDoc.documentDependenciesPaths = None
+		self.__model.parentDoc.loadExternalDocumentDependencies()
+
+		t_id_dep = self.__model.parentDoc.documentDependenciesPaths.index(self.__source)
+		t_document = self.__model.parentDoc.documentDependencies[t_id_dep]
+
+		if self.__modelRef is not None:
+			self.modelDefinition = t_document.getSubmodel(self.__modelRef).modelDefinition
+		else:
+			self.modelDefinition = t_document.model
