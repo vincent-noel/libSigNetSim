@@ -29,10 +29,11 @@ from libsignetsim.model.sbml.HasRef import HasRef
 
 class ReplacedElement(HasRef):
 
-	def __init__(self, model, obj_id):
+	def __init__(self, model, parent_object, obj_id):
 
 		self.__model = model
 		self.objId = obj_id
+		self.__parentObject = parent_object
 		HasRef.__init__(self, model)
 		self.__submodelRef = None
 		self.__deletion = None
@@ -259,3 +260,6 @@ class ReplacedElement(HasRef):
 						res = tt_model.listOfSbmlObjects.getByMetaId(t_deletion.getMetaIdRef())
 
 			return res
+
+	def getParentObject(self):
+		return self.__parentObject
