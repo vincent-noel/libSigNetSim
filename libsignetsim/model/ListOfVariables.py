@@ -53,7 +53,10 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 		return t_sbmlId
 
 	def removeVariable(self, variable):
-		del variable
+
+		for key, value in self.items():
+			if variable == value:
+				dict.__delitem__(self, key)
 
 	# Symbols
 	def symbols(self):
