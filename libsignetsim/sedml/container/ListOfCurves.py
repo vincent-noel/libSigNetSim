@@ -27,17 +27,18 @@ from libsignetsim.settings.Settings import Settings
 
 class ListOfCurves(ListOf):
 
-	def __init__(self, document):
+	def __init__(self, document, plot):
 
 		ListOf.__init__(self, document)
 
 		self.__document = document
+		self.__plot = plot
 		self.__curvesCounter = 0
 
 	def new(self, curve_id=None):
 		t_curve_id = curve_id
 		if t_curve_id is None:
-			t_curve_id = "curve_%d" % self.__curvesCounter
+			t_curve_id = "%s_curve_%d" % (self.__plot.getId(), self.__curvesCounter)
 
 		curve = Curve(self.__document)
 		curve.setId(t_curve_id)

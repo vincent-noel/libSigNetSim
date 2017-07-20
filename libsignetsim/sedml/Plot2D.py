@@ -35,7 +35,7 @@ class Plot2D(Output):
 		Output.__init__(self, document)
 
 		self.__document = document
-		self.listOfCurves = ListOfCurves(self.__document)
+		self.listOfCurves = ListOfCurves(self.__document, self)
 
 	def readSedml(self, plot, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
