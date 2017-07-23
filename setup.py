@@ -28,6 +28,7 @@ setup(name='libsignetsim',
 	  install_requires=[
 		  'matplotlib',
 		  'python-libsbml',
+		  'python-libnuml',
 		  'sympy',
 		  'numpy',
 		  'pydstool',

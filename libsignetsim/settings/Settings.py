@@ -62,6 +62,10 @@ class Settings(object):
 	defaultSedmlLevel = 1
 	defaultSedmlVersion = 2
 
+	# NuML settings
+	defaultNuMLLevel = 1
+	defaultNuMLVersion = 1
+
 	# Test settings
 	defaultTestAbsTol = 1e-6
 	defaultTestRelTol = 1e-3

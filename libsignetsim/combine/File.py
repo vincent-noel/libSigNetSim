@@ -39,6 +39,7 @@ class File(object):
 	XML = "http://purl.org/NET/mediatypes/application/xml"
 	SBML = "http://identifiers.org/combine.specifications/sbml"
 	SEDML = "http://identifiers.org/combine.specifications/sed-ml"
+	NUML = "http://identifiers.org/combine.specifications/numl"
 	CELLML = "http://identifiers.org/combine.specifications/cellml"
 	MANIFEST = "http://identifiers.org/combine.specifications/omex-manifest"
 	PDF = "http://purl.org/NET/mediatypes/application/pdf"
@@ -50,6 +51,7 @@ class File(object):
 		"xml" : XML,
 		"sbml" : SBML,
 		"sedml" : SEDML,
+		"numl" : NUML,
 		"cellml" : CELLML,
 		"pdf" : PDF,
 		"md" : MARKDOWN,
@@ -157,6 +159,10 @@ class File(object):
 		elif tag == "sedML":
 			sedmlDoc = readSedMLFromString(xml_content)
 			return self.SEDML + ".level-%d.version-%d" % (sedmlDoc.getLevel(), sedmlDoc.getVersion())
+
+		elif tag == "numl":
+			# sedmlDoc = readSedMLFromString(xml_content)
+			return self.NUML# + ".level-%d.version-%d" % (sedmlDoc.getLevel(), sedmlDoc.getVersion())
 
 		elif tag == "omexManifest":
 			return self.MANIFEST

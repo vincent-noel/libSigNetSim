@@ -21,24 +21,47 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
+import re
 
 class ExperimentalData(object):
 
-	def __init__ (self):
+	def __init__ (self, t=0, name="", value=0, value_dev=0, quantification_ratio=1):
 
-		self.value = 0
-		self.value_dev = None
-		self.t = 0
-		self.quantification_ratio = 1
+		self.name = name
+		self.t = t
+		self.value = value
+		self.value_dev = value_dev
+		self.quantification_ratio = quantification_ratio
 
 		self.steady_state = False
 		self.min_steady_state = 0
 		self.max_steady_state = 0
 
+
+		# Not used ?
 		self.variableName = ""
 		self.variableId = None
-		self.name = ""
 
+	def readNuML(self, composite_value):
+		self.t = float(composite_value.getIndexValue())
+		res = re.match(
+			r"/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species\[@name=\'(.*)\'\]",
+			composite_value.getContents()[0].getIndexValue()
+		)
+		self.name = res.groups()[0]
+		self.value = composite_value.getContents()[0].getContents()[0].getValue()
+
+	def writeNuML(self, composite_value):
+
+		time_index = composite_value.createCompositeValue(composite_value.getDescription().getContent(), self.t)
+		species_index = time_index.createCompositeValue(
+			composite_value.getDescription().getContent().getContent(),
+			"/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@name='%s']" % self.name
+		)
+		value = species_index.createAtomicValue(
+			composite_value.getDescription().getContent().getContent().getContent(),
+			self.value
+		)
 
 	def readDB(self, name, time, value, value_dev=0, steady_state=False,
 				min_steady_state=0, max_steady_state=0, quantification_ratio=1):

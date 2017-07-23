@@ -27,7 +27,7 @@ from libsignetsim.data.ExperimentalData import ExperimentalData
 
 class ListOfExperimentalData(dict):
 
-	def __init__ (self):
+	def __init__(self):
 
 		self.currentId = 0
 
@@ -36,6 +36,17 @@ class ListOfExperimentalData(dict):
 		self.update({self.currentId: experimental_data})
 		self.currentId += 1
 
+	def readNuML(self, list_of_data):
+
+		for data in list_of_data.getContents():
+			exp_data = ExperimentalData()
+			exp_data.readNuML(data)
+			self.add(exp_data)
+
+	def writeNuML(self, composite_value):
+
+		for data in self.values():
+			data.writeNuML(composite_value)
 
 	def getMaxTime(self):
 

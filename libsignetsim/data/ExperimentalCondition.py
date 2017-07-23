@@ -23,14 +23,26 @@
 """
 
 from libsignetsim.data.ListOfExperimentalData import ListOfExperimentalData
-
+from libsignetsim.data.ExperimentalData import ExperimentalData
 class ExperimentalCondition(object):
 
-	def __init__ (self):
+	def __init__(self, name=""):
 
 		self.listOfInitialConditions = ListOfExperimentalData()
 		self.listOfExperimentalData = ListOfExperimentalData()
-		self.name = ""
+		self.name = name
+
+
+	def addInitialCondition(self, t=0, name="", value=0, value_dev=0, quantification_ratio=1):
+
+		initial_condition = ExperimentalData(t, name, value, value_dev, quantification_ratio)
+		self.listOfInitialConditions.add(initial_condition)
+
+
+	def addObservation(self, t=0, name="", value=0, value_dev=0, quantification_ratio=1):
+
+		observation = ExperimentalData(t, name, value, value_dev, quantification_ratio)
+		self.listOfExperimentalData.add(observation)
 
 	def read(self, list_of_initial_values, list_of_observed_values, name=""):
 
@@ -38,6 +50,24 @@ class ExperimentalCondition(object):
 		self.listOfExperimentalData = list_of_observed_values
 		self.name = name
 
+	def readNuML(self, condition):
+
+		self.name = condition.getIndexValue()
+		for data_type in condition.getContents():
+
+			if data_type.getIndexValue() == "initial_values":
+				self.listOfInitialConditions.readNuML(data_type)
+			elif data_type.getIndexValue() == "observations":
+				self.listOfExperimentalData.readNuML(data_type)
+
+
+	def writeNuML(self, condition):
+
+		list_of_initial_values = condition.createCompositeValue(condition.getDescription().getContent(), "initial_values")
+		self.listOfInitialConditions.writeNuML(list_of_initial_values)
+
+		list_of_observations = condition.createCompositeValue(condition.getDescription().getContent(), "observations")
+		self.listOfExperimentalData.writeNuML(list_of_observations)
 
 	def getMaxTime(self):
 		return self.listOfExperimentalData.getMaxTime()
