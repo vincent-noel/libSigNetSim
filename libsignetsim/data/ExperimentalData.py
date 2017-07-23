@@ -49,18 +49,37 @@ class ExperimentalData(object):
 			composite_value.getContents()[0].getIndexValue()
 		)
 		self.name = res.groups()[0]
-		self.value = composite_value.getContents()[0].getContents()[0].getValue()
+		tuple = composite_value.getContents()[0].getContents()[0].getAtomicValues()
+
+
+		self.value = tuple[0].getValue()
+		self.value_dev = tuple[1].getValue()
+		# print "t=%.2g, var=%s, value=%s, dev=%s" % (self.t, self.name, str(self.value), str(self.value_dev))
 
 	def writeNuML(self, composite_value):
 
-		time_index = composite_value.createCompositeValue(composite_value.getDescription().getContent(), self.t)
+		time_desc = composite_value.getDescription().getContent()
+		time_index = composite_value.createCompositeValue(time_desc, self.t)
+
+		species_desc = time_desc.getContent()
 		species_index = time_index.createCompositeValue(
-			composite_value.getDescription().getContent().getContent(),
+			species_desc,
 			"/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@name='%s']" % self.name
 		)
-		value = species_index.createAtomicValue(
-			composite_value.getDescription().getContent().getContent().getContent(),
+
+		tuple_desc = species_desc.getContent()
+		tuple = species_index.createTupleValue(tuple_desc)
+
+		value_desc = tuple_desc.getAtomicDescriptions()[0]
+		value = tuple.createAtomicValue(
+			value_desc,
 			self.value
+		)
+
+		std_desc = tuple_desc.getAtomicDescriptions()[1]
+		std = tuple.createAtomicValue(
+			std_desc,
+			self.value_dev
 		)
 
 	def readDB(self, name, time, value, value_dev=0, steady_state=False,

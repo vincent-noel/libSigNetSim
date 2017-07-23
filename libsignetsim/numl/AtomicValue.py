@@ -33,10 +33,13 @@ class AtomicValue (Dimension):
 
 	def readNuML(self, atomic_value, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
 		Dimension.readNuML(self, atomic_value, level, version)
-		self.__value = atomic_value.getValue()
 
-	def writeNuML(self, dimension, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
-		atomic_value = dimension.createAtomicValue()
+		# Weird empty tag
+		if atomic_value.getValue()[0] != "\n":
+			self.__value = atomic_value.getValue()
+
+
+	def writeNuML(self, atomic_value, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
 
 		Dimension.writeNuML(self, atomic_value, level, version)
 		if self.__value is not None:

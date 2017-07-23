@@ -23,16 +23,36 @@
 """
 
 from libsignetsim.numl.Dimension import Dimension
+from libsignetsim.numl.AtomicValue import AtomicValue
 from libsignetsim.settings.Settings import Settings
 
 class TupleValue (Dimension):
 
-	def __init__(self, document, description):
-		Dimension.__init__(self, document, description)
+	def __init__(self, document, result_component, description):
+		Dimension.__init__(self, document, result_component, description)
 		self.__document = document
+		self.__atomicValues = []
+
+	def createAtomicValue(self, description=None, value=None):
+
+		atomic_value = AtomicValue(self.__document, self.getResultComponent(), description, value)
+		self.__atomicValues.append(atomic_value)
+		return atomic_value
 
 	def readNuML(self, tuple_value, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
-		Dimension.readNuML(tuple_value, level, version)
+		Dimension.readNuML(self, tuple_value, level, version)
+
+		for i in range(tuple_value.size()):
+			t_atomic_value = AtomicValue(self.__document, self.getResultComponent(), self.getDescription().getAtomicDescriptions()[i])
+			t_atomic_value.readNuML(tuple_value.getAtomicValue(i), level, version)
+			self.__atomicValues.append(t_atomic_value)
 
 	def writeNuML(self, tuple_value, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
-		pass
+		Dimension.writeNuML(self, tuple_value, level, version)
+
+		for atomic_value in self.__atomicValues:
+			t_atomic_value = tuple_value.createAtomicValue()
+			atomic_value.writeNuML(t_atomic_value, level, version)
+
+	def getAtomicValues(self):
+		return self.__atomicValues

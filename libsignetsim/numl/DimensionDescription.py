@@ -33,7 +33,7 @@ class DimensionDescription (NMBase):
 		self.__document = document
 		self.__id = None
 		self.__name = name
-		self.__ontologyTerm = None
+		# self.__ontologyTerm = None
 
 	def readNuML(self, dimension_description, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
 		NMBase.readNuML(self, dimension_description, level, version)
@@ -42,7 +42,7 @@ class DimensionDescription (NMBase):
 		if dimension_description.isSetName():
 			self.__name = dimension_description.getName()
 
-		self.__ontologyTerm = self.__document.listOfOntologyTerms.getByOntologyTerm(dimension_description.getOntologyTerm())
+		# self.__ontologyTerm = self.__document.listOfOntologyTerms.getByOntologyTerm(dimension_description.getOntologyTerm())
 
 
 	def writeNuML(self, dimension_description, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
@@ -54,8 +54,8 @@ class DimensionDescription (NMBase):
 		if self.__name is not None:
 			dimension_description.setName(self.__name)
 
-		if self.__ontologyTerm is not None:
-			dimension_description.setOntologyTerm(self.__ontologyTerm.getId())
+		# if self.__ontologyTerm is not None:
+		# 	dimension_description.setOntologyTerm(self.__ontologyTerm.getId())
 
 	def getName(self):
 		return self.__name

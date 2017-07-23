@@ -35,9 +35,9 @@ class ListOfResultComponents(ListOf, list):
 		self.__document = document
 		self.__resultComponentCounter = 0
 
-	def createResultComponent(self, name=None):
+	def createResultComponent(self):
 
-		result_component = ResultComponent(self.__document, name)
+		result_component = ResultComponent(self.__document)
 		result_component.setId("result_component_%d" % self.__resultComponentCounter)
 		ListOf.append(self, result_component)
 		self.__resultComponentCounter += 1

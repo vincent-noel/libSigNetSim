@@ -43,6 +43,13 @@ class CompositeValue (Dimension):
 		self.__contents.append(composite_value)
 		return composite_value
 
+	def createTupleValue(self, description=None):
+
+		tuple_value = TupleValue(self.__document, self.getResultComponent(), description)
+		self.__contents.append(tuple_value)
+		return tuple_value
+
+
 	def createAtomicValue(self, description=None, value=None):
 
 		atomic_value = AtomicValue(self.__document, self.getResultComponent(), description, value)
@@ -58,9 +65,12 @@ class CompositeValue (Dimension):
 				t_content = CompositeValue(self.__document, self.getResultComponent(), self.getDescription().getContent())
 				t_content.readNuML(composite_value_element, level, version)
 				self.__contents.append(t_content)
-			# elif composite_description.isContentTupleDescription():
-			# 	self.__content = TupleValue(self.__document)
-			# 	self.__content.readNuML(composite_description[0], level, version)
+
+			elif composite_value.isContentTuple():
+				t_content = TupleValue(self.__document, self.getResultComponent(), self.getDescription().getContent())
+				t_content.readNuML(composite_value_element, level, version)
+				self.__contents.append(t_content)
+
 			elif composite_value.isContentAtomicValue():
 				t_content = AtomicValue(self.__document, self.getResultComponent(), self.getDescription().getContent())
 				t_content.readNuML(composite_value_element, level, version)
@@ -69,14 +79,27 @@ class CompositeValue (Dimension):
 		self.__indexValue = composite_value.getIndexValue()
 
 	def writeNuML(self, dimension, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
-		composite_value = dimension.createCompositeValue()
-		Dimension.writeNuML(self, composite_value)
+		Dimension.writeNuML(self, dimension)
 		if self.getDescription() is not None:
-			composite_value.setDescription(self.getDescription().getId())
+			dimension.setDescription(self.getDescription().getId())
 
 		for content in self.__contents:
-			content.writeNuML(composite_value, level, version)
-		composite_value.setIndexValue(str(self.__indexValue))
+			t_dimension = None
+
+			from libsignetsim.numl.CompositeValue import CompositeValue
+			if isinstance(content, CompositeValue):
+				t_dimension = dimension.createCompositeValue()
+
+			elif isinstance(content, TupleValue):
+				t_dimension = dimension.createTuple()
+
+			elif isinstance(content, AtomicValue):
+				t_dimension = dimension.createAtomicValue()
+
+			if t_dimension is not None:
+				content.writeNuML(t_dimension, level, version)
+
+		dimension.setIndexValue(str(self.__indexValue))
 
 	def getContents(self):
 		return self.__contents

@@ -165,7 +165,10 @@ class CombineArchive(object):
 		all_sbmls = self.__listOfFiles.getAllSbmls()
 		return [join(self.__path, sbml.getFilename()) for sbml in all_sbmls]
 
+	def getAllNumls(self):
 
+		all_numls = self.__listOfFiles.getAllNumls()
+		return [join(self.__path, numl.getFilename()) for numl in all_numls]
 
 	def getPath(self):
 		return self.__path

@@ -67,4 +67,9 @@ class TestReadWriteData(TestCase):
 
 		experiment_imported = Experiment()
 		experiment_imported.readNuMLFromFile(join(join(dirname(__file__), "files"), "data.xml"))
+
+		self.assertEqual(experiment_imported.getMaxTime(), 3600.0)
+		self.assertEqual(experiment_imported.getTimes(), [0.0, 900.0, 1800.0, 300.0, 3600.0, 180.0, 60.0])
+		self.assertEqual(experiment_imported.getTreatedVariables(), ['FGF2'])
+
 		experiment_imported.writeNuMLToFile(join(join(dirname(__file__), "files"), "data_copy.xml"))

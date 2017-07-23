@@ -83,7 +83,9 @@ class Experiment(object):
 		desc_type = desc_condition.createCompositeDescription("Data type", "string")
 		desc_time = desc_type.createCompositeDescription("Time", "double")
 		desc_species = desc_time.createCompositeDescription("Species", "xpath")
-		desc_species.createAtomicDescription("Concentration", "double")
+		desc_values = desc_species.createTupleDescription()
+		desc_values.createAtomicDescription("Concentration", "double")
+		desc_values.createAtomicDescription("Standard deviation", "double")
 
 
 	def getMaxTime(self):
@@ -100,7 +102,7 @@ class Experiment(object):
 		times = []
 		for condition in self.listOfConditions.values():
 			times += condition.getTimes()
-		return times
+		return list(set(times))
 
 	def getTreatedVariables(self):
 		species = []

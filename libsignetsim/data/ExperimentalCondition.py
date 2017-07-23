@@ -33,7 +33,7 @@ class ExperimentalCondition(object):
 		self.name = name
 
 
-	def addInitialCondition(self, t=0, name="", value=0, value_dev=0, quantification_ratio=1):
+	def addInitialCondition(self, t=0, name="", value=0, value_dev=None, quantification_ratio=1):
 
 		initial_condition = ExperimentalData(t, name, value, value_dev, quantification_ratio)
 		self.listOfInitialConditions.add(initial_condition)

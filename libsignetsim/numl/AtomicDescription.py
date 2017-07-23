@@ -30,13 +30,19 @@ class AtomicDescription (DimensionDescription):
 		DimensionDescription.__init__(self, document, name)
 		self.__document = document
 		self.__valueType = value_type
+		self.__ontologyTerm = None
 
 	def readNuML(self, atomic_description, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
+
 		DimensionDescription.readNuML(self, atomic_description, level, version)
 		self.__valueType = atomic_description.getValueType()
+		self.__ontologyTerm = self.__document.listOfOntologyTerms.getByOntologyTerm(atomic_description.getOntologyTerm())
 
-	def writeNuML(self, description, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
-		atomic_description = description.createAtomicDescription()
+	def writeNuML(self, atomic_description, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
+
 		DimensionDescription.writeNuML(self, atomic_description, level, version)
 		if self.__valueType is not None:
 			atomic_description.setValueType(self.__valueType)
+
+		if self.__ontologyTerm is not None:
+			atomic_description.setOntologyTerm(self.__ontologyTerm.getId())

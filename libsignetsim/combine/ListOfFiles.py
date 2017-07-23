@@ -82,16 +82,10 @@ class ListOfFiles(list):
 
 
 	def getAllSedmls(self):
-		sedmls = []
-		for file in self:
-			if file.isSedml():
-				sedmls.append(file)
-		return sedmls
-
+		return [file for file in self if file.isSedml()]
 
 	def getAllSbmls(self):
-		sbmls = []
-		for file in self:
-			if file.isSbml():
-				sbmls.append(file)
-		return sbmls
+		return [file for file in self if file.isSbml()]
+
+	def getAllNumls(self):
+		return [file for file in self if file.isNuml()]

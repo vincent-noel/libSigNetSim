@@ -27,7 +27,7 @@ from os.path import dirname, basename, join
 from mimetypes import guess_type
 from lxml import etree
 from libsbml import SBMLReader
-
+from libnuml import readNUMLFromString
 import libsbml
 from libsedml import readSedMLFromString
 reload(libsbml)
@@ -135,6 +135,12 @@ class File(object):
 				and self.__manifest.getFormat(self.getFilename()).startswith(self.SBML)
 		)
 
+	def isNuml(self):
+		return (
+			self.__manifest.isInManifest(self.getFilename())
+			and self.__manifest.getFormat(self.getFilename()).startwith(self.NUML)
+		)
+
 	def getFilename(self):
 		if self.__path is not None:
 			return join(self.__path, self.__filename)
@@ -161,8 +167,8 @@ class File(object):
 			return self.SEDML + ".level-%d.version-%d" % (sedmlDoc.getLevel(), sedmlDoc.getVersion())
 
 		elif tag == "numl":
-			# sedmlDoc = readSedMLFromString(xml_content)
-			return self.NUML# + ".level-%d.version-%d" % (sedmlDoc.getLevel(), sedmlDoc.getVersion())
+			numlDoc = readNUMLFromString(xml_content)
+			return self.NUML + ".level-%d.version-%d" % (numlDoc.getLevel(), numlDoc.getVersion())
 
 		elif tag == "omexManifest":
 			return self.MANIFEST

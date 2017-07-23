@@ -23,6 +23,7 @@
 """
 
 from libsignetsim.numl.DimensionDescription import DimensionDescription
+from libsignetsim.numl.AtomicDescription import AtomicDescription
 from libsignetsim.settings.Settings import Settings
 
 class TupleDescription (DimensionDescription):
@@ -32,10 +33,25 @@ class TupleDescription (DimensionDescription):
 		self.__document = document
 		self.__atomicDescriptions = []
 
+	def createAtomicDescription(self, name=None, value_type="double"):
+		atomic_description = AtomicDescription(self.__document, name, value_type)
+		atomic_description.setId("%s_0" % self.getId())
+		self.__atomicDescriptions.append(atomic_description)
+		return atomic_description
+
 	def readNuML(self, tuple_description, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
-		DimensionDescription.readNuML(tuple_description, level, version)
-		for atomic_description in tuple_description.getAtomicDescriptions():
-			pass
+		DimensionDescription.readNuML(self, tuple_description, level, version)
+
+		for i in range(tuple_description.size()):
+			t_atomic_description = AtomicDescription(self.__document)
+			t_atomic_description.readNuML(tuple_description.getAtomicDescription(i), level, version)
+			self.__atomicDescriptions.append(t_atomic_description)
 
 	def writeNuML(self, tuple_description, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
-		pass
+		DimensionDescription.writeNuML(self, tuple_description, level, version)
+		for atomic_description in self.__atomicDescriptions:
+			t_atomic_description = tuple_description.createAtomicDescription()
+			atomic_description.writeNuML(t_atomic_description, level, version)
+
+	def getAtomicDescriptions(self):
+		return self.__atomicDescriptions

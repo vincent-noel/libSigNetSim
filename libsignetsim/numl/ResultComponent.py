@@ -33,18 +33,24 @@ from re import sub
 
 class ResultComponent (NMBase):
 
-	def __init__(self, document, name=None):
+	def __init__(self, document):
 
 		NMBase.__init__(self, document)
 		self.__document = document
 		self.__id = None
 		self.__dimensionDescriptions = []
 		self.__dimensions = []
-		self.__name = name
 
 	def createCompositeDescription(self, name=None, index_type="string"):
 
 		dimension_description = CompositeDescription(self.__document, name, index_type)
+		dimension_description.setId("%s_header_%d" % (self.__id, len(self.__dimensionDescriptions)))
+		self.__dimensionDescriptions.append(dimension_description)
+		return dimension_description
+
+	def createTupleDescription(self, name=None):
+
+		dimension_description = TupleDescription(self.__document, name)
 		dimension_description.setId("%s_header_%d" % (self.__id, len(self.__dimensionDescriptions)))
 		self.__dimensionDescriptions.append(dimension_description)
 		return dimension_description
@@ -55,22 +61,31 @@ class ResultComponent (NMBase):
 		self.__dimensions.append(dimension_value)
 		return dimension_value
 
+	def createTupleValue(self, description):
+
+		dimension_value = TupleValue(self.__document, self, description)
+		self.__dimensions.append(dimension_value)
+		return dimension_value
+
 	def readNuML(self, result_component, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
 		NMBase.readNuML(self, result_component, level, version)
 		self.__id = result_component.getId()
 
 		# Always one element ??!!
 		for dimension_description in result_component.getDimensionDescription():
-
+			# print dimension_description.getId()
+			# print type(dimension_description)
+			# print dir(dimension_description)
+			# print dimension_description.isContentCompositeDescription()
 			t_dimension_description = None
-			if dimension_description.isContentCompositeDescription():
-				t_dimension_description = CompositeDescription(self.__document)
-
-			elif dimension_description.isContentTupleDescription():
-				t_dimension_description = TupleDescription(self.__document)
-
-			elif dimension_description.isContentAtomicDescription():
-				t_dimension_description = AtomicDescription(self.__document)
+			# if dimension_description.isContentCompositeDescription():
+			t_dimension_description = CompositeDescription(self.__document)
+			#
+			# elif dimension_description.isContentTupleDescription():
+			# 	t_dimension_description = TupleDescription(self.__document)
+			#
+			# elif dimension_description.isContentAtomicDescription():
+			# 	t_dimension_description = AtomicDescription(self.__document)
 
 			if t_dimension_description is not None:
 				t_dimension_description.readNuML(dimension_description, level, version)
@@ -79,14 +94,14 @@ class ResultComponent (NMBase):
 		for dimension in result_component.getDimension():
 
 			t_dimension = None
-			if dimension.isContentCompositeValue():
-				t_dimension = CompositeValue(self.__document, self, self.__dimensionDescriptions[0])
+			# if dimension.isContentCompositeValue():
+			t_dimension = CompositeValue(self.__document, self, self.__dimensionDescriptions[0])
 
-			elif dimension.isContentTupleValue():
-				t_dimension = TupleValue(self.__document, self.__dimensionDescriptions[0])
-
-			elif dimension.isContentAtomicValue():
-				t_dimension = AtomicValue(self.__document, self.__dimensionDescriptions[0])
+			# elif dimension.isContentTuple():
+			# 	t_dimension = TupleValue(self.__document, self, self.__dimensionDescriptions[0])
+			#
+			# elif dimension.isContentAtomicValue():
+			# 	t_dimension = AtomicValue(self.__document, self.__dimensionDescriptions[0])
 
 			if t_dimension is not None:
 				t_dimension.readNuML(dimension, level, version)
@@ -96,16 +111,36 @@ class ResultComponent (NMBase):
 
 		NMBase.writeNuML(self, result_component, level, version)
 
-		if self.__name is not None:
-			result_component.setId(sub(r"[^A-Za-z0-9_]+", "", self.__name.replace(" ", "_")))
-		else:
-			result_component.setId(self.__id)
+		result_component.setId(self.__id)
 
 		for dimension_description in self.__dimensionDescriptions:
-			dimension_description.writeNuML(result_component, level, version)
+			t_dimension_description = None
+			if isinstance(dimension_description, CompositeDescription):
+				t_dimension_description = result_component.createCompositeDescription()
+
+			elif isinstance(dimension_description, TupleDescription):
+				t_dimension_description = result_component.createTupleDescription()
+
+			elif isinstance(dimension_description, AtomicDescription):
+				t_dimension_description = result_component.createAtomicDescription()
+
+			if t_dimension_description is not None:
+				dimension_description.writeNuML(t_dimension_description, level, version)
 
 		for dimension in self.__dimensions:
-			dimension.writeNuML(result_component, level, version)
+
+			t_dimension = None
+			if isinstance(dimension, CompositeValue):
+				t_dimension = result_component.createCompositeValue()
+
+			elif isinstance(dimension, TupleValue):
+				t_dimension = result_component.createTupleValue()
+
+			elif isinstance(dimension, AtomicValue):
+				t_dimension = result_component.createAtomicValue()
+
+			if t_dimension is not None:
+				dimension.writeNuML(t_dimension, level, version)
 
 
 	def setId(self, result_component_id):

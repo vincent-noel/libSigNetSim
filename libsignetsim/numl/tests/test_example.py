@@ -39,7 +39,28 @@ class TestExample(TestCase):
 		numl_doc = NuMLDocument()
 		numl_doc.readNuMLFromFile(join(join(dirname(__file__), "files"), "example.xml"))
 
+		# Trying to reproduce the example 5.2 from the specification,
+		# but libnuml doesn't allow a tuple description as the root description,
+		# seems like we need a composite description in the middle
+		result = numl_doc.listOfResultComponents.createResultComponent()
+		result.setId("main_fitting_result")
+		main = result.createCompositeDescription(name=None, index_type="double")
+		tuple = main.createTupleDescription()
+		objective_value = tuple.createAtomicDescription("Objective value", "float")
+		root_square_mean = tuple.createAtomicDescription("Root mean square", "float")
+		standard_deviation = tuple.createAtomicDescription("Standard deviation", "float")
+
+		main_value = result.createCompositeValue(main, index_value="0")
+		tuple_value = main_value.createTupleValue(tuple)
+		tuple_value.createAtomicValue(objective_value, 12.5015)
+		tuple_value.createAtomicValue(root_square_mean, 0.158123)
+		tuple_value.createAtomicValue(standard_deviation, 0.159242)
+
 		numl_doc.writeNuMLToFile(join(join(dirname(__file__), "files"), "example_copy.xml"))
+		numl_doc = NuMLDocument()
+		numl_doc.readNuMLFromFile(join(join(dirname(__file__), "files"), "example_copy.xml"))
+		numl_doc.writeNuMLToFile(join(join(dirname(__file__), "files"), "example_copy_copy.xml"))
+
 
 
 

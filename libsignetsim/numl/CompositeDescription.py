@@ -34,6 +34,7 @@ class CompositeDescription (DimensionDescription):
 		self.__document = document
 		self.__content = None
 		self.__indexType = index_type
+		self.__ontologyTerm = None
 
 	def createCompositeDescription(self, name=None, index_type="string"):
 
@@ -44,6 +45,7 @@ class CompositeDescription (DimensionDescription):
 
 	def createTupleDescription(self, name=None):
 		self.__content = TupleDescription(self.__document, name)
+		self.__content.setId("%s_0" % self.getId())
 		return self.__content
 
 	def createAtomicDescription(self, name=None, value_type="double"):
@@ -69,18 +71,32 @@ class CompositeDescription (DimensionDescription):
 			self.__content.readNuML(composite_description[0], level, version)
 
 		self.__indexType = composite_description.getIndexType()
+		self.__ontologyTerm = self.__document.listOfOntologyTerms.getByOntologyTerm(composite_description.getOntologyTerm())
 
-	def writeNuML(self, description, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
-
-		composite_description = description.createCompositeDescription()
+	def writeNuML(self, composite_description, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
 
 		DimensionDescription.writeNuML(self, composite_description)
 
 		if self.__indexType is not None:
 			composite_description.setIndexType(self.__indexType)
 
+		if self.__ontologyTerm is not None:
+			composite_description.setOntologyTerm(self.__ontologyTerm.getId())
+
 		if self.__content is not None:
-			self.__content.writeNuML(composite_description, level, version)
+			t_content = None
+			from libsignetsim.numl.CompositeDescription import CompositeDescription
+			if isinstance(self.__content, CompositeDescription):
+				t_content = composite_description.createCompositeDescription()
+
+			elif isinstance(self.__content, TupleDescription):
+				t_content = composite_description.createTupleDescription()
+
+			elif isinstance(self.__content, AtomicDescription):
+				t_content = composite_description.createAtomicDescription()
+
+			if t_content is not None:
+				self.__content.writeNuML(t_content, level, version)
 
 	def getContent(self):
 		return self.__content
