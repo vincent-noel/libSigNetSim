@@ -21,10 +21,8 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
-
 from libsignetsim.data.ExperimentalCondition import ExperimentalCondition
 from libsignetsim.numl.NuMLDocument import NuMLDocument
-
 
 class Experiment(object):
 

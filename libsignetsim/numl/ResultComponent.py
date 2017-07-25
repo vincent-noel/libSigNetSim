@@ -24,11 +24,11 @@
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.numl.NMBase import NMBase
 from libsignetsim.numl.CompositeDescription import CompositeDescription
-from libsignetsim.numl.AtomicDescription import AtomicDescription
-from libsignetsim.numl.TupleDescription import TupleDescription
+# from libsignetsim.numl.AtomicDescription import AtomicDescription
+# from libsignetsim.numl.TupleDescription import TupleDescription
 from libsignetsim.numl.CompositeValue import CompositeValue
-from libsignetsim.numl.TupleValue import TupleValue
-from libsignetsim.numl.AtomicValue import AtomicValue
+# from libsignetsim.numl.TupleValue import TupleValue
+# from libsignetsim.numl.AtomicValue import AtomicValue
 from re import sub
 
 class ResultComponent (NMBase):
@@ -48,12 +48,12 @@ class ResultComponent (NMBase):
 		self.__dimensionDescriptions.append(dimension_description)
 		return dimension_description
 
-	def createTupleDescription(self, name=None):
-
-		dimension_description = TupleDescription(self.__document, name)
-		dimension_description.setId("%s_header_%d" % (self.__id, len(self.__dimensionDescriptions)))
-		self.__dimensionDescriptions.append(dimension_description)
-		return dimension_description
+	# def createTupleDescription(self, name=None):
+	#
+	# 	dimension_description = TupleDescription(self.__document, name)
+	# 	dimension_description.setId("%s_header_%d" % (self.__id, len(self.__dimensionDescriptions)))
+	# 	self.__dimensionDescriptions.append(dimension_description)
+	# 	return dimension_description
 
 	def createCompositeValue(self, description, index_value="string"):
 
@@ -61,22 +61,19 @@ class ResultComponent (NMBase):
 		self.__dimensions.append(dimension_value)
 		return dimension_value
 
-	def createTupleValue(self, description):
-
-		dimension_value = TupleValue(self.__document, self, description)
-		self.__dimensions.append(dimension_value)
-		return dimension_value
+	# def createTupleValue(self, description):
+	#
+	# 	dimension_value = TupleValue(self.__document, self, description)
+	# 	self.__dimensions.append(dimension_value)
+	# 	return dimension_value
 
 	def readNuML(self, result_component, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
 		NMBase.readNuML(self, result_component, level, version)
 		self.__id = result_component.getId()
 
-		# Always one element ??!!
+		# Always one element ??!! A composite one ??!!
 		for dimension_description in result_component.getDimensionDescription():
-			# print dimension_description.getId()
-			# print type(dimension_description)
-			# print dir(dimension_description)
-			# print dimension_description.isContentCompositeDescription()
+
 			t_dimension_description = None
 			# if dimension_description.isContentCompositeDescription():
 			t_dimension_description = CompositeDescription(self.__document)
@@ -118,11 +115,11 @@ class ResultComponent (NMBase):
 			if isinstance(dimension_description, CompositeDescription):
 				t_dimension_description = result_component.createCompositeDescription()
 
-			elif isinstance(dimension_description, TupleDescription):
-				t_dimension_description = result_component.createTupleDescription()
-
-			elif isinstance(dimension_description, AtomicDescription):
-				t_dimension_description = result_component.createAtomicDescription()
+			# elif isinstance(dimension_description, TupleDescription):
+			# 	t_dimension_description = result_component.createTupleDescription()
+			#
+			# elif isinstance(dimension_description, AtomicDescription):
+			# 	t_dimension_description = result_component.createAtomicDescription()
 
 			if t_dimension_description is not None:
 				dimension_description.writeNuML(t_dimension_description, level, version)
@@ -133,11 +130,11 @@ class ResultComponent (NMBase):
 			if isinstance(dimension, CompositeValue):
 				t_dimension = result_component.createCompositeValue()
 
-			elif isinstance(dimension, TupleValue):
-				t_dimension = result_component.createTupleValue()
-
-			elif isinstance(dimension, AtomicValue):
-				t_dimension = result_component.createAtomicValue()
+			# elif isinstance(dimension, TupleValue):
+			# 	t_dimension = result_component.createTupleValue()
+			#
+			# elif isinstance(dimension, AtomicValue):
+			# 	t_dimension = result_component.createAtomicValue()
 
 			if t_dimension is not None:
 				dimension.writeNuML(t_dimension, level, version)

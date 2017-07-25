@@ -138,7 +138,7 @@ class File(object):
 	def isNuml(self):
 		return (
 			self.__manifest.isInManifest(self.getFilename())
-			and self.__manifest.getFormat(self.getFilename()).startwith(self.NUML)
+			and self.__manifest.getFormat(self.getFilename()).startswith(self.NUML)
 		)
 
 	def getFilename(self):

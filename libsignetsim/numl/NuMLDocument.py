@@ -26,6 +26,7 @@ from libsignetsim.numl.container.ListOfOntologyTerms import ListOfOntologyTerms
 from libsignetsim.numl.container.ListOfResultComponents import ListOfResultComponents
 from libsignetsim.numl.NuMLException import NuMLFileNotFound
 from libsignetsim.settings.Settings import Settings
+
 from libnuml import readNUMLFromFile, writeNUML, NUMLDocument
 from os.path import exists, dirname, basename
 
@@ -59,6 +60,10 @@ class NuMLDocument (NMBase):
 		return document
 
 	def readNuMLFromFile(self, filename):
+
+		# import libnuml
+		# reload(libnuml)
+		# from libnuml import readNUMLFromFile
 
 		if not exists(filename):
 			raise NuMLFileNotFound("NuML file %s not found" % filename)

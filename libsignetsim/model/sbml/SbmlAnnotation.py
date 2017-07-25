@@ -44,6 +44,9 @@ class SbmlAnnotation(object):
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
 
+		import libsbml
+		reload(libsbml)
+
 		for cvterm in sbml_object.getCVTerms():
 			t_cvterm = CVTerm(self.__model)
 			t_cvterm.readSbml(cvterm, sbml_level, sbml_version)
