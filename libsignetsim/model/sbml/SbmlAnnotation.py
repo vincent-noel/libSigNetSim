@@ -22,6 +22,7 @@
 
 """
 
+import libsbml
 
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.sbml.CVTerm import CVTerm
@@ -43,9 +44,6 @@ class SbmlAnnotation(object):
 	def readSbml(self, sbml_object,
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
-
-		import libsbml
-		reload(libsbml)
 
 		for cvterm in sbml_object.getCVTerms():
 			t_cvterm = CVTerm(self.__model)

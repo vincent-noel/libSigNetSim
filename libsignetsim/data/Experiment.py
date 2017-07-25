@@ -56,7 +56,6 @@ class Experiment(object):
 
 		numl_doc = NuMLDocument()
 
-
 		time_term = numl_doc.listOfOntologyTerms.createOntologyTerm()
 		time_term.defineAsTime()
 
