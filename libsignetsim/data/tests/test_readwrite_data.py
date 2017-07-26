@@ -61,7 +61,7 @@ class TestReadWriteData(TestCase):
 		condition_1.addObservation(300, "Total Ras-GTP", 333)
 		condition_1.addObservation(900, "Total Ras-GTP", 222)
 		condition_1.addObservation(1800, "Total Ras-GTP", 68)
-		condition_1.addObservation(1800, "Total Ras-GTP", 60)
+		condition_1.addObservation(3600, "Total Ras-GTP", 60)
 
 		experiment.writeNuMLToFile(join(join(dirname(__file__), "files"), "data.xml"))
 

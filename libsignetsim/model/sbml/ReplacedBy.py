@@ -30,7 +30,7 @@ class ReplacedBy(HasRef):
 	def __init__(self, model, parent_obj):
 
 		self.__model = model
-		# self.__parentObj = parent_obj.getMetaId()
+		self.__parentObj = parent_obj
 		HasRef.__init__(self, model)
 		self.__submodelRef = None
 
@@ -184,3 +184,6 @@ class ReplacedBy(HasRef):
 	def copy(self, obj, prefix="", shift=0):
 		HasRef.copy(self, obj, prefix, shift)
 		self.setSubmodelRef(obj.getSubmodelRef())
+
+	def getParentObject(self):
+		return self.__parentObj
