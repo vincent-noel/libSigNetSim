@@ -28,6 +28,7 @@ from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.settings.Settings import Settings
 
+
 class FunctionDefinition(HasId, SbmlObject):
 	""" Function definition definition """
 
@@ -46,6 +47,7 @@ class FunctionDefinition(HasId, SbmlObject):
 
 		HasId.readSbml(self, sbml_function_definition, sbml_level, sbml_version)
 		SbmlObject.readSbml(self, sbml_function_definition, sbml_level, sbml_version)
+
 		self.__definition.readSbml(sbml_function_definition.getMath(), sbml_level, sbml_version)
 
 

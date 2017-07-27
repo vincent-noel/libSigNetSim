@@ -53,7 +53,10 @@ class EventAssignment(SbmlObject):
 		self.__var = self.__model.listOfVariables.getBySbmlId(sbml_event_assignment.getVariable())
 		self.__var.addEventAssignmentBy(self.event)
 
-		self.__definition.readSbml(sbml_event_assignment.getMath())
+		if sbml_event_assignment.getMath() is not None:
+			self.__definition.readSbml(sbml_event_assignment.getMath())
+		else:
+			self.__definition = None
 
 		if self.__var.isConcentration():
 			t_comp = self.__var.getCompartment()
@@ -68,8 +71,10 @@ class EventAssignment(SbmlObject):
 		sbml_event_assignment = sbml_event.createEventAssignment()
 		SbmlObject.writeSbml(self, sbml_event_assignment, sbml_level, sbml_version)
 
-		t_definition = MathFormula(self.__model, MathFormula.MATH_EVENTASSIGNMENT)
-		t_definition.setInternalMathFormula(self.__definition.getInternalMathFormula())
+		if self.__definition is not None:
+			t_definition = MathFormula(self.__model, MathFormula.MATH_EVENTASSIGNMENT)
+			t_definition.setInternalMathFormula(self.__definition.getInternalMathFormula())
+
 		t_variable = self.__var.symbol.getSbmlMathFormula(sbml_level, sbml_version).getName()
 
 		if self.__var.isConcentration():

@@ -105,51 +105,51 @@ class ReplacedBy(HasRef):
 			return t_object.getMetaId()
 
 
-
-	def getReplacingElementSubmodelAndObject(self):
-
-		submodels = []
-		res = None
-		# Now choosing the right model
-		if self.hasModelRef():
-
-			if self.getSubmodelRef() == self.__model.getSbmlId():
-				tt_model = t_model
-
-			else:
-				tt_model = self.__model.listOfSubmodels.getBySbmlIdRef(self.getSubmodelRef()).getModelObject()
-
-			submodels.append(self.getSubmodelRef())
-
-			if self.hasIdRef():
-
-
-				if self.hasSBaseRef():
-					ttt_model = tt_model.listOfSubmodels.getBySbmlIdRef(self.getIdRef()).getModelObject()
-					refs = self.getSBaseRef().getRef(ttt_model)
-
-					# t_ref = self.getIdRef()
-					submodels.append(self.getIdRef())
-					while len(refs) > 1:
-						# t_ref = "%s__%s" % (t_ref, refs[0])
-						submodels.append(refs[0])
-						ttt_model = ttt_model.listOfSubmodels.getBySbmlIdRef(refs[0]).getModelObject()
-						refs = refs[-1:]
-
-					res = ttt_model.listOfSbmlObjects[refs[0]]
-
-					# return "%s__%s" % (t_ref, t_object.getMetaId())
-				else:
-					res = tt_model.listOfVariables.getBySbmlId(self.getIdRef())
-
-
-			elif self.hasPortRef():
-				res = tt_model.listOfPorts.getBySbmlId(self.getPortRef()).getRefObject()
-
-			elif self.hasMetaId():
-				res = tt_model.listOfSbmlObjects.getByMetaId(self.getMetaIdRef())
-
-			return (submodels, res)
+	# 
+	# def getReplacingElementSubmodelAndObject(self):
+	# 
+	# 	submodels = []
+	# 	res = None
+	# 	# Now choosing the right model
+	# 	if self.hasModelRef():
+	# 
+	# 		if self.getSubmodelRef() == self.__model.getSbmlId():
+	# 			tt_model = t_model
+	# 
+	# 		else:
+	# 			tt_model = self.__model.listOfSubmodels.getBySbmlIdRef(self.getSubmodelRef()).getModelObject()
+	# 
+	# 		submodels.append(self.getSubmodelRef())
+	# 
+	# 		if self.hasIdRef():
+	# 
+	# 
+	# 			if self.hasSBaseRef():
+	# 				ttt_model = tt_model.listOfSubmodels.getBySbmlIdRef(self.getIdRef()).getModelObject()
+	# 				refs = self.getSBaseRef().getRef(ttt_model)
+	# 
+	# 				# t_ref = self.getIdRef()
+	# 				submodels.append(self.getIdRef())
+	# 				while len(refs) > 1:
+	# 					# t_ref = "%s__%s" % (t_ref, refs[0])
+	# 					submodels.append(refs[0])
+	# 					ttt_model = ttt_model.listOfSubmodels.getBySbmlIdRef(refs[0]).getModelObject()
+	# 					refs = refs[-1:]
+	# 
+	# 				res = ttt_model.listOfSbmlObjects[refs[0]]
+	# 
+	# 				# return "%s__%s" % (t_ref, t_object.getMetaId())
+	# 			else:
+	# 				res = tt_model.listOfVariables.getBySbmlId(self.getIdRef())
+	# 
+	# 
+	# 		elif self.hasPortRef():
+	# 			res = tt_model.listOfPorts.getBySbmlId(self.getPortRef()).getRefObject()
+	# 
+	# 		elif self.hasMetaId():
+	# 			res = tt_model.listOfSbmlObjects.getByMetaId(self.getMetaIdRef())
+	# 
+	# 		return (submodels, res)
 
 	def getReplacingElement(self):
 

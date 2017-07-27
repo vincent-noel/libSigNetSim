@@ -60,7 +60,10 @@ class Event(HasId, SbmlObject):
 		HasId.readSbml(self, sbml_event, sbml_level, sbml_version)
 		SbmlObject.readSbml(self, sbml_event, sbml_level, sbml_version)
 
-		self.trigger.readSbml(sbml_event.getTrigger(), sbml_level, sbml_version)
+		if sbml_event.getTrigger() is not None:
+			self.trigger.readSbml(sbml_event.getTrigger(), sbml_level, sbml_version)
+		else:
+			self.trigger = None
 
 		if sbml_event.isSetDelay():
 			self.delay = EventDelay(self.__model)
@@ -93,7 +96,8 @@ class Event(HasId, SbmlObject):
 		HasId.writeSbml(self, sbml_event, sbml_level, sbml_version)
 		SbmlObject.writeSbml(self, sbml_event, sbml_level, sbml_version)
 
-		self.trigger.writeSbml(sbml_event, sbml_level, sbml_version)
+		if self.trigger is not None:
+			self.trigger.writeSbml(sbml_event, sbml_level, sbml_version)
 
 		if self.delay is not None:
 			self.delay.writeSbml(sbml_event, sbml_level, sbml_version)
@@ -246,3 +250,7 @@ class Event(HasId, SbmlObject):
 		if self.useValuesFromTriggerTime:
 			size += len(self.listOfEventAssignments)
 		return size
+
+	def isValid(self):
+
+		return self.trigger is not None and len([ass for ass in self.listOfEventAssignments if ass.getDefinition() is None]) == 0

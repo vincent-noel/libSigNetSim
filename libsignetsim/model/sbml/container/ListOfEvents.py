@@ -105,20 +105,20 @@ class ListOfEvents(ListOf, SbmlObject):
 
 	def withDelay(self):
 
-		return [obj.objId for obj in ListOf.values(self) if obj.delay is not None]
+		return [obj.objId for obj in self.validEvents() if obj.delay is not None]
 
 
 
 	def nbRoots(self):
 
 		res = 0
-		for event in ListOf.values(self):
+		for event in self.validEvents():
 			res += event.trigger.nbRoots()
 		return res
 
 	def getRootsOperators(self):
 		res = []
-		for event in ListOf.values(self):
+		for event in self.validEvents():
 			res += event.trigger.getRootsOperator()
 		return res
 
@@ -157,4 +157,20 @@ class ListOfEvents(ListOf, SbmlObject):
 			if obj.getSbmlId() is not None and sbml_id == obj.getSbmlId():
 				res = True
 
+		return res
+
+	def validEvents(self):
+
+		return [
+			event
+			for event in self.values()
+			if event.isValid()
+		]
+
+	def nbValidEvents(self):
+
+		res = 0
+		for event in self.values():
+			if event.isValid():
+				res += 1
 		return res

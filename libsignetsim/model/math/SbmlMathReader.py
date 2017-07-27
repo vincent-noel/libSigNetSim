@@ -488,7 +488,10 @@ class SbmlMathReader(object):
 
 				t_funcdef = self.model.listOfFunctionDefinitions.getBySbmlId(tree.getName())
 				t_name = "_functionDefinition_%d_" % (t_funcdef.objId)
-				t_function = SympyFunction(t_name)(*t_args)
+				if len(t_args) == 0:
+					t_function = SympyFunction(t_name)
+				else:
+					t_function = SympyFunction(t_name)(*t_args)
 
 				return t_function
 

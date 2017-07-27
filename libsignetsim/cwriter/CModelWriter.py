@@ -112,7 +112,7 @@ class CModelWriter(object):
 								variable_name, i_var, variable_alg.symbol.getPrettyPrintMathFormula()))
 
 		f_c.write("  %s.nb_init_assignments = 0;\n" % (variable_name))
-		f_c.write("  %s.nb_events = %d;\n" % (variable_name, len(self.listOfEvents.keys())))
+		f_c.write("  %s.nb_events = %d;\n" % (variable_name, self.listOfEvents.nbValidEvents()))
 		f_c.write("  %s.nb_roots = %d;\n" % (variable_name, self.listOfEvents.nbRoots()))
 
 		if self.listOfEvents.nbRoots() > 0:
@@ -120,17 +120,17 @@ class CModelWriter(object):
 			for i, roots_operators in enumerate(self.listOfEvents.getRootsOperators()):
 				f_c.write("  %s.roots_operators[%d] = %d;\n" % (variable_name, i, roots_operators))
 
-		if len(self.listOfEvents.keys()) > 0:
+		if self.listOfEvents.nbValidEvents() > 0:
 			f_c.write("  %s.events_init = calloc(%s.nb_events, sizeof(int));\n" % (variable_name, variable_name))
-			for i, event in enumerate(self.listOfEvents.values()):
+			for i, event in enumerate(self.listOfEvents.validEvents()):
 				f_c.write("  %s.events_init[%d] = %d;\n" % (variable_name, i, event.trigger.initialValue))
 
 			f_c.write("  %s.memory_size_per_event = calloc(%s.nb_events, sizeof(int));\n" % (variable_name, variable_name))
-			for event in self.listOfEvents.values():
+			for event in self.listOfEvents.validEvents():
 				f_c.write("  %s.memory_size_per_event[%d] = %d;\n" % (variable_name, event.objId, event.memorySize()))
 
 			f_c.write("  %s.events_has_priority = calloc(%s.nb_events, sizeof(int));\n" % (variable_name, variable_name))
-			for event in self.listOfEvents.values():
+			for event in self.listOfEvents.validEvents():
 				f_c.write("  %s.events_has_priority[%d] = %d;\n" % (variable_name, event.objId, event.priority is not None))
 
 		list_samples_str = "%.16g" % list_samples[0]
@@ -333,7 +333,7 @@ class CModelWriter(object):
 		else:
 			f_h.write("int roots_events_%d(realtype t, N_Vector y, realtype *gout,void *user_data);\n" % model_id)
 			f_c.write("int roots_events_%d(realtype t, N_Vector y, realtype *gout,void *user_data)\n{\n" % model_id)
-		if len(self.listOfEvents) > 0:
+		if self.listOfEvents.validEvents() > 0:
 
 			f_c.write("  IntegrationData * data = (IntegrationData *) user_data;\n")
 			f_c.write("  N_Vector cst = data->constant_variables;\n")
@@ -341,7 +341,7 @@ class CModelWriter(object):
 			f_c.write("  compute_rules_%d(t,y, user_data);\n" % model_id)
 
 			i_event = 0
-			for event in self.listOfEvents.values():
+			for event in self.listOfEvents.validEvents():
 				t_distances = event.trigger.getRootsFunctions()
 				for t_distance in t_distances:
 					f_c.write("  gout[%d] = %s;\n" % (i_event, t_distance))
@@ -366,7 +366,7 @@ class CModelWriter(object):
 		i_roots = 0
 		i_roots2 = 0
 
-		for i_event, event in enumerate(self.listOfEvents.values()):
+		for i_event, event in enumerate(self.listOfEvents.validEvents()):
 
 			# Events deactivation
 			(t_deactivation_condition, i_roots) = event.trigger.getDeactivationCondition(i_roots)
@@ -426,7 +426,7 @@ class CModelWriter(object):
 
 		f_h.write("int assign_events_%d(realtype t, N_Vector y, void *user_data, int assignment_id, realtype * memory);\n" % model_id)
 		f_c.write("int assign_events_%d(realtype t, N_Vector y, void *user_data, int assignment_id, realtype * memory)\n{\n" % model_id)
-		if len(self.listOfEvents) > 0:
+		if self.listOfEvents.nbValidEvents() > 0:
 
 			f_c.write("  IntegrationData * data = (IntegrationData *) user_data;\n")
 			f_c.write("  N_Vector cst = data->constant_variables;\n")
@@ -436,7 +436,7 @@ class CModelWriter(object):
 
 			i_event = 0
 			i_roots2 = 0
-			for event in self.listOfEvents.values():
+			for event in self.listOfEvents.validEvents():
 
 				f_c.write("    case %d :\n" % i_event)
 
@@ -480,14 +480,14 @@ class CModelWriter(object):
 
 		f_h.write("int priority_events_%d(realtype t, N_Vector y, void *user_data);\n" % model_id)
 		f_c.write("int priority_events_%d(realtype t, N_Vector y, void *user_data)\n{\n" % model_id)
-		if len(self.listOfEvents) > 0:
+		if self.listOfEvents.nbValidEvents() > 0:
 
 			f_c.write("  IntegrationData * data = (IntegrationData *) user_data;\n")
 			f_c.write("  N_Vector cst = data->constant_variables;\n")
 			f_c.write("  N_Vector ass = data->assignment_variables;\n")
 			# f_c.write("  N_Vector alg = data->algebraic_variables;\n")
 
-			for i, event in enumerate(self.listOfEvents.values()):
+			for i, event in enumerate(self.listOfEvents.validEvents()):
 
 				if event.priority is not None:
 					f_c.write("  *(data->events_priorities[%d]) = %s;\n" % (i, event.priority.getCMathFormula()))

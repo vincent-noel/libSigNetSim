@@ -155,61 +155,61 @@ class ReplacedElement(HasRef):
 
 			return t_object.getMetaId()
 
-	def getReplacedElementSubmodelAndObject(self):
-
-		submodel = []
-		res = None
-		# Now choosing the right model
-		if self.hasModelRef():
-
-			if self.getSubmodelRef() == self.__model.getSbmlId():
-				tt_model = self.__model
-			else:
-				tt_model = self.__model.listOfSubmodels.getBySbmlIdRef(self.getSubmodelRef()).getModelObject()
-
-			submodel.append(self.getSubmodelRef())
-
-			if self.hasIdRef():
-				if self.hasSBaseRef():
-					ttt_model = tt_model.listOfSubmodels.getBySbmlIdRef(self.getIdRef()).getModelObject()
-					refs = self.getSBaseRef().getRef(ttt_model)
-
-					submodel.append(self.getIdRef())
-					while len(refs) > 1:
-						submodel.append(res[0])
-						ttt_model = ttt_model.listOfSubmodels.getBySbmlIdRef(refs[0]).getModelObject()
-						refs = refs[-1:]
-
-					res = ttt_model.listOfSbmlObjects[refs[0]]
-
-				else:
-
-					res = tt_model.listOfVariables.getBySbmlId(self.getIdRef())
-
-			elif self.hasPortRef():
-				res = tt_model.listOfPorts.getBySbmlId(self.getPortRef()).getRefObject()
-
-			elif self.hasMetaIdRef():
-				res = tt_model.listOfSbmlObjects.getByMetaId(self.getMetaIdRef())
-
-			elif self.__deletion is not None:
-				t_submodel = self.__model.listOfSubmodels.getBySbmlIdRef(self.getSubmodelRef())
-
-				if self.__deletion in t_submodel.listOfDeletions.sbmlIds():
-
-					t_deletion = t_submodel.listOfDeletions.getBySbmlId(self.__deletion)
-
-					if t_deletion.hasIdRef():
-						res = tt_model.listOfVariables.getBySbmlId(t_deletion.getIdRef())
-
-					elif t_deletion.hasPortRef():
-						res = tt_model.listOfPorts.getBySbmlId(t_deletion.getPortRef()).getRefObject()
-
-					elif t_deletion.hasMetaIdRef():
-						res = tt_model.listOfSbmlObjects.getByMetaId(t_deletion.getMetaIdRef())
-
-			return (submodel, res)
-
+	# def getReplacedElementSubmodelAndObject(self):
+	#
+	# 	submodel = []
+	# 	res = None
+	# 	# Now choosing the right model
+	# 	if self.hasModelRef():
+	#
+	# 		if self.getSubmodelRef() == self.__model.getSbmlId():
+	# 			tt_model = self.__model
+	# 		else:
+	# 			tt_model = self.__model.listOfSubmodels.getBySbmlIdRef(self.getSubmodelRef()).getModelObject()
+	#
+	# 		submodel.append(self.getSubmodelRef())
+	#
+	# 		if self.hasIdRef():
+	# 			if self.hasSBaseRef():
+	# 				ttt_model = tt_model.listOfSubmodels.getBySbmlIdRef(self.getIdRef()).getModelObject()
+	# 				refs = self.getSBaseRef().getRef(ttt_model)
+	#
+	# 				submodel.append(self.getIdRef())
+	# 				while len(refs) > 1:
+	# 					submodel.append(res[0])
+	# 					ttt_model = ttt_model.listOfSubmodels.getBySbmlIdRef(refs[0]).getModelObject()
+	# 					refs = refs[-1:]
+	#
+	# 				res = ttt_model.listOfSbmlObjects[refs[0]]
+	#
+	# 			else:
+	#
+	# 				res = tt_model.listOfVariables.getBySbmlId(self.getIdRef())
+	#
+	# 		elif self.hasPortRef():
+	# 			res = tt_model.listOfPorts.getBySbmlId(self.getPortRef()).getRefObject()
+	#
+	# 		elif self.hasMetaIdRef():
+	# 			res = tt_model.listOfSbmlObjects.getByMetaId(self.getMetaIdRef())
+	#
+	# 		elif self.__deletion is not None:
+	# 			t_submodel = self.__model.listOfSubmodels.getBySbmlIdRef(self.getSubmodelRef())
+	#
+	# 			if self.__deletion in t_submodel.listOfDeletions.sbmlIds():
+	#
+	# 				t_deletion = t_submodel.listOfDeletions.getBySbmlId(self.__deletion)
+	#
+	# 				if t_deletion.hasIdRef():
+	# 					res = tt_model.listOfVariables.getBySbmlId(t_deletion.getIdRef())
+	#
+	# 				elif t_deletion.hasPortRef():
+	# 					res = tt_model.listOfPorts.getBySbmlId(t_deletion.getPortRef()).getRefObject()
+	#
+	# 				elif t_deletion.hasMetaIdRef():
+	# 					res = tt_model.listOfSbmlObjects.getByMetaId(t_deletion.getMetaIdRef())
+	#
+	# 		return (submodel, res)
+	#
 
 
 	def getReplacedElementObject(self):
