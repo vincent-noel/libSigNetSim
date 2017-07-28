@@ -24,6 +24,7 @@
 
 
 from libsignetsim.model.sbml.HasId import HasId
+from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.sbml.Unit import Unit
 from libsignetsim.settings.Settings import Settings
 
@@ -37,7 +38,7 @@ from libsbml import UNIT_KIND_AMPERE, UNIT_KIND_AVOGADRO, UNIT_KIND_BECQUEREL,\
 	UNIT_KIND_SIEMENS, UNIT_KIND_SIEVERT, UNIT_KIND_STERADIAN, UNIT_KIND_TESLA,\
 	UNIT_KIND_VOLT, UNIT_KIND_WATT, UNIT_KIND_WEBER, UNIT_KIND_INVALID
 
-class UnitDefinition(HasId):
+class UnitDefinition(HasId, SbmlObject):
 
 
 	def __init__ (self, model, objId=0):
@@ -45,9 +46,10 @@ class UnitDefinition(HasId):
 		self.__model = model
 		self.objId = objId
 
+		SbmlObject.__init__(self, model)
 		HasId.__init__(self, model)
-		self.listOfUnits = []
 
+		self.listOfUnits = []
 
 	def defaultConcentrationUnit(self):
 
@@ -132,6 +134,7 @@ class UnitDefinition(HasId):
 
 	def readSbml(self, unitDefinition, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
+		SbmlObject.readSbml(self, unitDefinition, sbml_level, sbml_version)
 		HasId.readSbml(self, unitDefinition, sbml_level, sbml_version)
 
 		for unit in unitDefinition.getListOfUnits():
@@ -143,7 +146,7 @@ class UnitDefinition(HasId):
 	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
 		t_unitDefinition = sbml_model.createUnitDefinition()
-
+		SbmlObject.writeSbml(self, t_unitDefinition, sbml_level, sbml_version)
 		HasId.writeSbml(self, t_unitDefinition, sbml_level, sbml_version)
 
 		for unit in self.listOfUnits:
@@ -181,7 +184,7 @@ class UnitDefinition(HasId):
 
 	def newUnit(self):
 		self.listOfUnits.append(Unit(self.__model, len(self.listOfUnits)))
-
+		return self.listOfUnits[len(self.listOfUnits)-1]
 
 	def deleteUnit(self, objId):
 		self.listOfUnits.remove(self.listOfUnits[objId])
