@@ -24,6 +24,7 @@
 
 
 from libsignetsim.model.sbml.HasId import HasId
+from libsignetsim.model.sbml.Unit import Unit
 from libsignetsim.settings.Settings import Settings
 
 from libsbml import UNIT_KIND_AMPERE, UNIT_KIND_AVOGADRO, UNIT_KIND_BECQUEREL,\
