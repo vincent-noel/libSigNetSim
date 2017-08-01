@@ -61,7 +61,7 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 		for experiment in self.listOfExperiments:
 			times += experiment.getTimes()
 
-		self.listOfSamples = list(set(times))
+		self.listOfSamples = sorted(list(set(times)))
 		self.timeMin = min(self.listOfSamples)
 		self.timeMax = max(self.listOfSamples)
 

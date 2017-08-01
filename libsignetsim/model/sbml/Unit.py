@@ -155,17 +155,17 @@ class Unit(object):
 			t_str += "(%g." % self.multiplier
 
 		if self.scale == -3:
-			t_str = "m"
+			t_str += "m"
 		elif self.scale == -6:
-			t_str = "u"
+			t_str += "u"
 		elif self.scale == -9:
-			t_str = "n"
+			t_str += "n"
 		elif self.scale == +3:
-			t_str = "k"
+			t_str += "k"
 		elif self.scale == +6:
-			t_str = "M"
+			t_str += "M"
 		elif self.scale == +9:
-			t_str = "G"
+			t_str += "G"
 
 		t_str += self.unit_id[self.kind] + ("^" + str(self.exponent) if self.exponent != 1 else "")
 

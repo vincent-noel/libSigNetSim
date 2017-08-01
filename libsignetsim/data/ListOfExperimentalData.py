@@ -72,6 +72,16 @@ class ListOfExperimentalData(dict):
 		return times
 
 
+	def getByVariable(self):
+		result = {}
+		for species in self.getSpecies():
+			result.update({species: []})
+		for data in self.values():
+			result[data.name].append(data)
+
+		return result
+
+
 	def getValuesOfSpecies(self):
 
 		values = {}
@@ -80,10 +90,7 @@ class ListOfExperimentalData(dict):
 				values.update({data.name: []})
 
 			values[data.name].append(data.value)
-
 		return values
-
-
 
 	def getTimesOfSpecies(self):
 

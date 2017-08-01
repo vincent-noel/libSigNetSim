@@ -25,7 +25,7 @@ import re
 
 class ExperimentalData(object):
 
-	def __init__ (self, t=0, name="", value=0, value_dev=0, quantification_ratio=1):
+	def __init__(self, t=0, name="", value=0, value_dev=0, quantification_ratio=1):
 
 		self.name = name
 		self.t = t
