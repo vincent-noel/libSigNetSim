@@ -45,6 +45,7 @@ int       score_type;
 ModelDefinition * sf_model;
 Experiment * sf_experiments;
 int nb_sf_experiments;
+ScoreSettings * score_settings;
 
 IntegrationResult *** sf_all_results;
 
@@ -91,14 +92,15 @@ void terminateIntegrationResults(IntegrationResult *** all_results, Experiment *
 
 void InitializeModelVsDataScoreFunction(ModelDefinition * model,
 										Experiment * experiments,
-										int nb_experiments)
+										int nb_experiments,
+										ScoreSettings * settings)
 {
 	score_type = MODEL_VS_DATA;
 	sf_model = model;
 	sf_experiments = experiments;
 	nb_sf_experiments = nb_experiments;
 	sf_all_results = initializeIntegrationResults(model, experiments, nb_experiments);
-
+    score_settings = settings;
 }
 
 void FinalizeScoreFunction()
@@ -190,14 +192,14 @@ double ComputeScoreDataVsModel(IntegrationResult * result, ExperimentalObservati
 	//int debug=0;
 	double score = 0;
 	int i;
-	int penalty = 0;
+	double penalty = 0;
 	for (i=0; i < (result->nb_derivative_variables + result->nb_assignment_variables); i++)
 	{
 		int t;
 		for (t=0; t < result->nb_samples; t++)
 		{
 		  if (result->y[i][t] < -1e-8)
-		  penalty += 10;
+		  penalty += score_settings->negative_penalty;
 		  // return -1;
 		}
 

@@ -44,12 +44,21 @@
 #define   MAX_SCORE         DBL_MAX      /* the biggest possible score, ever */
 #define   MAX_RECORD        256       /* max. length of lines read from file */
 
+
+typedef struct
+{
+	double negative_penalty;               /* Penalty for negative numbers */
+
+} ScoreSettings;
+
 void      InitializeModelVsDataScoreFunction    (ModelDefinition * model,
                                                   Experiment * experiments,
-                                                  int nb_experiments);
+                                                  int nb_experiments,
+                                                  ScoreSettings * settings);
 
 void      FinalizeScoreFunction                 ();
 
 double    computeScore                          ();
 void      saveBestResult                        (char * path, int proc);
 void      PrintReferenceData                    (char * path);
+

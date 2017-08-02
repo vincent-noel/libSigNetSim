@@ -35,7 +35,7 @@
 #include <mpi.h>
 #endif
 
-#include "scoreFunctions.h"
+//#include "scoreFunctions.h"
 #include "optim.h"
 #include "model.h"
 #include "data.h"
@@ -70,8 +70,9 @@ int main(int argc, char **argv )
 	Experiment * experiments = getListOfExperiments();
 	int nb_experiments = getNbExperiments();
 
+    ScoreSettings * score_settings = init_score_settings();
 	// Finally, we initialize the data and print the reference
-	InitializeModelVsDataScoreFunction(working_model, experiments, nb_experiments);
+	InitializeModelVsDataScoreFunction(working_model, experiments, nb_experiments, score_settings);
 
 #ifdef MPI
 	SAType * settings = InitPLSA(nnodes, myid);

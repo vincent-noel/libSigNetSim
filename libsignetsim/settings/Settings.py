@@ -111,6 +111,7 @@ class Settings(object):
 	defaultCVODEMaxConvFails = 100
 	defaultCVODEMaxErrFails = 70
 
+	defaultScoreNegativePenalty = 0
 
 	defaultPlsaSeed = 0
 	defaultPlsaInitialTemperature = 1

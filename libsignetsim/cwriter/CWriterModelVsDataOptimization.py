@@ -39,6 +39,7 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 				p_mix=Settings.defaultPlsaMixInterval,
 				p_initial_moves=Settings.defaultPlsaInitialMoves,
 				p_tau=Settings.defaultPlsaTau,
+				s_neg_penalty=Settings.defaultScoreNegativePenalty,
 	):
 
 
@@ -47,12 +48,18 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 		self.timeMin = None
 		self.timeMax = None
 		self.listOfSamples = None
-
+		self.scoreNegativePenalty = s_neg_penalty
 		self.findSimulationSettings()
 
 		CWriterModels.__init__(self, [workingModel], [Settings.simulationTimeMin], [self.listOfSamples], [Settings.defaultAbsTol], [Settings.defaultRelTol])
 		CWriterData.__init__(self, listOfExperiments, mapping, workingModel, subdir="src")
-		CWriterOptimization.__init__(self, workingModel, parameters_to_fit, p_lambda=p_lambda, p_criterion=p_criterion)
+		CWriterOptimization.__init__(
+			self, workingModel, parameters_to_fit,
+			p_lambda=p_lambda, p_criterion=p_criterion,
+			p_initial_temperature=p_initial_temperature,
+			p_gain=p_gain, p_interval=p_interval, p_tau=p_tau,
+			p_mix=p_mix, p_initial_moves=p_initial_moves
+		)
 
 	def findSimulationSettings(self):
 
@@ -85,6 +92,19 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 		self.writeOptimizationGlobalMethods(f_c, f_h)
 		self.writeOptimizationParameters(f_c, f_h)
 		self.writeOptimizationSettings(f_c, f_h, nb_procs)
+		self.writeOptimizationScoreSettings(f_c, f_h)
 
 		f_c.close()
 		f_h.close()
+
+
+
+	def writeOptimizationScoreSettings(self, f_c, f_h):
+
+		f_h.write("ScoreSettings * init_score_settings();\n")
+		f_c.write("ScoreSettings * init_score_settings()\n{\n")
+
+		f_c.write("  ScoreSettings * settings = malloc(sizeof(ScoreSettings));\n")
+		f_c.write("  settings->negative_penalty = %.2g;\n" % self.scoreNegativePenalty)
+		f_c.write("  return settings;\n")
+		f_c.write("}")

@@ -36,11 +36,19 @@ from os.path import isfile
 
 class ModelVsTimeseriesOptimization(Optimization, CWriterModelVsDataOptimization, NoiseGenerator):
 
-	def __init__(self, workingModel, parameters_to_fit=None,
-				list_of_experiments=None, reference_data=None,
-				mapping=None, noise=0, sampling=None, nb_procs=1,
-				p_lambda=Settings.defaultPlsaLambda,
-				p_criterion=Settings.defaultPlsaCriterion
+	def __init__(
+			self, workingModel, parameters_to_fit=None,
+			list_of_experiments=None, reference_data=None,
+			mapping=None, noise=0, sampling=None, nb_procs=1,
+			p_lambda=Settings.defaultPlsaLambda,
+			p_criterion=Settings.defaultPlsaCriterion,
+			p_initial_temperature=Settings.defaultPlsaInitialTemperature,
+			p_gain=Settings.defaultPlsaGainForJumpSizeControl,
+			p_interval=Settings.defaultPlsaInterval,
+			p_mix=Settings.defaultPlsaMixInterval,
+			p_initial_moves=Settings.defaultPlsaInitialMoves,
+			p_tau=Settings.defaultPlsaTau,
+			s_neg_penalty=Settings.defaultScoreNegativePenalty,
 	):
 
 		self.workingModel = workingModel
@@ -60,7 +68,12 @@ class ModelVsTimeseriesOptimization(Optimization, CWriterModelVsDataOptimization
 			parameters_to_fit=parameters_to_fit,
 			optimization_type=Optimization.MODEL_VS_DATA)
 
-		CWriterModelVsDataOptimization.__init__(self, workingModel, self.listOfExperiments, mapping, parameters_to_fit, p_lambda=p_lambda, p_criterion=p_criterion)
+		CWriterModelVsDataOptimization.__init__(
+			self, workingModel, self.listOfExperiments, mapping, parameters_to_fit,
+			p_lambda=p_lambda, p_criterion=p_criterion, p_initial_temperature=p_initial_temperature,
+			p_gain=p_gain, p_interval=p_interval, p_mix=p_mix, p_initial_moves=p_initial_moves, p_tau=p_tau,
+			s_neg_penalty=s_neg_penalty
+		)
 		NoiseGenerator.__init__(self, self.listOfExperiments, noise, sampling)
 
 		self.mapping = mapping

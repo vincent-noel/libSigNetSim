@@ -96,6 +96,7 @@ class CWriterOptimization(object):
 		f_h.write("#include \"plsa/sa.h\"\n")
 		f_h.write("#include \"plsa/config.h\"\n")
 		f_h.write("#include \"integrate/models.h\"\n")
+		f_h.write("#include \"scoreFunctions.h\"\n")
 
 
 
