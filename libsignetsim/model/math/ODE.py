@@ -56,9 +56,12 @@ class ODE(object):
 	def setDefinitionMath(self, definition):
 		self.__definition.setInternalMathFormula(definition)
 
-	def getFormula(self, rawFormula=True):
+	def getFormula(self, rawFormula=True, developped=False):
 
-		t_definition = self.__definition.getInternalMathFormula(rawFormula=rawFormula)
+		if developped:
+			t_definition = self.__definition.getDeveloppedInternalMathFormula(rawFormula=rawFormula)
+		else:
+			t_definition = self.__definition.getInternalMathFormula(rawFormula=rawFormula)
 
 		if not rawFormula and self.__variable.isSpecies() and self.__variable.isConcentration():
 			t_definition /= self.__variable.getCompartment().symbol.getInternalMathFormula()
@@ -67,7 +70,6 @@ class ODE(object):
 			self.__variable.symbol.getDerivative().getInternalMathFormula(rawFormula=rawFormula),
 			t_definition
 		)
-
 
 
 	def __str__(self):

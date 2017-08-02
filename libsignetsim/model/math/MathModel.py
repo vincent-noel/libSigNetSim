@@ -141,12 +141,12 @@ class MathModel(CModelWriter):
 		# # if
 		# # print "> conservation laws found in %.2gs" % (time() -t0)
 
-	def buildReducedModel(self):
+	def buildReducedModel(self, vars_to_keep=[]):
 
 		if not len(self.listOfEvents) > 0:
 			self.stoichiometryMatrix.build()
 			self.listOfConservationLaws.build()
-			self.assymetricModel.build()
+			self.assymetricModel.build(vars_to_keep=vars_to_keep)
 
 
 	def prettyPrint(self):

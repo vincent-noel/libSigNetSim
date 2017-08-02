@@ -1,5 +1,4 @@
 matplotlib
-mpld3
 python-libsbml
 python-libnuml
 git+https://github.com/vincent-noel/python-libsedml.git#egg=python-libsedml

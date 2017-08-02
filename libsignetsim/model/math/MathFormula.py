@@ -150,8 +150,11 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 			return MathFormula.getMathFormula(self, MathFormula.MATH_INTERNAL)
 
 
-	def getDeveloppedInternalMathFormula(self):
-		return MathFormula.getMathFormula(self, MathFormula.MATH_DEVINTERNAL)
+	def getDeveloppedInternalMathFormula(self, rawFormula=True):
+		if not rawFormula:
+			return self.translateForDeveloppedInternal(self.getInternalMathFormula(rawFormula=rawFormula))
+		else:
+			return MathFormula.getMathFormula(self, MathFormula.MATH_DEVINTERNAL)
 
 	def getCMathFormula(self):
 		return MathFormula.getMathFormula(self, MathFormula.MATH_C)

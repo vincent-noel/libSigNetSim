@@ -41,10 +41,15 @@ class DAE(object):
 	def getDefinition(self):
 		return self.__definition
 
-	def getFormula(self, rawFormula=True):
+	def getFormula(self, rawFormula=True, developped=False):
+
+		if developped:
+			t_definition = self.__definition.getDeveloppedInternalMathFormula(rawFormula=rawFormula)
+		else:
+			t_definition = self.__definition.getInternalMathFormula(rawFormula=rawFormula)
 
 		return SympyEqual(
-			self.__definition.getInternalMathFormula(rawFormula=rawFormula),
+			t_definition,
 			SympyInteger(0)
 		)
 

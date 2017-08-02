@@ -55,7 +55,7 @@ class MathSymbol(MathFormula):
 	# def setInternalVariable(self, internal_variable):
 	# 	MathFormula.setInternalMathFormula(self, internal_variable)
 
-	def getInternalMathFormula(self, rawFormula=False):
+	def getInternalMathFormula(self, rawFormula=False, developped=False):
 
 		from libsignetsim.model.math.MathVariable import MathVariable
 
@@ -67,7 +67,12 @@ class MathSymbol(MathFormula):
 			or (self.__variable.isConcentration() and not rawFormula)):
 			return MathFormula.getInternalMathFormula(self)
 		else:
-			return SympySymbol("_speciesForcedConcentration_%s_" % str(MathFormula.getInternalMathFormula(self)))
+
+			if not developped:
+				return SympySymbol("_speciesForcedConcentration_%s_" % str(MathFormula.getInternalMathFormula(self)))
+			else:
+				return MathFormula.getInternalMathFormula(self)/self.__variable.getCompartment().symbol.getInternalMathFormula(rawFormula=rawFormula)
+
 
 	def getSymbol(self):
 		return MathFormula.getInternalMathFormula(self)

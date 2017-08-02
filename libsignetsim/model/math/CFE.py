@@ -76,9 +76,12 @@ class CFE(object):
 			str(self.getDefinition().getDeveloppedInternalMathFormula())
 		)
 
-	def getFormula(self, rawFormula=True):
+	def getFormula(self, rawFormula=True, developped=False):
 
-		t_definition = self.__definition.getInternalMathFormula(rawFormula=rawFormula)
+		if developped:
+			t_definition = self.__definition.getDeveloppedInternalMathFormula(rawFormula=rawFormula)
+		else:
+			t_definition = self.__definition.getInternalMathFormula(rawFormula=rawFormula)
 
 		if not rawFormula:
 			if self.__variable.isSpecies() and self.__variable.isConcentration():
@@ -87,6 +90,6 @@ class CFE(object):
 				t_definition /= self.__variable.listOfReactants[0].getSpecies().getCompartment().symbol.getInternalMathFormula()
 
 		return SympyEqual(
-			self.__variable.symbol.getInternalMathFormula(rawFormula=rawFormula),
+			self.__variable.symbol.getInternalMathFormula(rawFormula=rawFormula, developped=developped),
 			t_definition
 		)

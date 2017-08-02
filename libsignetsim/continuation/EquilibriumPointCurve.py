@@ -23,8 +23,7 @@
 """
 
 from PyDSTool import args, ContClass, PyDSTool_ExistError
-from matplotlib import pyplot as plt
-import mpld3
+
 import threading
 from time import time
 from PyDSToolModel import PyDSToolModel
@@ -39,6 +38,9 @@ class EquilibriumPointCurve(object):
 		self.parameter = None
 		self.variable = None
 		self.continuationParameters = None
+		self.fromValue = None
+		self.toValue = None
+		
 
 	def setParameter(self, parameter):
 
@@ -51,10 +53,13 @@ class EquilibriumPointCurve(object):
 	def setVariable(self, sbml_id):
 		self.variable = sbml_id
 
+	def setRange(self, from_value, to_value):
+		self.fromValue = from_value
+		self.toValue = to_value
 
 	def build(self):
 
-		self.system.build(vars_to_keep=[self.parameter, self.variable])
+		self.system.build(self.parameter, self.toValue, vars_to_keep=[self.parameter, self.variable])
 		self.buildCont()
 
 	def run(self, callback_function_success, callback_function_error):
@@ -84,11 +89,8 @@ class EquilibriumPointCurve(object):
 		try:
 			print "> Starting thread"
 			t0 = time()
-			# self.continuation['EQ1'].forward()
-			self.continuation['EQ1'].backward()
-			# self.continuation['EQ1'].backward()
-			html_code = self.drawMPLD3Figure()
-			callback_function_success(html_code)
+			self.continuation['EQ1'].forward()
+			callback_function_success(self)
 
 			print "> Exiting thread (executed in %.3gs)" % (time()-t0)
 		except RuntimeError:
@@ -102,30 +104,3 @@ class EquilibriumPointCurve(object):
 		t = threading.Thread(group=None, target=self.executeCont, args=(callback_function_success, callback_function_error))
 		t.setDaemon(True)
 		t.start()
-
-
-
-	def drawMPLD3Figure(self):
-
-		# Plot
-		self.continuation.plot.setLabels('')
-		self.continuation.plot.toggleLabels(visible="on")
-		self.continuation.display((self.parameter, self.variable), stability=True)
-
-		t_figure_id = plt.get_fignums()[0]
-		t_figure = plt.figure(t_figure_id)
-		t_w, t_h = t_figure.get_size_inches()
-		t_figure.set_dpi(100)
-		t_figure.set_size_inches((8, 5))
-
-		t_figure_html = mpld3.fig_to_html(t_figure, template_type='simple')
-		t_figure_html = t_figure_html.replace("<script type=\"text/javascript\" src=\"https://mpld3.github.io/js/d3.v3.min.js\"></script>","")
-		t_figure_html = t_figure_html.replace("<script type=\"text/javascript\" src=\"https://mpld3.github.io/js/mpld3.v0.2.js\"></script>","")
-		t_figure_html = t_figure_html.replace("<style>","")
-		t_figure_html = t_figure_html.replace("</style>","")
-
-		# mpld3.close_figure(t_figure_id)
-
-
-
-		return t_figure_html

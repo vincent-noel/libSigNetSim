@@ -133,7 +133,7 @@ class MathAsymmetricModel(object):
 			t_dae.new(t_dae_formula)
 			self.listOfDAEs.append(t_dae)
 
-	def build(self, treated_variables=[]):
+	def build(self, treated_variables=[], vars_to_keep=[]):
 
 		self.parentModel.stoichiometryMatrix.build()
 		self.parentModel.listOfConservationLaws.build()
@@ -142,12 +142,12 @@ class MathAsymmetricModel(object):
 		for species in self.parentModel.variablesOdes:
 			if (str(species.symbol.getSymbol()) in treated_variables) or (species.hasEventAssignment()):
 				forbidden_variables.append(species.symbol.getSymbol())
-				# print "%s : %s" % (species.getNameOrSbmlId(), species.hasEventAssignment())
+				print "%s : %s" % (species.getNameOrSbmlId(), species.hasEventAssignment())
 
-
+		print str(vars_to_keep)
 		if self.parentModel.stoichiometryMatrix.hasNullSpace():
 			nullspace = self.parentModel.stoichiometryMatrix.getSimpleNullspace()
-			# print self.parentModel.listOfConservationLaws
+
 			independent_species = []
 			independent_species_formula = []
 			for i_cons, cons in enumerate(nullspace):
@@ -167,6 +167,7 @@ class MathAsymmetricModel(object):
 						if (
 							cons[i] == 1
 							and species.symbol.getSymbol() not in independent_species
+							and str(species.symbol.getSymbol()) not in vars_to_keep
 							and cons_law.getNbVars() > 1
 							# and species.symbol.getSymbol() not in [SympySymbol('A3'), SympySymbol('A'), SympySymbol('A4')]
 							and not (species.isDerivative() and species.hasEventAssignment())

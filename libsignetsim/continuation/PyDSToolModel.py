@@ -23,8 +23,8 @@
 """
 
 from PyDSTool import args, Generator
-from libsignetsim.model.math.sympy_shortcuts import SympySymbol
-from sympy import simplify
+
+
 class PyDSToolModel(object):
 
 	def __init__ (self, model):
@@ -37,75 +37,39 @@ class PyDSToolModel(object):
 	def getSystem(self):
 		return self.system
 
-	def build(self, vars_to_keep=[]):
-
+	def build(self, parameter, from_value, vars_to_keep=[]):
 		self.model.build(vars_to_keep=vars_to_keep)
-		self.buildDS()
+		self.model.buildReducedModel(vars_to_keep=vars_to_keep)
+		self.buildDS(parameter, from_value)
 
-
-	def makeSubs(self, formula):
-
-		t_atoms = formula.atoms(SympySymbol)
-		t_subs = {}
-		for atom in t_atoms:
-			t_var = self.model.listOfVariables.getBySbmlId(str(atom))
-			t_value = t_var.value.getInternalMathFormula()
-			if len(t_value.atoms(SympySymbol)) > 0:
-				t_value = self.makeSubs(t_value)
-			t_subs.update({atom:t_value})
-
-		return formula.subs(t_subs)
-
-
-	def buildDS(self):
+	def buildDS(self, parameter, from_value):
 
 		parameters = {}
 		variables = {}
 		odes = {}
-		subs = {}
 
-		# Getting the list of local parameters
-		local_params_subs = {}
-		for reaction in self.model.listOfReactions.values():
-			if len(reaction.listOfLocalParameters) > 0:
-				for l_param in reaction.listOfLocalParameters.values():
-					t_name = str(l_param.symbol.getInternalMathFormula())
-					local_params_subs.update({t_name: t_name[1:]})
-
-		if len(self.model.listOfCompartments) == 1:
-			t_comp = self.model.listOfCompartments.values()[0]
-			subs.update({t_comp.symbol.getInternalMathFormula():t_comp.value.getInternalMathFormula()})
-
-		for variable in self.model.listOfVariables.values():
+		subs_cfes = {}
+		for cfe in self.model.getMathModel().listOfCFEs:
+			subs_cfes.update({cfe.getVariable().symbol.getInternalMathFormula(): cfe.getDefinition().getInternalMathFormula()})
+		for variable in self.model.getMathModel().listOfVariables.values():
 			if variable.isConstant():
-				t_symbol = str(variable.symbol.getInternalMathFormula().subs(local_params_subs))
-
-				t_raw_value = variable.value.getInternalMathFormula()
-				if len(t_raw_value.atoms(SympySymbol)) > 0:
-					t_raw_value = self.makeSubs(t_raw_value)
-				t_value = float(t_raw_value)
-
-				parameters.update({t_symbol:t_value})
+				t_symbol = variable.symbol.getInternalMathFormula()#.subs(local_params_subs))
+				t_value = self.model.solvedInitialConditions[t_symbol].getInternalMathFormula()
+				if str(variable.symbol.getInternalMathFormula()) == parameter:
+					t_value = from_value
+				parameters.update({str(t_symbol): float(t_value)})
 
 			if variable.isDerivative():
 				t_symbol = variable.symbol.getInternalMathFormula()
+				t_value = self.model.solvedInitialConditions[t_symbol].getInternalMathFormula()
+				variables.update({str(t_symbol): float(t_value)})
 
-				t_raw_value = variable.value.getInternalMathFormula()
-				if len(t_raw_value.atoms(SympySymbol)) > 0:
-					t_raw_value = self.makeSubs(t_raw_value)
-				t_value = float(t_raw_value)
-
-				variables.update({str(t_symbol):t_value})
-
-				t_vars = [var.getInternalMathFormula() for var in self.model.ODE_vars]
-				t_index = t_vars.index(variable.symbol.getInternalMathFormula())
-				t_ode = self.model.ODEs[t_index].getInternalMathFormula().subs(subs).subs(local_params_subs)
-				odes.update({str(t_symbol):str(simplify(t_ode))})
-
+		for ode in self.model.getMathModel().listOfODEs:
+			odes.update({str(ode.getVariable().symbol.getInternalMathFormula()): str(ode.getDefinition().getDeveloppedInternalMathFormula().subs(subs_cfes))})
 
 		print odes
+		print variables
 		print parameters
-
 
 		self.systemParameters = args(name=self.model.getSbmlId())
 		self.systemParameters.pars = parameters
