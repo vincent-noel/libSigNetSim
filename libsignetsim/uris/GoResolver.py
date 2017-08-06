@@ -27,7 +27,7 @@ from lxml import etree
 
 class GoResolver(object):
 
-	URL = "https://www.ebi.ac.uk/QuickGO/GTerm?id=%s&format=oboxml"
+	URL = "https://www.ebi.ac.uk/QuickGO-Old/GTerm?id=%s&format=oboxml"
 
 	def __init__(self, go_id):
 		self.__id = go_id
