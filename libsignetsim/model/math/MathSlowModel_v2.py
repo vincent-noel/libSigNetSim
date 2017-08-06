@@ -171,7 +171,7 @@ class MathSlowModel_v2(object):
 		matrix_velocities = None
 		for reaction in self.parentModel.listOfReactions.values():
 			# if (reaction.fast and include_fast_reaction) or (not reaction.fast and include_slow_reaction):
-				velocities = reaction.kineticLaw.getRawVelocities_v3(
+				velocities = reaction.kineticLaw.getRawVelocities(
 					subs=subs,
 					include_fast_reaction=include_fast_reaction,
 					include_slow_reaction=include_slow_reaction

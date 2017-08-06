@@ -59,7 +59,7 @@ class EquilibriumPointCurve(object):
 
 	def build(self):
 
-		self.system.build(self.parameter, self.toValue, vars_to_keep=[self.parameter, self.variable])
+		self.system.build(self.parameter, self.fromValue, vars_to_keep=[self.parameter, self.variable])
 		self.buildCont()
 
 	def run(self, callback_function_success, callback_function_error):
@@ -72,12 +72,12 @@ class EquilibriumPointCurve(object):
 
 		self.continuationParameters = args(name='EQ1', type='EP-C')
 		self.continuationParameters.freepars = [self.parameter]
-		self.continuationParameters.StepSize = 0.001
-		self.continuationParameters.MaxNumPoints = 1500
+		self.continuationParameters.StepSize = 0.1
+		self.continuationParameters.MaxNumPoints = 1400
 		self.continuationParameters.MaxStepSize = 1
-		self.continuationParameters.MinStepSize = 0.00001
+		self.continuationParameters.MinStepSize = 0.01
 		self.continuationParameters.LocBifPoints = 'All'
-		self.continuationParameters.verbosity = 0
+		self.continuationParameters.verbosity = 2
 		self.continuationParameters.SaveEigen = True
 
 		self.continuation.newCurve(self.continuationParameters)

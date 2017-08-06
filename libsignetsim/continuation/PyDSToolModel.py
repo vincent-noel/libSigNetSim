@@ -39,10 +39,15 @@ class PyDSToolModel(object):
 
 	def build(self, parameter, from_value, vars_to_keep=[]):
 		self.model.build(vars_to_keep=vars_to_keep)
+
 		self.model.buildReducedModel(vars_to_keep=vars_to_keep)
 		self.buildDS(parameter, from_value)
 
 	def buildDS(self, parameter, from_value):
+
+		comp_subs = {}
+		for comp in self.model.listOfCompartments.values():
+			comp_subs.update({comp.symbol.getInternalMathFormula():comp.value.getInternalMathFormula()})
 
 		parameters = {}
 		variables = {}
@@ -65,7 +70,7 @@ class PyDSToolModel(object):
 				variables.update({str(t_symbol): float(t_value)})
 
 		for ode in self.model.getMathModel().listOfODEs:
-			odes.update({str(ode.getVariable().symbol.getInternalMathFormula()): str(ode.getDefinition().getDeveloppedInternalMathFormula().subs(subs_cfes))})
+			odes.update({str(ode.getVariable().symbol.getInternalMathFormula()): str(ode.getDefinition().getDeveloppedInternalMathFormula().subs(subs_cfes).subs(comp_subs))})
 
 		print odes
 		print variables

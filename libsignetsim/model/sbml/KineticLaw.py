@@ -115,7 +115,6 @@ class KineticLaw(KineticLawIdentifier):
 
 		if (forcedConcentration and len(self.reaction.listOfReactants) > 0
 			and self.reaction.listOfReactants[0].getSpecies().isConcentration()):
-			# if first_reactant.isConcentration():
 			t_comp = self.reaction.listOfReactants[0].getSpecies().getCompartment()
 			t_math_formula = MathFormula(self.__model, MathFormula.MATH_KINETICLAW)
 			t_math_formula.setPrettyPrintMathFormula(definition, forcedConcentration)
@@ -208,14 +207,11 @@ class KineticLaw(KineticLawIdentifier):
 		if len(self.reaction.listOfReactants) > 0:
 			first_reactant = self.reaction.listOfReactants[0].getSpecies()
 			if not first_reactant.hasOnlySubstanceUnits:
-				# print "SbmlId : %s" % first_reactant.getCompartment().getSbmlId()
-
 				t_formula *= first_reactant.getCompartment().symbol.getInternalMathFormula()
 
 		elif len(self.reaction.listOfModifiers) > 0:
 			first_modifier = self.reaction.listOfModifiers[0].getSpecies()
 			if not first_modifier.hasOnlySubstanceUnits:
-				print first_modifier.getCompartment().symbol.getInternalMathFormula()
 				t_formula *= first_modifier.getCompartment().symbol.getInternalMathFormula()
 
 		self.__definition.setInternalMathFormula(simplify(t_formula))
@@ -269,98 +265,22 @@ class KineticLaw(KineticLawIdentifier):
 
 		self.__definition.setInternalMathFormula(simplify(t_formula))
 
-	def getRawVelocities(self):
+	def getRawVelocities(self, subs={}, include_fast_reaction=True, include_slow_reaction=True):
 
 		definition = self.__definition.getDeveloppedInternalMathFormula()
-		print "> Definition : %s (%s)" % (definition, self.reaction.reversible)
-		if not self.reaction.reversible:
-			res = zeros(1, len(self.__model.listOfSpecies))
-
-			for i, var in enumerate(self.__model.variablesOdes):
-				res[i] = diff(definition, var.symbol.getSymbol()) * var.symbol.getSymbol()
-
-			return res
-
-		else:
-			res_front = zeros(1, len(self.__model.listOfSpecies))
-			res_backward = zeros(1, len(self.__model.listOfSpecies))
-
-			(definition_front, definition_back) = KineticLawIdentifier.getReversibleRates(self, definition)
-
-			for i, var in enumerate(self.__model.variablesOdes):
-				res_front[i] = diff(definition_front, var.symbol.getSymbol())*var.symbol.getSymbol()
-				res_backward[i] = diff(definition_back, var.symbol.getSymbol())*var.symbol.getSymbol()
-
-			print res_front.col_join(res_backward)
-
-			return res_front.col_join(res_backward)
-
-	def getRawVelocities_v2(self, include_fast_reaction=True, include_slow_reaction=True):
-
-		definition = self.__definition.getDeveloppedInternalMathFormula()
-		# print "> Definition : %s (%s)" % (definition, self.reaction.reversible)
-		if not KineticLawIdentifier.isReversible(self, definition):
-			res = zeros(1, len(self.__model.listOfSpecies))
-			if (self.reaction.fast and include_fast_reaction) or (not self.reaction.fast and include_slow_reaction):
-
-				for i, var in enumerate(self.__model.variablesOdes):
-					if self.reaction.isReactant(var):
-						res[i] += definition
-					# elif self.reaction.isProduct(var):
-					# 	res[i] += definition
-			return res
-
-		else:
-			res_front = zeros(1, len(self.__model.listOfSpecies))
-			res_backward = zeros(1, len(self.__model.listOfSpecies))
-			if (self.reaction.fast and include_fast_reaction) or (not self.reaction.fast and include_slow_reaction):
-
-				(definition_front, definition_back) = KineticLawIdentifier.getReversibleRates(self, definition)
-
-				for i, var in enumerate(self.__model.variablesOdes):
-					if self.reaction.isReactant(var):
-						res_front[i] += definition_front
-						# res_backward[i] += definition_back
-					elif self.reaction.isProduct(var):
-						# res_front[i] += definition_front
-						res_backward[i] += definition_back
-
-				# print res_front.col_join(res_backward)
-
-			return res_front.col_join(res_backward)
-
-
-	def getRawVelocities_v3(self, subs={}, include_fast_reaction=True, include_slow_reaction=True):
-
-		definition = self.__definition.getDeveloppedInternalMathFormula()
-		# print "> Definition : %s (%s)" % (definition, self.reaction.reversible)
 		if not KineticLawIdentifier.isReversible(self, definition):
 			res = zeros(1)
 			if (self.reaction.fast and include_fast_reaction) or (not self.reaction.fast and include_slow_reaction):
-
-				# for i, var in enumerate(self.__model.variablesOdes):
-				# 	if self.reaction.isReactant(var):
 				res[0] += definition.subs(subs)
-					# elif self.reaction.isProduct(var):
-					# 	res[i] += definition
 			return res
 
 		else:
 			res_front = zeros(1)
 			res_backward = zeros(1)
 			if (self.reaction.fast and include_fast_reaction) or (not self.reaction.fast and include_slow_reaction):
-
 				(definition_front, definition_back) = KineticLawIdentifier.getReversibleRates(self, definition)
-
-				# for i, var in enumerate(self.__model.variablesOdes):
-				# 	if self.reaction.isReactant(var):
 				res_front[0] += definition_front.subs(subs)
-						# res_backward[i] += definition_back
-					# elif self.reaction.isProduct(var):
-						# res_front[i] += definition_front
 				res_backward[0] += definition_back.subs(subs)
-
-				# print res_front.col_join(res_backward)
 
 			return res_front.col_join(res_backward)
 

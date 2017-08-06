@@ -210,7 +210,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 		if reaction_type == KineticLaw.UNDEFINED and math is not None:
 			self.kineticLaw = KineticLaw(self.model, self)
-			self.kineticLaw.getDefinition().setPrettyPrintMathFormula(math)
+			self.kineticLaw.setPrettyPrintMathFormula(math, forcedConcentration=True)
 
 		elif parameters is not None:
 			if reaction_type == KineticLaw.MASS_ACTION:
