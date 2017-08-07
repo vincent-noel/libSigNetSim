@@ -24,7 +24,8 @@
 
 
 from sympy import simplify, expand, srepr
-from libsignetsim.model.math.sympy_shortcuts import  (
+from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
+from libsignetsim.model.math.sympy_shortcuts import (
 	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
 	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
 	SympyInf, SympyNan, SympyAdd, SympyMul, SympyPow,
@@ -38,6 +39,7 @@ from libsignetsim.model.math.sympy_shortcuts import  (
 	SympyStrictGreaterThan, SympyStrictLessThan,
 	SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
 	SympyMax, SympyMin)
+
 
 class KineticLawIdentifier(object):
 	""" Class for handling math formulaes """
@@ -89,6 +91,10 @@ class KineticLawIdentifier(object):
 
 	T_PARAM = SympySymbol("_parameter_")
 	T_SPECIES = SympySymbol("_species_")
+	T_COMPARTMENT = SympySymbol("_compartment_")
+	T_REACTANT = SympySymbol("_reactant_")
+	T_MODIFIER = SympySymbol("_modifier_")
+	T_PRODUCT = SympySymbol("_product_")
 
 	T_MM_1 = SympyMul(SympyMul(SympySymbol("_parameter_"), SympySymbol("_species_")),
 						SympyPow(SympyAdd(SympySymbol("_parameter_"), SympySymbol("_species_")),
@@ -98,6 +104,17 @@ class KineticLawIdentifier(object):
 									SympyInteger(-1)))
 
 
+	T_MA_IR = SympyMul(SympySymbol("_parameter_"), SympySymbol("_reactant_"))
+	T_MA_R = SympyMul(SympySymbol("_parameter_"), SympySymbol("_reactant_")) - SympyMul(SympySymbol("_parameter_"), SympySymbol("_product_"))
+
+
+	T_MM_WITHOUT_ENZYME = SympyMul(SympyMul(SympySymbol("_parameter_"), SympySymbol("_reactant_")),
+						SympyPow(SympyAdd(SympySymbol("_parameter_"), SympySymbol("_reactant_")),
+									SympyInteger(-1)))
+
+	T_MM_WITH_ENZYME = SympyMul(SympyMul(SympySymbol("_parameter_"), SympySymbol("_reactant_"), SympySymbol("_modifier_")),
+						SympyPow(SympyAdd(SympySymbol("_parameter_"), SympySymbol("_reactant_")),
+									SympyInteger(-1)))
 
 	ZERO = SympyInteger(0)
 
@@ -130,7 +147,7 @@ class KineticLawIdentifier(object):
 		for compartment in self.model.listOfCompartments.values():
 			t_replaces.update({compartment.symbol.getInternalMathFormula(): SympyInteger(1)})
 
-		return t_rate.subs(t_replaces)
+		return unevaluatedSubs(t_rate, t_replaces)
 
 
 	def removeSpeciesAndCompartmentsFromRate(self, formula=None):
@@ -148,7 +165,7 @@ class KineticLawIdentifier(object):
 		for species in self.model.listOfSpecies.values():
 			t_replaces.update({species.symbol.getInternalMathFormula(): SympyInteger(1)})
 
-		return t_rate.subs(t_replaces)
+		return unevaluatedSubs(t_rate, t_replaces)
 
 
 	def simplifyRate(self, formula=None):
@@ -163,11 +180,29 @@ class KineticLawIdentifier(object):
 		for var in self.model.listOfVariables.values():
 			if var.isParameter():
 				t_replaces.update({var.symbol.getInternalMathFormula(): self.T_PARAM})
-			elif var.isSpecies():
-				t_replaces.update({var.symbol.getInternalMathFormula(): self.T_SPECIES})
 			elif var.isCompartment():
 				t_replaces.update({var.symbol.getInternalMathFormula(): SympyInteger(1)})
-		return t_rate.subs(t_replaces)
+
+		for i, reactant in enumerate(self.reaction.listOfReactants.values()):
+			if i == 0:
+				t_replaces.update({reactant.getSpecies().symbol.getInternalMathFormula(): self.T_REACTANT})
+			else:
+				t_replaces.update({reactant.getSpecies().symbol.getInternalMathFormula(): SympyInteger(1)})
+
+		for i, modifier in enumerate(self.reaction.listOfModifiers.values()):
+			if i == 0:
+				t_replaces.update({modifier.getSpecies().symbol.getInternalMathFormula(): self.T_MODIFIER})
+			else:
+				t_replaces.update({modifier.getSpecies().symbol.getInternalMathFormula(): SympyInteger(1)})
+
+		for i, product in enumerate(self.reaction.listOfProducts.values()):
+			if i == 0:
+				t_replaces.update({product.getSpecies().symbol.getInternalMathFormula(): self.T_PRODUCT})
+			else:
+				t_replaces.update({product.getSpecies().symbol.getInternalMathFormula(): SympyInteger(1)})
+
+
+		return unevaluatedSubs(t_rate, t_replaces)
 
 	def isFactor(self, formula, term):
 
@@ -193,6 +228,10 @@ class KineticLawIdentifier(object):
 
 		# print formula
 		# We look for parameter*(species^n)
+		t_formula = SympyZero
+
+
+
 		if formula.func == SympyMul:
 			if self.isFactor(formula, self.T_PARAM):
 				t_formula = formula/self.T_PARAM
@@ -265,18 +304,37 @@ class KineticLawIdentifier(object):
 		self.mathRate = self.removeCompartmentsFromRate()
 		self.typeRate = self.simplifyRate()
 
+		# print ">>"
+		# print self.typeRate
+		# print simplify(self.typeRate - self.T_MA_IR)
+		# print simplify(self.typeRate - self.T_MA_R)
+
 		self.reversible = False
 
 		t_formula = self.typeRate
 
-		if self.isMassAction(t_formula):
+		if simplify(self.typeRate - self.T_MA_IR) == 0 or simplify(self.typeRate - self.T_MA_R) == 0:
 			self.reactionType = self.MASS_ACTION
 
-		elif self.isMichaelisMentenWithoutEnzyme(t_formula):
+			if self.isReversible(t_formula):
+				self.reversible = True
+				self.reaction.reversible = True
+				# (forward, backward) = self.getReversibleRates(self.mathRate)
+				self.getReversibleFormulas()
+		elif (
+			simplify(self.typeRate - self.T_MM_WITH_ENZYME) == 0
+			or simplify(self.typeRate - self.T_MM_WITHOUT_ENZYME) == 0
+		):
 			self.reactionType = self.MICHAELIS
 
-		elif self.isMichaelisMentenWithEnzyme(t_formula):
-			self.reactionType = self.MICHAELIS
+		# elif self.isMassAction(t_formula):
+		# 	self.reactionType = self.MASS_ACTION
+		#
+		# elif self.isMichaelisMentenWithoutEnzyme(t_formula):
+		# 	self.reactionType = self.MICHAELIS
+		#
+		# elif self.isMichaelisMentenWithEnzyme(t_formula):
+		# 	self.reactionType = self.MICHAELIS
 
 		elif self.isReversible(t_formula):
 			self.reversible = True
@@ -325,6 +383,9 @@ class KineticLawIdentifier(object):
 
 
 	def getParameters(self):
+
+		print self.removeSpeciesAndCompartmentsFromRate()
+		print srepr(self.removeSpeciesAndCompartmentsFromRate())
 
 		if self.reactionType == self.MASS_ACTION and not self.reversible:
 			return self.findMassActionParameters()
