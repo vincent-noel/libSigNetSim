@@ -202,7 +202,7 @@ class KineticLawIdentifier(object):
 				t_replaces.update({product.getSpecies().symbol.getInternalMathFormula(): SympyInteger(1)})
 
 
-		return unevaluatedSubs(t_rate, t_replaces)
+		return simplify(unevaluatedSubs(t_rate, t_replaces))
 
 	def isFactor(self, formula, term):
 

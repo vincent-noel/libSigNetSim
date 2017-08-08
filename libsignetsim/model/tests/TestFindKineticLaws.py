@@ -28,6 +28,7 @@ from unittest import TestCase
 from os.path import join, dirname, isdir
 from os import mkdir, getcwd
 
+
 class TestFindKineticLaws(TestCase):
 	""" Tests high level functions """
 
@@ -48,6 +49,8 @@ class TestFindKineticLaws(TestCase):
 			kli.MICHAELIS, kli.MICHAELIS, kli.MICHAELIS, kli.MICHAELIS, kli.MICHAELIS, kli.MICHAELIS,
 			kli.MICHAELIS, kli.MICHAELIS, kli.MICHAELIS, kli.MASS_ACTION,
 		]
+
+
 		results_reversibility = [
 			True, True, False, False, False, False, False, False, True, False, False, False, False, False,
 			False, False, False, False, False, False, False, True,
