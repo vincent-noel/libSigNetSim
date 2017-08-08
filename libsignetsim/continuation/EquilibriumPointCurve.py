@@ -40,7 +40,8 @@ class EquilibriumPointCurve(object):
 		self.continuationParameters = None
 		self.fromValue = None
 		self.toValue = None
-		
+		self.ds = 0.1
+		self.maxSteps = 1000
 
 	def setParameter(self, parameter):
 
@@ -57,6 +58,12 @@ class EquilibriumPointCurve(object):
 		self.fromValue = from_value
 		self.toValue = to_value
 
+	def setDs(self, ds):
+		self.ds = ds
+
+	def setMaxSteps(self, max_steps):
+		self.maxSteps = max_steps
+
 	def build(self):
 
 		self.system.build(self.parameter, self.fromValue, vars_to_keep=[self.parameter, self.variable])
@@ -72,13 +79,13 @@ class EquilibriumPointCurve(object):
 
 		self.continuationParameters = args(name='EQ1', type='EP-C')
 		self.continuationParameters.freepars = [self.parameter]
-		self.continuationParameters.StepSize = 0.1
-		self.continuationParameters.MaxNumPoints = 1400
-		self.continuationParameters.MaxStepSize = 1
-		self.continuationParameters.MinStepSize = 0.01
+		self.continuationParameters.StepSize = self.ds
+		self.continuationParameters.MaxNumPoints = self.maxSteps
+		self.continuationParameters.MaxStepSize = self.ds*100
+		self.continuationParameters.MinStepSize = self.ds/100
 		self.continuationParameters.LocBifPoints = 'All'
 		self.continuationParameters.verbosity = 2
-		self.continuationParameters.SaveEigen = True
+		self.continuationParameters.SaveEigen = False
 
 		self.continuation.newCurve(self.continuationParameters)
 
@@ -89,7 +96,11 @@ class EquilibriumPointCurve(object):
 		try:
 			print "> Starting thread"
 			t0 = time()
-			self.continuation['EQ1'].forward()
+			if self.ds > 0:
+				self.continuation['EQ1'].forward()
+			else:
+				self.continuation['EQ1'].backward()
+
 			callback_function_success(self)
 
 			print "> Exiting thread (executed in %.3gs)" % (time()-t0)

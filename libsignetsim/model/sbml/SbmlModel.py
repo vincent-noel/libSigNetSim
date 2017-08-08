@@ -95,8 +95,8 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation):
 		self.setName(name)
 		self.setSbmlId("model_%d" % self.objId)
 
-		self.defaultCompartment = self.listOfCompartments.new("cell")
 		ModelUnits.setDefaultUnits(self)
+		self.defaultCompartment = self.listOfCompartments.new("cell")
 
 	def readSbml(self, sbmlModel,
 					sbml_level=Settings.defaultSbmlLevel,

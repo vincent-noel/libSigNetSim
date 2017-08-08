@@ -319,22 +319,12 @@ class KineticLawIdentifier(object):
 			if self.isReversible(t_formula):
 				self.reversible = True
 				self.reaction.reversible = True
-				# (forward, backward) = self.getReversibleRates(self.mathRate)
 				self.getReversibleFormulas()
 		elif (
 			simplify(self.typeRate - self.T_MM_WITH_ENZYME) == 0
 			or simplify(self.typeRate - self.T_MM_WITHOUT_ENZYME) == 0
 		):
 			self.reactionType = self.MICHAELIS
-
-		# elif self.isMassAction(t_formula):
-		# 	self.reactionType = self.MASS_ACTION
-		#
-		# elif self.isMichaelisMentenWithoutEnzyme(t_formula):
-		# 	self.reactionType = self.MICHAELIS
-		#
-		# elif self.isMichaelisMentenWithEnzyme(t_formula):
-		# 	self.reactionType = self.MICHAELIS
 
 		elif self.isReversible(t_formula):
 			self.reversible = True
