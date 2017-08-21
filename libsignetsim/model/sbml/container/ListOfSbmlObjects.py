@@ -39,19 +39,15 @@ class ListOfSbmlObjects(ListOf):
 		self.isListOfSbmlObjects = True
 		self.currentObjId = -1
 
-
-
 	def nextMetaId(self):
 		self.currentObjId += 1
 		return "_meta_id_%d_" % self.currentObjId
-
 
 	# Overloading standard methods to get ordering by metaId
 	def keys(self):
 		""" Override keys() to sort by id """
 		return sorted(dict.keys(self),
 					  key=lambda sbmlObj: ListOf.__getitem__(self, sbmlObj).getMetaId())
-
 
 	def items(self):
 		""" Override items() to sort by id """
@@ -61,24 +57,30 @@ class ListOfSbmlObjects(ListOf):
 		""" Override values() to sort by id """
 		return [dict.__getitem__(self, obj) for obj in self.keys()]
 
-
-
 	def addSbmlObject(self, sbml_object, prefix=""):
 
-		# print sbml_object.getMetaId()
-		# print self.keys()
 		if sbml_object.getMetaId() is None:
 			sbml_object.setMetaId(self.nextMetaId())
-		ListOf.update(self, {sbml_object.getMetaId(): sbml_object})
+
+		if sbml_object.getMetaId() in dict.keys(self):
+
+			t_meta_id = sbml_object.getMetaId()
+			while t_meta_id in dict.keys(self):
+				t_meta_id = self.nextMetaId()
+
+			ListOf.update(self, {t_meta_id: sbml_object})
+			sbml_object.rawSetMetaId(t_meta_id)
+
+		else:
+			ListOf.update(self, {sbml_object.getMetaId(): sbml_object})
+
 		return sbml_object
 
 
-	def updateMetaId(self, sbml_object, new_meta_id):
-		if sbml_object.getMetaId() in self.keys():
-			self.remove(sbml_object)
+	def updateMetaId(self, sbml_object, old_meta_id, new_meta_id):
+
+		dict.__delitem__(self, old_meta_id)
 		ListOf.update(self, {new_meta_id: sbml_object})
-
-
 
 	def listReplacedElements(self):
 

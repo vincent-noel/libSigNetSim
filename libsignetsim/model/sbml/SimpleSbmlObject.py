@@ -32,23 +32,21 @@ class SimpleSbmlObject(object):
 
 	def __init__(self, model):
 
-		# SbmlAnnotation.__init__(self, model)
 		self.__model = model
 		self.__metaId = None#self.newMetaId()
 		self.__notes = None
 		self.__annotation = SbmlAnnotation(self)
+		self.newMetaId()
+		self.__model.listOfSbmlObjects.addSbmlObject(self)
 
 	def new(self, notes=None):
 
-		self.newMetaId()
-		self.__model.listOfSbmlObjects.addSbmlObject(self)
 		self.__notes = notes
 
 
 	def copy(self, obj, prefix="", shift=0):
 
 		self.setMetaId(obj.getMetaId(), prefix)
-		self.__model.listOfSbmlObjects.addSbmlObject(self, prefix)
 		self.__notes = obj.getNotes()
 
 
@@ -58,9 +56,7 @@ class SimpleSbmlObject(object):
 
 		if sbml_level >= 2:
 			if sbml_object.isSetMetaId():
-				self.setMetaId(sbml_object.getMetaId())
-
-		self.__model.listOfSbmlObjects.addSbmlObject(self)
+				self.setMetaId(sbml_object.getMetaId(), force=True)
 
 		if sbml_object.isSetNotes():
 			t_notes = sbml_object.getNotes().getChild(0)
@@ -89,29 +85,43 @@ class SimpleSbmlObject(object):
 		self.__metaId = self.__model.listOfSbmlObjects.nextMetaId()
 
 
-	def setMetaId(self, meta_id, prefix=""):
+	def setMetaId(self, meta_id, prefix="", force=False):
 
 		if meta_id is not None:
 			t_meta_id = prefix + meta_id
 
 			if SyntaxChecker.isValidXMLID(t_meta_id):
 
-				while t_meta_id in self.__model.listOfSbmlObjects.keys():
-					t_meta_id = prefix + self.__model.listOfSbmlObjects.nextMetaId()
+				if self.__model.listOfSbmlObjects.containsMetaId(t_meta_id) and force:
+				# Here is a case where we probably choosed a meta id for an object, not knowing that the SBML file
+				# already had that meta id reserved for another object. So we need to rename the first one, so that
+				# we can keep the meta id of the reserved one.
+					t_object = self.__model.listOfSbmlObjects.getByMetaId(t_meta_id)
 
-				if t_meta_id not in self.__model.listOfSbmlObjects.keys():
+					t_new_meta_id = prefix + self.__model.listOfSbmlObjects.nextMetaId()
+					while self.__model.listOfSbmlObjects.containsMetaId(t_new_meta_id):
+						t_new_meta_id = prefix + self.__model.listOfSbmlObjects.nextMetaId()
 
-					if self.__metaId is not None and self.__model.listOfSbmlObjects.containsMetaId(self.__metaId):
-						self.__metaId = t_meta_id
-
-						self.__model.listOfSbmlObjects.updateMetaId(self, t_meta_id)
+					t_object.setMetaId(t_new_meta_id)
+					self.__model.listOfSbmlObjects.updateMetaId(self, self.__metaId, t_meta_id)
 
 					self.__metaId = t_meta_id
+
 				else:
-					raise CannotCreateException("MetaId already exists !!")
+					while self.__model.listOfSbmlObjects.containsMetaId(t_meta_id):
+						t_meta_id = prefix + self.__model.listOfSbmlObjects.nextMetaId()
+
+					self.__model.listOfSbmlObjects.updateMetaId(self, self.__metaId, t_meta_id)
+					self.__metaId = t_meta_id
 
 			else:
 				raise CannotCreateException("MetaId is not valid !!")
+
+	def rawSetMetaId(self, meta_id):
+		self.__metaId = meta_id
+		
+	def unsetMetaId(self):
+		self.__metaId = None
 
 
 	def getMetaId(self):
