@@ -38,11 +38,11 @@ class TestReadWriteData(TestCase):
 
 		# Initializing data structure
 		experiment = Experiment("Ras-GTP, ERK1-2 quantifications")
-
+		experiment.notes = "Elisa quantifications for RAS-GTP, Western blot quanfitication for ERK1-2"
 		condition_0 = experiment.createCondition("Starved")
 
 		condition_0.addInitialCondition(0, "FGF2", 0)
-
+		condition_0.notes = "starved cells for 48h"
 		condition_0.addObservation(0, "Total Ras-GTP", 40)
 		condition_0.addObservation(60, "Total Ras-GTP", 40)
 		condition_0.addObservation(180, "Total Ras-GTP", 40)
@@ -52,7 +52,7 @@ class TestReadWriteData(TestCase):
 		condition_0.addObservation(3600, "Total Ras-GTP", 40)
 
 		condition_1 = experiment.createCondition("FGF2")
-
+		condition_1.notes = "FGF2 treatment"
 		condition_1.addInitialCondition(0, "FGF2", 333)
 
 		condition_1.addObservation(0, "Total Ras-GTP", 40)

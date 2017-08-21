@@ -212,7 +212,6 @@ class KineticLawIdentifier(object):
 			return True
 
 		elif formula.func == SympyPow and formula.args[0] == term and formula.args[1].func == SympyInteger and int(formula.args[1]) > 0:
-			# print "Fuck yeah pow"
 			return True
 
 		elif formula.func == SympyMul:
@@ -374,8 +373,8 @@ class KineticLawIdentifier(object):
 
 	def getParameters(self):
 
-		print self.removeSpeciesAndCompartmentsFromRate()
-		print srepr(self.removeSpeciesAndCompartmentsFromRate())
+		# print self.removeSpeciesAndCompartmentsFromRate()
+		# print srepr(self.removeSpeciesAndCompartmentsFromRate())
 
 		if self.reactionType == self.MASS_ACTION and not self.reversible:
 			return self.findMassActionParameters()

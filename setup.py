@@ -18,30 +18,31 @@ class MyInstall(install):
 		install.do_egg_install(self)
 
 setup(name='libsignetsim',
-	  version=open(join(dirname(__file__), 'VERSION')).read(),
-	  description='An e-Science framework for mathematical modeling and computational simulation of molecular signaling networks',
-	  author='Vincent Noel',
-	  author_email='vincent-noel@butantan.gov.br',
-	  url='',
-	  packages=find_packages(),
-	  include_package_data=True,
-	  install_requires=[
-		  'matplotlib',
-		  'python-libsbml',
-		  'python-libnuml',
-		  'sympy',
-		  'numpy',
-		  'pydstool',
-		  'mpld3',
-		  'jinja2',
-		  'python-libsedml==0.4.2',
-		  'bioservices',
-		  'pandas',
-		  'lxml',
-		  'coveralls'
-	  ],
-	  dependency_links=[
-		  'git+https://github.com/vincent-noel/python-libsedml.git@master#egg=python-libsedml-0.4.2'
-	  ],
-	  cmdclass={'install': MyInstall}
+	version=open(join(dirname(__file__), 'VERSION')).read(),
+	description='An e-Science framework for mathematical modeling and computational simulation of molecular signaling networks',
+	author='Vincent Noel',
+	author_email='vincent-noel@butantan.gov.br',
+	url='',
+	packages=find_packages(),
+	include_package_data=True,
+	install_requires=[
+		'matplotlib',
+		'python-libsbml',
+		'python-libnuml==1.1.0',
+		'sympy',
+		'numpy',
+		'pydstool',
+		'mpld3',
+		'jinja2',
+		'python-libsedml==0.4.2',
+		'bioservices',
+		'pandas',
+		'lxml',
+		'coveralls<1.2.0'
+	],
+	dependency_links=[
+		'git+https://github.com/vincent-noel/python-libsedml.git@master#egg=python-libsedml-0.4.2'
+		'git+https://github.com/vincent-noel/python-libnuml.git@master#egg=python-libnuml-1.1.0'
+	],
+	cmdclass={'install': MyInstall}
 )

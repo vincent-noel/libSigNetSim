@@ -31,6 +31,7 @@ class ExperimentalCondition(object):
 		self.listOfInitialConditions = ListOfExperimentalData()
 		self.listOfExperimentalData = ListOfExperimentalData()
 		self.name = name
+		self.notes = ""
 
 
 	def addInitialCondition(self, t=0, name="", value=0, value_dev=None, quantification_ratio=1):
@@ -53,6 +54,8 @@ class ExperimentalCondition(object):
 	def readNuML(self, condition):
 
 		self.name = condition.getIndexValue()
+		self.notes = condition.getNotes()
+
 		for data_type in condition.getContents():
 
 			if data_type.getIndexValue() == "initial_values":
@@ -63,6 +66,7 @@ class ExperimentalCondition(object):
 
 	def writeNuML(self, condition):
 
+		condition.setNotes(self.notes)
 		list_of_initial_values = condition.createCompositeValue(condition.getDescription().getContent(), "initial_values")
 		self.listOfInitialConditions.writeNuML(list_of_initial_values)
 

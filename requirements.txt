@@ -1,12 +1,12 @@
 matplotlib
 python-libsbml
-python-libnuml
 git+https://github.com/vincent-noel/python-libsedml.git#egg=python-libsedml
+git+https://github.com/vincent-noel/python-libnuml.git#egg=python-libnuml
 numpy
 PyDSTool
 sympy
 bioservices
 pandas
 lxml
-coveralls
 jinja2
+coveralls<1.2.0

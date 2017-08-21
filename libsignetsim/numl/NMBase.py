@@ -23,7 +23,9 @@
 """
 
 from libsignetsim.settings.Settings import Settings
-
+# import libnuml
+from libnuml import XMLNode
+# reload(libnuml)
 class NMBase (object):
 
 	def __init__(self, document):
@@ -38,13 +40,12 @@ class NMBase (object):
 
 		if object.isSetMetaId():
 			self.__metaId = object.getMetaId()
-
+		#
 		# if object.isSetAnnotation():
 		# 	self.__annotation = object.getAnnotation()
-		#
-		# if object.isSetNotes():
-		# 	self.__notes = object.getNotes()
 
+		if object.isSetNotes():
+			self.__notes = XMLNode.convertXMLNodeToString(object.getNotes().getChild(0).getChild(0).getChild(0))
 
 	def writeNuML(self, object, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
 
@@ -53,9 +54,16 @@ class NMBase (object):
 
 		# if self.__annotation is not None:
 		# 	object.setAnnotation(self.__annotation)
-		#
-		# if self.__notes is not None:
-		# 	object.setNotes(self.__notes)
-		#
-		# if self.__name is not None:
-		# 	object.setAnnotation("<name>%s</name>" % self.__name)
+
+		if self.__notes is not None:
+			xml_string = "<notes><body xmlns=\"http://www.w3.org/1999/xhtml\">%s</body></notes>" % self.__notes
+			xml_node = XMLNode.convertStringToXMLNode(xml_string)
+			object.setNotes(xml_node)
+
+
+	def getNotes(self):
+		return self.__notes
+
+	def setNotes(self, notes=""):
+		self.__notes = notes
+

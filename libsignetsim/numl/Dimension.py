@@ -34,10 +34,10 @@ class Dimension (NMBase):
 		self.__description = description
 
 	def readNuML(self, dimension, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
-		# self.__description = dimension.getDescription()
-		pass
+		NMBase.readNuML(self, dimension, level, version)
+
 	def writeNuML(self, dimension, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
-		pass
+		NMBase.writeNuML(self, dimension, level, version)
 
 	def getResultComponent(self):
 		return self.__resultComponent

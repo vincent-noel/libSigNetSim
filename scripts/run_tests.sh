@@ -56,6 +56,8 @@ elif [ $1 = "sedml" ]; then
 
 elif [ $1 = "numl" ]; then
     coverage run -a -m unittest libsignetsim.numl.tests.test_example || exit 1;
+    coverage run -a -m unittest libsignetsim.numl.tests.test_example_notes || exit 1;
+    coverage run -a -m unittest libsignetsim.numl.tests.test_experiment || exit 1;
 
 elif [ $1 = "data" ]; then
     coverage run -a -m unittest libsignetsim.data.tests.test_readwrite_data || exit 1;

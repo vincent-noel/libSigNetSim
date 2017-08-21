@@ -31,6 +31,7 @@ class Experiment(object):
 		self.listOfConditions = {}
 		self.currentId = 0
 		self.name = name
+		self.notes = ""
 
 	def createCondition(self, name=""):
 		condition = ExperimentalCondition(name)
@@ -48,6 +49,8 @@ class Experiment(object):
 		result = numl_doc.listOfResultComponents[0]
 		data = result.getDimensions()[0]
 		self.name = data.getIndexValue()
+		self.notes = data.getNotes()
+
 		for data_condition in data.getContents():
 			condition = self.createCondition(data_condition.getIndexValue())
 			condition.readNuML(data_condition)
@@ -66,7 +69,7 @@ class Experiment(object):
 
 		self.writeNuMLDescription(result)
 		experiment = result.createCompositeValue(result.getDimensionsDescriptions()[0], self.name)
-
+		experiment.setNotes(self.notes)
 		for condition in self.listOfConditions.values():
 			t_condition = experiment.createCompositeValue(experiment.getDescription().getContent(), condition.name)
 
