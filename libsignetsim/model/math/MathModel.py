@@ -104,42 +104,28 @@ class MathModel(CModelWriter):
 		self.listOfDAEs.build()
 		# self.prettyPrint()
 		# self.solveInitialConditions(tmin)
-		# t0 = time()
+		t0 = time()
 		self.solveSimpleInitialConditions(tmin)
-		# print "Initial condition solved in %.2gs" % (time()-t0)
+		if Settings.verboseTiming >= 2:
+			print "Initial condition solved in %.2gs" % (time()-t0)
+
 		if len(self.listOfDAEs) > 0:
 			self.listOfDAEs.solveInitialConditions(tmin)
 			self.listOfDAEs.solveDAEs()
-		# self.prettyPrint()
-		#
-		# if self.listOfReactions.hasFastReaction():
-		# 	self.slowModel = MathSlowModel(self)
-		# 	self.slowModel.build()
-		# # t0 = time()
+
+
+	def buildConservationLaws(self):
+
+		t0 = time()
 		self.stoichiometryMatrix.build()
+		if Settings.verboseTiming >= 2:
+			print "> stoichiometry matrix built in %.2gs" % (time() -t0)
+
+		t0 = time()
 		self.listOfConservationLaws.build()
+		if Settings.verboseTiming >= 2:
+			print "> conservation laws built in %.2gs" % (time() - t0)
 
-		#
-		# print self.listOfConservationLaws
-
-		# if not dont_reduce and not len(self.listOfEvents) > 0:
-		# 	# self.stoichiometryMatrix.build()
-		# 	# self.listOfConservationLaws.build()
-		# 	# self.prettyPrint()
-		#
-		# 	self.assymetricModel.build(treated_variables=vars_to_keep)
-			# print self.listOfConservationLaws
-
-			# self.getMathModel().prettyPrint()
-			# if self.listOfReactions.hasFastReaction():
-			#
-			# 	# self.slowModel_v2.build()
-			# 	# self.slowModel_v2.buildFromReduced()
-			# 	self.slowModel_v2.build()
-			# 	self.getMathModel().prettyPrint()
-
-		# # if
-		# # print "> conservation laws found in %.2gs" % (time() -t0)
 
 	def buildReducedModel(self, vars_to_keep=[]):
 
@@ -273,48 +259,3 @@ class MathModel(CModelWriter):
 		# print [(key, value.getInternalMathFormula()) for key, value in self.solvedInitialConditions.items()]
 		if Settings.verbose >= 1:
 			print "> Finished calculating initial conditions (%.2gs)" % (time()-t0)
-
-
-	#
-	# def buildReducedSystem(self, vars_to_keep=[]):
-	#
-	# 	reduced_odes = []
-	# 	reduced_odes_vars = []
-	# 	reduced_odes_der_vars = []
-	# 	reduced_odes_symbols = []
-	#
-	# 	self.findReducibleVariables(vars_to_keep=vars_to_keep)
-	#
-	# 	# print self.reducibleVariables
-	# 	t_reducible_vars = [var for var in self.reducibleVariables.keys()]
-	# 	t_reducible_values = [var for var in self.reducibleVariables.values()]
-	#
-	# 	if len(self.reducibleVariables) > 0:
-	#
-	# 		for i, ode_var in enumerate(self.ODE_vars):
-	# 			if ode_var.getInternalMathFormula() in t_reducible_vars:
-	#
-	# 				t_cfe = t_reducible_values[t_reducible_vars.index(ode_var.getInternalMathFormula())]
-	# 				t_formula = MathFormula(self)
-	# 				t_formula.setInternalMathFormula(t_cfe)
-	# 				self.CFEs.append(t_formula)
-	#
-	# 				self.CFE_vars.append(ode_var)
-	# 				self.CFE_types.append(MathCFEs.SOLVED)
-	#
-	# 				#Now changing the variable type
-	# 				t_var = self.listOfVariables[str(ode_var.getInternalMathFormula())]
-	# 				self.listOfVariables.changeVariableType(t_var, Variable.VAR_ASS)
-	#
-	# 			else:
-	# 				reduced_odes.append(self.ODEs[i])
-	# 				reduced_odes_vars.append(ode_var)
-	# 				reduced_odes_der_vars.append(self.ODE_der_vars[i])
-	# 				reduced_odes_symbols.append(self.ODE_symbols[i])
-	#
-	# 		self.ODEs = reduced_odes
-	# 		self.ODE_vars = reduced_odes_vars
-	# 		self.ODE_der_vars = reduced_odes_der_vars
-	# 		self.ODE_symbols = reduced_odes_symbols
-	#
-	# 		self.developCFEs()
