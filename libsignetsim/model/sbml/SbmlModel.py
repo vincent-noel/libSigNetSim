@@ -173,8 +173,9 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 		ModelUnits.writeSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
 
 		if self.sbmlLevel >= 3:
-			if self.isSetConversionFactor() is not None:
-				HasConversionFactor.writeSbml(self, self, self.sbmlLevel, self.sbmlVersion)
+			if self.isSetConversionFactor():
+				# print "Writing conver"
+				HasConversionFactor.writeSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
 				# sbmlModel.setConversionFactor(self.__conversionFactor)
 
 

@@ -73,7 +73,7 @@ class HasConversionFactor(object):
 			return variable.symbol.getInternalMathFormula()
 
 	def setConversionFactor(self, sbml_id):
-		if sbml_id is not None and not self.__model.listOfVariables.containSbmlId(sbml_id):
+		if sbml_id is not None and not self.__model.listOfVariables.containsSbmlId(sbml_id):
 			raise UnknownSIdRefException("Variable reference %s is unknown" % sbml_id)
 
 		self.__conversionFactor = sbml_id
