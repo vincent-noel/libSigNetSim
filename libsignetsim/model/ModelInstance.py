@@ -46,6 +46,7 @@ class ModelInstance(Model):
 		self.__submodelInstances = {}
 		self.sbmlLevel = model.sbmlLevel
 		self.sbmlVersion = model.sbmlVersion
+		self.objectsDictionnary = {}
 		if Settings.verbose >= 2:
 			print "\n\n> Instanciating model %s, parent doc is %s" % (model.getSbmlId(), document.documentFilename)
 
@@ -55,7 +56,8 @@ class ModelInstance(Model):
 
 			# Instanciating submodels depth first
 			for submodel in self.__mainModel.listOfSubmodels.values():
-				self.__submodelInstances.update({submodel.getSbmlId(): submodel.getModelInstance()})
+				t_submodel_instance = submodel.getModelInstance()
+				self.__submodelInstances.update({submodel.getSbmlId(): t_submodel_instance})
 
 			# Looking for substitutions
 			deletions = []
@@ -65,13 +67,10 @@ class ModelInstance(Model):
 			for sbmlobject in self.__mainModel.listOfSbmlObjects.values():
 
 				if isinstance(sbmlobject, SbmlObject) and sbmlobject.hasReplacedElements():
+
 					for replaced_element in sbmlobject.getListOfReplacedElements().values():
 
-						replaced_object_id = replaced_element.getReplacedElementMetaId()
-						submodel_instance = self.__submodelInstances[replaced_element.getSubmodelRef()]
-						replaced_object = submodel_instance.listOfSbmlObjects.getByMetaId(replaced_object_id)
-						# replaced_object_v2
-
+						replaced_object = replaced_element.getReplacedElementObject(self)
 						deletions.append(replaced_object)
 
 						if isinstance(sbmlobject, Variable):
@@ -90,7 +89,7 @@ class ModelInstance(Model):
 								deletions.remove(replaced_object)
 
 							else:
-								var_subs_main.update({SympySymbol("%s__%s" % (replaced_element.getSubmodelRef(), replaced_object.getSbmlId())):SympySymbol(sbmlobject.getSbmlId())})
+								var_subs_main.update({SympySymbol("%s__%s" % (replaced_element.getSubmodelRef(), replaced_object.getSbmlId())): SympySymbol(sbmlobject.getSbmlId())})
 								var_subs_main_simples.update({SympySymbol(replaced_object.getSbmlId()):SympySymbol(sbmlobject.getSbmlId())})
 
 							# Should only work on variables, right ??!!
@@ -100,9 +99,7 @@ class ModelInstance(Model):
 
 				if isinstance(sbmlobject, SbmlObject) and sbmlobject.isReplaced():
 
-					replacing_object_id = sbmlobject.isReplacedBy().getReplacingElementMetaId()
-					submodel_instance = self.__submodelInstances[sbmlobject.isReplacedBy().getSubmodelRef()]
-					replacing_object = submodel_instance.listOfSbmlObjects.getByMetaId(replacing_object_id)
+					replacing_object = sbmlobject.isReplacedBy().getReplacingElementObject(self)
 
 					sbmlobject.isMarkedToBeReplaced = True
 					sbmlobject.isMarkedToBeRenamed = True # Should be true ?
@@ -110,29 +107,25 @@ class ModelInstance(Model):
 					sbmlobject.isMarkedToBeReplacedBy = replacing_object
 
 					if isinstance(sbmlobject, Variable):
-						# print sbmlobject.getSbmlId()
-						# print replacing_object.getSbmlId()
 						if sbmlobject.isConcentration():
 							var_subs_main.update({SympySymbol("_speciesForcedConcentration_%s__%s_" % (sbmlobject.isReplacedBy().getSubmodelRef(), sbmlobject.getSbmlId())):SympySymbol("_speciesForcedConcentration_%s_" % replacing_object.getSbmlId())})
 
 						var_subs_main.update({SympySymbol("%s__%s" % (sbmlobject.isReplacedBy().getSubmodelRef(), sbmlobject.getSbmlId())):SympySymbol(replacing_object.getSbmlId())})
 						var_subs_main_simples.update({SympySymbol(sbmlobject.getSbmlId()):SympySymbol(replacing_object.getSbmlId())})
 
-
 		# First let's copy the model...
 		self.copyMainModel(var_subs_main_simples)
-
 
 		if len(self.__mainModel.listOfSubmodels) > 0:
 			for i, submodel in enumerate(self.__mainModel.listOfSubmodels.values()):
 
 				# print "Generating submodel instance"
 				submodel_instance = self.__submodelInstances[submodel.getSbmlId()]
-				prefix= submodel.getSbmlId() + "__"
+				prefix = submodel.getSbmlId() + "__"
 				var_subs_submodel = {}
 
 				if submodel.hasTimeConversionFactor():
-					var_subs_submodel.update({SympySymbol("_time_"):SympySymbol("_time_")/submodel.getTimeConversionFactor().getInternalMathFormula()})
+					var_subs_submodel.update({SympySymbol("_time_"): SympySymbol("_time_")/submodel.getTimeConversionFactor().getInternalMathFormula()})
 
 				for var in submodel_instance.listOfVariables.values():
 
@@ -177,8 +170,6 @@ class ModelInstance(Model):
 			print "\n > Model's variables : "
 			print self.listOfVariables.sbmlIds()
 
-			# print "\n > Model's species : "
-			# print self.listOfSpecies.sbmlIds()
 			print "\n > Returning instance %s\n" % model.getSbmlId()
 
 
@@ -281,3 +272,6 @@ class ModelInstance(Model):
 			conversions=conv_factors,
 			time_conversion=submodel.getTimeConversionFactor()
 		)
+
+	def getSubmodelInstance(self, submodel_ref):
+		return self.__submodelInstances[submodel_ref]

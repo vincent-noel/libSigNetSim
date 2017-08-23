@@ -23,19 +23,17 @@
 """
 
 
-from libsignetsim.model.sbml.container.ListOf import ListOf
-from libsignetsim.settings.Settings import Settings
+from libsignetsim.model.sbml.container.ListOf_v2 import ListOf_v2
 from libsignetsim.model.sbml.container.ListOfReplacedElements import ListOfReplacedElements
-# from libsignetsim.model.Model import Model
-from libsbml import SyntaxChecker
 
-class ListOfSbmlObjects(ListOf):
+
+class ListOfSbmlObjects(ListOf_v2):
 	""" Class for the listOfModelDefinition in a sbml model """
 
 	def __init__ (self, model=None):
 
 		self.__model = model
-		ListOf.__init__(self, model)
+		ListOf_v2.__init__(self, model)
 		self.isListOfSbmlObjects = True
 		self.currentObjId = -1
 
@@ -43,49 +41,28 @@ class ListOfSbmlObjects(ListOf):
 		self.currentObjId += 1
 		return "_meta_id_%d_" % self.currentObjId
 
-	# Overloading standard methods to get ordering by metaId
-	def keys(self):
-		""" Override keys() to sort by id """
-		return sorted(dict.keys(self),
-					  key=lambda sbmlObj: ListOf.__getitem__(self, sbmlObj).getMetaId())
-
-	def items(self):
-		""" Override items() to sort by id """
-		return [(obj, dict.__getitem__(self, obj)) for obj in self.keys()]
-
-	def values(self):
-		""" Override values() to sort by id """
-		return [dict.__getitem__(self, obj) for obj in self.keys()]
-
 	def addSbmlObject(self, sbml_object, prefix=""):
 
 		if sbml_object.getMetaId() is None:
 			sbml_object.setMetaId(self.nextMetaId())
 
-		if sbml_object.getMetaId() in dict.keys(self):
+		if self.containsMetaId(sbml_object.getMetaId()):
 
 			t_meta_id = sbml_object.getMetaId()
-			while t_meta_id in dict.keys(self):
+			while self.containsMetaId(t_meta_id):
 				t_meta_id = self.nextMetaId()
 
-			ListOf.update(self, {t_meta_id: sbml_object})
 			sbml_object.rawSetMetaId(t_meta_id)
 
-		else:
-			ListOf.update(self, {sbml_object.getMetaId(): sbml_object})
+		self.append(sbml_object)
 
 		return sbml_object
 
 
-	def updateMetaId(self, sbml_object, old_meta_id, new_meta_id):
-
-		dict.__delitem__(self, old_meta_id)
-		ListOf.update(self, {new_meta_id: sbml_object})
-
 	def listReplacedElements(self):
 
 		res = []
-		for obj in ListOf.values(self):
+		for obj in ListOf_v2.values(self):
 			if not isinstance(obj, ListOfReplacedElements) and obj.hasReplacedElements():
 				for replaced_element in obj.getReplacedElements():
 					res.append(replaced_element)
@@ -95,7 +72,7 @@ class ListOfSbmlObjects(ListOf):
 	def getListOfSubstitutions(self):
 
 		res = []
-		for obj in ListOf.values(self):
+		for obj in ListOf_v2.values(self):
 			if obj.hasReplacedElements():
 				res += obj.getReplacedElements()
 
@@ -108,7 +85,7 @@ class ListOfSbmlObjects(ListOf):
 
 		res = []
 		type_substitutions = []
-		for obj in ListOf.values(self):
+		for obj in ListOf_v2.values(self):
 			if obj.hasReplacedElements():
 				for replaced_element in obj.getReplacedElements():
 
@@ -125,7 +102,7 @@ class ListOfSbmlObjects(ListOf):
 	def getListOfElementsToBeReplaced(self):
 
 		res = []
-		for obj in ListOf.values(self):
+		for obj in ListOf_v2.values(self):
 			if not isinstance(obj, ListOfReplacedElements) and obj.hasReplacedElements():
 				for replaced_element in obj.getReplacedElements():
 					if replaced_element.getSubmodelRef() == self.__model.getSbmlId():
@@ -142,7 +119,7 @@ class ListOfSbmlObjects(ListOf):
 
 	def hasToBeReplaced(self, ask_object):
 
-		for obj in ListOf.values(self):
+		for obj in ListOf_v2.values(self):
 			if not isinstance(obj, ListOfReplacedElements) and obj.hasReplacedElements():
 				for replaced_element in obj.getReplacedElements():
 					if replaced_element.getSubmodelRef() == self.__model.getSbmlId():
@@ -160,7 +137,7 @@ class ListOfSbmlObjects(ListOf):
 
 	def getReplacedBy(self, ask_object):
 
-		for obj in ListOf.values(self):
+		for obj in ListOf_v2.values(self):
 			if not isinstance(obj, ListOfReplacedElements) and not isinstance(obj, Model) and obj.hasReplacedElements():
 				for replaced_element in obj.getReplacedElements():
 					if replaced_element.getSubmodelRef() == self.__model.getSbmlId():
@@ -204,9 +181,3 @@ class ListOfSbmlObjects(ListOf):
 
 		return res
 
-
-
-	def remove(self, object):
-		""" Remove an object from the list """
-
-		dict.__delitem__(self, object.getMetaId())

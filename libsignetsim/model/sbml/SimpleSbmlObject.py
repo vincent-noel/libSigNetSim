@@ -37,18 +37,19 @@ class SimpleSbmlObject(object):
 		self.__notes = None
 		self.__annotation = SbmlAnnotation(self)
 		self.newMetaId()
+		# print "New object : %s : %s" % (type(self), self.__metaId)
 		self.__model.listOfSbmlObjects.addSbmlObject(self)
+		# print "Final meta id after adding to the list : %s" % self.__metaId
 
 	def new(self, notes=None):
 
 		self.__notes = notes
 
-
 	def copy(self, obj, prefix="", shift=0):
 
 		self.setMetaId(obj.getMetaId(), prefix)
 		self.__notes = obj.getNotes()
-
+		self.__model.objectsDictionnary.update({obj.getMetaId(): self.getMetaId()})
 
 	def readSbml(self, sbml_object,
 					sbml_level=Settings.defaultSbmlLevel,
@@ -74,7 +75,7 @@ class SimpleSbmlObject(object):
 
 
 		if sbml_level >= 2 and self.__metaId is not None:
-		    sbml_object.setMetaId(str(self.__metaId))
+			sbml_object.setMetaId(str(self.__metaId))
 
 		if self.__notes is not None and self.__notes != "":
 			sbml_object.setNotes(self.buildNotes(self.__notes))
@@ -103,7 +104,7 @@ class SimpleSbmlObject(object):
 						t_new_meta_id = prefix + self.__model.listOfSbmlObjects.nextMetaId()
 
 					t_object.setMetaId(t_new_meta_id)
-					self.__model.listOfSbmlObjects.updateMetaId(self, self.__metaId, t_meta_id)
+					# self.__model.listOfSbmlObjects.updateMetaId(self, self.__metaId, t_meta_id)
 
 					self.__metaId = t_meta_id
 
@@ -111,7 +112,7 @@ class SimpleSbmlObject(object):
 					while self.__model.listOfSbmlObjects.containsMetaId(t_meta_id):
 						t_meta_id = prefix + self.__model.listOfSbmlObjects.nextMetaId()
 
-					self.__model.listOfSbmlObjects.updateMetaId(self, self.__metaId, t_meta_id)
+					# self.__model.listOfSbmlObjects.updateMetaId(self, self.__metaId, t_meta_id)
 					self.__metaId = t_meta_id
 
 			else:

@@ -24,6 +24,8 @@
 
 
 from libsignetsim.settings.Settings import Settings
+from time import time
+
 
 class CModelWriter(object):
 	""" Sbml model class """
@@ -35,19 +37,33 @@ class CModelWriter(object):
 
 	def writeCCode(self, f_h, f_c, i_model, time_min, list_samples, abs_tol, rel_tol):
 
+		t0 = time()
 		self.writeSimulationInitialization(f_h, f_c, i_model, time_min, list_samples, abs_tol, rel_tol)
+		if Settings.verboseTiming >= 2:
+			print ">>> Initialization written in %.2gs" % (time()-t0)
+
 		self.writeSimulationFinalization(f_h, f_c, i_model)
 
+		t0 = time()
 		if len(self.getMathModel().listOfDAEs) > 0:
 			self.writeIdaSimulationFunction(f_h, f_c, i_model)
 		else:
 			self.writeCVodeSimulationFunction(f_h, f_c, i_model)
+		if Settings.verboseTiming >= 2:
+			print ">>> System written in %.2gs" % (time() - t0)
 
+		t0 = time()
 		self.writeSimulationComputeRules(f_h, f_c, i_model)
+		if Settings.verboseTiming >= 2:
+			print ">>> Rules written in %.2gs" % (time() - t0)
+
+		t0 = time()
 		self.writeEventsTriggersFunction(f_h, f_c, i_model)
 		self.writeEventsActivationFunction(f_h, f_c, i_model)
 		self.writeEventsAssignmentFunction(f_h, f_c, i_model)
 		self.writeEventsPriorityFunction(f_h, f_c, i_model)
+		if Settings.verboseTiming >= 2:
+			print ">>> Events written in %.2gs" % (time() - t0)
 
 	def writeSimulationInitialization(self, f_h, f_c, model_id, time_min, list_samples, abs_tol, rel_tol):
 		""" Writes the model initialization function in C files """
@@ -256,6 +272,11 @@ class CModelWriter(object):
 			i_var = 0
 			for i_ode, t_ode in enumerate(self.getMathModel().listOfODEs):
 				t_var = t_ode.getVariable()
+				t0 = time()
+				t_c_ode = t_ode.getDefinition().getCMathFormula()
+				if Settings.verboseTiming >= 2:
+					print ">>> ODE #%s translated in %.2gs" % (i_ode, time() - t0)
+
 				f_c.write("  // ODE\n")
 				f_c.write("  Ith(ydot, %d) = %s;\n\n" % ( t_var.ind+1, t_ode.getDefinition().getCMathFormula()))
 				i_var += 1

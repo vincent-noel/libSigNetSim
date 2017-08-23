@@ -66,7 +66,6 @@ class HasSBaseRef(object):
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
 
-		#TODO
 
 		if self.__portRef is not None:
 			sbml_object.setPortRef(self.__portRef)

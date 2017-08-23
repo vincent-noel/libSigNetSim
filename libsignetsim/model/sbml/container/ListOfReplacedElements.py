@@ -50,8 +50,6 @@ class ListOfReplacedElements(ListOf):#, SimpleSbmlObject):
 			t_re.readSbml(re, sbml_level, sbml_version)
 			ListOf.add(self, t_re)
 
-		# SimpleSbmlObject.readSbml(self, sbml_list_re, sbml_level, sbml_version)
-
 
 	def writeSbml(self, sbml_object,
 					sbml_level=Settings.defaultSbmlLevel,
@@ -60,8 +58,6 @@ class ListOfReplacedElements(ListOf):#, SimpleSbmlObject):
 
 		for t_replaced_element in ListOf.values(self):
 			t_replaced_element.writeSbml(sbml_object, sbml_level, sbml_version)
-
-		# SimpleSbmlObject.writeSbml(self, sbml_object, sbml_level, sbml_version)
 
 	def new(self):
 		""" Creates a new compartment """
@@ -77,8 +73,6 @@ class ListOfReplacedElements(ListOf):#, SimpleSbmlObject):
 			t_re.copy(replaced_element, prefix, shift)
 			ListOf.add(self, t_re)
 
-		# SimpleSbmlObject.copy(self, obj, prefix, shift)
-
 	def remove(self, obj):
 		""" Remove an object from the list """
 
@@ -90,11 +84,11 @@ class ListOfReplacedElements(ListOf):#, SimpleSbmlObject):
 		self.remove(self.getById(obj_id))
 
 
-	def getByReplacedElementObject(self, re_object):
-
-		for replacement_element in ListOf.values(self):
-			if replacement_element.getReplacedElementObject() == re_object:
-				return replacement_element
+	# def getByReplacedElementObject(self, re_object):
+	#
+	# 	for replacement_element in ListOf.values(self):
+	# 		if replacement_element.getReplacedElementObject() == re_object:
+	# 			return replacement_element
 
 	def containsSubmodel(self, submodel_ref):
 
