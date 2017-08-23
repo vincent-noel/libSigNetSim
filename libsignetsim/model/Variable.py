@@ -42,9 +42,8 @@ class Variable(SbmlVariable, MathVariable):
 		MathVariable.new(self, string)
 
 	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversion_factor=None):
-		SbmlVariable.copy(self, obj, prefix, shift, subs, deletions, replacements)
+		SbmlVariable.copy(self, obj, prefix, shift)
 		MathVariable.copy(self, obj, prefix, shift, subs, deletions, replacements, conversion_factor)
-		# print "> Adding variable %s : %s" % (prefix + obj.getSbmlId(), self.symbol.getInternalMathFormula())
 
 
 

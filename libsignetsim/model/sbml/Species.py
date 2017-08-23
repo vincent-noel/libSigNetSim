@@ -28,6 +28,7 @@ from libsignetsim.model.sbml.RuledVariable import RuledVariable
 from libsignetsim.model.Variable import Variable
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.sbml.HasUnits import HasUnits
+from libsignetsim.model.sbml.HasConversionFactor import HasConversionFactor
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.MathVariable import MathVariable
 from libsignetsim.settings.Settings import Settings
@@ -36,7 +37,7 @@ from libsbml import formulaToL3String
 from sympy import Symbol, srepr
 
 class Species(SbmlObject, Variable, InitiallyAssignedVariable,
-						RuledVariable, EventAssignedVariable, HasUnits):
+						RuledVariable, EventAssignedVariable, HasUnits, HasConversionFactor):
 
 	def __init__ (self, model, objId):
 
@@ -49,13 +50,14 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		RuledVariable.__init__(self, model)
 		EventAssignedVariable.__init__(self, model)
 		HasUnits.__init__(self, model)
+		HasConversionFactor.__init__(self, model)
 
 		self.__compartment = None
 		# self.boundaryCondition = False
 		self.hasOnlySubstanceUnits = False
 		self.isDeclaredConcentration = True
 		self.concentrationUnit = None
-		self.conversionFactor = None
+		# self.__conversionFactor = None
 
 
 
@@ -64,13 +66,13 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 
 		if compartment != None:
-			self.__compartment = compartment.objId
+			self.__compartment = compartment.getSbmlId()
 
 		else:
 			if len(self.__model.listOfCompartments) == 0:
 				self.__model.listOfCompartments.new("cell")
 
-			self.__compartment = self.__model.listOfCompartments.values()[0].objId
+			self.__compartment = self.__model.listOfCompartments.values()[0].getSbmlId()
 
 		SbmlObject.new(self)
 		Variable.new(self, name, Variable.SPECIES)
@@ -96,14 +98,14 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		RuledVariable.copy(self, obj, prefix, shift)
 		EventAssignedVariable.copy(self, obj, prefix, shift)
 		HasUnits.copy(self, obj, prefix, shift)
-
+		HasConversionFactor.copy(self, obj)
 		self.constant = obj.constant
 		self.boundaryCondition = obj.boundaryCondition
 		self.hasOnlySubstanceUnits = obj.hasOnlySubstanceUnits
 		self.isDeclaredConcentration = obj.isDeclaredConcentration
-		if obj.conversionFactor is not None:
-			self.conversionFactor = MathFormula(self.__model)
-			self.conversionFactor.setInternalMathFormula(obj.conversionFactor.getInternalMathFormula())
+		# if obj.getRawConversionFactor() is not None:
+		# self.__conversionFactor = self.getRawConversionFactor()
+		# self.__conversionFactor.setInternalMathFormula(obj.conversionFactor.getInternalMathFormula())
 
 
 
@@ -111,9 +113,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 	def readSbml(self, sbml_species, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
 		if sbml_level >= 2:
-			self.__compartment = self.__model.listOfCompartments.getBySbmlId(sbml_species.getCompartment()).objId
+			self.__compartment = sbml_species.getCompartment()
 		else:
-			self.__compartment = self.__model.listOfCompartments.getByName(sbml_species.getCompartment()).objId
+			self.__compartment = sbml_species.getCompartment()
 
 		Variable.readSbml(self, sbml_species, sbml_level, sbml_version)
 		SbmlObject.readSbml(self, sbml_species, sbml_level, sbml_version)
@@ -159,9 +161,10 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			self.constant = False
 
 		if sbml_level >= 3 and sbml_species.isSetConversionFactor():
-			self.conversionFactor = MathFormula(self.__model)
-			self.conversionFactor.readSbml(sbml_species.getConversionFactor(), sbml_level, sbml_version)
-
+			HasConversionFactor.readSbml(self, sbml_species.getConversionFactor, sbml_level, sbml_version)
+			# self.conversionFactor = MathFormula(self.__model)
+			# self.conversionFactor.readSbml(sbml_species.getConversionFactor(), sbml_level, sbml_version)
+			# self.__conversionFactor = sbml_species.getConversionFactor()
 
 	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
@@ -196,9 +199,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			sbml_sp.setConstant(self.constant)
 
 
-		if sbml_level >= 3 and self.conversionFactor is not None:
-			sbml_sp.setConversionFactor(formulaToL3String(
-				self.conversionFactor.writeSbml(sbml_level, sbml_version)))
+		if sbml_level >= 3 and self.isSetConversionFactor():
+			HasConversionFactor.writeSbml(self, self, sbml_level, sbml_version)
+			# sbml_sp.setConversionFactor(self.__conversionFactor)
 
 
 
@@ -296,11 +299,13 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 						ode += reaction.getODE(self, symbols=symbols, rawFormula=rawFormula).getInternalMathFormula()
 
 
-			if self.conversionFactor is not None:
-				ode *= self.conversionFactor.getInternalMathFormula()
+			if self.isSetConversionFactor():
+				# variable = self.__model.listOfVariables.getBySbmlId(self.__conversionFactor)
+				ode *= self.getSymbolConversionFactor()
 
-			elif self.__model.conversionFactor is not None:
-				ode *= self.__model.conversionFactor.getInternalMathFormula()
+			elif self.__model.isSetConversionFactor():
+				# variable = self.__model.listOfVariables.getBySbmlId(self.__model.getRawConversionFactor())
+				ode *= self.__model.getSymbolConversionFactor()
 
 			t_formula.setInternalMathFormula(ode)
 			return t_formula
@@ -376,7 +381,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 	def getCompartment(self):
 		if self.__compartment is not None:
-			return self.__model.listOfCompartments[self.__compartment]
+			return self.__model.listOfCompartments.getBySbmlId(self.__compartment)
 
 	def setCompartment(self, compartment, prefix="", shift=0, subs={}, deletions=[], replacements={}):
 
@@ -389,4 +394,13 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		else:
 			t_sbml_id = prefix+compartment.getSbmlId()
 
-		self.__compartment = self.__model.listOfCompartments.getBySbmlId(t_sbml_id).objId
+		self.__compartment = t_sbml_id
+
+	# def getRawConversionFactor(self):
+	# 	return self.__conversionFactor
+	#
+	# def getConversionFactor(self):
+	# 	formula = MathFormula(self.__model)
+	# 	variable = self.__model.listOfVariables.getBySbmlId(self.__conversionFactor)
+	# 	formula.setInternalMathFormula(variable.symbol.getInternalMathFormula())
+	# 	return formula

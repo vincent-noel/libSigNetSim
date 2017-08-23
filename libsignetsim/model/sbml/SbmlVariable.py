@@ -51,11 +51,10 @@ class SbmlVariable(HasId):
 		HasId.new(self, name, t_sbmlId)
 
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[],
-				replacements={}):
+	def copy(self, obj, prefix="", shift=0):
 
 
-		HasId.copy(self, obj, prefix, shift, subs, deletions, replacements)
+		HasId.copy(self, obj, prefix, shift)
 
 		if self.isParameter() and self.localParameter:
 			self.__model.listOfVariables.addVariable(self,

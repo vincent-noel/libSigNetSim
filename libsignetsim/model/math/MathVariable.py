@@ -84,10 +84,13 @@ class MathVariable(object):
 			self.value.setInternalMathFormula(t_formula)
 
 		if obj.derivative_value is not None and obj.derivative_value.getInternalMathFormula() is not None:
-			if conversion_factor is None:
-				self.derivative_value.setInternalMathFormula(obj.derivative_value.getInternalMathFormula().subs(subs).subs(replacements))
-			else:
-				self.derivative_value.setInternalMathFormula(obj.derivative_value.getInternalMathFormula().subs(subs).subs(replacements)*conversion_factor)
+			t_formula = unevaluatedSubs(obj.derivative_value.getInternalMathFormula(), subs)
+			t_formula = unevaluatedSubs(t_formula, replacements)
+
+			if conversion_factor is not None:
+				t_formula *= conversion_factor
+
+			self.derivative_value.setInternalMathFormula(t_formula)
 
 		self.isInitialized = obj.isInitialized
 		self.isDerivativeInitialized = obj.isDerivativeInitialized

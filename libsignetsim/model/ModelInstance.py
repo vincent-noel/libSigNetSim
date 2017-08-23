@@ -36,6 +36,7 @@ from libsignetsim.settings.Settings import Settings
 class ModelInstance(Model):
 	""" Sbml model class """
 
+	PREFIX_PATTERN = "%s__"
 
 	def __init__ (self, model, document):
 		""" Constructor of model class """
@@ -59,61 +60,11 @@ class ModelInstance(Model):
 				t_submodel_instance = submodel.getModelInstance()
 				self.__submodelInstances.update({submodel.getSbmlId(): t_submodel_instance})
 
-			# Looking for substitutions
-			deletions = []
-			var_subs_main = {}
-			var_subs_main_simples = {}
-			conv_factors = {}
-			for sbmlobject in self.__mainModel.listOfSbmlObjects.values():
-
-				if isinstance(sbmlobject, SbmlObject) and sbmlobject.hasReplacedElements():
-
-					for replaced_element in sbmlobject.getListOfReplacedElements().values():
-
-						replaced_object = replaced_element.getReplacedElementObject(self)
-						deletions.append(replaced_object)
-
-						if isinstance(sbmlobject, Variable):
-
-							if sbmlobject.isConcentration():
-								var_subs_main.update({SympySymbol("_speciesForcedConcentration_%s__%s_" % (replaced_element.getSubmodelRef(), replaced_object.getSbmlId())):SympySymbol("_speciesForcedConcentration_%s_" % sbmlobject.getSbmlId())})
-
-
-							if replaced_object.isParameter() and replaced_object.localParameter:
-								var_subs_main.update({SympySymbol("_local_%d_%s__%s" % (replaced_object.reaction.objId, replaced_element.getSubmodelRef(), replaced_object.getSbmlId())): SympySymbol("_local_%d_%s" % (replaced_object.reaction.objId, replaced_element.getSubmodelRef() + "__" +sbmlobject.getSbmlId()))})
-								var_subs_main.update({SympySymbol("_local_%d_%s" % (replaced_object.reaction.objId, replaced_object.getSbmlId())): SympySymbol("_local_%d_%s" % (replaced_object.reaction.objId, sbmlobject.getSbmlId()))})
-
-								# In this case we don't just rename the variables in the model's math, we also need to actually create the variable in the local scope
-								replaced_object.isMarkedToBeReplaced = True
-								replaced_object.isMarkedToBeReplacedBy = sbmlobject
-								deletions.remove(replaced_object)
-
-							else:
-								var_subs_main.update({SympySymbol("%s__%s" % (replaced_element.getSubmodelRef(), replaced_object.getSbmlId())): SympySymbol(sbmlobject.getSbmlId())})
-								var_subs_main_simples.update({SympySymbol(replaced_object.getSbmlId()):SympySymbol(sbmlobject.getSbmlId())})
-
-							# Should only work on variables, right ??!!
-							if replaced_element.getConversionFactor() is not None:
-								conv_factors.update({SympySymbol(sbmlobject.getSbmlId()): SympySymbol(replaced_element.getConversionFactor())})
-
-
-				if isinstance(sbmlobject, SbmlObject) and sbmlobject.isReplaced():
-
-					replacing_object = sbmlobject.isReplacedBy().getReplacingElementObject(self)
-
-					sbmlobject.isMarkedToBeReplaced = True
-					sbmlobject.isMarkedToBeRenamed = True # Should be true ?
-					# sbmlobject.isMarkedToBeRenamed = False # Should be true ?
-					sbmlobject.isMarkedToBeReplacedBy = replacing_object
-
-					if isinstance(sbmlobject, Variable):
-						if sbmlobject.isConcentration():
-							var_subs_main.update({SympySymbol("_speciesForcedConcentration_%s__%s_" % (sbmlobject.isReplacedBy().getSubmodelRef(), sbmlobject.getSbmlId())):SympySymbol("_speciesForcedConcentration_%s_" % replacing_object.getSbmlId())})
-
-						var_subs_main.update({SympySymbol("%s__%s" % (sbmlobject.isReplacedBy().getSubmodelRef(), sbmlobject.getSbmlId())):SympySymbol(replacing_object.getSbmlId())})
-						var_subs_main_simples.update({SympySymbol(sbmlobject.getSbmlId()):SympySymbol(replacing_object.getSbmlId())})
+			(deletions, var_subs_main, var_subs_main_simples, conv_factors) = self.findReplacements()
 
 		# First let's copy the model...
+		# 	print var_subs_main_simples
+		# 	print var_subs_main
 		self.copyMainModel(var_subs_main_simples)
 
 		if len(self.__mainModel.listOfSubmodels) > 0:
@@ -121,7 +72,7 @@ class ModelInstance(Model):
 
 				# print "Generating submodel instance"
 				submodel_instance = self.__submodelInstances[submodel.getSbmlId()]
-				prefix = submodel.getSbmlId() + "__"
+				prefix = self.PREFIX_PATTERN % submodel.getSbmlId()
 				var_subs_submodel = {}
 
 				if submodel.hasTimeConversionFactor():
@@ -195,9 +146,9 @@ class ModelInstance(Model):
 		self.listOfRules.copy(self.__mainModel.listOfRules)
 		self.listOfEvents.copy(self.__mainModel.listOfEvents)
 
-		if self.__mainModel.conversionFactor is not None:
-			self.conversionFactor = MathFormula(self)
-			self.conversionFactor.setInternalMathFormula(self.__mainModel.conversionFactor.getInternalMathFormula())
+		if self.__mainModel.isSetConversionFactor():
+			# self.conversionFactor = MathFormula(self)
+			self.setConversionFactor(self.__mainModel.getRawConversionFactor())
 
 	def copySubmodel(self, submodel, submodel_instance, prefix, var_subs_submodel, deletions, var_subs_main, conv_factors):
 
@@ -272,6 +223,83 @@ class ModelInstance(Model):
 			conversions=conv_factors,
 			time_conversion=submodel.getTimeConversionFactor()
 		)
+
+
+	def findReplacements(self):
+
+		# Looking for substitutions
+		deletions = []
+		deletions_submodels = {}
+		var_subs_main = {}
+		var_subs_main_simples = {}
+		conv_factors = {}
+		for submodel in self.__mainModel.listOfSubmodels.values():
+			deletions_submodels.update({submodel.getSbmlId():[]})
+
+		for sbmlobject in self.__mainModel.listOfSbmlObjects.values():
+
+			if isinstance(sbmlobject, SbmlObject) and sbmlobject.hasReplacedElements():
+
+				for replaced_element in sbmlobject.getListOfReplacedElements().values():
+
+					replaced_object = replaced_element.getReplacedElementObject(self)
+					deletions.append(replaced_object)
+
+					if isinstance(sbmlobject, Variable):
+
+						if sbmlobject.isConcentration():
+							var_subs_main.update({SympySymbol("_speciesForcedConcentration_%s__%s_" % (
+							replaced_element.getSubmodelRef(), replaced_object.getSbmlId())): SympySymbol(
+								"_speciesForcedConcentration_%s_" % sbmlobject.getSbmlId())})
+
+						if replaced_object.isParameter() and replaced_object.localParameter:
+							var_subs_main.update({SympySymbol("_local_%d_%s__%s" % (
+							replaced_object.reaction.objId, replaced_element.getSubmodelRef(),
+							replaced_object.getSbmlId())): SympySymbol("_local_%d_%s" % (replaced_object.reaction.objId,
+																						 replaced_element.getSubmodelRef() + "__" + sbmlobject.getSbmlId()))})
+							var_subs_main.update({SympySymbol("_local_%d_%s" % (
+							replaced_object.reaction.objId, replaced_object.getSbmlId())): SympySymbol(
+								"_local_%d_%s" % (replaced_object.reaction.objId, sbmlobject.getSbmlId()))})
+
+							# In this case we don't just rename the variables in the model's math, we also need to actually create the variable in the local scope
+							replaced_object.isMarkedToBeReplaced = True
+							replaced_object.isMarkedToBeReplacedBy = sbmlobject
+							deletions.remove(replaced_object)
+
+						else:
+							var_subs_main.update({SympySymbol((self.PREFIX_PATTERN + "%s") % (
+							replaced_element.getSubmodelRef(), replaced_object.getSbmlId())): SympySymbol(
+								sbmlobject.getSbmlId())})
+							var_subs_main_simples.update(
+								{SympySymbol(replaced_object.getSbmlId()): SympySymbol(sbmlobject.getSbmlId())})
+
+						# Should only work on variables, right ??!!
+						if replaced_element.getConversionFactor() is not None:
+							conv_factors.update({SympySymbol(sbmlobject.getSbmlId()): SympySymbol(
+								replaced_element.getConversionFactor())})
+
+			if isinstance(sbmlobject, SbmlObject) and sbmlobject.isReplaced():
+
+				replacing_object = sbmlobject.isReplacedBy().getReplacingElementObject(self)
+				# submodel_deletion[sbmlobject.isReplacedBy().getSubmodelRef()].append()
+				sbmlobject.isMarkedToBeReplaced = True
+				sbmlobject.isMarkedToBeRenamed = True  # Should be true ?
+				# sbmlobject.isMarkedToBeRenamed = False # Should be true ?
+				sbmlobject.isMarkedToBeReplacedBy = replacing_object
+
+				if isinstance(sbmlobject, Variable):
+					if sbmlobject.isConcentration():
+						var_subs_main.update({SympySymbol("_speciesForcedConcentration_%s__%s_" % (
+						sbmlobject.isReplacedBy().getSubmodelRef(), sbmlobject.getSbmlId())): SympySymbol(
+							"_speciesForcedConcentration_%s_" % replacing_object.getSbmlId())})
+
+					var_subs_main.update({SympySymbol((self.PREFIX_PATTERN + "%s") % (
+					sbmlobject.isReplacedBy().getSubmodelRef(), sbmlobject.getSbmlId())): SympySymbol(
+						replacing_object.getSbmlId())})
+					var_subs_main_simples.update(
+						{SympySymbol(sbmlobject.getSbmlId()): SympySymbol(replacing_object.getSbmlId())})
+
+		return (deletions, var_subs_main, var_subs_main_simples, conv_factors)
 
 	def getSubmodelInstance(self, submodel_ref):
 		return self.__submodelInstances[submodel_ref]

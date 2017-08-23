@@ -47,7 +47,7 @@ class HasId(object):
 		if sbml_id is not None:
 			self.__sbmlId = sbml_id
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
+	def copy(self, obj, prefix="", shift=0):
 
 		self.__sbmlId = prefix + obj.getSbmlId()
 		self.setName(obj.getName())
