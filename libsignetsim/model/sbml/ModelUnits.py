@@ -127,9 +127,6 @@ class ModelUnits(object):
 			if self.extentUnits is not None:
 				sbmlModel.setExtentUnits(self.extentUnits.getSbmlId())
 
-			if self.conversionFactor is not None:
-				sbmlModel.setConversionFactor(formulaToL3String(self.conversionFactor.writeSbml(self.sbmlLevel, self.sbmlVersion)))
-
 
 	def getTimeUnits(self):
 		return self.timeUnits
