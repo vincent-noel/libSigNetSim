@@ -48,7 +48,8 @@ class HasConversionFactor(object):
 	def writeSbml(self, object,
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
-		object.setConversionFactor(self.__conversionFactor)
+		if self.__conversionFactor is not None:
+			object.setConversionFactor(self.__conversionFactor)
 
 	def isSetConversionFactor(self):
 		return self.__conversionFactor is not None

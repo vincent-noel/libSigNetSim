@@ -161,7 +161,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			self.constant = False
 
 		if sbml_level >= 3 and sbml_species.isSetConversionFactor():
-			HasConversionFactor.readSbml(self, sbml_species.getConversionFactor, sbml_level, sbml_version)
+			HasConversionFactor.readSbml(self, sbml_species.getConversionFactor(), sbml_level, sbml_version)
 			# self.conversionFactor = MathFormula(self.__model)
 			# self.conversionFactor.readSbml(sbml_species.getConversionFactor(), sbml_level, sbml_version)
 			# self.__conversionFactor = sbml_species.getConversionFactor()
@@ -200,7 +200,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 
 		if sbml_level >= 3 and self.isSetConversionFactor():
-			HasConversionFactor.writeSbml(self, self, sbml_level, sbml_version)
+			HasConversionFactor.writeSbml(self, sbml_sp, sbml_level, sbml_version)
 			# sbml_sp.setConversionFactor(self.__conversionFactor)
 
 

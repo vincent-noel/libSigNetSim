@@ -22,8 +22,6 @@
 
 """
 
-
-
 from libsignetsim.model.sbml.container.ListOfSpecies import ListOfSpecies
 from libsignetsim.model.sbml.container.ListOfParameters import ListOfParameters
 from libsignetsim.model.sbml.container.ListOfReactions import ListOfReactions
@@ -38,7 +36,6 @@ from libsignetsim.model.sbml.container.ListOfSbmlObjects import ListOfSbmlObject
 from libsignetsim.model.sbml.container.ListOfSubmodels import ListOfSubmodels
 from libsignetsim.model.sbml.container.ListOfPorts import ListOfPorts
 
-from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.sbml.ModelUnits import ModelUnits
@@ -46,12 +43,6 @@ from libsignetsim.model.sbml.SbmlModelAnnotation import SbmlModelAnnotation
 from libsignetsim.model.sbml.HasId import HasId
 from libsignetsim.model.sbml.HasConversionFactor import HasConversionFactor
 
-from os.path import isfile
-from libsbml import SBMLReader, SBMLDocument, formulaToString,\
-					formulaToL3String, writeSBMLToFile,\
-					XMLFileUnreadable, XMLFileOperationError, \
-					LIBSBML_CAT_UNITS_CONSISTENCY, LIBSBML_SEV_INFO, \
-					LIBSBML_SEV_WARNING, SBMLExtensionRegistry
 
 from time import time
 
@@ -86,8 +77,6 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 		self.listOfSubmodels = ListOfSubmodels(self)
 		self.listOfPorts = ListOfPorts(self)
 
-		# self.conversionFactor = None
-		# self.__conversionFactor = None
 		self.defaultCompartment = None
 
 		self.sbmlLevel = Settings.defaultSbmlLevel
@@ -116,8 +105,6 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 
 		self.listOfFunctionDefinitions.readSbml(sbmlModel.getListOfFunctionDefinitions(), self.sbmlLevel, self.sbmlVersion)
 		self.listOfUnitDefinitions.readSbml(sbmlModel.getListOfUnitDefinitions(), self.sbmlLevel, self.sbmlVersion)
-		# # We need to load the units before reading the model's default units
-		# if self.sbmlLevel >= 3:
 		ModelUnits.readSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
 
 
@@ -128,9 +115,6 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 		if self.sbmlLevel >= 3:
 			if sbmlModel.isSetConversionFactor():
 				HasConversionFactor.readSbml(self, sbmlModel.getConversionFactor(), self.sbmlLevel, self.sbmlVersion)
-				# self.__conversionFactor = sbmlModel.getConversionFactor()
-				# self.conversionFactor = MathFormula(self)
-				# self.conversionFactor.readSbml(sbmlModel.getConversionFactor(), self.sbmlLevel, self.sbmlVersion)
 
 		self.listOfSpecies.readSbml(sbmlModel.getListOfSpecies(), self.sbmlLevel, self.sbmlVersion)
 		self.listOfReactions.readSbml(sbmlModel.getListOfReactions(), self.sbmlLevel, self.sbmlVersion)
@@ -174,10 +158,7 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 
 		if self.sbmlLevel >= 3:
 			if self.isSetConversionFactor():
-				# print "Writing conver"
 				HasConversionFactor.writeSbml(self, sbmlModel, self.sbmlLevel, self.sbmlVersion)
-				# sbmlModel.setConversionFactor(self.__conversionFactor)
-
 
 		if self.sbmlLevel == 3 and self.parentDoc.isCompEnabled():
 			self.listOfSubmodels.writeSbml(sbmlModel.getPlugin("comp"), self.sbmlLevel, self.sbmlVersion)
@@ -185,33 +166,6 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 
 		if Settings.verboseTiming >= 2:
 			print "> SBML Model %s written in %.2gs" % (self.getSbmlId(), time()-t0)
-
-
-	# def getRawConversionFactor(self):
-	# 	return self.__conversionFactor
-	#
-	# def getConversionFactor(self):
-	# 	formula = MathFormula(self)
-	# 	variable = self.listOfVariables.getBySbmlId(self.__conversionFactor)
-	# 	formula.setInternalMathFormula(variable.symbol.getInternalMathFormula())
-	# 	return formula
-	#
-	# def getVariableConversionFactor(self):
-	# 	if self.__conversionFactor is not None:
-	# 		return self.listOfVariables.getBySbmlId(self.__conversionFactor)
-	#
-	# def setConversionFactor(self, sbml_id):
-	# 	if sbml_id is None:
-	# 		self.__conversionFactor = None
-	#
-	# 	elif self.listOfVariables.containSbmlId(sbml_id):
-	# 		self.__conversionFactor = sbml_id
-	# 		# if self.conversionFactor is None:
-	# 		# 	self.conversionFactor = MathFormula(self)
-	# 		# self.conversionFactor.setInternalMathFormula(self.listOfVariables.getBySbmlId(sbml_id).symbol.getSymbol())
-
-
-
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		""" Here we rename the variable in all the math """
