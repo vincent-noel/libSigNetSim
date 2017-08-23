@@ -23,35 +23,50 @@
 """
 
 import requests
+from json import loads
 from lxml import etree
 
 class GoResolver(object):
 
-	URL = "https://www.ebi.ac.uk/QuickGO-Old/GTerm?id=%s&format=oboxml"
 
+	# URL = "https://www.ebi.ac.uk/QuickGO-Old/GTerm?id=%s&format=oboxml"
+	URL = "http://amigo.geneontology.org/amigo/term/%s/json"
 	def __init__(self, go_id):
 		self.__id = go_id
 		self.__xmlTree = None
+		self.__json = None
 		self.__name = None
 		self.__definition = None
 
 	def lookup(self):
 
 		if self.__id is not None:
-			self.getXMLTree()
-			self.parseXMLTree()
+			self.getJSON()
+			self.parseJSON()
 
-	def getXMLTree(self):
+	def getJSON(self):
 
-		r = requests.get(self.URL % self.__id, headers={"Content-Type": "application/xml"})
+		r = requests.get(self.URL % self.__id, headers={"Content-Type": "application/json"})
 		if r.ok:
-			self.__xmlTree = etree.fromstring(r.content)
+			self.__json = loads(r.content)
 
-	def parseXMLTree(self):
+	def parseJSON(self):
 
-		term = self.__xmlTree.find("term")
-		self.__name = term.find("name").text
-		self.__definition = term.find("def").find("defstr").text
+		if self.__json is not None:
+			self.__name = self.__json[u'results'][u'name']
+			self.__definition = self.__json[u'results'][u'definition']
+
+	# def getXMLTree(self):
+	#
+	# 	r = requests.get(self.URL % self.__id, headers={"Content-Type": "application/xml"})
+	# 	if r.ok:
+	# 		self.__xmlTree = etree.fromstring(r.content)
+	#
+	# def parseXMLTree(self):
+	#
+	# 	term = self.__xmlTree.find("term")
+	# 	self.__name = term.find("name").text
+	# 	self.__definition = term.find("def").find("defstr").text
 
 	def getName(self):
 		return self.__name

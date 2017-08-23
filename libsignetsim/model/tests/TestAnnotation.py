@@ -104,20 +104,22 @@ class TestAnnotation(TestCase):
 		self.assertEqual(sbml_model.getAnnotation().getModelUnknown(), [])
 
 		descriptions = [
-			'physical compartment', 'protein complex', 'protein complex', 'protein complex',
-			'multimer of macromolecules', 'protein complex', 'multimer of macromolecules', 'protein complex',
-			'multimer of macromolecules', 'protein complex', 'protein complex', 'multimer of macromolecules',
-			'protein complex', 'non-covalent binding', 'non-covalent binding', 'conformational transition',
-			'non-covalent binding', 'non-covalent binding', 'conformational transition', 'conformational transition',
-			'non-covalent binding', 'non-covalent binding', 'conformational transition', 'conformational transition',
-			'conformational transition', 'non-covalent binding', 'non-covalent binding', 'protein complex',
-			'multimer of macromolecules', 'protein complex', 'multimer of macromolecules', 'protein complex',
-			'multimer of macromolecules', 'protein complex', 'protein complex', 'multimer of macromolecules',
-			'protein complex', 'non-covalent binding', 'non-covalent binding', 'conformational transition',
-			'non-covalent binding', 'non-covalent binding', 'conformational transition', 'conformational transition',
-			'non-covalent binding', 'non-covalent binding', 'conformational transition', 'conformational transition',
-			'conformational transition', 'non-covalent binding', 'non-covalent binding', 'physical compartment',
-			'protein complex', 'protein complex'
+			u'physical compartment', u'protein complex', u'protein complex', u'protein complex',
+			u'multimer of macromolecules', u'protein complex', u'multimer of macromolecules', u'protein complex',
+			u'multimer of macromolecules', u'protein complex', u'protein complex', u'multimer of macromolecules',
+			u'protein complex', u'non-covalent binding', u'non-covalent binding', u'conformational transition',
+			u'non-covalent binding', u'non-covalent binding', u'conformational transition',
+			u'conformational transition', u'non-covalent binding', u'non-covalent binding',
+			u'conformational transition', u'conformational transition', u'conformational transition',
+			u'non-covalent binding', u'non-covalent binding', u'physical compartment', u'protein complex',
+			u'protein complex', u'protein complex', u'multimer of macromolecules', u'protein complex',
+			u'multimer of macromolecules', u'protein complex', u'multimer of macromolecules', u'protein complex',
+			u'protein complex', u'multimer of macromolecules', u'protein complex', u'non-covalent binding',
+			u'non-covalent binding', u'conformational transition', u'non-covalent binding', u'non-covalent binding',
+			u'conformational transition', u'conformational transition', u'non-covalent binding',
+			u'non-covalent binding', u'conformational transition', u'conformational transition',
+			u'conformational transition', u'non-covalent binding', u'non-covalent binding'
 		]
 
-		self.assertEqual(sbml_model.getListOfSBOTermsDescriptions(), descriptions)
+		resolved_descriptions = sbml_model.getListOfSBOTermsDescriptions()
+		self.assertEqual(resolved_descriptions, descriptions)
