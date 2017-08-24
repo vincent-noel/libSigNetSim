@@ -63,8 +63,6 @@ class ModelInstance(Model):
 			(deletions, var_subs_main, var_subs_main_simples, conv_factors) = self.findReplacements()
 
 		# First let's copy the model...
-		# 	print var_subs_main_simples
-		# 	print var_subs_main
 		self.copyMainModel(var_subs_main_simples)
 
 		if len(self.__mainModel.listOfSubmodels) > 0:
@@ -116,13 +114,11 @@ class ModelInstance(Model):
 				# Then copy the submodel
 				self.copySubmodel(submodel, submodel_instance, prefix, var_subs_submodel, deletions, var_subs_main, conv_factors)
 
-
 		if Settings.verbose >= 2:
 			print "\n > Model's variables : "
 			print self.listOfVariables.sbmlIds()
 
 			print "\n > Returning instance %s\n" % model.getSbmlId()
-
 
 	def copyMainModel(self, var_subs_main_simples):
 
@@ -147,7 +143,6 @@ class ModelInstance(Model):
 		self.listOfEvents.copy(self.__mainModel.listOfEvents)
 
 		if self.__mainModel.isSetConversionFactor():
-			# self.conversionFactor = MathFormula(self)
 			self.setConversionFactor(self.__mainModel.getRawConversionFactor())
 
 	def copySubmodel(self, submodel, submodel_instance, prefix, var_subs_submodel, deletions, var_subs_main, conv_factors):
@@ -242,7 +237,7 @@ class ModelInstance(Model):
 
 				for replaced_element in sbmlobject.getListOfReplacedElements().values():
 
-					replaced_object = replaced_element.getReplacedElementObject(self)
+					replaced_object = replaced_element.getReplacedElementObjectFromInstance(self)
 					deletions.append(replaced_object)
 
 					if isinstance(sbmlobject, Variable):
@@ -280,7 +275,7 @@ class ModelInstance(Model):
 
 			if isinstance(sbmlobject, SbmlObject) and sbmlobject.isReplaced():
 
-				replacing_object = sbmlobject.isReplacedBy().getReplacingElementObject(self)
+				replacing_object = sbmlobject.isReplacedBy().getReplacingElementObjectFromInstance(self)
 				# submodel_deletion[sbmlobject.isReplacedBy().getSubmodelRef()].append()
 				sbmlobject.isMarkedToBeReplaced = True
 				sbmlobject.isMarkedToBeRenamed = True  # Should be true ?

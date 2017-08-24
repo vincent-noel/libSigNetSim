@@ -78,17 +78,15 @@ class ListOfReplacedElements(ListOf):#, SimpleSbmlObject):
 
 		dict.__delitem__(self, obj.objId)
 
-
 	def removeById(self, obj_id):
 		""" Remove an object from the list """
 		self.remove(self.getById(obj_id))
 
+	def getByReplacedElementObject(self, re_object):
 
-	# def getByReplacedElementObject(self, re_object):
-	#
-	# 	for replacement_element in ListOf.values(self):
-	# 		if replacement_element.getReplacedElementObject() == re_object:
-	# 			return replacement_element
+		for replacement_element in ListOf.values(self):
+			if replacement_element.getReplacedElementObject() == re_object:
+				return replacement_element
 
 	def containsSubmodel(self, submodel_ref):
 

@@ -64,7 +64,7 @@ class ReplacedBy(HasRef):
 	def hasModelRef(self):
 		return self.__submodelRef is not None
 
-	def getReplacingElementObject(self, model_instance):
+	def getReplacingElementObjectFromInstance(self, model_instance):
 
 		# Now choosing the right model
 		if self.hasModelRef():
@@ -115,6 +115,41 @@ class ReplacedBy(HasRef):
 			return tt_instance.listOfSbmlObjects.getByMetaId(
 				tt_instance.objectsDictionnary[t_object.getMetaId()]
 			)
+
+	def getReplacingElementObject(self):
+
+		# Now choosing the right model
+		if self.hasModelRef():
+
+			if self.getSubmodelRef() == self.__model.getSbmlId():
+				tt_model = self.__model
+
+			else:
+				tt_model = self.__model.listOfSubmodels.getBySbmlIdRef(self.getSubmodelRef()).getModelObject()
+
+			if self.hasIdRef():
+
+				if self.hasSBaseRef():
+
+					ttt_model = tt_model.listOfSubmodels.getBySbmlIdRef(self.getIdRef()).getModelObject()
+					refs = self.getSBaseRef().getRef(ttt_model)
+
+					while len(refs) > 1:
+						ttt_model = ttt_model.listOfSubmodels.getBySbmlIdRef(refs[0]).getModelObject()
+						refs = refs[-1:]
+
+					return ttt_model.listOfSbmlObjects.getByMetaId(refs[0])
+
+				else:
+					return tt_model.listOfVariables.getBySbmlId(self.getIdRef())
+
+
+			elif self.hasPortRef():
+				return tt_model.listOfPorts.getBySbmlId(self.getPortRef()).getRefObject()
+
+			elif self.hasMetaId():
+				return tt_model.listOfSbmlObjects.getByMetaId(self.getMetaIdRef())
+
 
 
 	def copy(self, obj, prefix="", shift=0):
