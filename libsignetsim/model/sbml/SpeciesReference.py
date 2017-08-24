@@ -52,7 +52,7 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 
 	def load(self, species, stoichiometry=None):
 
-		self.__species = species.objId
+		self.__species = species.getSbmlId()
 
 		if stoichiometry is None:
 			self.stoichiometry.setValueMathFormula(1)
@@ -90,7 +90,7 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 		else:
 			t_sbml_id = prefix+obj.getSpecies().getSbmlId()
 
-		self.__species = self.__model.listOfSpecies.getBySbmlId(t_sbml_id).objId
+		self.__species = t_sbml_id
 		self.__isModifier = obj.isModifier()
 
 
@@ -138,9 +138,9 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 
 
 		if sbml_level >= 2:
-			self.__species = self.__model.listOfSpecies.getBySbmlId(sbmlSpeciesReference.getSpecies()).objId
+			self.__species = sbmlSpeciesReference.getSpecies()
 		else:
-			self.__species = self.__model.listOfSpecies.getByName(sbmlSpeciesReference.getSpecies()).objId
+			self.__species = sbmlSpeciesReference.getSpecies()
 
 
 	def readSbmlVariable(self, sbml_species_reference, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
@@ -157,7 +157,7 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 	def writeSbml(self, sbml_speciesReference, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Writes a species reference to  a sbml file """
 
-		sbml_speciesReference.setSpecies(self.__model.listOfSpecies[self.__species].getSbmlId())
+		sbml_speciesReference.setSpecies(self.__species)
 		SbmlObject.writeSbml(self, sbml_speciesReference, sbml_level, sbml_version)
 
 		if sbml_level == 3 and self.__hasId:
@@ -216,15 +216,12 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 
 
 	def setSpecies(self, species):
-
-		self.__species = species.objId
+		self.__species = species.getSbmlId()
 
 	def getSpecies(self):
-
 		if self.__species is not None:
-			return self.__model.listOfSpecies[self.__species]
-		else:
-			return None
+			return self.__model.listOfSpecies.getBySbmlId(self.__species)
+
 
 	def hasId(self):
 		return self.__hasId

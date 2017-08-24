@@ -52,16 +52,16 @@ class RateRule(Rule):
 		Rule.readSbml(self, rate_rule, sbml_level, sbml_version)
 
 		if self.__model.listOfVariables.containsSbmlId(rate_rule.getVariable()):
-			self.__var = self.__model.listOfVariables.getBySbmlId(rate_rule.getVariable())
-			self.__var.setRuledBy(self)
+			self.__var = rate_rule.getVariable()
+			self.getVariable().setRuledBy(self)
 
 
 		self.__definition.readSbml(rate_rule.getMath())
 
-		if self.__var.isConcentration():
+		if self.getVariable().isConcentration():
 			self.__definition.setInternalMathFormula(
 					SympyMul(self.__definition.getInternalMathFormula(),
-					self.__var.getCompartment().symbol.getInternalMathFormula()))
+					self.getVariable().getCompartment().symbol.getInternalMathFormula()))
 
 
 	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
@@ -69,26 +69,26 @@ class RateRule(Rule):
 		rate_rule = sbml_model.createRateRule()
 		if sbml_level < 2:
 
-			if self.__var.isSpecies():
+			if self.getVariable().isSpecies():
 				rate_rule.setL1TypeCode(SBML_SPECIES_CONCENTRATION_RULE)
-			elif self.__var.isParameter():
+			elif self.getVariable().isParameter():
 				rate_rule.setL1TypeCode(SBML_PARAMETER_RULE)
-			elif self.__var.isCompartment():
+			elif self.getVariable().isCompartment():
 				rate_rule.setL1TypeCode(SBML_COMPARTMENT_VOLUME_RULE)
 
 		Rule.writeSbml(self, rate_rule, sbml_level, sbml_version)
 
 		t_definition = MathFormula(self.__model, MathFormula.MATH_RATERULE)
 		t_definition.setInternalMathFormula(self.__definition.getInternalMathFormula())
-		t_variable = self.__var.symbol.getSbmlMathFormula(sbml_level, sbml_version).getName()
+		# t_variable = self.__var.symbol.getSbmlMathFormula(sbml_level, sbml_version).getName()
 
-		if self.__var.isConcentration():
+		if self.getVariable().isConcentration():
 			t_definition.setInternalMathFormula(
 					SympyMul(t_definition.getInternalMathFormula(),
 					SympyPow(self.getVariable().getCompartment().symbol.getInternalMathFormula(),
 					SympyInteger(-1))))
 
-		rate_rule.setVariable(t_variable)
+		rate_rule.setVariable(self.__var)
 		rate_rule.setMath(t_definition.getSbmlMathFormula(sbml_level, sbml_version))
 
 	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):
@@ -105,8 +105,8 @@ class RateRule(Rule):
 		else:
 			t_sbml_id = prefix+obj.getVariable().getSbmlId()
 
-		self.__var = self.__model.listOfVariables.getBySbmlId(t_sbml_id)
-		self.__var.setRuledBy(self)
+		self.__var = t_sbml_id
+		self.getVariable().setRuledBy(self)
 
 
 		t_convs = {}
@@ -130,22 +130,22 @@ class RateRule(Rule):
 
 
 	def getVariable(self):
-		return self.__var
+		return self.__model.listOfVariables.getBySbmlId(self.__var)
 
 
 	def setVariable(self, variable):
 
 		if self.__var is not None:
-			self.__var.unsetRuledBy()
+			self.getVariable().unsetRuledBy()
 
-		self.__var = variable
-		self.__var.setRuledBy(self)
+		self.__var = variable.getSbmlId()
+		self.getVariable().setRuledBy(self)
 
 
 	def setPrettyPrintDefinition(self, definition, rawFormula=False):
 
-		if self.__var.isConcentration() and not rawFormula:
-			t_comp = self.__var.getCompartment()
+		if self.getVariable().isConcentration() and not rawFormula:
+			t_comp = self.getVariable().getCompartment()
 			t_math_formula = MathFormula(self.__model, MathFormula.MATH_RATERULE)
 			t_math_formula.setPrettyPrintMathFormula(definition, rawFormula=rawFormula)
 			self.__definition.setInternalMathFormula(
@@ -158,8 +158,8 @@ class RateRule(Rule):
 	def getPrettyPrintDefinition(self):
 
 
-		if self.__var.isConcentration():
-			t_comp = self.__var.getCompartment()
+		if self.getVariable().isConcentration():
+			t_comp = self.getVariable().getCompartment()
 			t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
 			t_math_formula.setInternalMathFormula(self.__definition.getInternalMathFormula()/t_comp.symbol.getInternalMathFormula())
 			return t_math_formula.getPrettyPrintMathFormula()
@@ -172,8 +172,8 @@ class RateRule(Rule):
 
 		formula = self.__definition.getInternalMathFormula()
 
-		if self.__var.isConcentration() and not rawFormula:
-			formula /= self.__var.getCompartment().symbol.getInternalMathFormula()
+		if self.getVariable().isConcentration() and not rawFormula:
+			formula /= self.getVariable().getCompartment().symbol.getInternalMathFormula()
 
 		if not rawFormula:
 			subs = {}
@@ -209,4 +209,4 @@ class RateRule(Rule):
 	def containsVariable(self, variable):
 		return (variable.symbol.getInternalMathFormula() in self.__definition.getInternalMathFormula().atoms()
 				or (variable.isSpecies() and SympySymbol("_speciesForcedConcentration_%s_" % str(variable.symbol.getInternalMathFormula())) in self.__definition.getInternalMathFormula().atoms())
-				or variable.symbol.getInternalMathFormula() == self.__var.symbol.getInternalMathFormula())
+				or variable.symbol.getInternalMathFormula() == self.getVariable().symbol.getInternalMathFormula())

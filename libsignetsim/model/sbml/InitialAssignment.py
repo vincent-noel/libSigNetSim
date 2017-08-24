@@ -49,15 +49,15 @@ class InitialAssignment(SbmlObject):
 		SbmlObject.readSbml(self, initial_assignment, sbml_level, sbml_version)
 
 		if self.__model.listOfVariables.containsSbmlId(initial_assignment.getSymbol()):
-			self.__var = self.__model.listOfVariables.getBySbmlId(initial_assignment.getSymbol())
-			self.__var.setInitialAssignmentBy(self)
+			self.__var = initial_assignment.getSymbol()
+			self.getVariable().setInitialAssignmentBy(self)
 
 		self.__definition.readSbml(initial_assignment.getMath(), sbml_level, sbml_version)
 
-		if self.__var.isConcentration():
+		if self.getVariable().isConcentration():
 			self.__definition.setInternalMathFormula(
 				SympyMul(self.__definition.getInternalMathFormula(),
-						self.__var.getCompartment().symbol.getInternalMathFormula()))
+						self.getVariable().getCompartment().symbol.getInternalMathFormula()))
 
 
 	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
@@ -69,15 +69,15 @@ class InitialAssignment(SbmlObject):
 
 		t_definition = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
 		t_definition.setInternalMathFormula(self.__definition.getInternalMathFormula())
-		t_variable = self.__var.symbol.getSbmlMathFormula(sbml_level, sbml_version).getName()
+		# t_variable = self.__var.symbol.getSbmlMathFormula(sbml_level, sbml_version).getName()
 
-		if self.__var.isConcentration():
+		if self.getVariable().isConcentration():
 			t_definition.setInternalMathFormula(
 				SympyMul(self.__definition.getInternalMathFormula(),
-						SympyPow(self.__var.getCompartment().symbol.getInternalMathFormula(),
+						SympyPow(self.getVariable().getCompartment().symbol.getInternalMathFormula(),
 									SympyInteger(-1))))
 
-		sbml_initial_assignment.setSymbol(t_variable)
+		sbml_initial_assignment.setSymbol(self.__var)
 		sbml_initial_assignment.setMath(t_definition.getSbmlMathFormula(sbml_level, sbml_version))
 
 
@@ -94,8 +94,8 @@ class InitialAssignment(SbmlObject):
 		else:
 			t_sbml_id = prefix+obj.getVariable().getSbmlId()
 
-		self.__var = self.__model.listOfVariables.getBySbmlId(t_sbml_id)
-		self.__var.setInitialAssignmentBy(self)
+		self.__var = t_sbml_id
+		self.getVariable().setInitialAssignmentBy(self)
 
 		t_convs = {}
 		for var, conversion in conversions.items():
@@ -115,23 +115,23 @@ class InitialAssignment(SbmlObject):
 
 
 	def getVariable(self):
-		return self.__var
+		return self.__model.listOfVariables.getBySbmlId(self.__var)
 
 
 	def setVariable(self, variable):
 
 		if self.__var is not None:
-			self.__var.unsetInitialAssignmentBy()
+			self.getVariable().unsetInitialAssignmentBy()
 
-		self.__var = variable
-		self.__var.setInitialAssignmentBy(self)
+		self.__var = variable.getSbmlId()
+		self.getVariable().setInitialAssignmentBy(self)
 
 	def getRawDefinition(self, rawFormula=False):
 
 		formula = self.__definition.getInternalMathFormula()
 
-		if self.__var.isConcentration() and not rawFormula:
-			formula /= self.__var.getCompartment().symbol.getInternalMathFormula()
+		if self.getVariable().isConcentration() and not rawFormula:
+			formula /= self.getVariable().getCompartment().symbol.getInternalMathFormula()
 
 		if not rawFormula:
 			subs = {}
@@ -170,8 +170,8 @@ class InitialAssignment(SbmlObject):
 
 	def setPrettyPrintDefinition(self, definition, rawFormula=False):
 
-		if self.__var.isConcentration() and not rawFormula:
-			t_comp = self.__var.getCompartment()
+		if self.getVariable().isConcentration() and not rawFormula:
+			t_comp = self.getVariable().getCompartment()
 			t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
 			t_math_formula.setPrettyPrintMathFormula(definition, rawFormula=rawFormula)
 			self.__definition.setInternalMathFormula(
@@ -182,8 +182,8 @@ class InitialAssignment(SbmlObject):
 
 	def getPrettyPrintDefinition(self):
 
-		if self.__var.isSpecies() and not self.__var.hasOnlySubstanceUnits:
-			t_comp = self.__var.getCompartment()
+		if self.__var.isSpecies() and not self.getVariable().hasOnlySubstanceUnits:
+			t_comp = self.getVariable().getCompartment()
 			t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
 			t_math_formula.setInternalMathFormula(self.__definition.getInternalMathFormula()/t_comp.symbol.getInternalMathFormula())
 			return t_math_formula.getPrettyPrintMathFormula()
@@ -198,4 +198,4 @@ class InitialAssignment(SbmlObject):
 	def containsVariable(self, variable):
 		return (variable.symbol.getInternalMathFormula() in self.__definition.getInternalMathFormula().atoms()
 				or (variable.isSpecies() and SympySymbol("_speciesForcedConcentration_%s_" % str(variable.symbol.getInternalMathFormula())) in self.__definition.getInternalMathFormula().atoms())
-				or variable.symbol.getInternalMathFormula() == self.__var.symbol.getInternalMathFormula())
+				or variable.symbol.getInternalMathFormula() == self.getVariable().symbol.getInternalMathFormula())

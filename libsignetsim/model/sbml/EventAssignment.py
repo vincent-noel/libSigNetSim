@@ -50,16 +50,16 @@ class EventAssignment(SbmlObject):
 		""" Reads event assignment from a sbml file """
 
 		SbmlObject.readSbml(self, sbml_event_assignment, sbml_level, sbml_version)
-		self.__var = self.__model.listOfVariables.getBySbmlId(sbml_event_assignment.getVariable())
-		self.__var.addEventAssignmentBy(self.event)
+		self.__var = sbml_event_assignment.getVariable()
+		self.getVariable().addEventAssignmentBy(self.event)
 
 		if sbml_event_assignment.getMath() is not None:
 			self.__definition.readSbml(sbml_event_assignment.getMath())
 		else:
 			self.__definition = None
 
-		if self.__var.isConcentration():
-			t_comp = self.__var.getCompartment()
+		if self.getVariable().isConcentration():
+			t_comp = self.getVariable().getCompartment()
 			self.__definition.setInternalMathFormula(
 					SympyMul(self.__definition.getInternalMathFormula(),
 								t_comp.symbol.getInternalMathFormula()))
@@ -75,17 +75,17 @@ class EventAssignment(SbmlObject):
 			t_definition = MathFormula(self.__model, MathFormula.MATH_EVENTASSIGNMENT)
 			t_definition.setInternalMathFormula(self.__definition.getInternalMathFormula())
 
-		t_variable = self.__var.symbol.getSbmlMathFormula(sbml_level, sbml_version).getName()
+		# t_variable = self.__var.symbol.getSbmlMathFormula(sbml_level, sbml_version).getName()
 
-		if self.__var.isConcentration():
-			t_comp = self.__var.getCompartment()
+		if self.getVariable().isConcentration():
+			t_comp = self.getVariable().getCompartment()
 			t_definition.setInternalMathFormula(
 				SympyMul(t_definition.getInternalMathFormula(),
 							SympyPow(t_comp.symbol.getInternalMathFormula(),
 								SympyInteger(-1))))
 
 
-		sbml_event_assignment.setVariable(t_variable)
+		sbml_event_assignment.setVariable(self.__var)
 		sbml_event_assignment.setMath(t_definition.getSbmlMathFormula())
 
 
@@ -101,8 +101,8 @@ class EventAssignment(SbmlObject):
 		else:
 			t_sbml_id = prefix+obj.getVariable().getSbmlId()
 
-		self.__var = self.__model.listOfVariables.getBySymbol(SympySymbol(t_sbml_id))
-		self.__var.addEventAssignmentBy(self.event)
+		self.__var = t_sbml_id
+		self.getVariable().addEventAssignmentBy(self.event)
 
 		t_convs = {}
 		for var, conversion in conversions.items():
@@ -122,19 +122,19 @@ class EventAssignment(SbmlObject):
 
 
 	def getVariable(self):
-		return self.__var
+		return self.__model.listOfVariables.getBySbmlId(self.__var)
 
 	def getVariableMath(self):
-		return self.__var.symbol
+		return self.getVariable().symbol
 
 
 	def setVariable(self, variable):
 
 		if self.__var is not None:
-			self.__var.removeEventAssignmentBy(self.event)
+			self.getVariable().removeEventAssignmentBy(self.event)
 
-		self.__var = variable
-		self.__var.addEventAssignmentBy(self.event)
+		self.__var = variable.getSbmlId()
+		self.getVariable().addEventAssignmentBy(self.event)
 
 
 	def getPrettyPrintAssignment(self):
