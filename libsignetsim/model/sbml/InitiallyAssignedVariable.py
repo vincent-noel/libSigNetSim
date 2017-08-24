@@ -53,9 +53,3 @@ class InitiallyAssignedVariable(object):
 			return self.__model.listOfInitialAssignments[self.__hasInitialAssignmentBy]
 		else:
 			return None
-
-
-	# Copy
-	def copy(self, obj, prefix="", shift=0):
-		if obj.hasInitialAssignment():
-			self.setInitialAssignmentBy(obj.hasInitialAssignmentBy(), shift)

@@ -69,9 +69,6 @@ class Parameter(Variable, SbmlObject, InitiallyAssignedVariable,
 				replacements={}, conversion_factor=None):
 
 		SbmlObject.copy(self, parameter, prefix, shift)
-		InitiallyAssignedVariable.copy(self, parameter, prefix, shift)
-		EventAssignedVariable.copy(self, parameter, prefix, shift)
-		RuledVariable.copy(self, parameter, prefix, shift)
 		HasUnits.copy(self, parameter, prefix, shift)
 		Variable.copy(self, parameter, prefix, shift, subs, deletions,
 						replacements, conversion_factor)
@@ -156,12 +153,3 @@ class Parameter(Variable, SbmlObject, InitiallyAssignedVariable,
 	def isLocalParameter(self):
 		""" Tests the local property of the parameter """
 		return self.localParameter
-
-	#
-	# def getNameOrSbmlId(self):
-	#
-	#     # If there is no name, we need to return the sbmlId
-	#     if SbmlObject.getName(self) is None:
-	#         return Variable.getSbmlId(self)
-	#     else:
-	#         return SbmlObject.getName(self)

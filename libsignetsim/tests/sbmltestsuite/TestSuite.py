@@ -34,7 +34,11 @@ class TestSuite(object):
 
 	TODO_CASES = []
 	TODO_VERSIONS = []
-	TODO_TAGS = []
+	TODO_TAGS = [
+	# 	'comp:ConversionFactor', 'comp:Deletion', 'comp:ExtentConversionFactor', 'comp:ExternalModelDefinition',
+	# 	'comp:ModelDefinition', 'comp:Port', 'comp:ReplacedBy', 'comp:ReplacedElement', 'comp:SBaseRef',
+	# 	'comp:Submodel', 'comp:SubmodelOutput', 'comp:TimeConversionFactor'
+	]
 	INCOMPATIBLE_CASES = [1136, 1153, 1154]
 	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'FastReaction']
 

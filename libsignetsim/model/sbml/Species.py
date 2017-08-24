@@ -78,7 +78,6 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		Variable.new(self, name, Variable.SPECIES)
 		HasUnits.new(self, unit)
 
-
 		self.setValue(value)
 
 		self.constant = constant
@@ -86,29 +85,18 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		self.hasOnlySubstanceUnits = hasOnlySubstanceUnits
 		self.setUnits(self.__model.getSubstanceUnits())
 
-
-
 	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
 
 		self.setCompartment(obj.getCompartment(), prefix, shift, subs, deletions, replacements)
 
 		Variable.copy(self, obj, prefix, shift, subs, deletions, replacements)
 		SbmlObject.copy(self, obj, prefix, shift)
-		InitiallyAssignedVariable.copy(self, obj, prefix, shift)
-		RuledVariable.copy(self, obj, prefix, shift)
-		EventAssignedVariable.copy(self, obj, prefix, shift)
 		HasUnits.copy(self, obj, prefix, shift)
 		HasConversionFactor.copy(self, obj)
 		self.constant = obj.constant
 		self.boundaryCondition = obj.boundaryCondition
 		self.hasOnlySubstanceUnits = obj.hasOnlySubstanceUnits
 		self.isDeclaredConcentration = obj.isDeclaredConcentration
-		# if obj.getRawConversionFactor() is not None:
-		# self.__conversionFactor = self.getRawConversionFactor()
-		# self.__conversionFactor.setInternalMathFormula(obj.conversionFactor.getInternalMathFormula())
-
-
-
 
 	def readSbml(self, sbml_species, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 

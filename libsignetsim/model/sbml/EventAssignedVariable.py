@@ -32,30 +32,18 @@ class EventAssignedVariable(object):
 		self.__hasEventAssignment = False
 		self.__hasEventAssignmentBy = []
 
-
 	# we need both add and remove implemented for shifts,
 	# since we might have to delete some of them after having created them
 	def addEventAssignmentBy(self, event, shift=0):
 		self.__hasEventAssignmentBy.append((event.objId + shift))
 		self.__hasEventAssignment = True
 
-
 	def removeEventAssignmentBy(self, event, shift=0):
 		self.__hasEventAssignmentBy.remove((event.objId + shift))
 		self.__hasEventAssignment = (len(self.__hasEventAssignmentBy) > 0)
-
 
 	def hasEventAssignment(self):
 		return self.__hasEventAssignment
 
 	def hasEventAssignmentBy(self):
-		# if self.hasEventAssignment():
 		return [self.__model.listOfEvents[event] for event in self.__hasEventAssignmentBy]
-		# else:
-			# return None
-
-
-	def copy(self, obj, prefix, shift):
-
-		for event_assigner in obj.hasEventAssignmentBy():
-			self.addEventAssignmentBy(event_assigner, shift)

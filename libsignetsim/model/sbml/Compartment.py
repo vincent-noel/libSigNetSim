@@ -68,9 +68,6 @@ class Compartment(Variable, SbmlObject, InitiallyAssignedVariable,
 	def copy(self, compartment, prefix="", shift=0, subs={}, deletions=[], replacements={}):
 
 		SbmlObject.copy(self, compartment, prefix, shift)
-		InitiallyAssignedVariable.copy(self, compartment, prefix, shift)
-		EventAssignedVariable.copy(self, compartment, prefix, shift)
-		RuledVariable.copy(self, compartment, prefix, shift)
 		HasUnits.copy(self, compartment, prefix, shift)
 		Variable.copy(self, compartment, prefix, shift, subs, deletions, replacements)
 

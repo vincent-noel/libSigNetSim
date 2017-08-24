@@ -72,9 +72,6 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 			EventAssignedVariable.__init__(self, self.__model)
 
 			Variable.copy(self, obj, prefix, shift, subs)
-			InitiallyAssignedVariable.copy(self, obj, prefix, shift)
-			RuledVariable.copy(self, obj, prefix, shift)
-			EventAssignedVariable.copy(self, obj, prefix, shift)
 			self.constant = obj.constant
 
 		t_stoichiometry = unevaluatedSubs(obj.stoichiometry.getInternalMathFormula(), subs)
@@ -237,22 +234,12 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 		# elif isinstance(stoichiometry, float):
 		# 	self.stoichiometry = setPrettyPrintMathFormula(stoichiometry)
 
-
 	def getStoichiometry(self):
-
 		return self.stoichiometry.getPrettyPrintMathFormula()
 
 	def getStoichiometryMath(self):
-
 		return self.stoichiometry
 
 	def isVariableStoichiometry(self):
-		# if self.__hasId and not self.constant:
-		# 	print "%s is a variable stoichiometry" % self.getSbmlId()
 		return self.__hasId and not self.constant
 
-
-	# #In this case, it should be in the list of variables. So it should be useless
-	# def renameSbmlId(self, old_sbml_id, new_sbml_id):
-	# 	if self.__hasId:
-	# 		Variable.renameSbmlId(old_sbml_id, new_sbml_id)

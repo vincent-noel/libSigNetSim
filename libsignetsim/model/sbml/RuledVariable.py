@@ -64,7 +64,3 @@ class RuledVariable(object):
 		""" Tests is the compartment size is computed with a rate rule """
 		return self.isRuled() and self.__model.listOfRules[self.__isRuledBy].isAssignment()
 
-
-	def copy(self, obj, prefix="", shift=0):
-		if obj.isRuled():
-			self.setRuledBy(obj.isRuledBy(), shift)
