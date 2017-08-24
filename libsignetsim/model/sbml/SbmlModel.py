@@ -170,6 +170,7 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		""" Here we rename the variable in all the math """
 
+		self.listOfSpecies.renameSbmlId(old_sbml_id, new_sbml_id)
 		self.listOfVariables.renameSbmlId(old_sbml_id, new_sbml_id)
 		self.listOfInitialAssignments.renameSbmlId(old_sbml_id, new_sbml_id)
 		self.listOfRules.renameSbmlId(old_sbml_id, new_sbml_id)

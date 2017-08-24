@@ -30,16 +30,14 @@ from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.sbml.HasUnits import HasUnits
 from libsignetsim.model.sbml.HasConversionFactor import HasConversionFactor
 from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.math.MathVariable import MathVariable
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.sympy_shortcuts import SympyFloat
-from libsbml import formulaToL3String
-from sympy import Symbol, srepr
+from sympy import Symbol
 
 class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 						RuledVariable, EventAssignedVariable, HasUnits, HasConversionFactor):
 
-	def __init__ (self, model, objId):
+	def __init__(self, model, objId):
 
 		self.__model = model
 		self.objId = objId
@@ -53,13 +51,10 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		HasConversionFactor.__init__(self, model)
 
 		self.__compartment = None
-		# self.boundaryCondition = False
+		self.boundaryCondition = False
 		self.hasOnlySubstanceUnits = False
 		self.isDeclaredConcentration = True
 		self.concentrationUnit = None
-		# self.__conversionFactor = None
-
-
 
 	def new(self, name=None, compartment=None, value=0, unit=None,
 			 constant=False, boundaryCondition=False, hasOnlySubstanceUnits=False):
@@ -133,14 +128,12 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			self.isDeclaredConcentration = True
 			self.value.readSbml(sbml_species.getInitialConcentration(), sbml_level, sbml_version)
 			self.value.setInternalMathFormula(self.value.getInternalMathFormula()*self.getCompartment().symbol.getInternalMathFormula())
-			# print self.value.getInternalMathFormula()
 
 		if sbml_species.isSetBoundaryCondition():
 			self.boundaryCondition = sbml_species.getBoundaryCondition()
 
 		elif sbml_level in [1,2]:
 			self.boundaryCondition = False
-
 
 		if sbml_species.isSetConstant():
 			self.constant = sbml_species.getConstant()
@@ -150,9 +143,6 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 		if sbml_level >= 3 and sbml_species.isSetConversionFactor():
 			HasConversionFactor.readSbml(self, sbml_species.getConversionFactor(), sbml_level, sbml_version)
-			# self.conversionFactor = MathFormula(self.__model)
-			# self.conversionFactor.readSbml(sbml_species.getConversionFactor(), sbml_level, sbml_version)
-			# self.__conversionFactor = sbml_species.getConversionFactor()
 
 	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
@@ -189,17 +179,12 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 		if sbml_level >= 3 and self.isSetConversionFactor():
 			HasConversionFactor.writeSbml(self, sbml_sp, sbml_level, sbml_version)
-			# sbml_sp.setConversionFactor(self.__conversionFactor)
-
-
 
 	def isInReactions(self, including_fast_reactions=False):
 		""" The purpose of this function is to test is the species's amount
 			is actually modified by a reaction. Thus not checking the Modifiers
 			makes sense.
 		"""
-
-		# print "> Entering isInReactions : %s" % self.getSbmlId()
 
 		for i_reaction, reaction in enumerate(self.__model.listOfReactions.values()):
 			# print "\n> reaction #%d" % i_reaction
@@ -288,11 +273,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 
 			if self.isSetConversionFactor():
-				# variable = self.__model.listOfVariables.getBySbmlId(self.__conversionFactor)
 				ode *= self.getSymbolConversionFactor()
 
 			elif self.__model.isSetConversionFactor():
-				# variable = self.__model.listOfVariables.getBySbmlId(self.__model.getRawConversionFactor())
 				ode *= self.__model.getSymbolConversionFactor()
 
 			t_formula.setInternalMathFormula(ode)
@@ -384,11 +367,6 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 		self.__compartment = t_sbml_id
 
-	# def getRawConversionFactor(self):
-	# 	return self.__conversionFactor
-	#
-	# def getConversionFactor(self):
-	# 	formula = MathFormula(self.__model)
-	# 	variable = self.__model.listOfVariables.getBySbmlId(self.__conversionFactor)
-	# 	formula.setInternalMathFormula(variable.symbol.getInternalMathFormula())
-	# 	return formula
+	def renameSbmlId(self, old_sbml_id, new_sbml_id):
+		if self.__compartment == old_sbml_id:
+			self.__compartment = new_sbml_id

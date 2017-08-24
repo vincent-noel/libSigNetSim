@@ -243,3 +243,6 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 	def isVariableStoichiometry(self):
 		return self.__hasId and not self.constant
 
+	def renameSbmlId(self, old_sbml_id, new_sbml_id):
+		if self.__species == old_sbml_id:
+			self.__species = new_sbml_id

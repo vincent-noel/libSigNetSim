@@ -97,7 +97,7 @@ class ListOf_v2(list):
 
 		if not self.isListOfSbmlObjects:
 			self.__model.listOfSbmlObjects.remove(sbml_obj)
-		list.__delitem__(self, sbml_obj)
+		list.remove(self, sbml_obj)
 
 
 	def clear(self):

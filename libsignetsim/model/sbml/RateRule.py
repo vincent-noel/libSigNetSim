@@ -194,17 +194,9 @@ class RateRule(Rule):
 
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
-		# old_symbol = SympySymbol(old_sbml_id)
-		#
-		# if old_symbol in self.__definition.getInternalMathFormula().atoms():
-		#
-		# 	t_definition = unevaluatedSubs(
-		# 		self.__definition.getInternalMathFormula(),
-		# 		{old_symbol: SympySymbol(new_sbml_id)}
-		# 	)
-		#
-		# 	self.__definition.setInternalMathFormula(t_definition)
 		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
+		if self.__var == old_sbml_id:
+			self.__var = new_sbml_id
 
 	def containsVariable(self, variable):
 		return (variable.symbol.getInternalMathFormula() in self.__definition.getInternalMathFormula().atoms()

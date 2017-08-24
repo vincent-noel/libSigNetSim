@@ -328,14 +328,14 @@ class Reaction(Variable, SbmlObject, HasUnits):
 		# if the stoichiometry is a variable,then it's in the list of variables
 		# if it isn't, then there shouldn't be anything to rename
 
-		# for reactant in self.listOfReactants.values():
-		# 	reactant.renameSbmlId(old_sbml_id, new_sbml_id)
-		# 
-		# for modifier in self.listOfModifiers.values():
-		# 	modifier.renameSbmlId(old_sbml_id, new_sbml_id)
-		# 
-		# for product in self.listOfProducts.values():
-		# 	product.renameSbmlId(old_sbml_id, new_sbml_id)
+		for reactant in self.listOfReactants.values():
+			reactant.renameSbmlId(old_sbml_id, new_sbml_id)
+
+		for modifier in self.listOfModifiers.values():
+			modifier.renameSbmlId(old_sbml_id, new_sbml_id)
+
+		for product in self.listOfProducts.values():
+			product.renameSbmlId(old_sbml_id, new_sbml_id)
 
 
 	def getODE(self, species, rawFormula=False, symbols=False):

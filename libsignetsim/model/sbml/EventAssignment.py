@@ -155,3 +155,5 @@ class EventAssignment(SbmlObject):
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
+		if self.__var == old_sbml_id:
+			self.__var = new_sbml_id
