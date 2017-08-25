@@ -70,44 +70,28 @@ class ListOfEvents(ListOf, SbmlObject):
 		return event
 
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):
-
-		if len(self.keys()) > 0:
-			t_shift = max(self.keys())+1
-		else:
-			t_shift = 0
+	def copy(self, obj, deletions=[], sids_subs={}, symbols_subs={}, conversion_factors={}, time_conversion=None):
 
 		if obj not in deletions:
 
-			SbmlObject.copy(self, obj, prefix, t_shift)
+			SbmlObject.copy(self, obj)
 
 			for event in obj.values():
 				if event not in deletions:
 
-					t_event = Event(self.__model, (event.objId + t_shift))
-
-					if not event.isMarkedToBeReplaced:
-						t_event.copy(event, prefix, t_shift, subs, deletions, replacements, conversions, time_conversion)
-
-					else:
-						t_event.copy(event.isMarkedToBeReplacedBy, prefix, t_shift, subs, deletions, replacements, conversions, time_conversion)
-
-					if event.isMarkedToBeRenamed:
-						t_event.setSbmlId(event.getSbmlId(), model_wide=False)
-
+					t_event = Event(self.__model, self.nextId())
+					t_event.copy(
+						event,
+						deletions=deletions,
+						sids_subs=sids_subs,
+						symbols_subs=symbols_subs,
+						conversion_factors=conversion_factors,
+						time_conversion=time_conversion
+					)
 					ListOf.add(self, t_event)
 
-
-
-
-
-
-
 	def withDelay(self):
-
 		return [obj.objId for obj in self.validEvents() if obj.delay is not None]
-
-
 
 	def nbRoots(self):
 
@@ -122,13 +106,10 @@ class ListOfEvents(ListOf, SbmlObject):
 			res += event.trigger.getRootsOperator()
 		return res
 
-
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 
 		for obj in ListOf.values(self):
 			obj.renameSbmlId(old_sbml_id, new_sbml_id)
-
-
 
 	# Events can have ids, but they are optionals !
 	def sbmlIds(self):
@@ -147,7 +128,6 @@ class ListOfEvents(ListOf, SbmlObject):
 			return res[pos]
 		else:
 			return None
-
 
 	def containsSbmlId(self, sbml_id):
 		""" Test if an sbml id is in the list """

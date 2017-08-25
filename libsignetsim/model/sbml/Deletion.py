@@ -57,3 +57,18 @@ class Deletion(HasId, HasRef):
 
 		elif self.hasMetaIdRef():
 			return self.parentSubmodel.getModelObject().listOfSbmlObjects.getByMetaId(self.getMetaIdRef())
+
+	def getDeletionObjectFromInstance(self, model_instance):
+
+		if self.hasIdRef():
+			t_object = self.parentSubmodel.getModelObject().listOfVariables.getBySbmlId(self.getIdRef())
+			return model_instance.listOfSbmlObjects.getByMetaId(model_instance.objectsDictionnary[t_object.getMetaId()])
+
+		elif self.hasPortRef():
+			t_object = self.parentSubmodel.getModelObject().listOfPorts.getBySbmlId(self.getPortRef()).getRefObject()
+			return model_instance.listOfSbmlObjects.getByMetaId(model_instance.objectsDictionnary[t_object.getMetaId()])
+
+		elif self.hasMetaIdRef():
+			t_object = self.parentSubmodel.getModelObject().listOfSbmlObjects.getByMetaId(self.getMetaIdRef())
+			return model_instance.listOfSbmlObjects.getByMetaId(model_instance.objectsDictionnary[t_object.getMetaId()])
+

@@ -58,14 +58,13 @@ class EventPriority(SimpleSbmlObject, MathFormula):
 		sbml_priority.setMath(MathFormula.writeSbml(self, sbml_level, sbml_version))
 
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions=[]):
+	def copy(self, obj, symbols_subs={}, conversion_factors={}):
 
-		SimpleSbmlObject.copy(self, obj, prefix, shift)
+		SimpleSbmlObject.copy(self, obj)
 		t_convs = {}
-		for var, conversion in conversions.items():
-			t_convs.update({var:var/conversion})
+		for var, conversion in conversion_factors.items():
+			t_convs.update({var: var/conversion})
 
-		t_formula = unevaluatedSubs(obj.getInternalMathFormula(), subs)
-		t_formula = unevaluatedSubs(t_formula, replacements)
+		t_formula = unevaluatedSubs(obj.getInternalMathFormula(), symbols_subs)
 		t_formula = unevaluatedSubs(t_formula, t_convs)
 		MathFormula.setInternalMathFormula(self, t_formula)

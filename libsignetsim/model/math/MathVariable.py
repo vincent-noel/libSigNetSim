@@ -71,21 +71,26 @@ class MathVariable(object):
 		self.setValue(0)
 		self.setDerivativeValue(0)
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversion_factor=None, pure_math_variable=False):
+	def copy(self, obj, symbols_subs={}, conversion_factor=None, pure_math_variable=False):
 
-		self.symbol.setInternalMathFormula(SympySymbol(prefix + str(obj.symbol.getSymbol())))
+		if obj.symbol.getSymbol() in symbols_subs.keys():
+			self.symbol.setInternalMathFormula(symbols_subs[obj.symbol.getSymbol()])
+		else:
+			self.symbol.setInternalMathFormula(obj.symbol.getSymbol())
+
+		# self.symbol.setInternalMathFormula(SympySymbol(prefix + str(obj.symbol.getSymbol())))
 
 		if obj.value is not None and obj.value.getInternalMathFormula() is not None:
-			t_formula = unevaluatedSubs(obj.value.getInternalMathFormula(), subs)
-			t_formula = unevaluatedSubs(t_formula, replacements)
+			t_formula = unevaluatedSubs(obj.value.getInternalMathFormula(), symbols_subs)
+			# t_formula = unevaluatedSubs(t_formula, replacements)
 
 			if conversion_factor is not None:
 				t_formula *= conversion_factor
 			self.value.setInternalMathFormula(t_formula)
 
 		if obj.derivative_value is not None and obj.derivative_value.getInternalMathFormula() is not None:
-			t_formula = unevaluatedSubs(obj.derivative_value.getInternalMathFormula(), subs)
-			t_formula = unevaluatedSubs(t_formula, replacements)
+			t_formula = unevaluatedSubs(obj.derivative_value.getInternalMathFormula(), symbols_subs)
+			# t_formula = unevaluatedSubs(t_formula, replacements)
 
 			if conversion_factor is not None:
 				t_formula *= conversion_factor

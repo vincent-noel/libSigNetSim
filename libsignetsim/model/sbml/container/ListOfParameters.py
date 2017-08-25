@@ -79,34 +79,28 @@ class ListOfParameters(ListOf, HasIds, SbmlObject):
 		return t_parameter
 
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
-
-		if len(self.keys()) > 0:
-			t_shift = max(self.keys())+1
-		else:
-			t_shift = 0
-
+	def copy(self, obj, deletions=[], sids_subs={}, symbols_subs={}, usids_subs={}, conversion_factor=None):
 
 		if obj not in deletions:
 
-			SbmlObject.copy(self, obj, prefix, t_shift)
+			SbmlObject.copy(self, obj)
 
 			for parameter in obj.values():
 
 				if parameter not in deletions:
-					obj_id = parameter.objId + t_shift
-					t_parameter = Parameter(self.__model, obj_id,
-									local_parameter=parameter.localParameter,
-									reaction=parameter.reaction)
+					t_parameter = Parameter(
+						self.__model, self.nextId(),
+						local_parameter=parameter.localParameter,
+						reaction=parameter.reaction
+					)
 
-					if not parameter.isMarkedToBeReplaced:
-						t_parameter.copy(parameter, prefix, t_shift, subs, deletions, replacements)
-					else:
-						t_parameter.copy(parameter.isMarkedToBeReplacedBy, prefix, t_shift, subs, deletions, replacements)
-
-
-					if parameter.isMarkedToBeRenamed:
-						t_parameter.setSbmlId(parameter.getSbmlId(), model_wide=False)
+					t_parameter.copy(
+						parameter,
+						sids_subs=sids_subs,
+						symbols_subs=symbols_subs,
+						usids_subs=usids_subs,
+						conversion_factor=conversion_factor
+					)
 
 					ListOf.add(self, t_parameter)
 

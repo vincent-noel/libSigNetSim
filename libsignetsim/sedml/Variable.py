@@ -123,6 +123,9 @@ class Variable(SedBase, HasId):
 	def setTarget(self, object):
 		self.__target.setModelObject(object)
 
+	def setRawTarget(self, target):
+		self.__target.readSedml(target)
+
 	def setSymbol(self, symbol):
 		self.__symbol = symbol
 

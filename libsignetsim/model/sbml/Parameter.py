@@ -65,13 +65,11 @@ class Parameter(Variable, SbmlObject, InitiallyAssignedVariable,
 
 
 
-	def copy(self, parameter, prefix="", shift=0, subs={}, deletions=[],
-				replacements={}, conversion_factor=None):
+	def copy(self, parameter, sids_subs={}, symbols_subs={}, usids_subs={}, conversion_factor=None):
 
-		SbmlObject.copy(self, parameter, prefix, shift)
-		HasUnits.copy(self, parameter, prefix, shift)
-		Variable.copy(self, parameter, prefix, shift, subs, deletions,
-						replacements, conversion_factor)
+		SbmlObject.copy(self, parameter)
+		HasUnits.copy(self, parameter, usids_subs=usids_subs)
+		Variable.copy(self, parameter, sids_subs=sids_subs, symbols_subs=symbols_subs, conversion_factor=conversion_factor)
 
 		if self.localParameter:
 			self.symbol.setInternalMathFormula(

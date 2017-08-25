@@ -33,21 +33,18 @@ class SimpleSbmlObject(object):
 	def __init__(self, model):
 
 		self.__model = model
-		self.__metaId = None#self.newMetaId()
+		self.__metaId = None
 		self.__notes = None
 		self.__annotation = SbmlAnnotation(self)
 		self.newMetaId()
-		# print "New object : %s : %s" % (type(self), self.__metaId)
 		self.__model.listOfSbmlObjects.addSbmlObject(self)
-		# print "Final meta id after adding to the list : %s" % self.__metaId
 
 	def new(self, notes=None):
 
 		self.__notes = notes
 
-	def copy(self, obj, prefix="", shift=0):
+	def copy(self, obj):
 
-		self.setMetaId(obj.getMetaId(), prefix)
 		self.__notes = obj.getNotes()
 		self.__model.objectsDictionnary.update({obj.getMetaId(): self.getMetaId()})
 
@@ -86,10 +83,10 @@ class SimpleSbmlObject(object):
 		self.__metaId = self.__model.listOfSbmlObjects.nextMetaId()
 
 
-	def setMetaId(self, meta_id, prefix="", force=False):
+	def setMetaId(self, meta_id, force=False):
 
 		if meta_id is not None:
-			t_meta_id = prefix + meta_id
+			t_meta_id = meta_id
 
 			if SyntaxChecker.isValidXMLID(t_meta_id):
 
@@ -99,20 +96,18 @@ class SimpleSbmlObject(object):
 				# we can keep the meta id of the reserved one.
 					t_object = self.__model.listOfSbmlObjects.getByMetaId(t_meta_id)
 
-					t_new_meta_id = prefix + self.__model.listOfSbmlObjects.nextMetaId()
+					t_new_meta_id = self.__model.listOfSbmlObjects.nextMetaId()
 					while self.__model.listOfSbmlObjects.containsMetaId(t_new_meta_id):
-						t_new_meta_id = prefix + self.__model.listOfSbmlObjects.nextMetaId()
+						t_new_meta_id = self.__model.listOfSbmlObjects.nextMetaId()
 
 					t_object.setMetaId(t_new_meta_id)
-					# self.__model.listOfSbmlObjects.updateMetaId(self, self.__metaId, t_meta_id)
 
 					self.__metaId = t_meta_id
 
 				else:
 					while self.__model.listOfSbmlObjects.containsMetaId(t_meta_id):
-						t_meta_id = prefix + self.__model.listOfSbmlObjects.nextMetaId()
+						t_meta_id = self.__model.listOfSbmlObjects.nextMetaId()
 
-					# self.__model.listOfSbmlObjects.updateMetaId(self, self.__metaId, t_meta_id)
 					self.__metaId = t_meta_id
 
 			else:

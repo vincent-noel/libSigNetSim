@@ -82,28 +82,14 @@ class ListOfSpeciesReference(ListOf, HasIds, SbmlObject):
 		t_sr.setStoichiometry(stoichiometry)
 
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
-
-		if len(self.keys()) > 0:
-			t_shift = max(self.keys())+1
-		else:
-			t_shift = 0
+	def copy(self, obj, deletions=[], sids_subs={}, symbols_subs={}):
 
 		if obj not in deletions:
-			SbmlObject.copy(self, obj, prefix, t_shift)
+			SbmlObject.copy(self, obj)
 			for speciesReference in obj.values():
 				if speciesReference not in deletions:
-					t_sr = SpeciesReference(self.__model, (speciesReference.objId))
-
-					if not speciesReference.isMarkedToBeReplaced:
-						t_sr.copy(speciesReference, prefix, t_shift, subs, deletions, replacements)
-
-					else:
-						t_sr.copy(speciesReference.isMarkedToBeReplacedBy, prefix, t_shift, subs, deletions, replacements)
-
-					if speciesReference.isMarkedToBeRenamed:
-						t_sr.setSbmlId(speciesReference.getSbmlId(), model_wide=False)
-
+					t_sr = SpeciesReference(self.__model, self.nextId())
+					t_sr.copy(speciesReference, sids_subs=sids_subs, symbols_subs=symbols_subs)
 					ListOf.add(self, t_sr)
 
 	def hasVariableStoichiometry(self):

@@ -61,9 +61,9 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 			self.stoichiometry.setValueMathFormula(stoichiometry)
 
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
+	def copy(self, obj, sids_subs={}, symbols_subs={}):
 
-		SbmlObject.copy(self, obj, prefix, shift)
+		SbmlObject.copy(self, obj)
 		if obj.hasId():
 
 			Variable.__init__(self, self.__model, Variable.STOICHIOMERY)
@@ -71,23 +71,17 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 			RuledVariable.__init__(self, self.__model)
 			EventAssignedVariable.__init__(self, self.__model)
 
-			Variable.copy(self, obj, prefix, shift, subs)
+			Variable.copy(self, obj, sids_subs=sids_subs, symbols_subs=symbols_subs)
 			self.constant = obj.constant
 
-		t_stoichiometry = unevaluatedSubs(obj.stoichiometry.getInternalMathFormula(), subs)
-		t_stoichiometry = unevaluatedSubs(t_stoichiometry, replacements)
+		t_stoichiometry = unevaluatedSubs(obj.stoichiometry.getInternalMathFormula(), symbols_subs)
 		self.stoichiometry.setInternalMathFormula(t_stoichiometry)
 
-		t_symbol = Symbol(obj.getSpecies().getSbmlId())
-		if t_symbol in subs.keys():
-			t_sbml_id = str(subs[t_symbol])
-			tt_symbol = Symbol(t_sbml_id)
-			if tt_symbol in replacements.keys():
-				t_sbml_id = str(replacements[tt_symbol])
+		if obj.getSpecies().getSbmlId() in sids_subs.keys():
+			self.__species = sids_subs[obj.getSpecies().getSbmlId()]
 		else:
-			t_sbml_id = prefix+obj.getSpecies().getSbmlId()
+			self.__species = obj.getSpecies().getSbmlId()
 
-		self.__species = t_sbml_id
 		self.__isModifier = obj.isModifier()
 
 

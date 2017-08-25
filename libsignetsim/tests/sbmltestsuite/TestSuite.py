@@ -35,12 +35,13 @@ class TestSuite(object):
 	TODO_CASES = []
 	TODO_VERSIONS = []
 	TODO_TAGS = [
-	# 	'comp:ConversionFactor', 'comp:Deletion', 'comp:ExtentConversionFactor', 'comp:ExternalModelDefinition',
-	# 	'comp:ModelDefinition', 'comp:Port', 'comp:ReplacedBy', 'comp:ReplacedElement', 'comp:SBaseRef',
-	# 	'comp:Submodel', 'comp:SubmodelOutput', 'comp:TimeConversionFactor'
+		'comp:ConversionFactor', 'comp:Deletion', 'comp:ExtentConversionFactor', 'comp:ExternalModelDefinition',
+		'comp:ModelDefinition', 'comp:Port', 'comp:ReplacedBy', 'comp:ReplacedElement', 'comp:SBaseRef',
+		'comp:Submodel', 'comp:SubmodelOutput', 'comp:TimeConversionFactor'
 	]
-	INCOMPATIBLE_CASES = [1136, 1153, 1154]
-	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'FastReaction']
+	INCOMPATIBLE_CASES = [1153, 1154, 1159, 1160, 1161]
+	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'FastReaction', 'comp:ConversionFactor', 'comp:ExtentConversionFactor',
+		 'comp:TimeConversionFactor']
 
 	COMPATIBLE_PACKAGES = ['comp']
 
@@ -60,7 +61,6 @@ class TestSuite(object):
 	def testSuiteRun(self):
 
 		self.testSuitePath = Settings.tempDirectory
-		Settings.sbmlTestCasesPath = "/tmp/"
 		if not exists(join(self.testSuitePath, "test-suite-results")):
 			mkdir(join(self.testSuitePath, "test-suite-results"))
 		if not exists(join(self.testSuitePath, "cases")):

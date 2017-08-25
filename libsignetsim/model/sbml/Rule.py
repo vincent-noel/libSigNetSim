@@ -63,12 +63,11 @@ class Rule(SbmlObject):
 
 	def writeSbml(self, sbml_rule, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
-		# print self.getMetaId()
 		SbmlObject.writeSbml(self, sbml_rule, sbml_level, sbml_version)
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], conversions={}):
+	def copy(self, obj, sids_subs={}, symbols_subs={}, conversion_factors={}, time_conversion=None):
 
-		SbmlObject.copy(self, obj, prefix, shift)
+		SbmlObject.copy(self, obj)
 		self.ruleType = obj.ruleType
 
 	def isAssignment(self):

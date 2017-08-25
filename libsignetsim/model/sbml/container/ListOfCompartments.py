@@ -73,38 +73,29 @@ class ListOfCompartments(ListOf, HasIds, SbmlObject):
 		ListOf.add(self, t_compartment)
 		return t_compartment
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
-
-		if len(self.keys()) > 0:
-			t_shift = max(self.keys())+1
-		else:
-			t_shift = 0
+	def copy(self, obj, deletions=[], sids_subs={}, symbols_subs={}, usids_subs={}, conversion_factors=None):
 
 		if obj not in deletions:
 
-			SbmlObject.copy(self, obj, prefix, t_shift)
+			SbmlObject.copy(self, obj)
 
 			for compartment in obj.values():
 				if compartment not in deletions:
 
-					obj_id = compartment.objId + t_shift
-					t_compartment = Compartment(self.__model, obj_id)
-
-					if not compartment.isMarkedToBeReplaced:
-						t_compartment.copy(compartment, prefix, t_shift, subs, deletions, replacements)
-					else:
-						t_compartment.copy(compartment.isMarkedToBeReplacedBy, prefix, t_shift, subs, deletions, replacements)
-
-					if compartment.isMarkedToBeRenamed:
-						t_compartment.setSbmlId(compartment.getSbmlId(), model_wide=False)
-
+					t_compartment = Compartment(self.__model, self.nextId())
+					t_compartment.copy(
+						compartment,
+						sids_subs=sids_subs,
+						symbols_subs=symbols_subs,
+						usids_subs=usids_subs,
+						conversion_factors=conversion_factors
+					)
 					ListOf.add(self, t_compartment)
 
 
 	def remove(self, comp):
 		""" Remove an object from the list """
 
-		# t_id = comp.getSbmlId()
 		t_nb_species = comp.getNbSpecies()
 		if t_nb_species > 0:
 			message = "Compartment contains %d species" % t_nb_species

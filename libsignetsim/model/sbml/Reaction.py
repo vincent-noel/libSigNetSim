@@ -82,27 +82,52 @@ class Reaction(Variable, SbmlObject, HasUnits):
 		self.kineticLaw = KineticLaw(self.model, self)
 		SbmlObject.new(self)
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[],
-				replacements={}, conversions={},
-				extent_conversion=None, time_conversion=None):
+	def copy(self, obj, deletions=[], sids_subs={}, symbols_subs=[], usids_subs={}, conversion_factors={},
+			extent_conversion=None, time_conversion=None):
 
-		HasUnits.copy(self, obj, prefix, shift)
-		SbmlObject.copy(self, obj, prefix, shift)
-		Variable.copy(self, obj, prefix, shift, subs)
+		HasUnits.copy(self, obj, usids_subs=usids_subs)
+		SbmlObject.copy(self, obj)
+		Variable.copy(self, obj, sids_subs=sids_subs, symbols_subs=symbols_subs)
 
 		if obj.listOfReactants not in deletions and len(obj.listOfReactants) > 0:
-			self.listOfReactants.copy(obj.listOfReactants, prefix, shift, subs, deletions, replacements)
+			self.listOfReactants.copy(
+				obj.listOfReactants,
+				deletions=deletions,
+				sids_subs=sids_subs,
+				symbols_subs=symbols_subs
+			)
 		if obj.listOfModifiers not in deletions and len(obj.listOfModifiers) > 0:
-			self.listOfModifiers.copy(obj.listOfModifiers, prefix, shift, subs, deletions, replacements)
+			self.listOfModifiers.copy(
+				obj.listOfModifiers,
+				deletions=deletions,
+				sids_subs=sids_subs,
+				symbols_subs=symbols_subs
+			)
 		if obj.listOfProducts not in deletions and len(obj.listOfProducts) > 0:
-			self.listOfProducts.copy(obj.listOfProducts, prefix, shift, subs, deletions, replacements)
+			self.listOfProducts.copy(
+				obj.listOfProducts,
+				deletions=deletions,
+				sids_subs=sids_subs,
+				symbols_subs=symbols_subs
+			)
 
 		if obj.listOfLocalParameters not in deletions and len(obj.listOfLocalParameters) > 0:
-			self.listOfLocalParameters.copy(obj.listOfLocalParameters, prefix, shift, subs, deletions, replacements)
+			self.listOfLocalParameters.copy(
+				obj.listOfLocalParameters,
+				deletions=deletions,
+				sids_subs=sids_subs,
+				symbols_subs=symbols_subs,
+				usids_subs=usids_subs
+			)
 
 		if obj.kineticLaw is not None:
 			self.kineticLaw = KineticLaw(self.model, self)
-			self.kineticLaw.copy(obj, prefix, shift, subs, deletions, replacements, conversions, extent_conversion, time_conversion)
+			self.kineticLaw.copy(
+				obj,
+				symbols_subs=symbols_subs,
+				conversion_factors=conversion_factors,
+				extent_conversion=extent_conversion,
+				time_conversion=time_conversion)
 
 			self.value = MathFormula(self.model)
 			t_formula = self.kineticLaw.getDefinition(rawFormula=True).getInternalMathFormula()

@@ -73,34 +73,24 @@ class ListOfSpecies(ListOf, HasIds, SbmlObject):
 		ListOf.add(self, t_species)
 		return t_species
 
-
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
-
-		if len(self.keys()) > 0:
-			t_shift = max(self.keys())+1
-		else:
-			t_shift = 0
+	def copy(self, obj, deletions=[], sids_subs={}, symbols_subs={}, usids_subs={}, conversion_factor=None):
 
 		if obj not in deletions:
 
-			SbmlObject.copy(self, obj, prefix, t_shift)
+			SbmlObject.copy(self, obj)
 			for species in obj.values():
 
 				if species not in deletions:
 
-					t_species = Species(self.__model, (t_shift + species.objId))
-
-					if not species.isMarkedToBeReplaced:
-						t_species.copy(species, prefix, shift, subs, deletions, replacements)
-					else:
-						t_species.copy(species.isMarkedToBeReplacedBy, prefix, t_shift, subs, deletions, replacements)
-
-					if species.isMarkedToBeRenamed:
-						t_species.setSbmlId(species.getSbmlId(), model_wide=False)
-
+					t_species = Species(self.__model, self.nextId())
+					t_species.copy(
+						species,
+						sids_subs=sids_subs,
+						symbols_subs=symbols_subs,
+						usids_subs=usids_subs,
+						conversion_factor=conversion_factor
+					)
 					ListOf.add(self, t_species)
-
-
 
 	def nbFormulaInitialization(self):
 

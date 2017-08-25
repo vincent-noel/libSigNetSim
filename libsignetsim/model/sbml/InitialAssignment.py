@@ -69,7 +69,6 @@ class InitialAssignment(SbmlObject):
 
 		t_definition = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
 		t_definition.setInternalMathFormula(self.__definition.getInternalMathFormula())
-		# t_variable = self.__var.symbol.getSbmlMathFormula(sbml_level, sbml_version).getName()
 
 		if self.getVariable().isConcentration():
 			t_definition.setInternalMathFormula(
@@ -81,42 +80,32 @@ class InitialAssignment(SbmlObject):
 		sbml_initial_assignment.setMath(t_definition.getSbmlMathFormula(sbml_level, sbml_version))
 
 
-	def copy(self, obj, prefix="", shift="", subs={}, deletions=[], replacements={}, conversions=[]):
-		SbmlObject.copy(self, obj, prefix, shift)
+	def copy(self, obj, sids_subs={}, symbols_subs={}, conversion_factors=[]):
+		SbmlObject.copy(self, obj)
 
-		t_symbol = SympySymbol(obj.getVariable().getSbmlId())
-
-		if t_symbol in subs.keys():
-			t_sbml_id = str(subs[t_symbol])
-			tt_symbol = SympySymbol(t_sbml_id)
-			if tt_symbol in replacements.keys():
-				t_sbml_id = str(replacements[tt_symbol])
+		if obj.getVariable().getSbmlId() in sids_subs.keys():
+			self.__var = sids_subs[obj.getVariable().getSbmlId()]
 		else:
-			t_sbml_id = prefix+obj.getVariable().getSbmlId()
+			self.__var = obj.getVariable().getSbmlId()
 
-		self.__var = t_sbml_id
 		self.getVariable().setInitialAssignmentBy(self)
 
 		t_convs = {}
-		for var, conversion in conversions.items():
-			t_convs.update({var:var/conversion})
+		for var, conversion in conversion_factors.items():
+			t_convs.update({var: var/conversion})
 
-		t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(), subs)
-		t_definition = unevaluatedSubs(t_definition, replacements)
+		t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(), symbols_subs)
 		t_definition = unevaluatedSubs(t_definition, t_convs)
 
-		t_var_symbol = unevaluatedSubs(obj.getVariable().symbol.getInternalMathFormula(), subs)
-		t_var_symbol = unevaluatedSubs(t_var_symbol, replacements)
+		t_var_symbol = unevaluatedSubs(obj.getVariable().symbol.getInternalMathFormula(), symbols_subs)
 
-		if t_var_symbol in conversions:
-			t_definition *= conversions[t_var_symbol]
+		if t_var_symbol in conversion_factors:
+			t_definition *= conversion_factors[t_var_symbol]
 
 		self.__definition.setInternalMathFormula(t_definition)
 
-
 	def getVariable(self):
 		return self.__model.listOfVariables.getBySbmlId(self.__var)
-
 
 	def setVariable(self, variable):
 
@@ -148,22 +137,6 @@ class InitialAssignment(SbmlObject):
 		math_formula.setInternalMathFormula(self.getRawDefinition(rawFormula=rawFormula))
 
 		return math_formula
-
-	# def setDefinition(self, definition):
-	#
-	# 	if self.__var.isConcentration():
-	# 		t_comp = self.__var.getCompartment()
-	# 		t_math_formula = MathFormula(self.__model, MathFormula.MATH_RATERULE)
-	# 		t_math_formula.setInternalMathFormula(
-	# 					definition.getInternalMathFormula()
-	# 					* t_comp.symbol.getInternalMathFormula()
-	# 		)
-	#
-	# 		self.__definition = t_math_formula
-	#
-	# 	else:
-	# 		self.__definition = definition
-
 
 	def getRuleTypeDescription(self):
 		return "Initial assignment"

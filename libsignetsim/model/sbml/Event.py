@@ -114,26 +114,32 @@ class Event(HasId, SbmlObject):
 			sbml_event.setUseValuesFromTriggerTime(self.useValuesFromTriggerTime)
 
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={},
-				conversions={}, time_conversion=None):
+	def copy(self, obj, deletions=[], sids_subs={}, symbols_subs={},
+				conversion_factors={}, time_conversion=None):
 
-		HasId.copy(self, obj, prefix, shift)
-		SbmlObject.copy(self, obj, prefix, shift)
+		HasId.copy(self, obj, sids_subs=sids_subs)
+		SbmlObject.copy(self, obj)
 
-		self.trigger.copy(obj.trigger, prefix, shift, subs, deletions, replacements, conversions)
+		self.trigger.copy(obj.trigger, symbols_subs=symbols_subs, conversion_factors=conversion_factors)
 
 		if obj.delay is not None and obj.delay not in deletions:
 			self.delay = EventDelay(self.__model)
-			self.delay.copy(obj.delay, prefix, shift, subs, deletions, replacements, conversions, time_conversion)
+			self.delay.copy(obj.delay, symbols_subs=symbols_subs, conversion_factors=conversion_factors, time_conversion=time_conversion)
 
 		if obj.priority is not None and obj.priority not in deletions:
 			self.priority = EventPriority(self.__model)
-			self.priority.copy(obj.priority, prefix, shift, subs, deletions, replacements, conversions)
+			self.priority.copy(obj.priority, symbols_subs=symbols_subs, conversion_factors=conversion_factors)
 
 		for event_assignment in obj.listOfEventAssignments:
 			if event_assignment not in deletions:
-				t_event_assignment = EventAssignment(self.__model, event_assignment.objId, self)
-				t_event_assignment.copy(event_assignment, prefix, shift, subs, deletions, replacements, conversions, time_conversion)
+				t_event_assignment = EventAssignment(self.__model, len(self.listOfEventAssignments), self)
+				t_event_assignment.copy(
+					event_assignment,
+					sids_subs=sids_subs,
+					symbols_subs=symbols_subs,
+					conversion_factors=conversion_factors,
+					time_conversion=time_conversion
+				)
 				self.listOfEventAssignments.append(t_event_assignment)
 
 		self.useValuesFromTriggerTime = obj.useValuesFromTriggerTime

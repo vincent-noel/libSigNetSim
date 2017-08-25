@@ -94,5 +94,8 @@ class HasUnits(object):
 		self.__unit = "volume"
 
 
-	def copy(self, obj, prefix="", shift=0):
-		self.setUnitId(obj.getUnitId(), prefix)
+	def copy(self, obj, usids_subs={}):
+		if obj.getUnitId() in usids_subs.keys():
+			self.__unit = usids_subs[obj.getUnitId()]
+		else:
+			self.__unit = obj.getUnitId()

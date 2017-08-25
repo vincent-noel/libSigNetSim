@@ -42,32 +42,23 @@ class SbmlVariable(HasId):
 		self.sbmlType = sbml_type
 		self.reaction = is_from_reaction
 
-
-
 	def new(self, name, sbml_type=PARAMETER):
 
 		self.sbmlType = sbml_type
 		t_sbmlId = self.__model.listOfVariables.addVariable(self, name)
 		HasId.new(self, name, t_sbmlId)
 
+	def copy(self, obj, sids_subs={}):
 
-	def copy(self, obj, prefix="", shift=0):
-
-
-		HasId.copy(self, obj, prefix, shift)
+		HasId.copy(self, obj, sids_subs=sids_subs)
 
 		if self.isParameter() and self.localParameter:
 			self.__model.listOfVariables.addVariable(self,
-			"_local_%d_%s" % (self.reaction.objId, prefix + obj.getSbmlId()))
+			"_local_%d_%s" % (self.reaction.objId, self.getSbmlId()))
 
 		else:
-			t_sbml_id = prefix + obj.getSbmlId()
-			# print "> Adding variable %s : %s" % (t_sbml_id, self.symbol.getInternalMathFormula())
-			self.__model.listOfVariables.addVariable(self, t_sbml_id)
+			self.__model.listOfVariables.addVariable(self, self.getSbmlId())
 		self.sbmlType = obj.sbmlType
-
-
-
 
 	def readSbml(self, sbml_variable,
 						sbml_level=Settings.defaultSbmlLevel,

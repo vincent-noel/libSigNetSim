@@ -74,30 +74,18 @@ class ListOfInitialAssignments(ListOf, SbmlObject):
 			return t_initial_assignment
 
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}):
-
-		if len(self.keys()) > 0:
-			t_shift = max(self.keys())+1
-		else:
-			t_shift = 0
+	def copy(self, obj, deletions=[], sids_subs={}, symbols_subs={}, conversion_factors=[]):
 
 		if obj not in deletions:
-			SbmlObject.copy(self, obj, prefix, t_shift)
+
+			SbmlObject.copy(self, obj)
+
 			for init_ass in obj.values():
 				if init_ass not in deletions:
 
-					obj_id = init_ass.objId + t_shift
-					t_init_ass = InitialAssignment(self.__model, obj_id)
-
-					if not init_ass.isMarkedToBeReplaced:
-						t_init_ass.copy(init_ass, prefix, t_shift, subs, deletions, replacements, conversions)
-
-					else:
-						t_init_ass.copy(init_ass.isMarkedToBeReplacedBy, prefix, t_shift, subs, deletions, replacements, conversions)
-
-
+					t_init_ass = InitialAssignment(self.__model, self.nextId())
+					t_init_ass.copy(init_ass, sids_subs=sids_subs, symbols_subs=symbols_subs, conversion_factors=conversion_factors)
 					ListOf.add(self, t_init_ass)
-
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 

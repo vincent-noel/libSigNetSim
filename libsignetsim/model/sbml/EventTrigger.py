@@ -70,14 +70,13 @@ class EventTrigger(MathFormula):
 		sbml_event.setTrigger(sbml_trigger)
 
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}):
+	def copy(self, obj, symbols_subs={}, conversion_factors={}):
 
 		t_convs = {}
-		for var, conversion in conversions.items():
+		for var, conversion in conversion_factors.items():
 			t_convs.update({var:var/conversion})
 
-		t_formula = unevaluatedSubs(obj.getInternalMathFormula(), subs)
-		t_formula = unevaluatedSubs(t_formula, replacements)
+		t_formula = unevaluatedSubs(obj.getInternalMathFormula(), symbols_subs)
 		t_formula = unevaluatedSubs(t_formula, t_convs)
 		MathFormula.setInternalMathFormula(self, t_formula)
 

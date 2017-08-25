@@ -80,14 +80,15 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		self.hasOnlySubstanceUnits = hasOnlySubstanceUnits
 		self.setUnits(self.__model.getSubstanceUnits())
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
+	def copy(self, obj, sids_subs={}, symbols_subs={}, usids_subs={}, conversion_factor=None):
 
-		self.setCompartment(obj.getCompartment(), prefix, shift, subs, deletions, replacements)
+		self.setCompartment(obj.getCompartment(), sids_subs=sids_subs)
 
-		Variable.copy(self, obj, prefix, shift, subs, deletions, replacements)
-		SbmlObject.copy(self, obj, prefix, shift)
-		HasUnits.copy(self, obj, prefix, shift)
+		Variable.copy(self, obj, sids_subs=sids_subs, symbols_subs=symbols_subs, conversion_factor=conversion_factor)
+		SbmlObject.copy(self, obj)
+		HasUnits.copy(self, obj, usids_subs=usids_subs)
 		HasConversionFactor.copy(self, obj)
+
 		self.constant = obj.constant
 		self.boundaryCondition = obj.boundaryCondition
 		self.hasOnlySubstanceUnits = obj.hasOnlySubstanceUnits
@@ -354,18 +355,12 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		if self.__compartment is not None:
 			return self.__model.listOfCompartments.getBySbmlId(self.__compartment)
 
-	def setCompartment(self, compartment, prefix="", shift=0, subs={}, deletions=[], replacements={}):
+	def setCompartment(self, compartment, sids_subs={}):
 
-		t_symbol = Symbol(compartment.getSbmlId())
-		if t_symbol in subs.keys():
-			t_sbml_id = str(subs[t_symbol])
-			tt_symbol = Symbol(t_sbml_id)
-			if tt_symbol in replacements.keys():
-				t_sbml_id = str(replacements[tt_symbol])
+		if compartment.getSbmlId() in sids_subs.keys():
+			self.__compartment = sids_subs[compartment.getSbmlId()]
 		else:
-			t_sbml_id = prefix+compartment.getSbmlId()
-
-		self.__compartment = t_sbml_id
+			self.__compartment = compartment.getSbmlId()
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		if self.__compartment == old_sbml_id:

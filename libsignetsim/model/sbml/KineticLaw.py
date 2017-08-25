@@ -52,16 +52,13 @@ class KineticLaw(KineticLawIdentifier):
 		self.__definition = MathFormula(model, MathFormula.MATH_KINETICLAW, isFromReaction)
 		KineticLawIdentifier.__init__(self, model, isFromReaction)
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[],
-				replacements={}, conversions={},
-				extent_conversion=None, time_conversion=None):
+	def copy(self, obj, symbols_subs={}, conversion_factors={}, extent_conversion=None, time_conversion=None):
 
 		t_convs = {}
-		for var, conversion in conversions.items():
-			t_convs.update({var:var/conversion})
+		for var, conversion in conversion_factors.items():
+			t_convs.update({var: var/conversion})
 
-		t_formula = unevaluatedSubs(obj.kineticLaw.getDefinition().getInternalMathFormula(), subs)
-		t_formula = unevaluatedSubs(t_formula, replacements)
+		t_formula = unevaluatedSubs(obj.kineticLaw.getDefinition().getInternalMathFormula(), symbols_subs)
 		t_formula = unevaluatedSubs(t_formula, t_convs)
 
 		if extent_conversion is not None:

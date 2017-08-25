@@ -65,11 +65,11 @@ class Compartment(Variable, SbmlObject, InitiallyAssignedVariable,
 		self.setUnits(self.model.getCompartmentUnits())
 
 
-	def copy(self, compartment, prefix="", shift=0, subs={}, deletions=[], replacements={}):
+	def copy(self, compartment, sids_subs={}, symbols_subs={}, usids_subs={}, conversion_factors=None):
 
-		SbmlObject.copy(self, compartment, prefix, shift)
-		HasUnits.copy(self, compartment, prefix, shift)
-		Variable.copy(self, compartment, prefix, shift, subs, deletions, replacements)
+		SbmlObject.copy(self, compartment)
+		HasUnits.copy(self, compartment, usids_subs=usids_subs)
+		Variable.copy(self, compartment, sids_subs=sids_subs, symbols_subs=symbols_subs, conversion_factor=conversion_factors)
 
 		self.spatialDimensions = compartment.spatialDimensions
 

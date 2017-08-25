@@ -61,16 +61,15 @@ class EventDelay(SbmlObject, MathFormula):
 
 
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):
+	def copy(self, obj, symbols_subs={}, conversion_factors={}, time_conversion=None):
 
-		SbmlObject.copy(self, obj, prefix, shift)
+		SbmlObject.copy(self, obj)
 
 		t_convs = {}
-		for var, conversion in conversions.items():
-			t_convs.update({var:var/conversion})
+		for var, conversion in conversion_factors.items():
+			t_convs.update({var: var/conversion})
 
-		t_formula = unevaluatedSubs(obj.getInternalMathFormula(), subs)
-		t_formula = unevaluatedSubs(t_formula, replacements)
+		t_formula = unevaluatedSubs(obj.getInternalMathFormula(), symbols_subs)
 		t_formula = unevaluatedSubs(t_formula, t_convs)
 
 		if time_conversion is not None:

@@ -89,34 +89,27 @@ class EventAssignment(SbmlObject):
 		sbml_event_assignment.setMath(t_definition.getSbmlMathFormula())
 
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):
-		SbmlObject.copy(self, obj, prefix, shift)
+	def copy(self, obj, sids_subs={}, symbols_subs={}, conversion_factors={}, time_conversion=None):
+		SbmlObject.copy(self, obj)
 
-		t_symbol = SympySymbol(obj.getVariable().getSbmlId())
-		if t_symbol in subs.keys():
-			t_sbml_id = str(subs[t_symbol])
-			tt_symbol = SympySymbol(t_sbml_id)
-			if tt_symbol in replacements.keys():
-				t_sbml_id = str(replacements[tt_symbol])
+		if obj.getVariable().getSbmlId() in sids_subs.keys():
+			self.__var = sids_subs[obj.getVariable().getSbmlId()]
 		else:
-			t_sbml_id = prefix+obj.getVariable().getSbmlId()
+			self.__var = obj.getVariable().getSbmlId()
 
-		self.__var = t_sbml_id
 		self.getVariable().addEventAssignmentBy(self.event)
 
 		t_convs = {}
-		for var, conversion in conversions.items():
-			t_convs.update({var:var/conversion})
+		for var, conversion in conversion_factors.items():
+			t_convs.update({var: var/conversion})
 
-		t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(), subs)
-		t_definition = unevaluatedSubs(t_definition, replacements)
+		t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(), symbols_subs)
 		t_definition = unevaluatedSubs(t_definition, t_convs)
 
-		t_var_symbol = unevaluatedSubs(obj.getVariable().symbol.getInternalMathFormula(), subs)
-		t_var_symbol = unevaluatedSubs(t_var_symbol, replacements)
+		t_var_symbol = unevaluatedSubs(obj.getVariable().symbol.getInternalMathFormula(), symbols_subs)
 
-		if t_var_symbol in conversions:
-			t_definition *= conversions[t_var_symbol]
+		if t_var_symbol in conversion_factors:
+			t_definition *= conversion_factors[t_var_symbol]
 
 		self.__definition.setInternalMathFormula(t_definition)
 

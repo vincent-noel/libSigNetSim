@@ -78,8 +78,8 @@ class SbmlObject(SimpleSbmlObject, HasReplacedElements):
 
 
 	def copy(self, obj, prefix="", shift=0):
-		SimpleSbmlObject.copy(self, obj, prefix, shift)
-		HasReplacedElements.copy(self, obj, prefix, shift)
+		SimpleSbmlObject.copy(self, obj)
+		# HasReplacedElements.copy(self, obj, prefix, shift)
 
 	def isInMainModel(self):
 		return self.__model.isMainModel

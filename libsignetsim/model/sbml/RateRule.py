@@ -46,7 +46,6 @@ class RateRule(Rule):
 		self.__definition = MathFormula(model, MathFormula.MATH_RATERULE)
 		self.__var = None
 
-
 	def readSbml(self, rate_rule, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
 		Rule.readSbml(self, rate_rule, sbml_level, sbml_version)
@@ -55,14 +54,12 @@ class RateRule(Rule):
 			self.__var = rate_rule.getVariable()
 			self.getVariable().setRuledBy(self)
 
-
 		self.__definition.readSbml(rate_rule.getMath())
 
 		if self.getVariable().isConcentration():
 			self.__definition.setInternalMathFormula(
 					SympyMul(self.__definition.getInternalMathFormula(),
 					self.getVariable().getCompartment().symbol.getInternalMathFormula()))
-
 
 	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
@@ -80,7 +77,6 @@ class RateRule(Rule):
 
 		t_definition = MathFormula(self.__model, MathFormula.MATH_RATERULE)
 		t_definition.setInternalMathFormula(self.__definition.getInternalMathFormula())
-		# t_variable = self.__var.symbol.getSbmlMathFormula(sbml_level, sbml_version).getName()
 
 		if self.getVariable().isConcentration():
 			t_definition.setInternalMathFormula(
@@ -91,37 +87,28 @@ class RateRule(Rule):
 		rate_rule.setVariable(self.__var)
 		rate_rule.setMath(t_definition.getSbmlMathFormula(sbml_level, sbml_version))
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversions={}, time_conversion=None):
+	def copy(self, obj, sids_subs={}, symbols_subs={}, conversion_factors={}, time_conversion=None):
 
-		Rule.copy(self, obj, prefix, shift, subs, deletions, conversions)
+		Rule.copy(self, obj)
 
-		t_symbol = SympySymbol(obj.getVariable().getSbmlId())
-		if t_symbol in subs.keys():
-			t_sbml_id = str(subs[t_symbol])
-			tt_symbol = SympySymbol(t_sbml_id)
-
-			if tt_symbol in replacements.keys():
-				t_sbml_id = str(replacements[tt_symbol])
+		if obj.getVariable().getSbmlId() in sids_subs.keys():
+			self.__var = sids_subs[obj.getVariable().getSbmlId()]
 		else:
-			t_sbml_id = prefix+obj.getVariable().getSbmlId()
+			self.__var = obj.getVariable().getSbmlId()
 
-		self.__var = t_sbml_id
 		self.getVariable().setRuledBy(self)
 
-
 		t_convs = {}
-		for var, conversion in conversions.items():
-			t_convs.update({var:var/conversion})
+		for var, conversion in conversion_factors.items():
+			t_convs.update({var: var/conversion})
 
-		t_var_symbol = unevaluatedSubs(obj.getVariable().symbol.getInternalMathFormula(), subs)
-		t_var_symbol = unevaluatedSubs(t_var_symbol, replacements)
-
-		t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(), subs)
-		t_definition = unevaluatedSubs(t_definition, replacements)
+		t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(), symbols_subs)
 		t_definition = unevaluatedSubs(t_definition, t_convs)
 
-		if t_var_symbol in conversions:
-			t_definition *= conversions[t_var_symbol]
+		t_var_symbol = unevaluatedSubs(obj.getVariable().symbol.getInternalMathFormula(), symbols_subs)
+
+		if t_var_symbol in conversion_factors:
+			t_definition *= conversion_factors[t_var_symbol]
 
 		if time_conversion is not None:
 			t_definition /= time_conversion.getInternalMathFormula()

@@ -59,14 +59,11 @@ class AlgebraicRule(Rule):
 																sbml_version))
 
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[],
-				replacements={}, conversions={}, time_conversion=None):
+	def copy(self, obj, symbols_subs={}):
 
-		Rule.copy(self, obj, prefix, shift)
+		Rule.copy(self, obj)
 
-		t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(), subs)
-		t_definition = unevaluatedSubs(t_definition, replacements)
-
+		t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(), symbols_subs)
 		self.__definition.setInternalMathFormula(t_definition)
 
 	def getRawDefinition(self, rawFormula=False):

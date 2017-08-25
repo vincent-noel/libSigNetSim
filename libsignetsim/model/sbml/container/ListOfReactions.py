@@ -74,39 +74,25 @@ class ListOfReactions(ListOf, HasIds, SbmlObject):
 		return t_reaction
 
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[],
-				replacements={}, conversions={},
+	def copy(self, obj, deletions=[], sids_subs={}, symbols_subs={}, usids_subs={}, conversion_factors={},
 				extent_conversion=None, time_conversion=None):
 
-		if len(self.keys()) > 0:
-			t_shift = max(self.keys())+1
-		else:
-			t_shift = 0
-
-
 		if obj not in deletions:
-			SbmlObject.copy(self, obj, prefix, t_shift)
+			SbmlObject.copy(self, obj)
 			for reaction in obj.values():
 				if reaction not in deletions:
-					t_obj_id = reaction.objId + t_shift
-					t_reaction = Reaction(self.__model, t_obj_id)
 
-					if not reaction.isMarkedToBeReplaced:
-						t_reaction.copy(reaction, prefix, t_shift, subs,
-											deletions, replacements,
-											conversions, extent_conversion,
-											time_conversion)
-					else:
-						t_reaction.copy(reaction.isMarkedToBeReplacedBy,
-											prefix, t_shift, subs, deletions,
-											replacements, conversions,
-											extent_conversion,
-											time_conversion)
-
-					if reaction.isMarkedToBeRenamed:
-						t_reaction.setSbmlId(reaction.getSbmlId(),
-											model_wide=False)
-
+					t_reaction = Reaction(self.__model, self.nextId())
+					t_reaction.copy(
+						reaction,
+						deletions=deletions,
+						sids_subs=sids_subs,
+						symbols_subs=symbols_subs,
+						usids_subs=usids_subs,
+						conversion_factors=conversion_factors,
+						extent_conversion=extent_conversion,
+						time_conversion=time_conversion
+					)
 					ListOf.add(self, t_reaction)
 
 

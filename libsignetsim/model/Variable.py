@@ -41,11 +41,9 @@ class Variable(SbmlVariable, MathVariable):
 		SbmlVariable.new(self, string, sbml_type)
 		MathVariable.new(self, string)
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}, conversion_factor=None):
-		SbmlVariable.copy(self, obj, prefix, shift)
-		MathVariable.copy(self, obj, prefix, shift, subs, deletions, replacements, conversion_factor)
-
-
+	def copy(self, obj, sids_subs={}, symbols_subs={}, conversion_factor=None):
+		SbmlVariable.copy(self, obj, sids_subs=sids_subs)
+		MathVariable.copy(self, obj, symbols_subs=symbols_subs, conversion_factor=conversion_factor)
 
 	def readSbml(self, sbml_variable,
 					sbml_level=Settings.defaultSbmlLevel,

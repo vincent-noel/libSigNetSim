@@ -37,8 +37,9 @@ class ModelInstance(Model):
 	""" Sbml model class """
 
 	PREFIX_PATTERN = "%s__"
+	DEBUG = False
 
-	def __init__ (self, model, document):
+	def __init__(self, model, document):
 		""" Constructor of model class """
 
 		Model.__init__(self, parent_doc=document, is_model_instance=True, is_main_model=True)
@@ -48,10 +49,22 @@ class ModelInstance(Model):
 		self.sbmlLevel = model.sbmlLevel
 		self.sbmlVersion = model.sbmlVersion
 		self.objectsDictionnary = {}
-		if Settings.verbose >= 2:
+		self.deletions = []
+		self.substitutions = []
+
+		self.dict_sids = {}
+		self.dict_symbols = {}
+		self.dict_usids = {}
+		self.submodel_sids_subs = {}
+		self.submodel_symbols_subs = {}
+		self.submodel_usids_subs = {}
+
+		self.conv_factors = {}
+
+		# if Settings.verbose >= 2:
+		if self.DEBUG:
 			print "\n\n> Instanciating model %s, parent doc is %s" % (model.getSbmlId(), document.documentFilename)
 
-		var_subs_main_simples = {}
 
 		if len(self.__mainModel.listOfSubmodels) > 0:
 
@@ -59,177 +72,53 @@ class ModelInstance(Model):
 			for submodel in self.__mainModel.listOfSubmodels.values():
 				t_submodel_instance = submodel.getModelInstance()
 				self.__submodelInstances.update({submodel.getSbmlId(): t_submodel_instance})
+				self.submodel_sids_subs.update({submodel.getSbmlId(): {}})
+				self.submodel_symbols_subs.update({submodel.getSbmlId(): {}})
+				self.submodel_usids_subs.update({submodel.getSbmlId(): {}})
 
-			(deletions, var_subs_main, var_subs_main_simples, conv_factors) = self.findReplacements()
+				for variable in t_submodel_instance.listOfVariables.values():
+					self.submodel_sids_subs[submodel.getSbmlId()].update({
+						variable.getSbmlId(): (self.PREFIX_PATTERN % submodel.getSbmlId()) + variable.getSbmlId()
+					})
+					# if variable.isConcentration():
+					# 	old_symbol = SympySymbol("_speciesForcedConcentration_%s_" % str(variable.symbol.getInternalMathFormula()))
+					# 	new_symbol = SympySymbol("_speciesForcedConcentration_%s_" % (
+					# 		(self.PREFIX_PATTERN % submodel.getSbmlId())
+					# 		+ str(variable.symbol.getInternalMathFormula()))
+					# 	)
+					# 	self.submodel_symbols_subs[submodel.getSbmlId()].update({old_symbol: new_symbol})
 
-		# First let's copy the model...
-		self.copyMainModel(var_subs_main_simples)
+					old_symbol = variable.symbol.getInternalMathFormula()
+					new_symbol = SympySymbol(
+						(self.PREFIX_PATTERN % submodel.getSbmlId())
+						+ str(variable.symbol.getInternalMathFormula())
+					)
+					self.submodel_symbols_subs[submodel.getSbmlId()].update({old_symbol: new_symbol})
 
-		if len(self.__mainModel.listOfSubmodels) > 0:
-			for i, submodel in enumerate(self.__mainModel.listOfSubmodels.values()):
+				for deletion in submodel.listOfDeletions.values():
+					self.deletions.append(deletion.getDeletionObjectFromInstance(t_submodel_instance))
 
-				# print "Generating submodel instance"
-				submodel_instance = self.__submodelInstances[submodel.getSbmlId()]
-				prefix = self.PREFIX_PATTERN % submodel.getSbmlId()
-				var_subs_submodel = {}
+			self.findReplacements_v2()
 
-				if submodel.hasTimeConversionFactor():
-					var_subs_submodel.update({SympySymbol("_time_"): SympySymbol("_time_")/submodel.getTimeConversionFactor().getInternalMathFormula()})
+			if self.DEBUG:
+				print ">> Sids dictionnaries"
+				print self.dict_sids
+				print self.submodel_sids_subs
+				print ">> Symbols dictionnaries"
+				print self.dict_symbols
+				print self.submodel_symbols_subs
 
-				for var in submodel_instance.listOfVariables.values():
+		self.mergeModels()
 
-					if var.isParameter() and var.localParameter:
-						var_subs_submodel.update({SympySymbol("_local_%d_%s" % (var.reaction.objId, var.getSbmlId())): SympySymbol("_local_%d_%s" % (var.reaction.objId, prefix+var.getSbmlId()))})
-
-					elif var.isConcentration():
-						var_subs_submodel.update({SympySymbol("_speciesForcedConcentration_%s_" % var.getSbmlId()):SympySymbol("_speciesForcedConcentration_%s_" % (prefix+var.getSbmlId()))})
-						var_subs_submodel.update({SympySymbol(var.getSbmlId()):SympySymbol(prefix+var.getSbmlId())})
-
-					else:
-						var_subs_submodel.update({SympySymbol(var.getSbmlId()):SympySymbol(prefix+var.getSbmlId())})
-
-
-				t_deletions = submodel.getDeletionsMetaIds()
-				for t_deletion in t_deletions:
-					deletions.append(submodel_instance.listOfSbmlObjects.getByMetaId(t_deletion))
-
-				for deletion in deletions:
-					# If we just delete a local parameter, that means we are switching to a global parameter with the same sbml id
-					if isinstance(deletion, Variable) and deletion.isParameter() and deletion.localParameter:
-						var_subs_submodel.update({SympySymbol("_local_%d_%s" % (deletion.reaction.objId, deletion.getSbmlId())):SympySymbol(prefix+deletion.getSbmlId())})
-
-
-				t_factor = SympyInteger(1)
-				if submodel.hasExtentConversionFactor():
-					t_factor *= submodel.getExtentConversionFactor().getInternalMathFormula()
-
-				if submodel.hasTimeConversionFactor():
-					t_factor /= submodel.getTimeConversionFactor().getInternalMathFormula()
+		# if Settings.verbose >= 2:
+		# print ">> Model's variables : "
+		# print self.listOfVariables.sbmlIds()
+		#
+		if self.DEBUG:
+			print "> Returning instance %s\n" % model.getSbmlId()
 
 
-				for reaction in submodel_instance.listOfReactions.values():
-					if t_factor != MathFormula.ONE:
-						conv_factors.update({SympySymbol(prefix+reaction.getSbmlId()):t_factor})
-
-				# Then copy the submodel
-				self.copySubmodel(submodel, submodel_instance, prefix, var_subs_submodel, deletions, var_subs_main, conv_factors)
-
-		if Settings.verbose >= 2:
-			print "\n > Model's variables : "
-			print self.listOfVariables.sbmlIds()
-
-			print "\n > Returning instance %s\n" % model.getSbmlId()
-
-	def copyMainModel(self, var_subs_main_simples):
-
-		# First let's copy the model...
-		self.listOfFunctionDefinitions.copy(self.__mainModel.listOfFunctionDefinitions)
-		self.listOfUnitDefinitions.copy(self.__mainModel.listOfUnitDefinitions)
-		self.listOfCompartments.copy(self.__mainModel.listOfCompartments, subs=var_subs_main_simples)
-		self.listOfParameters.copy(self.__mainModel.listOfParameters)
-
-		# TODO
-		# here it's really weird
-		# I thought I need both species and reactions with the ability to substitute the right sbml id or compartments and speciesReferences
-		# Actually, species seems to work ok, but reactions don't
-		# Maybe for a lack of a good test for the species references ?
-		# Here we still have to do something.
-		# The obvious solution is to add yet another variable to the copy of the objects whivh have a variable replacement covered by this case
-
-		self.listOfSpecies.copy(self.__mainModel.listOfSpecies, subs=var_subs_main_simples)
-		self.listOfReactions.copy(self.__mainModel.listOfReactions, replacements=var_subs_main_simples)
-		self.listOfInitialAssignments.copy(self.__mainModel.listOfInitialAssignments)
-		self.listOfRules.copy(self.__mainModel.listOfRules)
-		self.listOfEvents.copy(self.__mainModel.listOfEvents)
-
-		if self.__mainModel.isSetConversionFactor():
-			self.setConversionFactor(self.__mainModel.getRawConversionFactor())
-
-	def copySubmodel(self, submodel, submodel_instance, prefix, var_subs_submodel, deletions, var_subs_main, conv_factors):
-
-		self.listOfFunctionDefinitions.copy(
-			submodel_instance.listOfFunctionDefinitions,
-			prefix=prefix,
-			subs=var_subs_submodel,
-			deletions=deletions
-		)
-
-		self.listOfUnitDefinitions.copy(submodel_instance.listOfUnitDefinitions, prefix=prefix)
-		self.listOfCompartments.copy(
-			submodel_instance.listOfCompartments,
-			prefix=prefix,
-			subs=var_subs_submodel,
-			deletions=deletions,
-			replacements=var_subs_main
-		)
-
-		self.listOfParameters.copy(
-			submodel_instance.listOfParameters,
-			prefix=prefix,
-			subs=var_subs_submodel,
-			deletions=deletions,
-			replacements=var_subs_main
-		)
-
-		self.listOfSpecies.copy(
-			submodel_instance.listOfSpecies,
-			prefix=prefix,
-			subs=var_subs_submodel,
-			deletions=deletions,
-			replacements=var_subs_main
-		)
-
-		self.listOfReactions.copy(
-			submodel_instance.listOfReactions,
-			prefix=prefix,
-			subs=var_subs_submodel,
-			deletions=deletions,
-			replacements=var_subs_main,
-			conversions=conv_factors,
-			extent_conversion=submodel.getExtentConversionFactor(),
-			time_conversion=submodel.getTimeConversionFactor()
-		)
-
-		self.listOfInitialAssignments.copy(
-			submodel_instance.listOfInitialAssignments,
-			prefix=prefix,
-			subs=var_subs_submodel,
-			deletions=deletions,
-			replacements=var_subs_main,
-			conversions=conv_factors
-		)
-
-		self.listOfRules.copy(
-			submodel_instance.listOfRules,
-			prefix=prefix,
-			subs=var_subs_submodel,
-			deletions=deletions,
-			replacements=var_subs_main,
-			conversions=conv_factors,
-			time_conversion=submodel.getTimeConversionFactor()
-		)
-
-		self.listOfEvents.copy(
-			submodel_instance.listOfEvents,
-			prefix=prefix,
-			subs=var_subs_submodel,
-			deletions=deletions,
-			replacements=var_subs_main,
-			conversions=conv_factors,
-			time_conversion=submodel.getTimeConversionFactor()
-		)
-
-
-	def findReplacements(self):
-
-		# Looking for substitutions
-		deletions = []
-		deletions_submodels = {}
-		var_subs_main = {}
-		var_subs_main_simples = {}
-		conv_factors = {}
-		for submodel in self.__mainModel.listOfSubmodels.values():
-			deletions_submodels.update({submodel.getSbmlId():[]})
+	def findReplacements_v2(self):
 
 		for sbmlobject in self.__mainModel.listOfSbmlObjects.values():
 
@@ -238,63 +127,208 @@ class ModelInstance(Model):
 				for replaced_element in sbmlobject.getListOfReplacedElements().values():
 
 					replaced_object = replaced_element.getReplacedElementObjectFromInstance(self)
-					deletions.append(replaced_object)
+					self.substitutions.append((replaced_object, sbmlobject))
+					self.deletions.append(replaced_object)
 
 					if isinstance(sbmlobject, Variable):
 
-						if sbmlobject.isConcentration():
-							var_subs_main.update({SympySymbol("_speciesForcedConcentration_%s__%s_" % (
-							replaced_element.getSubmodelRef(), replaced_object.getSbmlId())): SympySymbol(
-								"_speciesForcedConcentration_%s_" % sbmlobject.getSbmlId())})
+						old_string = (self.PREFIX_PATTERN % replaced_element.getSubmodelRef()) + replaced_object.getSbmlId()
+						new_string = sbmlobject.getSbmlId()
 
-						if replaced_object.isParameter() and replaced_object.localParameter:
-							var_subs_main.update({SympySymbol("_local_%d_%s__%s" % (
-							replaced_object.reaction.objId, replaced_element.getSubmodelRef(),
-							replaced_object.getSbmlId())): SympySymbol("_local_%d_%s" % (replaced_object.reaction.objId,
-																						 replaced_element.getSubmodelRef() + "__" + sbmlobject.getSbmlId()))})
-							var_subs_main.update({SympySymbol("_local_%d_%s" % (
-							replaced_object.reaction.objId, replaced_object.getSbmlId())): SympySymbol(
-								"_local_%d_%s" % (replaced_object.reaction.objId, sbmlobject.getSbmlId()))})
+						for old, new in self.submodel_sids_subs[replaced_element.getSubmodelRef()].items():
+							if new == old_string:
+								self.submodel_sids_subs[replaced_element.getSubmodelRef()].update({
+									old: new_string
+								})
 
-							# In this case we don't just rename the variables in the model's math, we also need to actually create the variable in the local scope
-							replaced_object.isMarkedToBeReplaced = True
-							replaced_object.isMarkedToBeReplacedBy = sbmlobject
-							deletions.remove(replaced_object)
+						# if replaced_object.isConcentration():
+						#
+						# 	old_symbol = SympySymbol("_speciesForcedConcentration_%s_" % old_string)
+						# 	new_symbol = SympySymbol("_speciesForcedConcentration_%s_" % new_string)
+						#
+						# 	for old, new in self.submodel_symbols_subs[replaced_element.getSubmodelRef()].items():
+						# 		if new == old_symbol:
+						# 			self.submodel_symbols_subs[replaced_element.getSubmodelRef()].update({
+						# 				old: new_symbol
+						# 			})
 
-						else:
-							var_subs_main.update({SympySymbol((self.PREFIX_PATTERN + "%s") % (
-							replaced_element.getSubmodelRef(), replaced_object.getSbmlId())): SympySymbol(
-								sbmlobject.getSbmlId())})
-							var_subs_main_simples.update(
-								{SympySymbol(replaced_object.getSbmlId()): SympySymbol(sbmlobject.getSbmlId())})
+						old_symbol = SympySymbol(old_string)
+						new_symbol = SympySymbol(new_string)
 
-						# Should only work on variables, right ??!!
+						for old, new in self.submodel_symbols_subs[replaced_element.getSubmodelRef()].items():
+							if new == old_symbol:
+								self.submodel_symbols_subs[replaced_element.getSubmodelRef()].update({
+									old: new_symbol
+								})
+
 						if replaced_element.getConversionFactor() is not None:
-							conv_factors.update({SympySymbol(sbmlobject.getSbmlId()): SympySymbol(
+							self.conv_factors.update({SympySymbol(sbmlobject.getSbmlId()): SympySymbol(
 								replaced_element.getConversionFactor())})
 
 			if isinstance(sbmlobject, SbmlObject) and sbmlobject.isReplaced():
 
 				replacing_object = sbmlobject.isReplacedBy().getReplacingElementObjectFromInstance(self)
-				# submodel_deletion[sbmlobject.isReplacedBy().getSubmodelRef()].append()
-				sbmlobject.isMarkedToBeReplaced = True
-				sbmlobject.isMarkedToBeRenamed = True  # Should be true ?
-				# sbmlobject.isMarkedToBeRenamed = False # Should be true ?
-				sbmlobject.isMarkedToBeReplacedBy = replacing_object
+				self.substitutions.append((sbmlobject, replacing_object))
+				self.deletions.append(sbmlobject)
 
 				if isinstance(sbmlobject, Variable):
-					if sbmlobject.isConcentration():
-						var_subs_main.update({SympySymbol("_speciesForcedConcentration_%s__%s_" % (
-						sbmlobject.isReplacedBy().getSubmodelRef(), sbmlobject.getSbmlId())): SympySymbol(
-							"_speciesForcedConcentration_%s_" % replacing_object.getSbmlId())})
+					old_string = sbmlobject.getSbmlId()
+					new_string = replacing_object.getSbmlId()
 
-					var_subs_main.update({SympySymbol((self.PREFIX_PATTERN + "%s") % (
-					sbmlobject.isReplacedBy().getSubmodelRef(), sbmlobject.getSbmlId())): SympySymbol(
-						replacing_object.getSbmlId())})
-					var_subs_main_simples.update(
-						{SympySymbol(sbmlobject.getSbmlId()): SympySymbol(replacing_object.getSbmlId())})
+					if new_string in self.submodel_sids_subs[sbmlobject.isReplacedBy().getSubmodelRef()].keys():
+						self.submodel_sids_subs[sbmlobject.isReplacedBy().getSubmodelRef()].update({new_string: old_string})
 
-		return (deletions, var_subs_main, var_subs_main_simples, conv_factors)
+					# if replacing_object.isConcentration():
+					# 	old_symbol = SympySymbol("_speciesForcedConcentration_%s_" % old_string)
+					# 	new_symbol = SympySymbol("_speciesForcedConcentration_%s_" % new_string)
+					#
+					# 	if new_symbol in self.submodel_symbols_subs[sbmlobject.isReplacedBy().getSubmodelRef()].keys():
+					# 		self.submodel_symbols_subs[sbmlobject.isReplacedBy().getSubmodelRef()].update(
+					# 			{new_symbol: old_symbol})
+
+					old_symbol = SympySymbol(old_string)
+					new_symbol = SympySymbol(new_string)
+
+					if new_symbol in self.submodel_symbols_subs[sbmlobject.isReplacedBy().getSubmodelRef()].keys():
+						self.submodel_symbols_subs[sbmlobject.isReplacedBy().getSubmodelRef()].update({new_symbol: old_symbol})
+
+
+
+	def mergeModels(self):
+
+		# This function copy the main model and the submodels into the instanciated model, one element at a time
+
+		# self.listOfUnitDefinitions.copy(
+		# 	self.__mainModel.listOfUnitDefinitions,
+		# 	deletions=self.deletions,
+		# )
+		# for submodel in self.__mainModel.listOfSubmodels.values():
+		# 	self.listOfUnitDefinitions.copy(
+		# 		self.__submodelInstances[submodel.getSbmlId()].listOfUnitDefinitions,
+		# 		prefix=self.PREFIX_PATTERN % submodel.getSbmlId(),
+		# 		deletions=self.deletions,
+		# 	)
+
+		self.listOfCompartments.copy(
+			self.__mainModel.listOfCompartments,
+			deletions=self.deletions,
+			sids_subs=self.dict_sids,
+			symbols_subs=self.dict_symbols,
+			usids_subs=self.dict_usids
+		)
+		for submodel in self.__mainModel.listOfSubmodels.values():
+			self.listOfCompartments.copy(
+				self.__submodelInstances[submodel.getSbmlId()].listOfCompartments,
+				deletions=self.deletions,
+				sids_subs=self.submodel_sids_subs[submodel.getSbmlId()],
+				symbols_subs=self.submodel_symbols_subs[submodel.getSbmlId()],
+				usids_subs=self.submodel_usids_subs[submodel.getSbmlId()]
+			)
+
+		self.listOfParameters.copy(
+			self.__mainModel.listOfParameters,
+			deletions=self.deletions,
+			sids_subs=self.dict_sids,
+			symbols_subs=self.dict_symbols,
+			usids_subs=self.dict_usids
+		)
+		for submodel in self.__mainModel.listOfSubmodels.values():
+			self.listOfParameters.copy(
+				self.__submodelInstances[submodel.getSbmlId()].listOfParameters,
+				deletions=self.deletions,
+				sids_subs=self.submodel_sids_subs[submodel.getSbmlId()],
+				symbols_subs=self.submodel_symbols_subs[submodel.getSbmlId()],
+				usids_subs=self.submodel_usids_subs[submodel.getSbmlId()]
+			)
+
+		self.listOfSpecies.copy(
+			self.__mainModel.listOfSpecies,
+			deletions=self.deletions,
+			sids_subs=self.dict_sids,
+			symbols_subs=self.dict_symbols,
+			usids_subs=self.dict_usids
+		)
+		for submodel in self.__mainModel.listOfSubmodels.values():
+			self.listOfSpecies.copy(
+				self.__submodelInstances[submodel.getSbmlId()].listOfSpecies,
+				deletions=self.deletions,
+				sids_subs=self.submodel_sids_subs[submodel.getSbmlId()],
+				symbols_subs=self.submodel_symbols_subs[submodel.getSbmlId()],
+				usids_subs=self.submodel_usids_subs[submodel.getSbmlId()]
+			)
+
+		self.listOfReactions.copy(
+			self.__mainModel.listOfReactions,
+			deletions=self.deletions,
+			sids_subs=self.dict_symbols,
+			symbols_subs=self.dict_symbols,
+			usids_subs=self.dict_usids,
+			conversion_factors=self.conv_factors
+		)
+		for submodel in self.__mainModel.listOfSubmodels.values():
+			self.listOfReactions.copy(
+				self.__submodelInstances[submodel.getSbmlId()].listOfReactions,
+				deletions=self.deletions,
+				sids_subs=self.submodel_sids_subs[submodel.getSbmlId()],
+				symbols_subs=self.submodel_symbols_subs[submodel.getSbmlId()],
+				usids_subs=self.submodel_usids_subs[submodel.getSbmlId()],
+				conversion_factors=self.conv_factors
+			)
+
+		if self.DEBUG:
+			print ">> Model's variables : "
+			print self.listOfVariables.sbmlIds()
+			print self.listOfVariables.symbols()
+
+		self.listOfInitialAssignments.copy(
+			self.__mainModel.listOfInitialAssignments,
+			deletions=self.deletions,
+			sids_subs=self.dict_sids,
+			symbols_subs=self.dict_symbols,
+			conversion_factors=self.conv_factors
+		)
+		for submodel in self.__mainModel.listOfSubmodels.values():
+			self.listOfInitialAssignments.copy(
+				self.__submodelInstances[submodel.getSbmlId()].listOfInitialAssignments,
+				deletions=self.deletions,
+				sids_subs=self.submodel_sids_subs[submodel.getSbmlId()],
+				symbols_subs=self.submodel_symbols_subs[submodel.getSbmlId()],
+				conversion_factors=self.conv_factors
+		)
+
+		self.listOfRules.copy(
+			self.__mainModel.listOfRules,
+			deletions=self.deletions,
+			sids_subs=self.dict_sids,
+			symbols_subs=self.dict_symbols,
+			conversion_factors=self.conv_factors
+		)
+		for submodel in self.__mainModel.listOfSubmodels.values():
+			self.listOfRules.copy(
+				self.__submodelInstances[submodel.getSbmlId()].listOfRules,
+				deletions=self.deletions,
+				sids_subs=self.submodel_sids_subs[submodel.getSbmlId()],
+				symbols_subs=self.submodel_symbols_subs[submodel.getSbmlId()],
+				conversion_factors=self.conv_factors,
+		)
+
+
+		self.listOfEvents.copy(
+			self.__mainModel.listOfEvents,
+			deletions=self.deletions,
+			sids_subs=self.dict_sids,
+			symbols_subs=self.dict_symbols,
+			conversion_factors=self.conv_factors
+		)
+
+		for submodel in self.__mainModel.listOfSubmodels.values():
+			self.listOfEvents.copy(
+				self.__submodelInstances[submodel.getSbmlId()].listOfEvents,
+				deletions=self.deletions,
+				sids_subs=self.submodel_sids_subs[submodel.getSbmlId()],
+				symbols_subs=self.submodel_symbols_subs[submodel.getSbmlId()],
+				conversion_factors=self.conv_factors
+		)
 
 	def getSubmodelInstance(self, submodel_ref):
 		return self.__submodelInstances[submodel_ref]
