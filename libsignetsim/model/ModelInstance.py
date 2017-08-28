@@ -77,37 +77,40 @@ class ModelInstance(Model):
 				self.submodel_symbols_subs.update({submodel.getSbmlId(): {}})
 				self.submodel_usids_subs.update({submodel.getSbmlId(): {}})
 
-				for variable in t_submodel_instance.listOfVariables.values():
-					self.submodel_sids_subs[submodel.getSbmlId()].update({
-						variable.getSbmlId(): (self.PREFIX_PATTERN % submodel.getSbmlId()) + variable.getSbmlId()
-					})
-					# if variable.isConcentration():
-					# 	old_symbol = SympySymbol("_speciesForcedConcentration_%s_" % str(variable.symbol.getInternalMathFormula()))
-					# 	new_symbol = SympySymbol("_speciesForcedConcentration_%s_" % (
-					# 		(self.PREFIX_PATTERN % submodel.getSbmlId())
-					# 		+ str(variable.symbol.getInternalMathFormula()))
-					# 	)
-					# 	self.submodel_symbols_subs[submodel.getSbmlId()].update({old_symbol: new_symbol})
-
-					old_symbol = variable.symbol.getInternalMathFormula()
-					new_symbol = SympySymbol(
-						(self.PREFIX_PATTERN % submodel.getSbmlId())
-						+ str(variable.symbol.getInternalMathFormula())
-					)
-					self.submodel_symbols_subs[submodel.getSbmlId()].update({old_symbol: new_symbol})
-
 				for deletion in submodel.listOfDeletions.values():
 					self.deletions.append(deletion.getDeletionObjectFromInstance(t_submodel_instance))
 
+				for variable in t_submodel_instance.listOfVariables.values():
+					if variable not in self.deletions:
+						self.submodel_sids_subs[submodel.getSbmlId()].update({
+							variable.getSbmlId(): (self.PREFIX_PATTERN % submodel.getSbmlId()) + variable.getSbmlId()
+						})
+						# if variable.isConcentration():
+						# 	old_symbol = SympySymbol("_speciesForcedConcentration_%s_" % str(variable.symbol.getInternalMathFormula()))
+						# 	new_symbol = SympySymbol("_speciesForcedConcentration_%s_" % (
+						# 		(self.PREFIX_PATTERN % submodel.getSbmlId())
+						# 		+ str(variable.symbol.getInternalMathFormula()))
+						# 	)
+						# 	self.submodel_symbols_subs[submodel.getSbmlId()].update({old_symbol: new_symbol})
+						if variable.isParameter() and variable.localParameter:
+							old_symbol = variable.symbol.getInternalMathFormula()
+							new_symbol = SympySymbol("_local_%d_%s" % (variable.reaction.objId,
+								(self.PREFIX_PATTERN % submodel.getSbmlId())
+								+ str(variable.getSbmlId())
+							))
+						else:
+							old_symbol = variable.symbol.getInternalMathFormula()
+							new_symbol = SympySymbol(
+								(self.PREFIX_PATTERN % submodel.getSbmlId())
+								+ str(variable.symbol.getInternalMathFormula())
+							)
+						self.submodel_symbols_subs[submodel.getSbmlId()].update({old_symbol: new_symbol})
+
 
 				if submodel.hasExtentConversionFactor():
-					# symbol = submodel.listOfVariables.getBySymbol(submodel.getExtentConversionFactor()).value.getInternalMathFormula()
 					self.submodel_extentConversionFactor.update(
 						{submodel.getSbmlId(): submodel.getExtentConversionFactor()}
 					)
-					# for reaction in t_submodel_instance.listOfReactions.values():
-					# 	self.submodel_symbols_subs[submodel.getSbmlId()].update({reaction.symbol.getSymbol():
-					# 		reaction.symbol.getSymbol() / submodel.getExtentConversionFactor().getInternalMathFormula()})
 
 				else:
 					self.submodel_extentConversionFactor.update({submodel.getSbmlId(): None})
@@ -121,8 +124,12 @@ class ModelInstance(Model):
 				else:
 					self.submodel_timeConversionFactor.update({submodel.getSbmlId(): None})
 
+			if self.DEBUG:
+				print ">> Symbols dictionnaries"
+				print self.dict_symbols
+				print self.submodel_symbols_subs
 
-			self.findReplacements_v2()
+			self.findReplacements()
 
 			if self.DEBUG:
 				print ">> Sids dictionnaries"
@@ -141,14 +148,14 @@ class ModelInstance(Model):
 
 		if self.DEBUG:
 			print ">> Model's variables : "
-			print self.listOfSbmlObjects.metaIds()
-			# print self.listOfVariables.symbols()
-			print self.objectsDictionnary
+			print self.listOfVariables.sbmlIds()
+			print self.listOfVariables.symbols()
+			# print self.objectsDictionnary
 		if self.DEBUG:
 			print "> Returning instance %s\n" % model.getSbmlId()
 
 
-	def findReplacements_v2(self):
+	def findReplacements(self):
 
 		for sbmlobject in self.__mainModel.listOfSbmlObjects.values():
 
@@ -181,8 +188,11 @@ class ModelInstance(Model):
 						# 			self.submodel_symbols_subs[replaced_element.getSubmodelRef()].update({
 						# 				old: new_symbol
 						# 			})
+						if replaced_object.isParameter() and replaced_object.localParameter:
+							old_symbol = SympySymbol("_local_%d_%s" % (replaced_object.reaction.objId, old_string))
+						else:
+							old_symbol = SympySymbol(old_string)
 
-						old_symbol = SympySymbol(old_string)
 						new_symbol = SympySymbol(new_string)
 
 						for old, new in self.submodel_symbols_subs[replaced_element.getSubmodelRef()].items():
@@ -305,11 +315,6 @@ class ModelInstance(Model):
 				time_conversion=self.submodel_timeConversionFactor[submodel.getSbmlId()],
 				extent_conversion=self.submodel_extentConversionFactor[submodel.getSbmlId()]
 			)
-
-		if self.DEBUG:
-			print ">> Model's variables : "
-			print self.listOfVariables.sbmlIds()
-			print self.listOfVariables.symbols()
 
 		self.listOfInitialAssignments.copy(
 			self.__mainModel.listOfInitialAssignments,

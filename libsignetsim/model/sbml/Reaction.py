@@ -120,6 +120,12 @@ class Reaction(Variable, SbmlObject, HasUnits):
 				usids_subs=usids_subs
 			)
 
+		# Here we need to add the deleted local parameters to the symbols subs, because they were promoted
+		for local_param in obj.listOfLocalParameters.values():
+			if local_param in deletions and local_param.symbol.getSymbol() not in symbols_subs:
+				new_symbol = symbols_subs[SympySymbol(local_param.getSbmlId())]
+				symbols_subs.update({local_param.symbol.getSymbol(): new_symbol})
+
 		if obj.kineticLaw is not None:
 			self.kineticLaw = KineticLaw(self.model, self)
 			self.kineticLaw.copy(
@@ -128,11 +134,6 @@ class Reaction(Variable, SbmlObject, HasUnits):
 				conversion_factors=conversion_factors,
 				extent_conversion=extent_conversion,
 				time_conversion=time_conversion)
-
-			# print obj.kineticLaw.getDefinition().getInternalMathFormula()
-			# print self.kineticLaw.getDefinition().getInternalMathFormula()
-
-
 
 			self.value = MathFormula(self.model)
 			t_formula = self.kineticLaw.getDefinition(rawFormula=True).getInternalMathFormula()
@@ -144,8 +145,6 @@ class Reaction(Variable, SbmlObject, HasUnits):
 				t_formula *= time_conversion.getInternalMathFormula()
 
 			self.value.setInternalMathFormula(t_formula)
-			# print obj.value.getInternalMathFormula()
-			# print self.value.getInternalMathFormula()
 			self.constant = obj.constant
 
 		self.reversible = obj.reversible

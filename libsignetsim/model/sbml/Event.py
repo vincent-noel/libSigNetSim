@@ -128,6 +128,7 @@ class Event(Variable, SbmlObject):
 	def writeSbmlVariable(self, sbml_var, sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
 		pass
+
 	def copy(self, obj, deletions=[], sids_subs={}, symbols_subs={},
 				conversion_factors={}, time_conversion=None):
 
