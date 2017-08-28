@@ -83,6 +83,21 @@ class HasSBaseRef(object):
 			sbml_sbaseref = sbml_object.createSBaseRef()
 			self.__SBaseRef.writeSbml(sbml_sbaseref, sbml_level, sbml_version)
 
+	# def getRef(self, t_model):
+	#
+	# 	t_sbase_ref = []
+	# 	if self.hasIdRef():
+	# 		if self.hasSBaseRef():
+	# 			tt_model = t_model.listOfSubmodels.getBySbmlIdRef(self.getIdRef()).getModelObject()
+	# 			t_sbase_ref = self.getSBaseRef().getRef(tt_model)
+	# 			return [self.getIdRef()] + t_sbase_ref
+	#
+	# 		else:
+	# 			return [t_model.listOfVariables.getBySbmlId(self.getIdRef()).getMetaId()] + t_sbase_ref
+	#
+	# 	elif self.hasMetaIdRef():
+	# 		return [self.getMetaIdRef()] + t_sbase_ref
+
 	def getRef(self, t_model):
 
 		t_sbase_ref = []
@@ -96,7 +111,11 @@ class HasSBaseRef(object):
 				return [t_model.listOfVariables.getBySbmlId(self.getIdRef()).getMetaId()] + t_sbase_ref
 
 		elif self.hasMetaIdRef():
-			return [self.getMetaIdRef()] + t_sbase_ref
+			return self.getMetaIdRef()
+
+		elif self.hasPortRef():
+			return self.getPortRef()
+
 
 
 	def hasPortRef(self):

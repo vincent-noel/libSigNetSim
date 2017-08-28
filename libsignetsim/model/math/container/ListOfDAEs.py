@@ -142,8 +142,9 @@ class ListOfDAEs(list):
 				if t_var not in init_cond.keys():
 					t_value = var.value.getDeveloppedInternalMathFormula()
 					if t_value is not None:
-						init_cond.update({t_var:t_value})
-
+						init_cond.update({t_var: t_value})
+					else:
+						print "WTF %s" % var.getSbmlId()
 			if DEBUG:
 				print init_cond
 

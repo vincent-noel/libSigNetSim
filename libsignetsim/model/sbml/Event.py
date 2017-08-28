@@ -23,17 +23,17 @@
 """
 
 
-from libsignetsim.model.sbml.HasId import HasId
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
-
+from libsignetsim.model.Variable import Variable
 from libsignetsim.model.sbml.EventAssignment import EventAssignment
 from libsignetsim.model.sbml.EventTrigger import EventTrigger
 from libsignetsim.model.sbml.EventDelay import EventDelay
 from libsignetsim.model.sbml.EventPriority import EventPriority
-
+from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
 
-class Event(HasId, SbmlObject):
+class Event(Variable, SbmlObject):
+
 	""" Events definition """
 
 	def __init__ (self, model, obj_id):
@@ -41,7 +41,7 @@ class Event(HasId, SbmlObject):
 		self.__model = model
 		self.objId = obj_id
 
-		HasId.__init__(self, model)
+		Variable.__init__(self, model, Variable.EVENT)
 		SbmlObject.__init__(self, model)
 
 		self.trigger = EventTrigger(model)
@@ -57,13 +57,14 @@ class Event(HasId, SbmlObject):
 					sbml_version=Settings.defaultSbmlVersion):
 		""" Reads an event definition from a sbml file """
 
-		HasId.readSbml(self, sbml_event, sbml_level, sbml_version)
 		SbmlObject.readSbml(self, sbml_event, sbml_level, sbml_version)
 
 		if sbml_event.getTrigger() is not None:
 			self.trigger.readSbml(sbml_event.getTrigger(), sbml_level, sbml_version)
 		else:
 			self.trigger = None
+
+		Variable.readSbml(self, sbml_event, sbml_level, sbml_version)
 
 		if sbml_event.isSetDelay():
 			self.delay = EventDelay(self.__model)
@@ -85,6 +86,17 @@ class Event(HasId, SbmlObject):
 			t_event_assignment.readSbml(event_assignment, sbml_level, sbml_version)
 			self.listOfEventAssignments.append(t_event_assignment)
 
+	def readSbmlVariable(self, variable, sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+		# variable id
+		self.symbol.readSbml(variable.getId(), sbml_level, sbml_version)
+
+		if self.trigger is not None:
+			self.value = MathFormula(self.__model)
+			self.value.setInternalMathFormula(self.trigger.getInternalMathFormula())
+			self.constant = False
+		else:
+			self.constant = True
 
 	def writeSbml(self, sbml_model,
 					sbml_level=Settings.defaultSbmlLevel,
@@ -93,7 +105,7 @@ class Event(HasId, SbmlObject):
 
 		sbml_event = sbml_model.createEvent()
 
-		HasId.writeSbml(self, sbml_event, sbml_level, sbml_version)
+		Variable.writeSbml(self, sbml_event, sbml_level, sbml_version)
 		SbmlObject.writeSbml(self, sbml_event, sbml_level, sbml_version)
 
 		if self.trigger is not None:
@@ -113,11 +125,13 @@ class Event(HasId, SbmlObject):
 		else:
 			sbml_event.setUseValuesFromTriggerTime(self.useValuesFromTriggerTime)
 
-
+	def writeSbmlVariable(self, sbml_var, sbml_level=Settings.defaultSbmlLevel,
+					sbml_version=Settings.defaultSbmlVersion):
+		pass
 	def copy(self, obj, deletions=[], sids_subs={}, symbols_subs={},
 				conversion_factors={}, time_conversion=None):
 
-		HasId.copy(self, obj, sids_subs=sids_subs)
+		Variable.copy(self, obj, sids_subs=sids_subs)
 		SbmlObject.copy(self, obj)
 
 		self.trigger.copy(obj.trigger, symbols_subs=symbols_subs, conversion_factors=conversion_factors)
@@ -144,6 +158,9 @@ class Event(HasId, SbmlObject):
 
 		self.useValuesFromTriggerTime = obj.useValuesFromTriggerTime
 
+		self.value = MathFormula(self.__model)
+		self.value.setInternalMathFormula(self.trigger.getInternalMathFormula())
+		self.constant = obj.constant
 
 
 	def setTrigger(self, trigger):

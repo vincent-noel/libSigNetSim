@@ -114,6 +114,12 @@ class ModelInstance(Model):
 		# print ">> Model's variables : "
 		# print self.listOfVariables.sbmlIds()
 		#
+
+		if self.DEBUG:
+			print ">> Model's variables : "
+			print self.listOfSbmlObjects.metaIds()
+			# print self.listOfVariables.symbols()
+			print self.objectsDictionnary
 		if self.DEBUG:
 			print "> Returning instance %s\n" % model.getSbmlId()
 

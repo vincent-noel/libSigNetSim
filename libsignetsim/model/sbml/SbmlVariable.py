@@ -34,6 +34,7 @@ class SbmlVariable(HasId):
 	PARAMETER           = 2
 	STOICHIOMERY        = 3
 	REACTION            = 4
+	EVENT				= 5
 
 	def __init__(self, model, sbml_type, is_from_reaction=None):
 
@@ -96,6 +97,9 @@ class SbmlVariable(HasId):
 
 	def isReaction(self):
 		return self.sbmlType == self.REACTION
+
+	def isEvent(self):
+		return self.sbmlType == self.EVENT
 
 	def isGlobal(self):
 		return self.reaction is None

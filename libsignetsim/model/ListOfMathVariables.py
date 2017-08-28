@@ -95,7 +95,7 @@ class ListOfMathVariables(object):
 
 		for variable in self.values():
 
-			if variable.isReaction() or variable.isAssignmentRuled():
+			if (variable.isReaction() or variable.isEvent()) or variable.isAssignmentRuled():
 				# print "Assignment variable detected : %s" % variable.getSbmlId()
 				variable.type = MathVariable.VAR_ASS
 				variable.ind = i_variables_assignment

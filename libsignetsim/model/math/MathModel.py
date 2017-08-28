@@ -188,7 +188,6 @@ class MathModel(CModelWriter):
 
 		for var in self.listOfVariables.values():
 			t_var = var.symbol.getSymbol()
-
 			if t_var not in init_cond.keys():
 				t_value = var.value.getDeveloppedInternalMathFormula()
 				if t_value is not None:
@@ -250,6 +249,10 @@ class MathModel(CModelWriter):
 					t_value = MathFormula(self)
 					t_value.setInternalMathFormula(value.doit())
 					self.solvedInitialConditions.update({t_var.symbol.getSymbol():t_value})
+
+		if DEBUG:
+			print "> Final solvedInitialConditions"
+			print self.solvedInitialConditions.keys()
 
 
 		for var in self.listOfVariables.values():
