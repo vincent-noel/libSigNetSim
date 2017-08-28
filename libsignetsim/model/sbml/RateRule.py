@@ -114,7 +114,8 @@ class RateRule(Rule):
 			t_definition /= time_conversion.getInternalMathFormula()
 
 		self.__definition.setInternalMathFormula(t_definition)
-
+		# print obj.getDefinition().getInternalMathFormula()
+		# print self.__definition.getInternalMathFormula()
 
 	def getVariable(self):
 		return self.__model.listOfVariables.getBySbmlId(self.__var)

@@ -58,7 +58,8 @@ class ModelInstance(Model):
 		self.submodel_sids_subs = {}
 		self.submodel_symbols_subs = {}
 		self.submodel_usids_subs = {}
-
+		self.submodel_timeConversionFactor = {}
+		self.submodel_extentConversionFactor = {}
 		self.conv_factors = {}
 
 		# if Settings.verbose >= 2:
@@ -97,6 +98,29 @@ class ModelInstance(Model):
 
 				for deletion in submodel.listOfDeletions.values():
 					self.deletions.append(deletion.getDeletionObjectFromInstance(t_submodel_instance))
+
+
+				if submodel.hasExtentConversionFactor():
+					# symbol = submodel.listOfVariables.getBySymbol(submodel.getExtentConversionFactor()).value.getInternalMathFormula()
+					self.submodel_extentConversionFactor.update(
+						{submodel.getSbmlId(): submodel.getExtentConversionFactor()}
+					)
+					# for reaction in t_submodel_instance.listOfReactions.values():
+					# 	self.submodel_symbols_subs[submodel.getSbmlId()].update({reaction.symbol.getSymbol():
+					# 		reaction.symbol.getSymbol() / submodel.getExtentConversionFactor().getInternalMathFormula()})
+
+				else:
+					self.submodel_extentConversionFactor.update({submodel.getSbmlId(): None})
+
+				if submodel.hasTimeConversionFactor():
+					self.submodel_timeConversionFactor.update(
+						{submodel.getSbmlId(): submodel.getTimeConversionFactor()}
+					)
+					self.submodel_symbols_subs[submodel.getSbmlId()].update({SympySymbol("_time_"): SympySymbol("_time_")/submodel.getTimeConversionFactor().getInternalMathFormula()})
+
+				else:
+					self.submodel_timeConversionFactor.update({submodel.getSbmlId(): None})
+
 
 			self.findReplacements_v2()
 
@@ -269,7 +293,6 @@ class ModelInstance(Model):
 			sids_subs=self.dict_symbols,
 			symbols_subs=self.dict_symbols,
 			usids_subs=self.dict_usids,
-			conversion_factors=self.conv_factors
 		)
 		for submodel in self.__mainModel.listOfSubmodels.values():
 			self.listOfReactions.copy(
@@ -278,7 +301,9 @@ class ModelInstance(Model):
 				sids_subs=self.submodel_sids_subs[submodel.getSbmlId()],
 				symbols_subs=self.submodel_symbols_subs[submodel.getSbmlId()],
 				usids_subs=self.submodel_usids_subs[submodel.getSbmlId()],
-				conversion_factors=self.conv_factors
+				conversion_factors=self.conv_factors,
+				time_conversion=self.submodel_timeConversionFactor[submodel.getSbmlId()],
+				extent_conversion=self.submodel_extentConversionFactor[submodel.getSbmlId()]
 			)
 
 		if self.DEBUG:
@@ -291,7 +316,6 @@ class ModelInstance(Model):
 			deletions=self.deletions,
 			sids_subs=self.dict_sids,
 			symbols_subs=self.dict_symbols,
-			conversion_factors=self.conv_factors
 		)
 		for submodel in self.__mainModel.listOfSubmodels.values():
 			self.listOfInitialAssignments.copy(
@@ -300,14 +324,13 @@ class ModelInstance(Model):
 				sids_subs=self.submodel_sids_subs[submodel.getSbmlId()],
 				symbols_subs=self.submodel_symbols_subs[submodel.getSbmlId()],
 				conversion_factors=self.conv_factors
-		)
+			)
 
 		self.listOfRules.copy(
 			self.__mainModel.listOfRules,
 			deletions=self.deletions,
 			sids_subs=self.dict_sids,
 			symbols_subs=self.dict_symbols,
-			conversion_factors=self.conv_factors
 		)
 		for submodel in self.__mainModel.listOfSubmodels.values():
 			self.listOfRules.copy(
@@ -316,15 +339,14 @@ class ModelInstance(Model):
 				sids_subs=self.submodel_sids_subs[submodel.getSbmlId()],
 				symbols_subs=self.submodel_symbols_subs[submodel.getSbmlId()],
 				conversion_factors=self.conv_factors,
-		)
-
+				time_conversion=self.submodel_timeConversionFactor[submodel.getSbmlId()],
+			)
 
 		self.listOfEvents.copy(
 			self.__mainModel.listOfEvents,
 			deletions=self.deletions,
 			sids_subs=self.dict_sids,
 			symbols_subs=self.dict_symbols,
-			conversion_factors=self.conv_factors
 		)
 
 		for submodel in self.__mainModel.listOfSubmodels.values():
@@ -333,8 +355,9 @@ class ModelInstance(Model):
 				deletions=self.deletions,
 				sids_subs=self.submodel_sids_subs[submodel.getSbmlId()],
 				symbols_subs=self.submodel_symbols_subs[submodel.getSbmlId()],
-				conversion_factors=self.conv_factors
-		)
+				conversion_factors=self.conv_factors,
+				time_conversion=self.submodel_timeConversionFactor[submodel.getSbmlId()],
+			)
 
 	def getSubmodelInstance(self, submodel_ref):
 		return self.__submodelInstances[submodel_ref]

@@ -40,8 +40,7 @@ class TestSuite(object):
 		# 'comp:Submodel', 'comp:SubmodelOutput', 'comp:TimeConversionFactor'
 	]
 	INCOMPATIBLE_CASES = [1159, 1160, 1161]
-	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'FastReaction', 'comp:ExtentConversionFactor',
-		 'comp:TimeConversionFactor']
+	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'FastReaction']
 
 	COMPATIBLE_PACKAGES = ['comp']
 

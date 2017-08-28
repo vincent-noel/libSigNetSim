@@ -74,7 +74,7 @@ class ListOfInitialAssignments(ListOf, SbmlObject):
 			return t_initial_assignment
 
 
-	def copy(self, obj, deletions=[], sids_subs={}, symbols_subs={}, conversion_factors=[]):
+	def copy(self, obj, deletions=[], sids_subs={}, symbols_subs={}, conversion_factors={}):
 
 		if obj not in deletions:
 

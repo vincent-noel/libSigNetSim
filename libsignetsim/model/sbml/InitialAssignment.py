@@ -80,7 +80,7 @@ class InitialAssignment(SbmlObject):
 		sbml_initial_assignment.setMath(t_definition.getSbmlMathFormula(sbml_level, sbml_version))
 
 
-	def copy(self, obj, sids_subs={}, symbols_subs={}, conversion_factors=[]):
+	def copy(self, obj, sids_subs={}, symbols_subs={}, conversion_factors={}):
 		SbmlObject.copy(self, obj)
 
 		if obj.getVariable().getSbmlId() in sids_subs.keys():

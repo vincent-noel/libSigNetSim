@@ -129,10 +129,23 @@ class Reaction(Variable, SbmlObject, HasUnits):
 				extent_conversion=extent_conversion,
 				time_conversion=time_conversion)
 
+			# print obj.kineticLaw.getDefinition().getInternalMathFormula()
+			# print self.kineticLaw.getDefinition().getInternalMathFormula()
+
+
+
 			self.value = MathFormula(self.model)
 			t_formula = self.kineticLaw.getDefinition(rawFormula=True).getInternalMathFormula()
 
+			if extent_conversion is not None:
+				t_formula /= extent_conversion.getInternalMathFormula()
+
+			if time_conversion is not None:
+				t_formula *= time_conversion.getInternalMathFormula()
+
 			self.value.setInternalMathFormula(t_formula)
+			# print obj.value.getInternalMathFormula()
+			# print self.value.getInternalMathFormula()
 			self.constant = obj.constant
 
 		self.reversible = obj.reversible
