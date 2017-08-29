@@ -41,7 +41,6 @@ class FunctionDefinition(HasId, SbmlObject):
 		SbmlObject.__init__(self, model)
 		self.__definition = MathFormula(model, MathFormula.MATH_FUNCTION)
 
-
 	def readSbml(self, sbml_function_definition, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Reads a function definition from a sbml file """
 
@@ -49,7 +48,6 @@ class FunctionDefinition(HasId, SbmlObject):
 		SbmlObject.readSbml(self, sbml_function_definition, sbml_level, sbml_version)
 
 		self.__definition.readSbml(sbml_function_definition.getMath(), sbml_level, sbml_version)
-
 
 	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Writes a function definition to a sbml file """
@@ -60,13 +58,10 @@ class FunctionDefinition(HasId, SbmlObject):
 		t_function_definition.setMath(self.__definition.writeSbml(sbml_level, sbml_version))
 
 
-	def copy(self, obj, prefix="", shift=0):
-		HasId.copy(self, obj, prefix, shift)
-		SbmlObject.copy(self, obj, prefix, shift)
+	def copy(self, obj, sids_subs={}):
+		HasId.copy(self, obj, sids_subs=sids_subs)
+		SbmlObject.copy(self, obj)
 		self.__definition.setInternalMathFormula(obj.getDefinition().getInternalMathFormula())
-		if prefix != "":
-			self.__definition.renameSbmlId(obj.getSbmlId(), prefix+obj.getSbmlId())
-
 
 	def getDefinition(self):
 		return self.__definition

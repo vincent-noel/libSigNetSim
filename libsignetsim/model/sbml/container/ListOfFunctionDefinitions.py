@@ -66,15 +66,14 @@ class ListOfFunctionDefinitions(ListOf, HasIds, SbmlObject):
 		SbmlObject.writeSbml(self, sbml_model.getListOfFunctionDefinitions(), sbml_level, sbml_version)
 
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[]):
+	def copy(self, obj, deletions=[], sids_subs={}):
 
 		if obj not in deletions:
-			SbmlObject.copy(self, obj, prefix, shift)
+			SbmlObject.copy(self, obj)
 			for function_definition in obj.values():
 				if function_definition not in deletions:
-					obj_id = function_definition.objId + shift
-					t_function = FunctionDefinition(self.__model, obj_id)
-					t_function.copy(function_definition, prefix, shift)
+					t_function = FunctionDefinition(self.__model, self.nextId())
+					t_function.copy(function_definition, sids_subs=sids_subs)
 					ListOf.add(self, t_function)
 
 

@@ -25,13 +25,10 @@
 
 from libsignetsim.model.Model import Model
 from libsignetsim.model.Variable import Variable
-from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.sbml.container.ListOfReplacedElements import ListOfReplacedElements
-from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger
+from libsignetsim.model.sbml.FunctionDefinition import FunctionDefinition
+from libsignetsim.model.sbml.UnitDefinition import UnitDefinition
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
-from libsignetsim.model.sbml.SpeciesReference import SpeciesReference
-from libsignetsim.settings.Settings import Settings
-
 
 class ModelInstance(Model):
 	""" Sbml model class """
@@ -50,11 +47,7 @@ class ModelInstance(Model):
 		self.sbmlVersion = model.sbmlVersion
 		self.objectsDictionnary = {}
 		self.deletions = []
-		self.substitutions = []
 
-		self.dict_sids = {}
-		self.dict_symbols = {}
-		self.dict_usids = {}
 		self.submodel_sids_subs = {}
 		self.submodel_symbols_subs = {}
 		self.submodel_usids_subs = {}
@@ -99,6 +92,25 @@ class ModelInstance(Model):
 							)
 						self.submodel_symbols_subs[submodel.getSbmlId()].update({old_symbol: new_symbol})
 
+				for function_definition in t_submodel_instance.listOfFunctionDefinitions.values():
+					if function_definition not in self.deletions:
+						self.submodel_sids_subs[submodel.getSbmlId()].update({
+							function_definition.getSbmlId(): (self.PREFIX_PATTERN % submodel.getSbmlId()) + function_definition.getSbmlId()
+						})
+
+						old_symbol = SympySymbol(function_definition.getSbmlId())
+						new_symbol = SympySymbol(
+							(self.PREFIX_PATTERN % submodel.getSbmlId())
+							+ function_definition.getSbmlId()
+						)
+						self.submodel_symbols_subs[submodel.getSbmlId()].update({old_symbol: new_symbol})
+
+				for unit_definition in t_submodel_instance.listOfUnitDefinitions.values():
+					if unit_definition not in self.deletions:
+						self.submodel_usids_subs[submodel.getSbmlId()].update({
+							unit_definition.getSbmlId(): (self.PREFIX_PATTERN % submodel.getSbmlId()) + unit_definition.getSbmlId()
+						})
+
 
 				if submodel.hasExtentConversionFactor():
 					self.submodel_extentConversionFactor.update(
@@ -122,10 +134,8 @@ class ModelInstance(Model):
 
 			if self.DEBUG:
 				print ">> Sids dictionnaries"
-				print self.dict_sids
 				print self.submodel_sids_subs
 				print ">> Symbols dictionnaries"
-				print self.dict_symbols
 				print self.submodel_symbols_subs
 
 		self.mergeModels()
@@ -147,7 +157,6 @@ class ModelInstance(Model):
 				for replaced_element in sbmlobject.getListOfReplacedElements().values():
 
 					replaced_object = replaced_element.getReplacedElementObjectFromInstance(self)
-					self.substitutions.append((replaced_object, sbmlobject))
 					self.deletions.append(replaced_object)
 
 					if isinstance(sbmlobject, Variable):
@@ -178,13 +187,47 @@ class ModelInstance(Model):
 							self.conv_factors.update({SympySymbol(sbmlobject.getSbmlId()): SympySymbol(
 								replaced_element.getConversionFactor())})
 
+					if isinstance(sbmlobject, FunctionDefinition):
+
+						old_string = (self.PREFIX_PATTERN % replaced_element.getSubmodelRef()) + replaced_object.getSbmlId()
+						new_string = sbmlobject.getSbmlId()
+
+						for old, new in self.submodel_sids_subs[replaced_element.getSubmodelRef()].items():
+							if new == old_string:
+								self.submodel_sids_subs[replaced_element.getSubmodelRef()].update({
+									old: new_string
+								})
+
+
+						old_symbol = SympySymbol(old_string)
+						new_symbol = SympySymbol(new_string)
+
+						for old, new in self.submodel_symbols_subs[replaced_element.getSubmodelRef()].items():
+							if new == old_symbol:
+								self.submodel_symbols_subs[replaced_element.getSubmodelRef()].update({
+									old: new_symbol
+								})
+
+					if isinstance(sbmlobject, UnitDefinition):
+
+						old_string = (self.PREFIX_PATTERN % replaced_element.getSubmodelRef()) + replaced_object.getSbmlId()
+						new_string = sbmlobject.getSbmlId()
+
+						for old, new in self.submodel_usids_subs[replaced_element.getSubmodelRef()].items():
+							if new == old_string:
+								self.submodel_usids_subs[replaced_element.getSubmodelRef()].update({
+									old: new_string
+								})
+
+
+
+
 			if isinstance(sbmlobject, SbmlObject) and sbmlobject.isReplaced():
 
 				replacing_object = sbmlobject.isReplacedBy().getReplacingElementObjectFromInstance(self)
-				self.substitutions.append((sbmlobject, replacing_object))
 				self.deletions.append(sbmlobject)
 
-				if isinstance(sbmlobject, Variable):
+				if isinstance(sbmlobject, Variable) or isinstance(sbmlobject, FunctionDefinition):
 					old_string = sbmlobject.getSbmlId()
 					new_string = replacing_object.getSbmlId()
 
@@ -197,29 +240,44 @@ class ModelInstance(Model):
 					if new_symbol in self.submodel_symbols_subs[sbmlobject.isReplacedBy().getSubmodelRef()].keys():
 						self.submodel_symbols_subs[sbmlobject.isReplacedBy().getSubmodelRef()].update({new_symbol: old_symbol})
 
+				if isinstance(sbmlobject, UnitDefinition):
+					old_string = sbmlobject.getSbmlId()
+					new_string = replacing_object.getSbmlId()
+
+					if new_string in self.submodel_usids_subs[sbmlobject.isReplacedBy().getSubmodelRef()].keys():
+						self.submodel_usids_subs[sbmlobject.isReplacedBy().getSubmodelRef()].update({new_string: old_string})
 
 
 	def mergeModels(self):
 
 		# This function copy the main model and the submodels into the instanciated model, one element at a time
 
-		# self.listOfUnitDefinitions.copy(
-		# 	self.__mainModel.listOfUnitDefinitions,
-		# 	deletions=self.deletions,
-		# )
-		# for submodel in self.__mainModel.listOfSubmodels.values():
-		# 	self.listOfUnitDefinitions.copy(
-		# 		self.__submodelInstances[submodel.getSbmlId()].listOfUnitDefinitions,
-		# 		prefix=self.PREFIX_PATTERN % submodel.getSbmlId(),
-		# 		deletions=self.deletions,
-		# 	)
+		self.listOfUnitDefinitions.copy(
+			self.__mainModel.listOfUnitDefinitions,
+			deletions=self.deletions,
+		)
+		for submodel in self.__mainModel.listOfSubmodels.values():
+			self.listOfUnitDefinitions.copy(
+				self.__submodelInstances[submodel.getSbmlId()].listOfUnitDefinitions,
+				deletions=self.deletions,
+				usids_subs=self.submodel_usids_subs[submodel.getSbmlId()]
+			)
+
+		self.listOfFunctionDefinitions.copy(
+			self.__mainModel.listOfFunctionDefinitions,
+			deletions=self.deletions,
+		)
+		for submodel in self.__mainModel.listOfSubmodels.values():
+			self.listOfFunctionDefinitions.copy(
+				self.__submodelInstances[submodel.getSbmlId()].listOfFunctionDefinitions,
+				deletions=self.deletions,
+				sids_subs=self.submodel_sids_subs[submodel.getSbmlId()]
+			)
+
 
 		self.listOfCompartments.copy(
 			self.__mainModel.listOfCompartments,
 			deletions=self.deletions,
-			sids_subs=self.dict_sids,
-			symbols_subs=self.dict_symbols,
-			usids_subs=self.dict_usids
 		)
 		for submodel in self.__mainModel.listOfSubmodels.values():
 			self.listOfCompartments.copy(
@@ -233,9 +291,6 @@ class ModelInstance(Model):
 		self.listOfParameters.copy(
 			self.__mainModel.listOfParameters,
 			deletions=self.deletions,
-			sids_subs=self.dict_sids,
-			symbols_subs=self.dict_symbols,
-			usids_subs=self.dict_usids
 		)
 		for submodel in self.__mainModel.listOfSubmodels.values():
 			self.listOfParameters.copy(
@@ -249,9 +304,6 @@ class ModelInstance(Model):
 		self.listOfSpecies.copy(
 			self.__mainModel.listOfSpecies,
 			deletions=self.deletions,
-			sids_subs=self.dict_sids,
-			symbols_subs=self.dict_symbols,
-			usids_subs=self.dict_usids
 		)
 		for submodel in self.__mainModel.listOfSubmodels.values():
 			self.listOfSpecies.copy(
@@ -265,9 +317,6 @@ class ModelInstance(Model):
 		self.listOfReactions.copy(
 			self.__mainModel.listOfReactions,
 			deletions=self.deletions,
-			sids_subs=self.dict_symbols,
-			symbols_subs=self.dict_symbols,
-			usids_subs=self.dict_usids,
 		)
 		for submodel in self.__mainModel.listOfSubmodels.values():
 			self.listOfReactions.copy(
@@ -284,8 +333,6 @@ class ModelInstance(Model):
 		self.listOfInitialAssignments.copy(
 			self.__mainModel.listOfInitialAssignments,
 			deletions=self.deletions,
-			sids_subs=self.dict_sids,
-			symbols_subs=self.dict_symbols,
 		)
 		for submodel in self.__mainModel.listOfSubmodels.values():
 			self.listOfInitialAssignments.copy(
@@ -299,8 +346,6 @@ class ModelInstance(Model):
 		self.listOfRules.copy(
 			self.__mainModel.listOfRules,
 			deletions=self.deletions,
-			sids_subs=self.dict_sids,
-			symbols_subs=self.dict_symbols,
 		)
 		for submodel in self.__mainModel.listOfSubmodels.values():
 			self.listOfRules.copy(
@@ -315,8 +360,6 @@ class ModelInstance(Model):
 		self.listOfEvents.copy(
 			self.__mainModel.listOfEvents,
 			deletions=self.deletions,
-			sids_subs=self.dict_sids,
-			symbols_subs=self.dict_symbols,
 		)
 
 		for submodel in self.__mainModel.listOfSubmodels.values():

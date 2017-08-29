@@ -70,33 +70,17 @@ class ListOfUnitDefinitions(ListOf, HasIds, SbmlObject):
 		return t_unitDefinition
 
 
-	def copy(self, obj, prefix="", shift=0, subs={}, deletions=[], replacements={}):
-
-
-		if len(self.keys()) > 0:
-			t_shift = max(self.keys())+1
-		else:
-			t_shift = 0
-
+	def copy(self, obj, deletions=[], usids_subs={}):
 
 		if obj not in deletions:
 
-			SbmlObject.copy(self, obj, prefix, t_shift)
+			SbmlObject.copy(self, obj)
 
 			for unit_definition in obj.values():
 				if unit_definition not in deletions:
 
-					obj_id = unit_definition.objId + t_shift
-					t_definition = UnitDefinition(self.__model, obj_id)
-
-					# if not unit_definition.isMarkedToBeReplaced:
-					t_definition.copy(unit_definition, prefix, t_shift)
-					# else:
-					#     t_definition.copy(unit_definition.isMarkedToBeReplacedBy, prefix, t_shift)
-					#
-					# if unit_definition.isMarkedToBeRenamed:
-					#     t_definition.setSbmlId(unit_definition.getSbmlId(), model_wide=False)
-
+					t_definition = UnitDefinition(self.__model, self.nextId())
+					t_definition.copy(unit_definition, usids_subs=usids_subs)
 					ListOf.add(self, t_definition)
 
 

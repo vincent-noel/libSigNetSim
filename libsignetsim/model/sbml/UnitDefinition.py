@@ -122,13 +122,13 @@ class UnitDefinition(HasId, SbmlObject):
 			return False
 
 
-	def copy(self, obj, prefix="", shift=0):
+	def copy(self, obj, usids_subs={}):
 
-		HasId.copy(self, obj, prefix, shift)
+		HasId.copy(self, obj, sids_subs=usids_subs)
 
 		for unit in obj.listOfUnits:
-			t_unit = Unit(self.__model, unit.objId)
-			t_unit.copy(unit, prefix, shift)
+			t_unit = Unit(self.__model, len(self.listOfUnits))
+			t_unit.copy(unit)
 			self.listOfUnits.append(t_unit)
 
 
