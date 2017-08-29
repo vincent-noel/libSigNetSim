@@ -54,7 +54,7 @@ class TestSuiteCase(object):
 
 	def getFilename(self):
 
-		return join(Settings.sbmlTestCasesPath, "cases/semantic/%s/%s-sbml-l%sv%s-sedml.xml" % (
+		return join(Settings.sbmlTestCasesPath, "%s/%s-sbml-l%sv%s-sedml.xml" % (
 				self.caseId, self.caseId, self.sbmlLevel, self.sbmlVersion)
 		)
 
@@ -62,13 +62,13 @@ class TestSuiteCase(object):
 		return join(Settings.sbmlTestResultsPath, "%s.csv" % self.caseId)
 
 	def getExpectedResultsFilename(self):
-		return join(Settings.sbmlTestCasesPath, "cases/semantic/%s/%s-results.csv" % (
+		return join(Settings.sbmlTestCasesPath, "%s/%s-results.csv" % (
 				self.caseId, self.caseId)
 		)
 
 	def getSettingsFilename(self):
 
-		return join(Settings.sbmlTestCasesPath, "cases/semantic/%s/%s-settings.txt" % (
+		return join(Settings.sbmlTestCasesPath, "%s/%s-settings.txt" % (
 				self.caseId, self.caseId)
 		)
 

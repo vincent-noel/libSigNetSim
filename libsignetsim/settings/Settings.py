@@ -104,8 +104,8 @@ class Settings(object):
 	verboseTiming = 0
 	showSbmlErrors = False
 
-	sbmlTestCasesPath = "/tmp/"
-	sbmlTestResultsPath = join('/tmp',"test-suite-results/")
+	sbmlTestCasesPath = join('/', 'tmp',"sbml-test-suite", "cases", "semantic")
+	sbmlTestResultsPath = join('/', 'tmp',"test-suite-results")
 
 	defaultCVODEmaxNumSteps = 5000
 	defaultCVODEMaxConvFails = 100

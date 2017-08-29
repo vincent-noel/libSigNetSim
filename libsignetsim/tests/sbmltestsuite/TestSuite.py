@@ -32,15 +32,16 @@ from os import getcwd, mkdir, system
 class TestSuite(object):
 	""" Tests SED-ML semantic test cases """
 
-	TODO_CASES = []
+	TODO_CASES = range(0, 1218)
 	TODO_VERSIONS = []
 	TODO_TAGS = [
-		# 'comp:ConversionFactor', 'comp:Deletion', 'comp:ExtentConversionFactor', 'comp:ExternalModelDefinition',
-		# 'comp:ModelDefinition', 'comp:Port', 'comp:ReplacedBy', 'comp:ReplacedElement', 'comp:SBaseRef',
-		# 'comp:Submodel', 'comp:SubmodelOutput', 'comp:TimeConversionFactor'
+
 	]
 	INCOMPATIBLE_CASES = []
-	INCOMPATIBLE_TAGS = ['CSymbolDelay', 'FastReaction']
+	INCOMPATIBLE_TAGS = [
+		'CSymbolDelay', 'FastReaction',
+	]
+
 
 	COMPATIBLE_PACKAGES = ['comp']
 
@@ -49,7 +50,6 @@ class TestSuite(object):
 	def __init__(self, version):
 
 		self.TODO_VERSIONS.append(version)
-		self.testSuitePath = None
 		self.testCasesPath = None
 		self.testCasesTags = {}
 		self.testCasesVersions = {}
@@ -59,15 +59,10 @@ class TestSuite(object):
 
 	def testSuiteRun(self):
 
-		self.testSuitePath = Settings.tempDirectory
-		if not exists(join(self.testSuitePath, "test-suite-results")):
-			mkdir(join(self.testSuitePath, "test-suite-results"))
-		if not exists(join(self.testSuitePath, "cases")):
-			present_dir = getcwd()
-			cmd = "cd %s; wget %s -O temp.zip; unzip -nq temp.zip; rm temp.zip; cd %s" % (
-				Settings.tempDirectory, self.SEMANTIC_CASES_LINK, present_dir
-			)
-			system(cmd)
+		self.testCasesPath = Settings.sbmlTestCasesPath
+		if not exists(join(Settings.tempDirectory, "test-suite-results")):
+			mkdir(join(Settings.tempDirectory, "test-suite-results"))
+
 
 		self.loadTestCasesInfo()
 		return self.runTestCases()
@@ -75,9 +70,6 @@ class TestSuite(object):
 	def loadTestCasesInfo(self, path=None):
 		""" Loads cases info from the .cases-tags-map """
 
-		self.testCasesPath = join(
-								join(self.testSuitePath, "cases")
-								, "semantic")
 
 		cases_tags_map_file = join(self.testCasesPath,
 											".cases-tags-map")
@@ -93,6 +85,9 @@ class TestSuite(object):
 
 				elif line.startswith('+'):
 					# Some kind of comment ?
+					pass
+
+				elif line.strip() == "README.md":
 					pass
 
 				else:
@@ -163,15 +158,15 @@ class TestSuite(object):
 
 				nb_cases += 1
 
-				try:
-					if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
-						print ""
+				# try:
+				if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
+					print ""
 
-					test = TestSuiteCase(case, str(level), str(version), test_export=self.testExport)
-					if test.run():
-						nb_success += 1
+				test = TestSuiteCase(case, str(level), str(version), test_export=self.testExport)
+				if test.run():
+					nb_success += 1
 
-				except Exception as e:
-					print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
+				# except Exception as e:
+				# 	print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
 
 		return nb_success, nb_cases
