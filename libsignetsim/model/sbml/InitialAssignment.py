@@ -33,7 +33,7 @@ from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 class InitialAssignment(SbmlObject):
 	""" Initial assignment definition """
 
-	def __init__ (self, model, obj_id):
+	def __init__(self, model, obj_id):
 
 		self.__model = model
 		self.objId = obj_id

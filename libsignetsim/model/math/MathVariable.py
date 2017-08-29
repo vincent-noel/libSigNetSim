@@ -262,25 +262,3 @@ class MathVariable(object):
 		return (self.isSpecies()
 				and (self.getCompartment() is not None and not self.getCompartment().spatialDimensions == 0)
 				and not self.hasOnlySubstanceUnits)
-
-	def getInitialValue(self, math_type=MathFormula.MATH_INTERNAL):
-		# Getting value
-		if self.hasInitialAssignment():
-			tt_value = self.hasInitialAssignmentBy().getExpressionMath().getMathFormula(math_type)
-
-			for tt_species in self.listOfSpecies.values():
-				ttt_symbol = tt_species.symbol.getMathFormula(math_type)
-				ttt_value = tt_species.value.getMathFormula(math_type)
-				if ttt_symbol in tt_value.atoms(SympySymbol) and ttt_value is not None:
-					tt_value = tt_value.subs(ttt_symbol, ttt_value)
-
-			if self.isConcentration():
-				tt_value /= self.getCompartment().symbol.getMathFormula(math_type)
-
-			if SympySymbol("_time_") in tt_value.atoms():
-				tt_value = tt_value.subs(SympySymbol("_time_"), 0)
-
-		elif self.value.getFinalMathFormula() is not None:
-			tt_value =  self.getMathValue().getMathFormula(math_type)
-			if self.isConcentration():
-				tt_value /= self.getCompartment().symbol.getMathFormula(math_type)

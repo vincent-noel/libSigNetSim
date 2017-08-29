@@ -249,11 +249,13 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		elif self.isRateRuled():
 			t_rule = self.isRuledBy().getDefinition(rawFormula=rawFormula).getInternalMathFormula()
 
-			if self.getCompartment().isRateRuled() and not t_rule == MathFormula.ZERO:
+			if self.hasOnlySubstanceUnits:
+				t_formula.setInternalMathFormula(t_rule)
+
+			elif self.getCompartment().isRateRuled() and not t_rule == MathFormula.ZERO:
 				""" Then things get complicated. We need to add a term :
 					 amount_species * rate_comp / comp
 				"""
-				t_formula_corrector = MathFormula(self.__model)
 				t_amount_species = self.symbol.getInternalMathFormula()
 				t_comp_rate = self.getCompartment().isRuledBy().getDefinition(rawFormula=rawFormula).getInternalMathFormula()
 				t_comp = self.getCompartment().symbol.getInternalMathFormula()
@@ -268,10 +270,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			ode = MathFormula.ZERO
 
 			if not self.boundaryCondition:
-				for reaction in self.__model.listOfReactions.values():
-					if not reaction.fast or including_fast_reactions:
-						ode += reaction.getODE(self, symbols=symbols, rawFormula=rawFormula).getInternalMathFormula()
-
+					for reaction in self.__model.listOfReactions.values():
+						if not reaction.fast or including_fast_reactions:
+							ode += reaction.getODE(self, symbols=symbols, rawFormula=rawFormula).getInternalMathFormula()
 
 			if self.isSetConversionFactor():
 				ode *= self.getSymbolConversionFactor()

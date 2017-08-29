@@ -90,7 +90,10 @@ class Compartment(Variable, SbmlObject, InitiallyAssignedVariable,
 		# spatialDimensions
 		if sbml_level >= 2:
 			if sbml_compartment.isSetSpatialDimensions():
-				self.spatialDimensions = sbml_compartment.getSpatialDimensions()
+				if sbml_level == 2:
+					self.spatialDimensions = sbml_compartment.getSpatialDimensions()
+				else:
+					self.spatialDimensions = sbml_compartment.getSpatialDimensionsAsDouble()
 			elif sbml_level in [1, 2]:
 				self.spatialDimensions = 3
 

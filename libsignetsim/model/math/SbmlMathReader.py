@@ -28,9 +28,7 @@ from math import isinf, isnan
 from sympy import srepr
 from libsignetsim.model.math.sympy_shortcuts import *
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.ModelException import (SbmlException,
-												TagNotImplementedModelException)
-
+from libsignetsim.model.ModelException import (SbmlException, TagNotImplementedModelException)
 
 class SbmlMathReader(object):
 	""" Class for handling math formulaes """

@@ -30,8 +30,7 @@ from libsignetsim.model.Variable import Variable
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.sbml.HasUnits import HasUnits
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.math.sympy_shortcuts import SympySymbol
-from copy import copy
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger
 
 class Parameter(Variable, SbmlObject, InitiallyAssignedVariable,
 						RuledVariable, EventAssignedVariable,
@@ -113,7 +112,8 @@ class Parameter(Variable, SbmlObject, InitiallyAssignedVariable,
 		if sbml_parameter.isSetValue():
 			self.isInitialized = True
 			self.value.readSbml(sbml_parameter.getValue(), sbml_level, sbml_version)
-
+		else:
+			self.value.setInternalMathFormula(SympyInteger(1))
 		if sbml_parameter.isSetConstant():
 			self.constant = sbml_parameter.getConstant()
 		elif sbml_level == 2:
