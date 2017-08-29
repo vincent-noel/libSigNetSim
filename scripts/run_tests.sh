@@ -21,6 +21,9 @@ if [ $1 = "sbml-test-suite" ]; then
     elif [ $2 = "3.1" ]; then
         coverage run -a -m unittest libsignetsim.tests.sbmltestsuite.TestSuite_l3v1 || exit 1;
 
+    elif [ $2 = "3.2" ]; then
+        coverage run -a -m unittest libsignetsim.tests.sbmltestsuite.TestSuite_l3v2 || exit 1;
+
     fi
 
 elif [ $1 = "biomodels" ]; then

@@ -45,8 +45,6 @@ class TestSuite(object):
 
 	COMPATIBLE_PACKAGES = ['comp']
 
-	SEMANTIC_CASES_LINK = "http://downloads.sourceforge.net/project/sbml/test-suite/3.2.0/case-archives/sbml-semantic-test-cases-2016-07-27.zip"
-
 	def __init__(self, version):
 
 		self.TODO_VERSIONS.append(version)
