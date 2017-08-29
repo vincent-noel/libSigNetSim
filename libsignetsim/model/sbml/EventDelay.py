@@ -69,7 +69,7 @@ class EventDelay(SbmlObject, MathFormula):
 		for var, conversion in conversion_factors.items():
 			t_convs.update({var: var/conversion})
 
-		t_formula = unevaluatedSubs(obj.getInternalMathFormula(), symbols_subs)
+		t_formula = unevaluatedSubs(obj.getInternalMathFormula(rawFormula=False), symbols_subs)
 		t_formula = unevaluatedSubs(t_formula, t_convs)
 
 		if time_conversion is not None:

@@ -65,6 +65,6 @@ class EventPriority(SimpleSbmlObject, MathFormula):
 		for var, conversion in conversion_factors.items():
 			t_convs.update({var: var/conversion})
 
-		t_formula = unevaluatedSubs(obj.getInternalMathFormula(), symbols_subs)
+		t_formula = unevaluatedSubs(obj.getInternalMathFormula(rawFormula=False), symbols_subs)
 		t_formula = unevaluatedSubs(t_formula, t_convs)
 		MathFormula.setInternalMathFormula(self, t_formula)

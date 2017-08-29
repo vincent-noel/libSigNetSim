@@ -103,7 +103,7 @@ class EventAssignment(SbmlObject):
 		for var, conversion in conversion_factors.items():
 			t_convs.update({var: var/conversion})
 
-		t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(), symbols_subs)
+		t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(rawFormula=False), symbols_subs)
 		t_definition = unevaluatedSubs(t_definition, t_convs)
 
 		t_var_symbol = unevaluatedSubs(obj.getVariable().symbol.getInternalMathFormula(), symbols_subs)

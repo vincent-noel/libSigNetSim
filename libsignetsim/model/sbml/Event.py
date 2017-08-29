@@ -132,7 +132,7 @@ class Event(Variable, SbmlObject):
 	def copy(self, obj, deletions=[], sids_subs={}, symbols_subs={},
 				conversion_factors={}, time_conversion=None):
 
-		Variable.copy(self, obj, sids_subs=sids_subs)
+		Variable.copy(self, obj, sids_subs=sids_subs, symbols_subs=symbols_subs)
 		SbmlObject.copy(self, obj)
 
 		self.trigger.copy(obj.trigger, symbols_subs=symbols_subs, conversion_factors=conversion_factors)

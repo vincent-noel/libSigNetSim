@@ -62,7 +62,6 @@ class ModelInstance(Model):
 		self.submodel_extentConversionFactor = {}
 		self.conv_factors = {}
 
-		# if Settings.verbose >= 2:
 		if self.DEBUG:
 			print "\n\n> Instanciating model %s, parent doc is %s" % (model.getSbmlId(), document.documentFilename)
 
@@ -85,13 +84,7 @@ class ModelInstance(Model):
 						self.submodel_sids_subs[submodel.getSbmlId()].update({
 							variable.getSbmlId(): (self.PREFIX_PATTERN % submodel.getSbmlId()) + variable.getSbmlId()
 						})
-						# if variable.isConcentration():
-						# 	old_symbol = SympySymbol("_speciesForcedConcentration_%s_" % str(variable.symbol.getInternalMathFormula()))
-						# 	new_symbol = SympySymbol("_speciesForcedConcentration_%s_" % (
-						# 		(self.PREFIX_PATTERN % submodel.getSbmlId())
-						# 		+ str(variable.symbol.getInternalMathFormula()))
-						# 	)
-						# 	self.submodel_symbols_subs[submodel.getSbmlId()].update({old_symbol: new_symbol})
+
 						if variable.isParameter() and variable.localParameter:
 							old_symbol = variable.symbol.getInternalMathFormula()
 							new_symbol = SympySymbol("_local_%d_%s" % (variable.reaction.objId,
@@ -124,10 +117,6 @@ class ModelInstance(Model):
 				else:
 					self.submodel_timeConversionFactor.update({submodel.getSbmlId(): None})
 
-			if self.DEBUG:
-				print ">> Symbols dictionnaries"
-				print self.dict_symbols
-				print self.submodel_symbols_subs
 
 			self.findReplacements()
 
@@ -141,17 +130,11 @@ class ModelInstance(Model):
 
 		self.mergeModels()
 
-		# if Settings.verbose >= 2:
-		# print ">> Model's variables : "
-		# print self.listOfVariables.sbmlIds()
-		#
-
 		if self.DEBUG:
 			print ">> Model's variables : "
 			print self.listOfVariables.sbmlIds()
 			print self.listOfVariables.symbols()
-			# print self.objectsDictionnary
-		if self.DEBUG:
+
 			print "> Returning instance %s\n" % model.getSbmlId()
 
 
@@ -178,16 +161,6 @@ class ModelInstance(Model):
 									old: new_string
 								})
 
-						# if replaced_object.isConcentration():
-						#
-						# 	old_symbol = SympySymbol("_speciesForcedConcentration_%s_" % old_string)
-						# 	new_symbol = SympySymbol("_speciesForcedConcentration_%s_" % new_string)
-						#
-						# 	for old, new in self.submodel_symbols_subs[replaced_element.getSubmodelRef()].items():
-						# 		if new == old_symbol:
-						# 			self.submodel_symbols_subs[replaced_element.getSubmodelRef()].update({
-						# 				old: new_symbol
-						# 			})
 						if replaced_object.isParameter() and replaced_object.localParameter:
 							old_symbol = SympySymbol("_local_%d_%s" % (replaced_object.reaction.objId, old_string))
 						else:
@@ -217,14 +190,6 @@ class ModelInstance(Model):
 
 					if new_string in self.submodel_sids_subs[sbmlobject.isReplacedBy().getSubmodelRef()].keys():
 						self.submodel_sids_subs[sbmlobject.isReplacedBy().getSubmodelRef()].update({new_string: old_string})
-
-					# if replacing_object.isConcentration():
-					# 	old_symbol = SympySymbol("_speciesForcedConcentration_%s_" % old_string)
-					# 	new_symbol = SympySymbol("_speciesForcedConcentration_%s_" % new_string)
-					#
-					# 	if new_symbol in self.submodel_symbols_subs[sbmlobject.isReplacedBy().getSubmodelRef()].keys():
-					# 		self.submodel_symbols_subs[sbmlobject.isReplacedBy().getSubmodelRef()].update(
-					# 			{new_symbol: old_symbol})
 
 					old_symbol = SympySymbol(old_string)
 					new_symbol = SympySymbol(new_string)

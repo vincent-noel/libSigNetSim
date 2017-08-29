@@ -32,12 +32,12 @@ from os import getcwd, mkdir, system
 class TestSuite(object):
 	""" Tests SED-ML semantic test cases """
 
-	TODO_CASES = range(0, 1218)
+	TODO_CASES = []
 	TODO_VERSIONS = []
 	TODO_TAGS = [
 
 	]
-	INCOMPATIBLE_CASES = []
+	INCOMPATIBLE_CASES = [1221, 1310, 1478, 1479, 1489, 1490, 1491, 1492, 1493, 1494, 1502, 1504, 1505, 1506, 1507, 1508, 1511, 1512, 1531, 1575, 1589, 1590]
 	INCOMPATIBLE_TAGS = [
 		'CSymbolDelay', 'FastReaction',
 	]
@@ -158,15 +158,15 @@ class TestSuite(object):
 
 				nb_cases += 1
 
-				# try:
-				if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
-					print ""
+				try:
+					if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
+						print ""
 
-				test = TestSuiteCase(case, str(level), str(version), test_export=self.testExport)
-				if test.run():
-					nb_success += 1
+					test = TestSuiteCase(case, str(level), str(version), test_export=self.testExport)
+					if test.run():
+						nb_success += 1
 
-				# except Exception as e:
-				# 	print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
+				except Exception as e:
+					print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
 
 		return nb_success, nb_cases

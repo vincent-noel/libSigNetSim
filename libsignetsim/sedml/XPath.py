@@ -25,7 +25,8 @@ from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.sbml.Species import Species
 from libsignetsim.model.sbml.Compartment import Compartment
 from libsignetsim.model.sbml.Parameter import Parameter
-from libsignetsim.sedml.SedmlException import SedmlUnknownXPATH
+from libsignetsim.model.sbml.Reaction import Reaction
+
 from re import match
 
 class XPath(object):
@@ -54,57 +55,19 @@ class XPath(object):
 	def readSedml(self, xpath, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
 		if xpath is not None:
-			# print xpath
 			t_path = xpath.split('/')
 
 			last_ind = len(t_path)-1
 			if t_path[last_ind].startswith("@"):
 				self.__attribute = t_path[last_ind][1:]
-				# self.__path = self.__path[:-1]
 				last_ind -= 1
 
 			self.readRef(t_path[last_ind])
-		#
-		#
-		# if self.__path[-1].startswith("descendant::*"):
-		#
-		#
-		# if self.__path[0] == "" and self.__path[1] in ["sbml:sbml", "sbml"] and self.__path[2] == ["sbml:model", "model"]:
-		# 	self.__preambule = ["", "sbml:sbml", "sbml:model"]
-		#
-		#
-		# 	if self.__path[3].startswith("descendant::*"):
-		# 		# Then we'll get it via listOfVariables, or listOfSbmlObjects I guess
-		# 		self.__containers = ["descendant::*"]
-		# 	elif ":" in self.__path[3] and
-		#
-		#
-		#
-		#
-		#
-		# 		ind_last_token = len(self.__path) - 1
-		#
-		# 		if self.__path[ind_last_token].startswith("@"):
-		# 			self.__attribute = self.__path[ind_last_token][1:]
-		# 			self.__path = self.__path[:-1]
-		# 			ind_last_token -= 1
-		#
-		# 		print self.__path[ind_last_token]
-		# 		last_token =
-		# 		if self.__path[ind_last_token].startswith("sbml:"):
-		#
-		# 		res_match = match(r"(sbml:[a-zA-Z]+)\[@([a-zA-Z]+)=[\'\"](.*)[\'\"]\]", self.__path[ind_last_token])
-		#
-		# 		print res_match.groups()
-		# 		self.__path[ind_last_token] = res_match.groups()[0]
-		# 		self.__refType = res_match.groups()[1]
-		# 		self.__ref = res_match.groups()[2]
 
 	def readRef(self, string):
 
 		res_match = match(r"([a-zA-Z\:\*]+)\[@([a-zA-Z]+)=[\'\"](.*)[\'\"]\]", string)
 
-		# print res_match.groups()
 		self.__varType = res_match.groups()[0]
 		if self.__varType != "descendant::*" and ":" not in self.__varType:
 			self.__varType = "sbml:" + self.__varType
@@ -114,13 +77,7 @@ class XPath(object):
 
 	def getModelObject(self, sbml_model):
 
-		# print self.__path
-		# ind_last_token = len(self.__path) - 1
-		# if self.__attribute is not None:
-		# 	ind_last_token -= 1
-
 		t_container = None
-		# if self.__path[ind_last_token] == "sbml:species":
 		if self.__varType == "descendant::*":
 			if self.__refType == "id":
 				t_container = sbml_model.listOfVariables
@@ -136,6 +93,9 @@ class XPath(object):
 		elif self.__varType.endswith(":parameter"):
 			t_container = sbml_model.listOfParameters
 
+		elif self.__varType.endswith(":reaction"):
+			t_container = sbml_model.listOfReactions
+
 		if t_container is not None:
 			if self.__refType == "id":
 				return t_container.getBySbmlId(self.__ref)
@@ -144,10 +104,6 @@ class XPath(object):
 				return t_container.getByName(self.__ref)
 
 	def setModelObject(self, object, attribute=None):
-
-		# self.__path = ["", "sbml:sbml", "sbml:model"]
-		# print type(object)
-		# print object.getSbmlId()
 
 		if object.getModel().sbmlLevel == 1:
 			self.__refType = "name"
@@ -163,11 +119,11 @@ class XPath(object):
 			self.__varType = "sbml:species"
 
 		elif isinstance(object, Parameter):
-			# print "YEAH PARAMETEr"
 			self.__varType = "sbml:parameter"
 
-		# else:
-		# 	print type(object)
+		elif isinstance(object, Reaction):
+			self.__varType = "sbml:reaction"
+
 		self.__attribute = attribute
 
 	def writeSedml(self, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
@@ -176,7 +132,7 @@ class XPath(object):
 	def getXPath(self):
 
 		if self.__varType is not None and self.__refType is not None and self.__ref is not None:
-			# print "%s (%s)" % (self.__ref, self.__varType)
+
 			str = "/sbml:sbml/sbml:model"
 			if self.__varType == "descendant::*":
 				str += "/" + self.__varType
@@ -191,6 +147,8 @@ class XPath(object):
 				elif self.__varType.endswith(":parameter"):
 					str += "/sbml:listOfParameters/sbml:parameter"
 
+				elif self.__varType.endswith(":reaction"):
+					str += "/sbml:listOfReactions/sbml:reaction"
 
 			str += ("[@%s='%s']" % (self.__refType, self.__ref))
 			if self.__attribute is not None:

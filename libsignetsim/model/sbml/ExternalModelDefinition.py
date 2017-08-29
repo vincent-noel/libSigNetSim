@@ -59,7 +59,7 @@ class ExternalModelDefinition(HasId, SbmlObject):
 		t_document = self.__model.parentDoc.documentDependencies[t_id_dep]
 
 		if self.__modelRef is not None:
-			self.modelDefinition = t_document.getSubmodel(self.__modelRef).modelDefinition
+			self.modelDefinition = t_document.getSubmodel(self.__modelRef)
 		else:
 			self.modelDefinition = t_document.model
 
@@ -108,6 +108,6 @@ class ExternalModelDefinition(HasId, SbmlObject):
 		t_document = self.__model.parentDoc.documentDependencies[t_id_dep]
 
 		if self.__modelRef is not None:
-			self.modelDefinition = t_document.getSubmodel(self.__modelRef).modelDefinition
+			self.modelDefinition = t_document.getSubmodel(self.__modelRef)
 		else:
 			self.modelDefinition = t_document.model

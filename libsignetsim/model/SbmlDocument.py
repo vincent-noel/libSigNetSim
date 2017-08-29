@@ -75,10 +75,12 @@ class SbmlDocument(object):
 
 
 	def getSubmodel(self, submodel_id):
-		if submodel_id in self.listOfModelDefinitions.sbmlIds():
-			return self.listOfModelDefinitions.getBySbmlId(submodel_id)
+		if submodel_id == self.model.getSbmlId():
+			return self.model
+		elif submodel_id in self.listOfModelDefinitions.sbmlIds():
+			return self.listOfModelDefinitions.getBySbmlId(submodel_id).modelDefinition
 		elif submodel_id in self.listOfExternalModelDefinitions.sbmlIds():
-			return self.listOfExternalModelDefinitions.getBySbmlId(submodel_id)
+			return self.listOfExternalModelDefinitions.getBySbmlId(submodel_id).modelDefinition
 
 
 	def enableComp(self):
