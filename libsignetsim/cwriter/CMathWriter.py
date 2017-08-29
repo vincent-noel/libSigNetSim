@@ -39,7 +39,7 @@ from libsignetsim.model.math.sympy_shortcuts import (
 	SympyMax, SympyMin, SympyITE)
 
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.ModelException import MathException
+from libsignetsim.model.math.MathException import MathException, DelayNotImplemented
 
 class CMathWriter(object):
 	""" Class for handling math formulaes """
@@ -215,8 +215,7 @@ class CMathWriter(object):
 
 
 		elif tree.func == SympyMul:
-			# if len(tree.args) > 2:
-			# 	print srepr(tree)
+
 			if len(tree.args) == 2:
 				if tree.args[0].func == SympyNegOne:
 					return "-" + self.translateForC(tree.args[1])
@@ -230,8 +229,6 @@ class CMathWriter(object):
 			t_divider = ""
 			for i_arg, arg in enumerate(tree.args):
 
-				# if len(tree.args) > 2:
-				# 	print arg
 				if arg.func == SympyNegOne:
 					t_mul = "-" + t_mul
 
@@ -250,8 +247,6 @@ class CMathWriter(object):
 			if t_divider == "":
 				return t_mul
 			else:
-				# if len(tree.args) > 2:
-				# 	print "(" + t_mul + "/(%s))" % t_divider
 				return t_minus + "(" + t_mul + "/(%s))" % t_divider
 
 		# AST_FUNCTION_ABS
@@ -355,24 +350,15 @@ class CMathWriter(object):
 				line_end = line_end + ")"
 
 			line = line + ":(RCONST(0.0))" + line_end
-			# print line
 			return line
 
 		# AST_FUNCTION_PIECEWISE
 		elif tree.func == SympyITE:
-			# print srepr(tree)
 			t_cond = tree.args[0]
 			t_val = tree.args[1]
 			t_other_val = tree.args[2]
 			line = "(%s?%s:%s)" % (self.translateForC(t_cond), self.translateForC(t_val), self.translateForC(t_other_val))
 
-			# for piece in range(1, len(tree.args)):
-			# 	(t_val, t_cond) = tree.args[piece]
-			# 	line = line + ":(%s?%s" % (self.translateForC(t_cond), self.translateForC(t_val))
-			# 	line_end = line_end + ")"
-
-			# line = line + ":(RCONST(0.0))" + line_end
-			# print line
 			return line
 
 		# AST_FUNCTION_POWER
@@ -443,32 +429,13 @@ class CMathWriter(object):
 
 		elif tree.func == SympyXor:
 			return self.translateForC(simplify(tree))
-			# t_args = "("
-			#
-			# for i_arg in range(0, min(2, len(tree.args))):
-			#     if i_arg > 0:
-			#         t_args = t_args + " && "
-			#     t_args = t_args + "(!" + self.translateForC(tree.args[i_arg]) + ")"
-			#
-			# print t_args + ")"
-			# if len(tree.args) > 2:
-			#     for i_arg in range(2, len(tree.args)):
-			#
-			#         t_args = "(" + t_args + ") && (!" + self.translateForC(tree.args[i_arg]) + ")"
-			# print t_args + ")"
-			#
-			# return t_args + ")"
-
 
 		elif tree.func == SympyNot:
 			return "(!%s)" % self.translateForC(tree.args[0])
 
 		elif tree.func == SympyFunction:
-			#TODO
-			#This case *should* only be used by the delay function. And right now, we just return the variable
-			#ie : It's not working !!!
-			return self.translateForC(tree.args[0])
+			raise DelayNotImplemented()
+
 		else:
-			print str(tree)
 			raise MathException("C Math Writer : Unknown Sympy Symbol %s" % str(tree))
 			return str(tree)

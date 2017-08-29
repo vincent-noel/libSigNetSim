@@ -25,7 +25,7 @@
 
 from libsignetsim.model.math.sympy_shortcuts import *
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.ModelException import MathException
+from libsignetsim.model.math.MathException import MathException
 
 import libsbml
 from sympy import srepr
@@ -134,7 +134,7 @@ class SbmlMathWriter(object):
 		# elif isinstance(tree, str):
 		# 	return self.translateVariableForSbml(tree, sbml_level, sbml_version)
 
-		if tree.func == SympySymbol:
+		if tree.func == SympySymbol or tree.func == SympyDummy:
 			return self.translateVariableForSbml(str(tree), sbml_level, sbml_version)
 
 		# elif isinstance(tree.func, SympyUndefinedFunction) and tree.args == (SympySymbol("t"),) and str(tree.func) in self.model.listOfVariables.keys():
@@ -158,7 +158,6 @@ class SbmlMathWriter(object):
 			# The python libsbml doesn't seems to be implemented in that case.
 			# Not sure if it's standard or not, but the test case exists... so
 			if float(long(tree.p)) != float(tree.p) or float(long(tree.p)) != float(tree.p):
-				print "DETECTED"
 				t_ast = libsbml.ASTNode()
 				t_ast.setType(libsbml.AST_DIVIDE)
 				t_ast.addChild(self.translateForSbml(tree.p, sbml_level, sbml_version))
@@ -664,7 +663,7 @@ class SbmlMathWriter(object):
 			t_ast.setType(libsbml.AST_LOGICAL_NOT)
 			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
 			return t_ast
-		elif tree.func == SympyLambda:
+		elif tree.func == SympyLambda or tree.func == SympyIdentityFunction:
 			t_ast = libsbml.ASTNode()
 			t_ast.setType(libsbml.AST_LAMBDA)
 			t_args = list(tree.args[0])
@@ -687,6 +686,19 @@ class SbmlMathWriter(object):
 
 			return t_ast
 
+		elif "_functionDefinition_" in str(tree):
+			t_ast = libsbml.ASTNode()
+			t_ast.setType(libsbml.AST_FUNCTION)
+
+			res_match = match(r"_functionDefinition_(\d+)_", str(tree))
+			t_id = int(res_match.groups()[0])
+
+			t_ast.setName(self.model.listOfFunctionDefinitions[t_id].getSbmlId())
+			# for i_arg in range(0, len(tree.args)):
+			# 	# print tree.args[i_arg]
+			# 	t_ast.addChild(self.translateForSbml(tree.args[i_arg], sbml_level, sbml_version))
+
+			return t_ast
 		else:
 			# print str(tree)
 			raise MathException("Sbml Math Writer : Unknown Sympy Symbol %s" % str(tree))

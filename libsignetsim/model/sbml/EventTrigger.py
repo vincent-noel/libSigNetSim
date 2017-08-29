@@ -24,7 +24,8 @@
 
 
 from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.ModelException import MathException, SbmlException
+from libsignetsim.model.ModelException import SbmlException
+from libsignetsim.model.math.MathException import MathException
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.sympy_shortcuts import (
 	SympySymbol, SympyEqual, SympyUnequal, SympyGreaterThan, SympyLessThan,
@@ -34,6 +35,8 @@ from libsignetsim.model.math.sympy_shortcuts import (
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 
 from libsbml import parseL3Formula
+from sympy import srepr
+
 class EventTrigger(MathFormula):
 	""" Events definition """
 

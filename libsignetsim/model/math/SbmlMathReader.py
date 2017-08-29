@@ -224,11 +224,9 @@ class SbmlMathReader(object):
 				return True
 
 			elif tree.getType() == libsbml.AST_CONSTANT_PI:
-				# print " PIIIIIII"
 				return SympyPi
 
 			elif tree.getType() == libsbml.AST_NAME_AVOGADRO or tree.getType() == libsbml.AST_TYPECODE_CSYMBOL_AVOGADRO:
-				# print " Avogadro detected"
 				return SympySymbol("_avogadro_")
 
 			else:
@@ -483,6 +481,7 @@ class SbmlMathReader(object):
 
 			else:
 				t_args = []
+
 				for param in range(0, tree.getNumChildren()):
 					t_args.append(self.translateForInternal(tree.getChild(param), sbml_level, sbml_version, simplified, develop))
 
@@ -504,8 +503,10 @@ class SbmlMathReader(object):
 
 			t_def = self.translateForInternal(tree.getChild(tree.getNumChildren()-1), sbml_level, sbml_version, simplified, develop)
 
-			return SympyLambda(tuple(t_args), t_def)
-
+			if len(t_args) > 0:
+				return SympyLambda(tuple(t_args), t_def)
+			else:
+				return SympyLambda(tuple([]), t_def)
 
 		elif tree.isRelational():
 

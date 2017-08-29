@@ -40,27 +40,11 @@ class SbmlException(ModelException):
 
 	pass
 
-class MathException(ModelException):
-
-	pass
-
 class FileException(ModelException):
 
 	pass
 
-#
-# class ModelException(Exception):
-#
-# 	def __init__(self, value, message):
-#
-# 		self.value = value
-# 		self.message = message
-#
-# 	def __str__(self):
-# 		return "%d : %s" % (self.value, self.message)
-
 class TagNotImplementedModelException(ModelException):
-
 
 	def __init__(self, tag):
 		self.tag = tag

@@ -37,7 +37,7 @@ from libsignetsim.model.math.MathAsymmetricModel import MathAsymmetricModel
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyFloat
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
-from libsignetsim.model.ModelException import MathException
+from libsignetsim.model.math.MathException import MathException
 from libsignetsim.settings.Settings import Settings
 
 from time import time

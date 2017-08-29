@@ -27,6 +27,8 @@ from sympy.core.symbol import Symbol as SympySymbol
 from sympy.core.numbers import Integer as SympyInteger
 from sympy.core.numbers import Float as SympyFloat
 from sympy.core.basic import Atom as SympyAtom
+from sympy.core.containers import Tuple as SympyTuple
+from sympy.core.symbol import Dummy as SympyDummy
 #numbers
 from sympy.core.numbers import One as SympyOne
 from sympy.core.numbers import NegativeOne as SympyNegOne
@@ -48,6 +50,8 @@ from sympy.core.power import Pow as SympyPow
 from sympy.core.function import Function as SympyFunction
 from sympy.core.function import UndefinedFunction as SympyUndefinedFunction
 from sympy.core.function import Lambda as SympyLambda
+from sympy.functions.elementary.miscellaneous import IdentityFunction as SympyIdentityFunction
+
 from sympy.core.function import Derivative as SympyDerivative
 from sympy.functions.elementary.integers import ceiling as SympyCeiling
 from sympy.functions.elementary.integers import floor as SympyFloor

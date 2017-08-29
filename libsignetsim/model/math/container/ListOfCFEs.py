@@ -26,7 +26,7 @@ from libsignetsim.model.math.CFE import CFE
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.sympy_shortcuts import SympyPiecewise, SympyITE, SympyInf, SympyNan, SympyEqual, SympySymbol, SympyPow
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.ModelException import MathException
+from libsignetsim.model.math.MathException import MathException
 from sympy import solve, sympify, srepr, simplify
 from time import time
 

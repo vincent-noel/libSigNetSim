@@ -25,8 +25,9 @@
 
 from libsignetsim.model.math.sympy_shortcuts import (
 	SympySymbol, SympyInteger, SympyFloat, SympyPi, SympyMul, SympyPow, SympyUndefinedFunction,
-	SympyTrue, SympyFalse, SympyExprCondPair, SympyITE)
+	SympyTrue, SympyFalse, SympyExprCondPair, SympyITE, SympyLambda, SympyTuple)
 from re import match
+from sympy import srepr
 
 
 def unevaluatedSubs(expr, substitutions, *args, **kwargs):
@@ -74,6 +75,7 @@ class MathDevelopper(object):
 										SympyInteger(-1)))
 
 		else:
+
 			return variable
 
 
@@ -89,23 +91,31 @@ class MathDevelopper(object):
 			return tree
 
 		if isinstance(tree.func, SympyUndefinedFunction) and "_functionDefinition_" in str(tree.func):
-
 			res_match = match(r"_functionDefinition_(\d+)_", str(tree.func))
 			t_id = int(res_match.groups()[0])
-			t_definition = self.__model.listOfFunctionDefinitions[t_id].getDefinition().getInternalMathFormula().args[1]
+			t_definition = self.translateForDeveloppedInternal(self.__model.listOfFunctionDefinitions[t_id].getDefinition().getInternalMathFormula().args[1])
 			t_arguments = list(self.__model.listOfFunctionDefinitions[t_id].getDefinition().getInternalMathFormula().args[0])
 
 			for child in range(0, len(tree.args)):
-				t_definition = t_definition.subs(t_arguments[child], self.translateForDeveloppedInternal(tree.args[child]))
+				t_definition = unevaluatedSubs(t_definition, {t_arguments[child]: self.translateForDeveloppedInternal(tree.args[child])})
 
 			return t_definition
 
+		elif isinstance(tree, SympyUndefinedFunction):
+			res_match = match(r"_functionDefinition_(\d+)_", str(tree))
+			t_id = int(res_match.groups()[0])
+			t_definition = self.__model.listOfFunctionDefinitions[t_id].getDefinition().getInternalMathFormula()
+
+			return self.translateForDeveloppedInternal(t_definition)
 
 		elif tree.func == SympySymbol:
 			return self.translateVariableForDeveloppedInternal(tree)
 
+		elif tree.func == SympyLambda and len(tree.args) > 0 and tree.args[0] == SympyTuple():
+			return self.translateForDeveloppedInternal(tree.args[1])
+
 		else:
-			if len(tree.args) >= 1:
+			if len(tree.args) > 0:
 				t_children = []
 				for child in range(0, len(tree.args)):
 					t_children.append(self.translateForDeveloppedInternal(tree.args[child]))

@@ -28,7 +28,7 @@ from libsignetsim.model.math.MathVariable import MathVariable
 from libsignetsim.model.math.DAE import DAE
 from libsignetsim.model.math.CFE import CFE
 from libsignetsim.model.math.sympy_shortcuts import SympyEqual, SympyInteger, SympySymbol, SympyFloat
-from libsignetsim.model.ModelException import MathException
+from libsignetsim.model.math.MathException import MathException
 from sympy import solve
 from time import time
 

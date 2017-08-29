@@ -24,7 +24,8 @@
 
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.ModelException import TagNotImplementedModelException, PackageNotImplementedModelException
-from libsignetsim.model.ModelException import SbmlException, MathException
+from libsignetsim.model.ModelException import SbmlException
+from libsignetsim.model.math.MathException import MathException
 from libsignetsim.simulation.SimulationException import SimulationException
 from libsignetsim.tests.biomodels.BiomodelsTestCaseSimulation import BiomodelsTestCaseSimulation
 

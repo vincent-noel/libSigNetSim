@@ -33,7 +33,7 @@ from libsignetsim.settings.Settings import Settings
 
 from libsbml import AST_REAL, AST_INTEGER, AST_RATIONAL, formulaToString
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
-from sympy import Symbol, sympify, srepr, simplify, expand, factor, nsimplify
+from sympy import Symbol, sympify, srepr, simplify, expand, factor, nsimplify, Integer
 
 class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 						RuledVariable, EventAssignedVariable):
@@ -97,6 +97,7 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 			Variable.readSbml(self, sbmlSpeciesReference, sbml_level, sbml_version)
 			self.stoichiometry = self.symbol
 			self.__hasId = True
+			self.__isModifier = sbmlSpeciesReference.isModifier()
 		else:
 
 
@@ -137,13 +138,17 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 	def readSbmlVariable(self, sbml_species_reference, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
 		self.symbol.readSbml(sbml_species_reference.getId(), sbml_level, sbml_version)
-		if sbml_level == 3:
+		if sbml_level == 3 and not sbml_species_reference.isModifier():
 			self.constant = sbml_species_reference.getConstant()
+		else:
+			self.constant = True
 
-		if sbml_species_reference.isSetStoichiometry():
+		if not sbml_species_reference.isModifier() and sbml_species_reference.isSetStoichiometry():
 			self.isInitialized = True
 			self.value.readSbml(sbml_species_reference.getStoichiometry(), sbml_level, sbml_version)
-
+		else:
+			self.isInitialized = True
+			self.value.setInternalMathFormula(Integer(1))
 
 	def writeSbml(self, sbml_speciesReference, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Writes a species reference to  a sbml file """
@@ -200,10 +205,12 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 
 	def writeSbmlVariable(self, sbml_species_reference, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
-		sbml_species_reference.setConstant(self.constant)
+		if not self.isModifier():
 
-		if self.isInitialized:
-			sbml_species_reference.setStoichiometry(self.getValue())
+			sbml_species_reference.setConstant(self.constant)
+
+			if self.isInitialized:
+				sbml_species_reference.setStoichiometry(self.getValue())
 
 
 	def setSpecies(self, species):
