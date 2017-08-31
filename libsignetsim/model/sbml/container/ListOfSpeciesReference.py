@@ -65,7 +65,8 @@ class ListOfSpeciesReference(ListOf, HasIds, SbmlObject):
 		for speciesReference in ListOf.values(self):
 			speciesReference.writeSbml(sbmlReaction, sbmlLevel, sbmlVersion)
 
-		SbmlObject.writeSbml(self, sbmlReaction, sbmlLevel, sbmlVersion)
+		if len(ListOf.values(self)):
+			SbmlObject.writeSbml(self, sbmlReaction, sbmlLevel, sbmlVersion)
 
 
 	def new(self):

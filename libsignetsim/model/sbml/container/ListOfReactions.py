@@ -63,7 +63,8 @@ class ListOfReactions(ListOf, HasIds, SbmlObject):
 		for reaction in ListOf.values(self):
 			reaction.writeSbml(sbml_model, sbml_level, sbml_version)
 
-		SbmlObject.writeSbml(self, sbml_model.getListOfReactions(), sbml_level, sbml_version)
+		if len(ListOf.values(self)):
+			SbmlObject.writeSbml(self, sbml_model.getListOfReactions(), sbml_level, sbml_version)
 
 
 	def new(self, name=None):

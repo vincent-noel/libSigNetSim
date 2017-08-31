@@ -65,7 +65,8 @@ class ListOfParameters(ListOf, HasIds, SbmlObject):
 		for parameter in ListOf.values(self):
 			parameter.writeSbml(sbml_model, sbml_level, sbml_version)
 
-		SbmlObject.writeSbml(self, sbml_model.getListOfParameters(), sbml_level, sbml_version)
+		if len(ListOf.values(self)):
+			SbmlObject.writeSbml(self, sbml_model.getListOfParameters(), sbml_level, sbml_version)
 
 
 	def new(self, parameter=None):

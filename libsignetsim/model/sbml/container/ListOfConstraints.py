@@ -63,4 +63,5 @@ class ListOfConstraints(ListOf, HasIds, SbmlObject):
 		for constraint in ListOf.values(self):
 			constraint.writeSbml(sbml_model,sbml_level, sbml_version)
 
-		SbmlObject.writeSbml(self, sbml_model.getListOfConstraints(), sbml_level, sbml_version)
+		if len(ListOf.values(self)):
+			SbmlObject.writeSbml(self, sbml_model.getListOfConstraints(), sbml_level, sbml_version)

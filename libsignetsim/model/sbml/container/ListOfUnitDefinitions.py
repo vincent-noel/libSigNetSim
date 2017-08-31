@@ -60,7 +60,8 @@ class ListOfUnitDefinitions(ListOf, HasIds, SbmlObject):
 		for unitDefinition in ListOf.values(self):
 			unitDefinition.writeSbml(sbml_model, sbml_level, sbml_version)
 
-		SbmlObject.writeSbml(self, sbml_model.getListOfUnitDefinitions(), sbml_level, sbml_version)
+		if len(ListOf.values(self)):
+			SbmlObject.writeSbml(self, sbml_model.getListOfUnitDefinitions(), sbml_level, sbml_version)
 
 
 	def new(self):
