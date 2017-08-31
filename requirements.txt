@@ -1,5 +1,5 @@
 matplotlib
-python-libsbml-experimental
+python-libsbml
 git+https://github.com/vincent-noel/python-libsedml.git#egg=python-libsedml
 git+https://github.com/vincent-noel/python-libnuml.git#egg=python-libnuml
 numpy

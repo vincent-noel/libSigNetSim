@@ -27,7 +27,7 @@ setup(name='libsignetsim',
 	include_package_data=True,
 	install_requires=[
 		'matplotlib',
-		'python-libsbml-experimental',
+		'python-libsbml',
 		'python-libnuml==1.1.0',
 		'sympy',
 		'numpy',
