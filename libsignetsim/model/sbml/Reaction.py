@@ -208,11 +208,13 @@ class Reaction(Variable, SbmlObject, HasUnits):
 		Variable.writeSbml(self, sbml_reaction, sbml_level, sbml_version)
 		SbmlObject.writeSbml(self, sbml_reaction, sbml_level, sbml_version)
 
-		if (sbml_level < 3 and self.reversible == False) or sbml_level == 3:
+		if (sbml_level < 3 and not self.reversible) or sbml_level == 3:
 			sbml_reaction.setReversible(self.reversible)
 
-		if (sbml_level < 3 and self.fast == True) or sbml_level == 3:
+		if (sbml_level < 3 and self.fast) or (sbml_level == 3 and sbml_version == 1):
 			sbml_reaction.setFast(self.fast)
+		else:
+			sbml_reaction.setFast(False)
 
 		if self.listOfModifiers:
 			for modifier in self.listOfModifiers.keys():

@@ -25,7 +25,7 @@
 
 from libsignetsim.model.math.sympy_shortcuts import (
 	SympySymbol, SympyInteger, SympyFloat, SympyPi, SympyMul, SympyPow, SympyUndefinedFunction,
-	SympyTrue, SympyFalse, SympyExprCondPair, SympyITE, SympyLambda, SympyTuple)
+	SympyTrue, SympyFalse, SympyExprCondPair, SympyITE, SympyLambda, SympyTuple, SympyAvogadro)
 from re import match
 from sympy import srepr
 
@@ -73,6 +73,13 @@ class MathDevelopper(object):
 			return SympyMul(t_species.symbol.getInternalMathFormula(),
 							SympyPow(t_compartment.symbol.getInternalMathFormula(),
 										SympyInteger(-1)))
+
+		elif str(variable).startswith("_functionDefinition_"):
+			res_match = match(r"_functionDefinition_(\d+)_", str(variable))
+			t_id = int(res_match.groups()[0])
+			t_definition = self.__model.listOfFunctionDefinitions[t_id].getDefinition().getInternalMathFormula()
+
+			return self.translateForDeveloppedInternal(t_definition)
 
 		else:
 

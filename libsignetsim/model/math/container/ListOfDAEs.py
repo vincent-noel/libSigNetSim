@@ -29,7 +29,7 @@ from libsignetsim.model.math.DAE import DAE
 from libsignetsim.model.math.CFE import CFE
 from libsignetsim.model.math.sympy_shortcuts import SympyEqual, SympyInteger, SympySymbol, SympyFloat
 from libsignetsim.model.math.MathException import MathException
-from sympy import solve
+from sympy import solve, srepr
 from time import time
 
 class ListOfDAEs(list):
@@ -62,8 +62,6 @@ class ListOfDAEs(list):
 			if not self.__model.listOfVariables.getBySymbol(var).isAlgebraic():
 				subs.update({var:val.getInternalMathFormula()})
 
-		# print "subs"
-		# print subs
 		for dae in self:
 			system.append(
 				SympyEqual(
@@ -89,7 +87,7 @@ class ListOfDAEs(list):
 		if len(system_vars) > 0 and not all_true:
 
 			init_cond = {}
-			res = solve(system, system_vars)
+			res = solve(system, system_vars, manual=True)
 
 			if DEBUG:
 				print res
@@ -97,15 +95,15 @@ class ListOfDAEs(list):
 			if res is not True and len(res) > 0:
 				if isinstance(res, dict):
 					for var, value in res.items():
-						init_cond.update({var:value})
+						init_cond.update({var: value})
 
 				elif isinstance(res[0], dict):
 					for var, value in res[0].items():
-						init_cond.update({var:value})
+						init_cond.update({var: value})
 
 				elif isinstance(res[0], tuple):
 					for i_var, value in enumerate(res[0]):
-						init_cond.update({system_vars[i_var]:value})
+						init_cond.update({system_vars[i_var]: value})
 
 			if DEBUG:
 				print init_cond
@@ -131,7 +129,7 @@ class ListOfDAEs(list):
 
 					if t_var not in init_cond.keys():
 						t_value = rule.getDefinition().getDeveloppedInternalMathFormula()
-						init_cond.update({t_var:t_value})
+						init_cond.update({t_var: t_value})
 
 			if DEBUG:
 				print init_cond
@@ -168,8 +166,8 @@ class ListOfDAEs(list):
 							if DEBUG:
 								print ">> " + str(match) + " : " + str(init_cond[match])
 
-							t_def = t_def.subs({match:init_cond[match]})
-							init_cond.update({t_var:t_def})
+							t_def = t_def.subs({match: init_cond[match]})
+							init_cond.update({t_var: t_def})
 
 						if DEBUG:
 							if len(t_def.atoms(SympySymbol).intersection(set(init_cond.keys()))) == 0:

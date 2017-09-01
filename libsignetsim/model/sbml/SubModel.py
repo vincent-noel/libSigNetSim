@@ -28,7 +28,7 @@ from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.sbml.container.ListOfDeletions import ListOfDeletions
 
-class SubModel(HasId):#, SbmlObject):
+class SubModel(HasId):
 
 	def __init__(self, model, obj_id):
 
@@ -36,7 +36,6 @@ class SubModel(HasId):#, SbmlObject):
 		self.objId = obj_id
 
 		HasId.__init__(self, model)
-		# SbmlObject.__init__(self, model)
 
 		self.__modelRef = None
 		self.__timeConversionFactor = None
@@ -67,7 +66,6 @@ class SubModel(HasId):#, SbmlObject):
 		self.listOfDeletions.readSbml(sbml_submodel.getListOfDeletions(),
 									sbml_level, sbml_version)
 
-		# SbmlObject.readSbml(self, sbml_submodel, sbml_level, sbml_version)
 
 
 	def writeSbml(self, sbml_model,
@@ -87,7 +85,6 @@ class SubModel(HasId):#, SbmlObject):
 			sbml_submodel.setExtentConversionFactor(self.__extentConversionFactor.getSbmlMathFormula().getName())
 
 		self.listOfDeletions.writeSbml(sbml_submodel, sbml_level, sbml_version)
-		# SbmlObject.writeSbml(self, sbml_submodel, sbml_level, sbml_version)
 
 	def hasExtentConversionFactor(self):
 		return self.__extentConversionFactor is not None
@@ -120,7 +117,6 @@ class SubModel(HasId):#, SbmlObject):
 	def setModelRef(self, model_ref):
 		self.__modelRef = model_ref
 
-
 	def getModelRef(self):
 		return self.__modelRef
 
@@ -135,42 +131,6 @@ class SubModel(HasId):#, SbmlObject):
 			elif self.__modelRef in t_doc.listOfExternalModelDefinitions.sbmlIds():
 				return t_doc.listOfExternalModelDefinitions.getBySbmlId(self.__modelRef).modelDefinition
 
-
-	def getDeletionsMetaIds(self):
-
-		deletions = []
-
-		for deletion in self.listOfDeletions.values():
-			if deletion.hasIdRef():
-				if deletion.hasSBaseRef():
-					ttt_model = self.getModelObject().listOfSubmodels.getBySbmlIdRef(deletion.getIdRef()).getModelObject()
-					refs = deletion.getSBaseRef().getRef(ttt_model)
-
-					t_ref = deletion.getIdRef()
-					while len(refs) > 1:
-						t_ref = "%s__%s" % (t_ref, refs[0])
-						ttt_model = ttt_model.listOfSubmodels.getBySbmlIdRef(refs[0]).getModelObject()
-						refs = refs[-1:]
-
-					t_object = ttt_model.listOfSbmlObjects[refs[0]]
-					deletions.append("%s__%s" % (t_ref, t_object.getMetaId()))
-
-				else:
-					if self.getModelObject().listOfVariables.containsSbmlId(deletion.getIdRef()):
-						deletions.append(self.getModelObject().listOfVariables.getBySbmlId(deletion.getIdRef()).getMetaId())
-
-					elif self.getModelObject().listOfEvents.containsSbmlId(deletion.getIdRef()):
-						deletions.append(self.getModelObject().listOfEvents.getBySbmlId(deletion.getIdRef()).getMetaId())
-
-			elif deletion.hasPortRef():
-				deletions.append(self.getModelObject().listOfPorts.getBySbmlId(deletion.getPortRef()).getRefObject().getMetaId())
-
-			elif deletion.hasMetaIdRef():
-				deletions.append(deletion.getMetaIdRef())
-
-		return deletions
-
 	def getModelInstance(self):
 		from libsignetsim.model.ModelInstance import ModelInstance
-
 		return ModelInstance(self.getModelObject(), self.__model.parentDoc)

@@ -201,7 +201,6 @@ class SbmlDocument(object):
 			self.listOfModelDefinitions.writeSbml(sbmlDoc.getPlugin("comp"), self.sbmlLevel, self.sbmlVersion)
 			self.listOfExternalModelDefinitions.writeSbml(sbmlDoc.getPlugin("comp"), self.sbmlLevel, self.sbmlVersion)
 
-
 		if Settings.showSbmlErrors:
 			sbmlDoc.validateSBML()
 			for error in range(0, sbmlDoc.getNumErrors()):
@@ -219,19 +218,12 @@ class SbmlDocument(object):
 
 		t0 = time()
 
-		# print sbml_filename
-
 		if sbml_filename is not None:
-			# if isabs(sbml_filename):
 			self.documentPath = dirname(sbml_filename)
-
 			self.documentFilename = basename(sbml_filename)
 
 		if path is not None:
 			self.documentPath = path
-
-		# print self.documentPath
-		# print self.documentFilename
 
 		sbmlDoc = self.writeSbml()
 
@@ -246,8 +238,8 @@ class SbmlDocument(object):
 
 			return False
 
-		# if Settings.verboseTiming >= 1:
-		# 	print "Writing document %s into directory %s in %.2gs" % (self.documentFilename, self.documentPath, time()-t0)
+		if Settings.verboseTiming >= 1:
+			print "Writing document %s into directory %s in %.2gs" % (self.documentFilename, self.documentPath, time()-t0)
 
 
 	def getModelInstance(self):

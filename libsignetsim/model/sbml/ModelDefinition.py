@@ -22,12 +22,11 @@
 """
 
 from libsignetsim.model.sbml.HasId import HasId
-from libsignetsim.model.sbml.SbmlObject import SbmlObject
-
 from libsignetsim.model.Model import Model
 from libsignetsim.settings.Settings import Settings
 
-class ModelDefinition(HasId, SbmlObject):
+
+class ModelDefinition(HasId):
 
 	def __init__(self, model, obj_id):
 
@@ -35,7 +34,6 @@ class ModelDefinition(HasId, SbmlObject):
 		self.objId = obj_id
 
 		HasId.__init__(self, model)
-		SbmlObject.__init__(self, model)
 
 		self.modelDefinition = Model(obj_id=self.objId, parent_doc=self.__model.parentDoc)
 
@@ -43,16 +41,13 @@ class ModelDefinition(HasId, SbmlObject):
 	def readSbml(self, sbml_model_definition,
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
-
-		HasId.readSbml(self, sbml_model_definition, sbml_level, sbml_version)
 		self.modelDefinition.readSbml(sbml_model_definition, sbml_level, sbml_version)
-		SbmlObject.readSbml(self, sbml_model_definition, sbml_level, sbml_version)
+		HasId.readSbml(self, sbml_model_definition, sbml_level, sbml_version)
 
 
 	def writeSbml(self, sbml_model_definition,
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
 
-		HasId.writeSbml(self, sbml_model_definition, sbml_level, sbml_version)
 		self.modelDefinition.writeSbml(sbml_model_definition, sbml_level, sbml_version)
-		SbmlObject.writeSbml(self, sbml_model_definition, sbml_level, sbml_version)
+		HasId.writeSbml(self, sbml_model_definition, sbml_level, sbml_version)

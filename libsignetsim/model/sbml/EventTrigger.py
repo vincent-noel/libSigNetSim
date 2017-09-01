@@ -35,7 +35,7 @@ from libsignetsim.model.math.sympy_shortcuts import (
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 
 from libsbml import parseL3Formula
-from sympy import srepr
+from sympy import srepr, simplify
 
 class EventTrigger(MathFormula):
 	""" Events definition """
@@ -103,7 +103,7 @@ class EventTrigger(MathFormula):
 			MathFormula.setInternalMathFormula(self, MathFormula.getInternalMathFormula(self).subs(t_subs_mask))
 
 	def getRootsFunctions(self):
-		return self.generateRootsFunctions(MathFormula.getDeveloppedInternalMathFormula(self))
+		return self.generateRootsFunctions(simplify(MathFormula.getDeveloppedInternalMathFormula(self)))
 
 
 	def generateRootsFunctions(self, tree):
@@ -155,7 +155,7 @@ class EventTrigger(MathFormula):
 
 			i_event = shift
 			(res, i_event) = self.generateActivationCondition(
-								MathFormula.getDeveloppedInternalMathFormula(self),
+								simplify(MathFormula.getDeveloppedInternalMathFormula(self)),
 								i_event)
 			return res, i_event
 
@@ -184,7 +184,7 @@ class EventTrigger(MathFormula):
 
 
 	def nbRoots(self):
-		return self.countRoots(MathFormula.getDeveloppedInternalMathFormula(self), 0)
+		return self.countRoots(simplify(MathFormula.getDeveloppedInternalMathFormula(self)), 0)
 
 
 	def countRoots(self, tree, counter):
@@ -201,7 +201,7 @@ class EventTrigger(MathFormula):
 
 
 	def getRootsOperator(self):
-		return self.generateRootsOperator(MathFormula.getDeveloppedInternalMathFormula(self), [])
+		return self.generateRootsOperator(simplify(MathFormula.getDeveloppedInternalMathFormula(self)), [])
 
 
 	def generateRootsOperator(self, tree, t_list):

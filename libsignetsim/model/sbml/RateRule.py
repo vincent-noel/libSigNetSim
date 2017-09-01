@@ -24,14 +24,13 @@
 
 
 from libsignetsim.model.sbml.Rule import Rule
-from libsignetsim.model.math.MathSymbol import MathSymbol
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
 from libsbml import SBML_SPECIES_CONCENTRATION_RULE,\
 					SBML_PARAMETER_RULE,\
 					SBML_COMPARTMENT_VOLUME_RULE
 
-from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyMul, SympyPow
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyMul, SympyPow, SympyUndefinedFunction
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 
 
@@ -114,8 +113,6 @@ class RateRule(Rule):
 			t_definition /= time_conversion.getInternalMathFormula()
 
 		self.__definition.setInternalMathFormula(t_definition)
-		# print obj.getDefinition().getInternalMathFormula()
-		# print self.__definition.getInternalMathFormula()
 
 	def getVariable(self):
 		return self.__model.listOfVariables.getBySbmlId(self.__var)

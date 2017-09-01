@@ -422,14 +422,12 @@ class SbmlMathReader(object):
 						t_value = self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop)
 						t_condition = self.translateForInternal(tree.getChild(i_arg+1), sbml_level, sbml_version, simplified, develop)
 
-						if isinstance(t_value, bool):
+						if isinstance(t_value, bool) or (not isinstance(t_condition, bool) and isinstance(t_condition.func, SympyUndefinedFunction)):
 							value_piecewise = True
 
-						# if isinstance(t_condition, SympyPiecewise):
 						t_pieces.append((t_value, t_condition))
 						i_arg += 2
 					else:
-						# print "and there we have the else"
 						t_value = self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop)
 						if isinstance(t_value, bool):
 							value_piecewise = True
@@ -486,7 +484,7 @@ class SbmlMathReader(object):
 				t_funcdef = self.model.listOfFunctionDefinitions.getBySbmlId(tree.getName())
 				t_name = "_functionDefinition_%d_" % (t_funcdef.objId)
 				if len(t_args) == 0:
-					t_function = SympyFunction(t_name)
+					t_function = SympySymbol(t_name)
 				else:
 					t_function = SympyFunction(t_name)(*t_args)
 

@@ -40,7 +40,7 @@ from sympy.core.numbers import Half as SympyHalf
 from sympy.core.numbers import Rational as SympyRational
 from sympy.core.numbers import oo as SympyInf
 from sympy.core.numbers import nan as SympyNan
-
+from sympy.physics.units import avogadro_number as SympyAvogadro
 #basic operators
 from sympy.core.add import Add as SympyAdd
 from sympy.core.mul import Mul as SympyMul

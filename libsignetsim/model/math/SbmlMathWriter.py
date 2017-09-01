@@ -108,6 +108,16 @@ class SbmlMathWriter(object):
 			t_ast.setName(t_localparam.getSbmlId())
 			return t_ast
 
+		elif "_functionDefinition_" in str(variable):
+			t_ast = libsbml.ASTNode()
+			t_ast.setType(libsbml.AST_FUNCTION)
+
+			res_match = match(r"_functionDefinition_(\d+)_", str(variable))
+			t_id = int(res_match.groups()[0])
+
+			t_ast.setName(self.model.listOfFunctionDefinitions[t_id].getSbmlId())
+			return t_ast
+
 		else:
 			# print "translateVariableToSbml unknown variable type ! (%s)" % variable
 			t_ast = libsbml.ASTNode()

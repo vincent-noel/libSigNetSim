@@ -25,7 +25,7 @@
 
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyEqual, SympyInteger
-from sympy import solve
+from sympy import solve, srepr
 
 class DAE(object):
 	""" DAE class """
@@ -61,7 +61,8 @@ class DAE(object):
 		to_solve = []
 		for var in self.__definition.getDeveloppedInternalMathFormula().atoms(SympySymbol):
 			variable = self.__model.listOfVariables.getBySymbol(var)
-			if variable.isAlgebraic():
+
+			if variable is not None and variable.isAlgebraic():
 				to_solve.append(var)
 
 		return (to_solve[0], solve(self.__definition.getDeveloppedInternalMathFormula(), to_solve))

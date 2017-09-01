@@ -23,8 +23,9 @@
 """
 
 from libsignetsim.settings.Settings import Settings
+# import libsbml, libnuml
 from libnuml import XMLNode
-
+# reload(libsbml)
 class NMBase (object):
 
 	def __init__(self, document):
@@ -43,6 +44,7 @@ class NMBase (object):
 		# if object.isSetAnnotation():
 		# 	self.__annotation = object.getAnnotation()
 
+		reload(libnuml)
 		if object.isSetNotes():
 			self.__notes = XMLNode.convertXMLNodeToString(object.getNotes().getChild(0).getChild(0).getChild(0))
 
