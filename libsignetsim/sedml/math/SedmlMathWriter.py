@@ -24,7 +24,7 @@
 
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.sedml.SedmlException import SedmlMathException
-
+import libsbml
 # token: cn , ci , csymbol , sep
 from libsedml import AST_NAME, AST_NAME_TIME, AST_INTEGER, AST_REAL
 from sympy_shortcuts import SympyInteger, SympyFloat, SympySymbol
@@ -91,7 +91,7 @@ from libsedml import (AST_CONSTANT_TRUE, AST_CONSTANT_FALSE, AST_CONSTANT_PI, AS
 from sympy_shortcuts import (
 	SympyTrue, SympyFalse, SympyPi, SympyE, SympyExp1, SympyInf, SympyNan, SympyOne, SympyNegOne, SympyHalf, SympyZero
 )
-import libsbml
+# import libsbml
 from libsedml import ASTNode, parseFormula, formulaToString
 reload(libsbml)
 

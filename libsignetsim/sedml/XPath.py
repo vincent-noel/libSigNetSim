@@ -29,6 +29,7 @@ from libsignetsim.model.sbml.Reaction import Reaction
 
 from re import match
 
+
 class XPath(object):
 
 	VALUE = "value"

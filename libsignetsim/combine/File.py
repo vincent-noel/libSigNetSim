@@ -27,8 +27,8 @@ from os.path import dirname, basename, join
 from mimetypes import guess_type
 from lxml import etree
 from libsbml import SBMLReader
-from libnuml import readNUMLFromString
 import libsbml
+from libnuml import readNUMLFromString
 from libsedml import readSedMLFromString
 reload(libsbml)
 from shutil import copy

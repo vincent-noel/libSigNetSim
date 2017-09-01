@@ -28,9 +28,6 @@ from libsignetsim.sedml.container.ListOfParameters import ListOfParameters
 from libsignetsim.sedml.container.ListOfVariables import ListOfVariables
 from libsignetsim.sedml.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
-# import libsedml
-# import libsbml
-
 
 class DataGenerator(SedBase, HasId):
 
@@ -53,9 +50,7 @@ class DataGenerator(SedBase, HasId):
 
 		self.listOfVariables.readSedml(data_generator.getListOfVariables(), level, version)
 		self.listOfParameters.readSedml(data_generator.getListOfParameters(), level, version)
-		# reload(libsedml)
 		self.__math.readSedml(data_generator.getMath(), level, version)
-		# reload(libsbml)
 
 	def writeSedml(self, data_generator, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 

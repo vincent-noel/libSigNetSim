@@ -23,9 +23,8 @@
 """
 
 from libsignetsim.settings.Settings import Settings
-# import libnuml
 from libnuml import XMLNode
-# reload(libnuml)
+
 class NMBase (object):
 
 	def __init__(self, document):

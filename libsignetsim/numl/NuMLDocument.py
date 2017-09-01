@@ -27,8 +27,9 @@ from libsignetsim.numl.container.ListOfResultComponents import ListOfResultCompo
 from libsignetsim.numl.NuMLException import NuMLFileNotFound
 from libsignetsim.settings.Settings import Settings
 
-import libnuml, libsbml
+import libsbml
 from libnuml import readNUMLFromFile, writeNUML, NUMLDocument
+reload(libsbml)
 from os.path import exists, dirname, basename
 
 class NuMLDocument (NMBase):
@@ -61,10 +62,6 @@ class NuMLDocument (NMBase):
 
 	def readNuMLFromFile(self, filename):
 
-		# Reloading libnuml just before instanciating the NUMLDocument
-		# This avoid the kind of bug referenced here : https://github.com/fbergmann/libSEDML/issues/21
-		reload(libnuml)
-
 		if not exists(filename):
 			raise NuMLFileNotFound("NuML file %s not found" % filename)
 
@@ -72,9 +69,6 @@ class NuMLDocument (NMBase):
 		self.path = dirname(filename)
 		self.filename = basename(filename)
 		self.readNuML(document)
-
-		# Reloading libsbml
-		reload(libsbml)
 
 	def writeNuMLToFile(self, filename):
 
