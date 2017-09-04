@@ -24,6 +24,7 @@
 
 from libsignetsim.settings.Settings import Settings
 # import libsbml, libnuml
+import libnuml
 from libnuml import XMLNode
 # reload(libsbml)
 class NMBase (object):
