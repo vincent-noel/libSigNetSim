@@ -103,10 +103,11 @@ class MathDevelopper(object):
 			t_definition = self.translateForDeveloppedInternal(self.__model.listOfFunctionDefinitions[t_id].getDefinition().getInternalMathFormula().args[1])
 			t_arguments = list(self.__model.listOfFunctionDefinitions[t_id].getDefinition().getInternalMathFormula().args[0])
 
+			subs = {}
 			for child in range(0, len(tree.args)):
-				t_definition = unevaluatedSubs(t_definition, {t_arguments[child]: self.translateForDeveloppedInternal(tree.args[child])})
+				subs.update({t_arguments[child]: self.translateForDeveloppedInternal(tree.args[child])})
 
-			return t_definition
+			return unevaluatedSubs(t_definition, subs)
 
 		elif isinstance(tree, SympyUndefinedFunction):
 			res_match = match(r"_functionDefinition_(\d+)_", str(tree))
@@ -136,13 +137,3 @@ class MathDevelopper(object):
 			else:
 				return tree
 
-
-	# def translateForFinalInternal(self, formula, forcedConcentration=False):
-	#
-	# 	if self.__model.isUpToDate():
-	# 		return formula.subs(self.__model.listOfVariables.getInternalToFinal(forcedConcentration))
-	#
-	# def translateFinalForInternal(self, formula, forcedConcentration=False):
-	#
-	# 	if self.__model.isUpToDate():
-	# 		return formula.subs(self.__model.listOfVariables.getFinalToInternal(forcedConcentration))
