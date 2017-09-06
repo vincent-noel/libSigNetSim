@@ -27,7 +27,7 @@ from libsignetsim.numl.container.ListOfResultComponents import ListOfResultCompo
 from libsignetsim.numl.NuMLException import NuMLFileNotFound
 from libsignetsim.settings.Settings import Settings
 
-import libsbml
+import libsbml, libnuml
 from libnuml import readNUMLFromFile, writeNUML, NUMLDocument
 reload(libsbml)
 from os.path import exists, dirname, basename
@@ -45,19 +45,20 @@ class NuMLDocument (NMBase):
 
 
 	def readNuML(self, numl_document, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
+		reload(libnuml)
 		NMBase.readNuML(self, numl_document, level, version)
 		self.listOfOntologyTerms.readNuML(numl_document.getOntologyTerms(), level, version)
 		self.listOfResultComponents.readNuML(numl_document.getResultComponents(), level, version)
-
+		reload(libsbml)
 	def writeNuML(self, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
-
+		reload(libnuml)
 		document = NUMLDocument(level, version)
 
 		NMBase.writeNuML(self, document, level, version)
 
 		self.listOfOntologyTerms.writeNuML(document, level, version)
 		self.listOfResultComponents.writeNuML(document, level, version)
-
+		reload(libsbml)
 		return document
 
 	def readNuMLFromFile(self, filename):
