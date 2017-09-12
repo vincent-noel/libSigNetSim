@@ -114,6 +114,8 @@ class MathModel(CModelWriter):
 			self.listOfDAEs.solveInitialConditions(tmin)
 			self.listOfDAEs.solveDAEs()
 
+		if len(self.listOfEvents) > 0:
+			self.buildReducedModel()
 
 	def buildConservationLaws(self):
 

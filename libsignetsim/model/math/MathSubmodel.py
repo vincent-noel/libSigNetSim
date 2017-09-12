@@ -33,7 +33,7 @@ from libsignetsim.model.math.MathFormula import MathFormula
 class MathSubmodel(object):
 	""" Sbml model class """
 
-	def __init__ (self, parent_model=None):
+	def __init__(self, parent_model=None):
 		""" Constructor of model class """
 
 		self.parentModel = parent_model
