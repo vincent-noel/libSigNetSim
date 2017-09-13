@@ -45,10 +45,12 @@ class SbmlAnnotation(object):
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
 
-		for cvterm in sbml_object.getCVTerms():
-			t_cvterm = CVTerm(self.__model)
-			t_cvterm.readSbml(cvterm, sbml_level, sbml_version)
-			self.__cvTerms.append(t_cvterm)
+		if sbml_object.getCVTerms() is not None:
+
+			for cvterm in sbml_object.getCVTerms():
+				t_cvterm = CVTerm(self.__model)
+				t_cvterm.readSbml(cvterm, sbml_level, sbml_version)
+				self.__cvTerms.append(t_cvterm)
 
 		if sbml_object.isSetSBOTerm():
 			self.__sboTerm = int(sbml_object.getSBOTerm())
