@@ -42,6 +42,8 @@ from libsbml import SBMLReader, SBMLDocument, writeSBMLToFile,\
 					LIBSBML_SEV_WARNING, \
 					SBMLExtensionRegistry, readSBMLFromString
 from time import time
+from bioservices import BioModels
+
 
 class SbmlDocument(object):
 	""" Sbml model class """
@@ -164,7 +166,6 @@ class SbmlDocument(object):
 
 		self.readSbml(sbmlDoc)
 
-
 	def readSbmlFromString(self, string):
 
 
@@ -175,6 +176,12 @@ class SbmlDocument(object):
 		sbmlDoc = sbmlReader.readSBMLFromString(string)
 		self.readSbml(sbmlDoc)
 
+	def readFromBiomodels(self, biomodels_id):
+
+		biomodels = BioModels()
+		sbml_string = str(biomodels.getModelSBMLById(biomodels_id))
+		if sbml_string is not None and sbml_string != "":
+			self.readSbmlFromString(sbml_string)
 
 	def writeSbml(self):
 
