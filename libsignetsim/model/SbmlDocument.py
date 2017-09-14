@@ -179,7 +179,9 @@ class SbmlDocument(object):
 	def readFromBiomodels(self, biomodels_id):
 
 		biomodels = BioModels()
-		sbml_string = str(biomodels.getModelSBMLById(biomodels_id))
+		unicode_string = biomodels.getModelSBMLById(biomodels_id)
+		sbml_string = unicode_string.encode('utf-8')
+
 		if sbml_string is not None and sbml_string != "":
 			self.readSbmlFromString(sbml_string)
 
