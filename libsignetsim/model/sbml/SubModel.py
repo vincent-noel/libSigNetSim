@@ -127,7 +127,7 @@ class SubModel(HasId):
 		else:
 			t_doc = self.__model.parentDoc
 			if self.__modelRef in t_doc.listOfModelDefinitions.sbmlIds():
-				return t_doc.listOfModelDefinitions.getBySbmlId(self.__modelRef).modelDefinition
+				return t_doc.listOfModelDefinitions.getBySbmlId(self.__modelRef)
 			elif self.__modelRef in t_doc.listOfExternalModelDefinitions.sbmlIds():
 				return t_doc.listOfExternalModelDefinitions.getBySbmlId(self.__modelRef).modelDefinition
 

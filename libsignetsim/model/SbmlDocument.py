@@ -30,9 +30,9 @@ from libsignetsim.model.Variable import Variable
 from libsignetsim.model.sbml.container.ListOfModelDefinitions import ListOfModelDefinitions
 from libsignetsim.model.sbml.container.ListOfExternalModelDefinitions import ListOfExternalModelDefinitions
 from libsignetsim.model.ModelInstance import ModelInstance
-from libsignetsim.model.ModelException import (FileException, SbmlException,
-														MissingModelException,
-													  MissingSubmodelException)
+from libsignetsim.model.ModelException import (
+	FileException, SbmlException, MissingModelException, MissingSubmodelException, InvalidXPath
+)
 from libsignetsim.settings.Settings import Settings
 
 from os.path import isfile, isabs, dirname, join, basename
@@ -79,8 +79,10 @@ class SbmlDocument(object):
 	def getSubmodel(self, submodel_id):
 		if submodel_id == self.model.getSbmlId():
 			return self.model
+
 		elif submodel_id in self.listOfModelDefinitions.sbmlIds():
-			return self.listOfModelDefinitions.getBySbmlId(submodel_id).modelDefinition
+			return self.listOfModelDefinitions.getBySbmlId(submodel_id)
+
 		elif submodel_id in self.listOfExternalModelDefinitions.sbmlIds():
 			return self.listOfExternalModelDefinitions.getBySbmlId(submodel_id).modelDefinition
 
@@ -330,3 +332,31 @@ class SbmlDocument(object):
 					document.writeSbmlToFile()
 				else:
 					document.writeSbmlToFile(path=path)
+
+
+	def resolveXPath(self, xpath):
+
+		tokens = xpath.split("/")
+		first = tokens[0]
+		tokens.pop(0)
+
+		if first == "sbml:sbml":
+
+			second = tokens[0]
+			tokens.pop(0)
+
+			if second == "sbml:model":
+				return self.model.resolveXPath(tokens)
+			elif second == "sbml:listOfModelDefinitions" and self.useCompPackage:
+				return self.listOfModelDefinitions.resolveXPath(tokens)
+			# elif second == "sbml:listOfExternalModelDefinitions" and self.useCompPackage:
+			# 	self.listOfExternalModelDefinitions.resolveXPath(tokens)
+			else:
+				raise InvalidXPath(xpath)
+
+		elif first == "sbml:model":
+			tokens.pop(0)
+			return self.model.resolveXPath(tokens)
+
+		else:
+			raise InvalidXPath(xpath)

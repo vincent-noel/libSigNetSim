@@ -27,8 +27,11 @@ from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.model.sbml.container.HasIds import HasIds
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.sbml.Compartment import Compartment
-from libsignetsim.model.ModelException import CannotDeleteException
+from libsignetsim.model.ModelException import CannotDeleteException, InvalidXPath
 from libsignetsim.settings.Settings import Settings
+
+from re import match
+
 
 class ListOfCompartments(ListOf, HasIds, SbmlObject):
 	""" Class for the listOfCompartments in a sbml model """
@@ -109,3 +112,26 @@ class ListOfCompartments(ListOf, HasIds, SbmlObject):
 	def removeById(self, obj_id):
 		""" Remove an object from the list """
 		self.remove(ListOf.getById(self, obj_id))
+
+	def resolveXPath(self, xpath):
+
+		if isinstance(xpath, list):
+			first = xpath[0]
+			xpath.pop(0)
+		else:
+			first = xpath
+
+		if first.startswith("compartment") or first.startswith("sbml:compartment"):
+
+			res_match = match(r'(.*)\[@(.*)=(.*)\]', first)
+			if res_match is not None:
+				tokens = res_match.groups()
+
+				if len(tokens) == 3:
+					if tokens[1] == "id":
+						return self.getBySbmlId(tokens[2][1:-1])
+					elif tokens[1] == "name":
+						return self.getByName(tokens[2][1:-1])
+
+		# If not returned yet
+		raise InvalidXPath(first)

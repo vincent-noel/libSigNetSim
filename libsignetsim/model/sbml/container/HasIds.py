@@ -47,8 +47,6 @@ class HasIds(object):
 
 		if len(res) > 0:
 			return res[pos]
-		else:
-			return None
 
 
 	def containsSbmlId(self, sbml_id):
@@ -77,8 +75,7 @@ class HasIds(object):
 
 		if len(res) > 0:
 			return res[pos]
-		else:
-			return non
+
 
 
 	def containsName(self, name):

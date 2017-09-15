@@ -42,7 +42,7 @@ from libsignetsim.model.sbml.ModelUnits import ModelUnits
 from libsignetsim.model.sbml.SbmlModelAnnotation import SbmlModelAnnotation
 from libsignetsim.model.sbml.HasId import HasId
 from libsignetsim.model.sbml.HasConversionFactor import HasConversionFactor
-
+from libsignetsim.model.ModelException import InvalidXPath
 
 from time import time
 
@@ -203,3 +203,20 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 		elif level == 3:
 			self.sbmlVersion = 1
 
+
+	def resolveXPath(self, xpath):
+
+		first = xpath[0]
+		xpath.pop(0)
+
+		if first in ["sbml:listOfSpecies", "listOfSpecies"]:
+			return self.listOfSpecies.resolveXPath(xpath)
+
+		if first in ["sbml:listOfParameters", "listOfParameters"]:
+			return self.listOfParameters.resolveXPath(xpath)
+
+		if first in ["sbml:listOfCompartments", "listOfCompartments"]:
+			return self.listOfCompartments.resolveXPath(xpath)
+
+		else:
+			raise InvalidXPath("/".join(xpath))

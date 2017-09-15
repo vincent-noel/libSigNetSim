@@ -80,3 +80,6 @@ class MissingSubmodelException(ModelException):
 
 class UnknownSIdRefException(ModelException):
 	pass
+
+class InvalidXPath(ModelException):
+	pass

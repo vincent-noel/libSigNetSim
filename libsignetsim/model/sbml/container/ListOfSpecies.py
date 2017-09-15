@@ -28,9 +28,10 @@ from libsignetsim.model.sbml.container.HasIds import HasIds
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
 from libsignetsim.model.sbml.Species import Species
-from libsignetsim.model.ModelException import CannotDeleteException
+from libsignetsim.model.ModelException import CannotDeleteException, InvalidXPath
 from libsignetsim.settings.Settings import Settings
 
+from re import match
 
 class ListOfSpecies(ListOf, HasIds, SbmlObject):
 
@@ -132,3 +133,26 @@ class ListOfSpecies(ListOf, HasIds, SbmlObject):
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		for obj in ListOf.values(self):
 			Species.renameSbmlId(obj, old_sbml_id, new_sbml_id)
+
+	def resolveXPath(self, xpath):
+
+		if isinstance(xpath, list):
+			first = xpath[0]
+			xpath.pop(0)
+		else:
+			first = xpath
+
+		if first.startswith("species") or first.startswith("sbml:species"):
+
+			res_match = match(r'(.*)\[@(.*)=(.*)\]', first)
+			if res_match is not None:
+				tokens = res_match.groups()
+
+				if len(tokens) == 3:
+					if tokens[1] == "id":
+						return self.getBySbmlId(tokens[2][1:-1])
+					elif tokens[1] == "name":
+						return self.getByName(tokens[2][1:-1])
+
+		# If not returned yet
+		raise InvalidXPath(first)

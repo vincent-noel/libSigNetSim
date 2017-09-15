@@ -26,9 +26,11 @@
 from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.model.sbml.container.HasIds import HasIds
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
-from libsignetsim.model.ModelException import CannotDeleteException
+from libsignetsim.model.ModelException import CannotDeleteException, InvalidXPath
 from libsignetsim.model.sbml.Parameter import Parameter
 from libsignetsim.settings.Settings import Settings
+
+from re import match
 
 
 class ListOfParameters(ListOf, HasIds, SbmlObject):
@@ -124,3 +126,26 @@ class ListOfParameters(ListOf, HasIds, SbmlObject):
 		""" Remove an object from the list """
 
 		self.remove(self.getById(parameter_obj_id))
+
+	def resolveXPath(self, xpath):
+
+		if isinstance(xpath, list):
+			first = xpath[0]
+			xpath.pop(0)
+		else:
+			first = xpath
+
+		if first.startswith("parameter") or first.startswith("sbml:parameter"):
+
+			res_match = match(r'(.*)\[@(.*)=(.*)\]', first)
+			if res_match is not None:
+				tokens = res_match.groups()
+
+				if len(tokens) == 3:
+					if tokens[1] == "id":
+						return self.getBySbmlId(tokens[2][1:-1])
+					elif tokens[1] == "name":
+						return self.getByName(tokens[2][1:-1])
+
+		# If not returned yet
+		raise InvalidXPath(first)
