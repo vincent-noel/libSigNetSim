@@ -65,7 +65,7 @@ class SbmlDocument(object):
 		self.isCompatible = None
 
 		if model is None:
-			self.model = Model(parent_doc=self, is_main_model=True)
+			self.model = Model(parent_doc=self)
 
 		else:
 			self.model = model

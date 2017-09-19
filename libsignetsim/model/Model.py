@@ -32,22 +32,19 @@ from time import time
 class Model(SbmlModel, MathModel):
 	""" Sbml model class """
 
+	def __init__(self, obj_id=0, parent_doc=None):
 
-	def __init__ (self, obj_id=0, parent_doc=None, is_main_model=False, is_model_instance=False):
 		""" Constructor of model class """
 
 		self.objId = obj_id
-		self.isMainModel = is_main_model
-		self.isModelInstance = is_model_instance
 
 		SbmlModel.__init__(self, parent_doc, obj_id)
 		MathModel.__init__(self, obj_id)
 		self.listOfVariables = ListOfVariables(self)
-		# self.listOfInstanceVariables = ListOfVariables(self)
+
 	def build(self, vars_to_keep=[], dont_reduce=False, tmin=0):
 
 		t0 = time()
-		# self.listOfInstanceVariables.buildInstance()
 		self.listOfVariables.classifyVariables()
 		MathModel.buildModel(self, vars_to_keep=vars_to_keep, dont_reduce=dont_reduce, tmin=tmin)
 

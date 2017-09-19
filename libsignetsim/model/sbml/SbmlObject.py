@@ -26,8 +26,6 @@ from libsignetsim.model.sbml.SimpleSbmlObject import SimpleSbmlObject
 from libsignetsim.model.sbml.HasReplacedElements import HasReplacedElements
 
 from libsignetsim.settings.Settings import Settings
-from libsbml import SyntaxChecker
-from libsbml import XMLNode
 
 
 class SbmlObject(SimpleSbmlObject, HasReplacedElements):
@@ -43,14 +41,12 @@ class SbmlObject(SimpleSbmlObject, HasReplacedElements):
 		self.isMarkedToBeRenamed = False
 		self.hasConversionFactor = None
 
-
 	def readSbml(self, sbml_object,
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
 
 		HasReplacedElements.readSbml(self, sbml_object, sbml_level, sbml_version)
 		SimpleSbmlObject.readSbml(self, sbml_object, sbml_level, sbml_version)
-
 
 	def writeSbml(self, sbml_object,
 					sbml_level=Settings.defaultSbmlLevel,
@@ -59,30 +55,8 @@ class SbmlObject(SimpleSbmlObject, HasReplacedElements):
 		HasReplacedElements.writeSbml(self, sbml_object, sbml_level, sbml_version)
 		SimpleSbmlObject.writeSbml(self, sbml_object, sbml_level, sbml_version)
 
-
-	def instance(self):
-
-		if self.__model.isMainModel:
-			t_model = self.__model
-		else:
-			t_model = self.__model.parentDoc.model
-
-		if t_model.listOfSbmlObjects.hasToBeReplaced(self):
-			return t_model.listOfSbmlObjects.getReplacedBy(self)
-		else:
-			return self
-
-
-	def needReplacement(self):
-		return self.__model.listOfSbmlObjects.hasToBeReplaced(self)
-
-
 	def copy(self, obj, prefix="", shift=0):
 		SimpleSbmlObject.copy(self, obj)
-		# HasReplacedElements.copy(self, obj, prefix, shift)
-
-	def isInMainModel(self):
-		return self.__model.isMainModel
 
 	def getModel(self):
 		return self.__model
