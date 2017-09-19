@@ -334,29 +334,43 @@ class SbmlDocument(object):
 					document.writeSbmlToFile(path=path)
 
 
-	def resolveXPath(self, xpath):
+	def resolveXPath(self, selector):
+
+		if selector == "sbml:model":
+			return self.model
+
+		elif selector == "sbml:listOfModelDefinitions" and self.useCompPackage:
+			return self.listOfModelDefinitions
+
+		else:
+			raise InvalidXPath(selector)
+
+	def getByXPath(self, xpath):
 
 		tokens = xpath.split("/")
-		first = tokens[0]
-		tokens.pop(0)
 
-		if first == "sbml:sbml":
-
-			second = tokens[0]
-			tokens.pop(0)
-
-			if second == "sbml:model":
-				return self.model.resolveXPath(tokens)
-			elif second == "sbml:listOfModelDefinitions" and self.useCompPackage:
-				return self.listOfModelDefinitions.resolveXPath(tokens)
-			# elif second == "sbml:listOfExternalModelDefinitions" and self.useCompPackage:
-			# 	self.listOfExternalModelDefinitions.resolveXPath(tokens)
+		try:
+			if tokens[0] == "sbml:sbml":
+				return self.resolveXPath(tokens[1]).getByXPath(tokens[2:])
+			elif tokens[0] == "sbml:model":
+				return self.resolveXPath(tokens[0]).getByXPath(tokens[1:])
 			else:
 				raise InvalidXPath(xpath)
 
-		elif first == "sbml:model":
-			tokens.pop(0)
-			return self.model.resolveXPath(tokens)
-
-		else:
+		except InvalidXPath:
 			raise InvalidXPath(xpath)
+
+	def setByXPath(self, xpath, object):
+
+		tokens = xpath.split("/")
+		try:
+			if tokens[0] == "sbml:sbml":
+				return self.resolveXPath(tokens[1]).setByXPath(tokens[2:], object)
+			elif tokens[0] == "sbml:model":
+				return self.resolveXPath(tokens[0]).setByXPath(tokens[1:], object)
+			else:
+				raise InvalidXPath(xpath)
+
+		except InvalidXPath:
+			raise InvalidXPath(xpath)
+

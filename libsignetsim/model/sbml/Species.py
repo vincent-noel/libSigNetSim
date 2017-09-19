@@ -32,7 +32,8 @@ from libsignetsim.model.sbml.HasConversionFactor import HasConversionFactor
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.sympy_shortcuts import SympyFloat
-from sympy import Symbol
+from libsignetsim.model.ModelException import InvalidXPath
+
 
 class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 						RuledVariable, EventAssignedVariable, HasUnits, HasConversionFactor):
@@ -366,3 +367,39 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		if self.__compartment == old_sbml_id:
 			self.__compartment = new_sbml_id
+
+
+	def getByXPath(self, xpath):
+
+		if len(xpath) == 0:
+			return self
+
+		if len(xpath) > 1:
+			return InvalidXPath("/".join(xpath))
+
+		if xpath[0] == "@value":
+			return self.getValue()
+
+		elif xpath[0] == "@name":
+			return self.getName()
+
+		elif xpath[0] == "@id":
+			return self.getSbmlId()
+
+
+	def setByXPath(self, xpath, object):
+
+		if len(xpath) == 0:
+			return InvalidXPath("/".join(xpath))
+
+		if len(xpath) > 1:
+			return InvalidXPath("/".join(xpath))
+
+		if xpath[0] == "@value":
+			return self.setValue(object)
+
+		elif xpath[0] == "@name":
+			return self.setName(object)
+
+		elif xpath[0] == "@id":
+			return self.setSbmlId(object)

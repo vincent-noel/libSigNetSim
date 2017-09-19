@@ -28,7 +28,9 @@ from libsignetsim.model.sbml.RuledVariable import RuledVariable
 from libsignetsim.model.Variable import Variable
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.sbml.HasUnits import HasUnits
+from libsignetsim.model.ModelException import InvalidXPath
 from libsignetsim.settings.Settings import Settings
+
 
 class Compartment(Variable, SbmlObject, InitiallyAssignedVariable,
 						RuledVariable, EventAssignedVariable, HasUnits):
@@ -222,3 +224,37 @@ class Compartment(Variable, SbmlObject, InitiallyAssignedVariable,
 			if species.getCompartment() == self:
 				count += 1
 		return count
+
+	def getByXPath(self, xpath):
+
+		if len(xpath) == 0:
+			return self
+
+		if len(xpath) > 1:
+			return InvalidXPath("/".join(xpath))
+
+		if xpath[0] == "@size":
+			return self.getValue()
+
+		elif xpath[0] == "@name":
+			return self.getName()
+
+		elif xpath[0] == "@id":
+			return self.getSbmlId()
+
+	def setByXPath(self, xpath, object):
+
+		if len(xpath) == 0:
+			return InvalidXPath("/".join(xpath))
+
+		if len(xpath) > 1:
+			return InvalidXPath("/".join(xpath))
+
+		if xpath[0] == "@size":
+			return self.setValue(object)
+
+		elif xpath[0] == "@name":
+			return self.setName(object)
+
+		elif xpath[0] == "@id":
+			return self.setSbmlId(object)

@@ -113,25 +113,32 @@ class ListOfCompartments(ListOf, HasIds, SbmlObject):
 		""" Remove an object from the list """
 		self.remove(ListOf.getById(self, obj_id))
 
-	def resolveXPath(self, xpath):
 
-		if isinstance(xpath, list):
-			first = xpath[0]
-			xpath.pop(0)
-		else:
-			first = xpath
+	def resolveXPath(self, selector):
 
-		if first.startswith("compartment") or first.startswith("sbml:compartment"):
+		if not (selector.startswith("compartment") or selector.startswith("sbml:compartment")):
+			raise InvalidXPath(selector)
 
-			res_match = match(r'(.*)\[@(.*)=(.*)\]', first)
-			if res_match is not None:
-				tokens = res_match.groups()
+		res_match = match(r'(.*)\[@(.*)=(.*)\]', selector)
+		if res_match is None:
+			raise InvalidXPath(selector)
 
-				if len(tokens) == 3:
-					if tokens[1] == "id":
-						return self.getBySbmlId(tokens[2][1:-1])
-					elif tokens[1] == "name":
-						return self.getByName(tokens[2][1:-1])
+		tokens = res_match.groups()
+		if len(tokens) != 3:
+			raise InvalidXPath(selector)
+
+		if tokens[1] == "id":
+			return self.getBySbmlId(tokens[2][1:-1])
+		elif tokens[1] == "name":
+			return self.getByName(tokens[2][1:-1])
+		elif tokens[1] == "metaid":
+			return self.getByMetaId(tokens[2][1:-1])
 
 		# If not returned yet
-		raise InvalidXPath(first)
+		raise InvalidXPath(selector)
+
+	def getByXPath(self, xpath):
+		return self.resolveXPath(xpath[0]).getByXPath(xpath[1:])
+
+	def setByXPath(self, xpath, object):
+		self.resolveXPath(xpath[0]).setByXPath(xpath[1:], object)

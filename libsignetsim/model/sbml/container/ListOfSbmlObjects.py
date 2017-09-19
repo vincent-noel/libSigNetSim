@@ -24,16 +24,18 @@
 
 
 from libsignetsim.model.sbml.container.ListOf_v2 import ListOf_v2
+from libsignetsim.model.sbml.container.HasMetaIds import HasMetaIds
 from libsignetsim.model.sbml.container.ListOfReplacedElements import ListOfReplacedElements
 
 
-class ListOfSbmlObjects(ListOf_v2):
+class ListOfSbmlObjects(ListOf_v2, HasMetaIds):
 	""" Class for the listOfModelDefinition in a sbml model """
 
 	def __init__ (self, model=None):
 
 		self.__model = model
 		ListOf_v2.__init__(self, model)
+		HasMetaIds.__init__(self, model)
 		self.isListOfSbmlObjects = True
 		self.currentObjId = -1
 
@@ -151,33 +153,4 @@ class ListOfSbmlObjects(ListOf_v2):
 						if t_object == ask_object:
 							return obj
 
-
-
-	def metaIds(self):
-		""" Return set of names of the sbml objects """
-		return [obj.getMetaId() for obj in self.values()]
-
-	def getByMetaId(self, meta_id, pos=0):
-		""" Find sbml objects by their name """
-
-		res = []
-		for obj in self.values():
-			if obj.getMetaId() == meta_id:
-				res.append(obj)
-
-		if len(res) > 0:
-			return res[pos]
-		else:
-			return None
-
-
-	def containsMetaId(self, meta_id):
-		""" Test if a name is in the list """
-
-		res = False
-		for obj in self.values():
-			if meta_id == obj.getMetaId():
-				res = True
-
-		return res
 

@@ -79,6 +79,9 @@ class ListOfSbmlVariables(object):
 			elif variable.isReaction():
 				t_string = "reaction_%d" % variable.objId
 
+			elif variable.isEvent():
+				t_string = "event_%d" % variable.objId
+
 			elif variable.isParameter():
 				if variable.isLocalParameter():
 					t_string = "_local_%d_parameter_%d" % (variable.reaction.objId, variable.objId)

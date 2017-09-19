@@ -83,7 +83,7 @@ class ListOfModelDefinitions(ListOf, HasIds):
 		return res
 
 
-	def resolveXPath(self, xpath):
+	def getByXPath(self, xpath):
 
 		first = xpath[0]
 		xpath.pop(0)
@@ -96,9 +96,9 @@ class ListOfModelDefinitions(ListOf, HasIds):
 
 				if len(tokens) == 3:
 					if tokens[1] == "id":
-						return self.getBySbmlId(tokens[2][1:-1]).resolveXPath(xpath)
+						return self.getBySbmlId(tokens[2][1:-1]).getByXPath(xpath)
 					elif tokens[1] == "name":
-						return self.getByName(tokens[2][1:-1]).resolveXPath(xpath)
+						return self.getByName(tokens[2][1:-1]).getByXPath(xpath)
 
 		# If not returned yet
 		raise InvalidXPath(first)

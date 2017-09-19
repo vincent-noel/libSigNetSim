@@ -26,30 +26,17 @@
 from libsignetsim.model.sbml.container.ListOfParameters import ListOfParameters
 from libsignetsim.model.sbml.container.ListOfSpeciesReference import ListOfSpeciesReference
 
-# from libsignetsim.model.math.MathKineticLaw import MathKineticLaw
 from libsignetsim.model.sbml.KineticLaw import KineticLaw
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
-# from libsignetsim.model.sbml.HasId import HasId
 from libsignetsim.model.sbml.HasUnits import HasUnits
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.Variable import Variable
 from libsignetsim.settings.Settings import Settings
 from sympy import zeros
-from libsignetsim.model.math.sympy_shortcuts import  (
-	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
-	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
-	SympyInf, SympyNan, SympyAdd, SympyMul, SympyPow,
-	SympyFunction, SympyUndefinedFunction, SympyLambda, SympyDerivative,
-	SympyCeiling, SympyFloor, SympyAbs, SympyLog, SympyExp, SympyPiecewise,
-	SympyFactorial, SympyRoot, SympyAcos, SympyAsin, SympyAtan, SympyAcosh,
-	SympyAsinh, SympyAtanh, SympyCos, SympySin, SympyTan, SympyAcot,
-	SympyAcoth, SympyCosh, SympySinh, SympyTanh, SympySec, SympyCsc,
-	SympyCot, SympyCoth, SympyAcsc, SympyAsec,
-	SympyEqual, SympyUnequal, SympyGreaterThan, SympyLessThan,
-	SympyStrictGreaterThan, SympyStrictLessThan,
-	SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
-	SympyMax, SympyMin)
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol
+from libsignetsim.model.ModelException import InvalidXPath
+
 
 class Reaction(Variable, SbmlObject, HasUnits):
 	""" Parent class for Sbml reaction """
@@ -242,6 +229,10 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 		pass
 
+
+	def __str__(self):
+
+		return self.getReactionDescription() + " (" + str(self.kineticLaw.getDefinition().getInternalMathFormula() )+ ")"
 
 	def setKineticLaw(self, reaction_type, reversible, parameters=None, math=None):
 
@@ -600,3 +591,20 @@ class Reaction(Variable, SbmlObject, HasUnits):
 		return (
 			variable.symbol.getInternalMathFormula() in self.kineticLaw.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula().atoms()
 		)
+
+	def getByXPath(self, xpath):
+
+		if len(xpath) == 0:
+			return self
+
+		if len(xpath) > 1:
+			return InvalidXPath("/".join(xpath))
+
+		if xpath[0] == "@value":
+			return self.getValue()
+
+		elif xpath[0] == "@name":
+			return self.getName()
+
+		elif xpath[0] == "@id":
+			return self.getSbmlId()

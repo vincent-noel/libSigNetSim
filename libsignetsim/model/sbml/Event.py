@@ -31,6 +31,8 @@ from libsignetsim.model.sbml.EventDelay import EventDelay
 from libsignetsim.model.sbml.EventPriority import EventPriority
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
+from libsignetsim.model.ModelException import InvalidXPath
+
 
 class Event(Variable, SbmlObject):
 
@@ -51,6 +53,10 @@ class Event(Variable, SbmlObject):
 		self.priority = None
 		self.useValuesFromTriggerTime = True
 
+	def new(self, name=None):
+
+		Variable.new(self, name, Variable.EVENT)
+		SbmlObject.new(self)
 
 	def readSbml(self, sbml_event,
 					sbml_level=Settings.defaultSbmlLevel,
@@ -278,3 +284,20 @@ class Event(Variable, SbmlObject):
 	def isValid(self):
 
 		return self.trigger is not None and len([ass for ass in self.listOfEventAssignments if ass.getDefinition() is None]) == 0
+
+	def getByXPath(self, xpath):
+
+		if len(xpath) == 0:
+			return self
+
+		if len(xpath) > 1:
+			return InvalidXPath("/".join(xpath))
+
+		if xpath[0] == "@value":
+			return self.getValue()
+
+		elif xpath[0] == "@name":
+			return self.getName()
+
+		elif xpath[0] == "@id":
+			return self.getSbmlId()

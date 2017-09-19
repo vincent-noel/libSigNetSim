@@ -134,25 +134,34 @@ class ListOfSpecies(ListOf, HasIds, SbmlObject):
 		for obj in ListOf.values(self):
 			Species.renameSbmlId(obj, old_sbml_id, new_sbml_id)
 
-	def resolveXPath(self, xpath):
 
-		if isinstance(xpath, list):
-			first = xpath[0]
-			xpath.pop(0)
-		else:
-			first = xpath
 
-		if first.startswith("species") or first.startswith("sbml:species"):
+	def resolveXPath(self, selector):
 
-			res_match = match(r'(.*)\[@(.*)=(.*)\]', first)
-			if res_match is not None:
-				tokens = res_match.groups()
+		if not (selector.startswith("species") or selector.startswith("sbml:species")):
+			raise InvalidXPath(selector)
 
-				if len(tokens) == 3:
-					if tokens[1] == "id":
-						return self.getBySbmlId(tokens[2][1:-1])
-					elif tokens[1] == "name":
-						return self.getByName(tokens[2][1:-1])
+		res_match = match(r'(.*)\[@(.*)=(.*)\]', selector)
+		if res_match is None:
+			raise InvalidXPath(selector)
+
+		tokens = res_match.groups()
+		if len(tokens) != 3:
+			raise InvalidXPath(selector)
+
+		if tokens[1] == "id":
+			return self.getBySbmlId(tokens[2][1:-1])
+		elif tokens[1] == "name":
+			return self.getByName(tokens[2][1:-1])
+		elif tokens[1] == "metaid":
+			return self.getByMetaId(tokens[2][1:-1])
 
 		# If not returned yet
-		raise InvalidXPath(first)
+		raise InvalidXPath(selector)
+
+	def getByXPath(self, xpath):
+		return self.resolveXPath(xpath[0]).getByXPath(xpath[1:])
+
+	def setByXPath(self, xpath, object):
+		self.resolveXPath(xpath[0]).setByXPath(xpath[1:], object)
+

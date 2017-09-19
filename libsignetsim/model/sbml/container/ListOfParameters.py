@@ -71,13 +71,13 @@ class ListOfParameters(ListOf, HasIds, SbmlObject):
 			SbmlObject.writeSbml(self, sbml_model.getListOfParameters(), sbml_level, sbml_version)
 
 
-	def new(self, parameter=None):
+	def new(self, parameter=None, value=None):
 		""" Creates new parameter """
 
 		t_parameter = Parameter(self.__model, self.nextId(),
 								local_parameter=self.are_local_parameters,
 								reaction=self.reaction)
-		t_parameter.new(parameter)
+		t_parameter.new(parameter, value=value)
 		ListOf.add(self, t_parameter)
 		return t_parameter
 
@@ -127,25 +127,32 @@ class ListOfParameters(ListOf, HasIds, SbmlObject):
 
 		self.remove(self.getById(parameter_obj_id))
 
-	def resolveXPath(self, xpath):
 
-		if isinstance(xpath, list):
-			first = xpath[0]
-			xpath.pop(0)
-		else:
-			first = xpath
+	def resolveXPath(self, selector):
 
-		if first.startswith("parameter") or first.startswith("sbml:parameter"):
+		if not (selector.startswith("parameter") or selector.startswith("sbml:parameter")):
+			raise InvalidXPath(selector)
 
-			res_match = match(r'(.*)\[@(.*)=(.*)\]', first)
-			if res_match is not None:
-				tokens = res_match.groups()
+		res_match = match(r'(.*)\[@(.*)=(.*)\]', selector)
+		if res_match is None:
+			raise InvalidXPath(selector)
 
-				if len(tokens) == 3:
-					if tokens[1] == "id":
-						return self.getBySbmlId(tokens[2][1:-1])
-					elif tokens[1] == "name":
-						return self.getByName(tokens[2][1:-1])
+		tokens = res_match.groups()
+		if len(tokens) != 3:
+			raise InvalidXPath(selector)
+
+		if tokens[1] == "id":
+			return self.getBySbmlId(tokens[2][1:-1])
+		elif tokens[1] == "name":
+			return self.getByName(tokens[2][1:-1])
+		elif tokens[1] == "metaid":
+			return self.getByMetaId(tokens[2][1:-1])
 
 		# If not returned yet
-		raise InvalidXPath(first)
+		raise InvalidXPath(selector)
+
+	def getByXPath(self, xpath):
+		return self.resolveXPath(xpath[0]).getByXPath(xpath[1:])
+
+	def setByXPath(self, xpath, object):
+		self.resolveXPath(xpath[0]).setByXPath(xpath[1:], object)

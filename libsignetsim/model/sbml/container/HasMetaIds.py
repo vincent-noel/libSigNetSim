@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" HasIds.py
+""" HasMetaIds.py
 
 
 	This file ...
@@ -22,69 +22,41 @@
 
 """
 
-from libsignetsim.model.sbml.container.HasMetaIds import HasMetaIds
 
-class HasIds(HasMetaIds):
+class HasMetaIds(object):
 	""" Parent class for all the ListOf_ containers in a sbml model """
 
 	def __init__ (self, model=None):
 
 		self.__model = model
-		HasMetaIds.__init__(self, model)
 
 
 
-	def sbmlIds(self):
-		""" Return a set of import ids of the sbml objects """
-		return [obj.getSbmlId() for obj in self.values()]
 
-	def getBySbmlId(self, sbml_id, pos=0):
-		""" Find sbml objects by their import Id """
-
-		res = []
-		for obj in self.values():
-			if obj.getSbmlId() == sbml_id:
-				res.append(obj)
-
-		if len(res) > 0:
-			return res[pos]
-
-
-	def containsSbmlId(self, sbml_id):
-		""" Test if an sbml id is in the list """
-
-		res = False
-		for obj in self.values():
-			if sbml_id == obj.getSbmlId():
-				res = True
-
-		return res
-
-
-
-	def names(self):
+	def metaIds(self):
 		""" Return set of names of the sbml objects """
-		return [obj.getName() for obj in self.values()]
+		return [obj.getMetaId() for obj in self.values()]
 
-	def getByName(self, name, pos=0):
+	def getByMetaId(self, meta_id, pos=0):
 		""" Find sbml objects by their name """
 
 		res = []
 		for obj in self.values():
-			if obj.getName() == name:
+			if obj.getMetaId() == meta_id:
 				res.append(obj)
 
 		if len(res) > 0:
 			return res[pos]
+		else:
+			return None
 
 
-
-	def containsName(self, name):
+	def containsMetaId(self, meta_id):
 		""" Test if a name is in the list """
 
 		res = False
 		for obj in self.values():
-			if name == obj.getName():
+			if meta_id == obj.getMetaId():
 				res = True
 
 		return res

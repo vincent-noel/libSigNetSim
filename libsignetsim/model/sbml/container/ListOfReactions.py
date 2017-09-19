@@ -27,9 +27,12 @@
 from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.model.sbml.container.HasIds import HasIds
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
-
 from libsignetsim.model.sbml.Reaction import Reaction
+from libsignetsim.model.ModelException import InvalidXPath
 from libsignetsim.settings.Settings import Settings
+
+from re import match
+
 
 class ListOfReactions(ListOf, HasIds, SbmlObject):
 	""" Class for the list of reactions in a sbml model """
@@ -151,3 +154,34 @@ class ListOfReactions(ListOf, HasIds, SbmlObject):
 
 		for obj in ListOf.values(self):
 			obj.renameSbmlId(old_sbml_id, new_sbml_id)
+
+
+
+	def resolveXPath(self, selector):
+
+		if not (selector.startswith("reaction") or selector.startswith("sbml:reaction")):
+			raise InvalidXPath(selector)
+
+		res_match = match(r'(.*)\[@(.*)=(.*)\]', selector)
+		if res_match is None:
+			raise InvalidXPath(selector)
+
+		tokens = res_match.groups()
+		if len(tokens) != 3:
+			raise InvalidXPath(selector)
+
+		if tokens[1] == "id":
+			return self.getBySbmlId(tokens[2][1:-1])
+		elif tokens[1] == "name":
+			return self.getByName(tokens[2][1:-1])
+		elif tokens[1] == "metaid":
+			return self.getByMetaId(tokens[2][1:-1])
+
+		# If not returned yet
+		raise InvalidXPath(selector)
+
+	def getByXPath(self, xpath):
+		return self.resolveXPath(xpath[0]).getByXPath(xpath[1:])
+
+	def setByXPath(self, xpath, object):
+		self.resolveXPath(xpath[0]).setByXPath(xpath[1:], object)

@@ -24,19 +24,22 @@
 
 
 from libsignetsim.model.sbml.container.ListOf import ListOf
+from libsignetsim.model.sbml.container.HasIds import HasIds
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
-
+from libsignetsim.model.ModelException import InvalidXPath
 from libsignetsim.model.sbml.Event import Event
 from libsignetsim.settings.Settings import Settings
 
+from re import match
 
-class ListOfEvents(ListOf, SbmlObject):
+class ListOfEvents(ListOf, HasIds, SbmlObject):
 	""" Class for the listOfEvents in a sbml model """
 
 	def __init__ (self, model=None):
 
 		self.__model = model
 		ListOf.__init__(self, model)
+		HasIds.__init__(self, model)
 		SbmlObject.__init__(self, model)
 
 
@@ -64,10 +67,11 @@ class ListOfEvents(ListOf, SbmlObject):
 			SbmlObject.writeSbml(self, sbmlModel.getListOfEvents(), sbmlLevel, sbmlVersion)
 
 
-	def new(self):
+	def new(self, name=None):
 		event = Event(self.__model, self.nextId())
+		event.new(name)
 		ListOf.add(self, event)
-		SbmlObject.new(event)
+		# SbmlObject.new(event)
 		return event
 
 
@@ -155,3 +159,32 @@ class ListOfEvents(ListOf, SbmlObject):
 			if event.isValid():
 				res += 1
 		return res
+
+	def resolveXPath(self, selector):
+
+		if not (selector.startswith("event") or selector.startswith("sbml:event")):
+			raise InvalidXPath(selector)
+
+		res_match = match(r'(.*)\[@(.*)=(.*)\]', selector)
+		if res_match is None:
+			raise InvalidXPath(selector)
+
+		tokens = res_match.groups()
+		if len(tokens) != 3:
+			raise InvalidXPath(selector)
+
+		if tokens[1] == "id":
+			return self.getBySbmlId(tokens[2][1:-1])
+		elif tokens[1] == "name":
+			return self.getByName(tokens[2][1:-1])
+		elif tokens[1] == "metaid":
+			return self.getByMetaId(tokens[2][1:-1])
+
+		# If not returned yet
+		raise InvalidXPath(selector)
+
+	def getByXPath(self, xpath):
+		return self.resolveXPath(xpath[0]).getByXPath(xpath[1:])
+
+	def setByXPath(self, xpath, object):
+		self.resolveXPath(xpath[0]).setByXPath(xpath[1:], object)

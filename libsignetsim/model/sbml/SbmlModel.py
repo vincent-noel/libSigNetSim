@@ -203,20 +203,27 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 		elif level == 3:
 			self.sbmlVersion = 1
 
+	def resolveXPath(self, selector):
 
-	def resolveXPath(self, xpath):
+		if selector in ["sbml:listOfSpecies", "listOfSpecies"]:
+			return self.listOfSpecies
 
-		first = xpath[0]
-		xpath.pop(0)
+		if selector in ["sbml:listOfParameters", "listOfParameters"]:
+			return self.listOfParameters
 
-		if first in ["sbml:listOfSpecies", "listOfSpecies"]:
-			return self.listOfSpecies.resolveXPath(xpath)
+		if selector in ["sbml:listOfCompartments", "listOfCompartments"]:
+			return self.listOfCompartments
 
-		if first in ["sbml:listOfParameters", "listOfParameters"]:
-			return self.listOfParameters.resolveXPath(xpath)
+		if selector in ["sbml:listOfReactions", "listOfReactions"]:
+			return self.listOfReactions
 
-		if first in ["sbml:listOfCompartments", "listOfCompartments"]:
-			return self.listOfCompartments.resolveXPath(xpath)
+		if selector in ["sbml:listOfEvents", "listOfEvents"]:
+			return self.listOfEvents
 
-		else:
-			raise InvalidXPath("/".join(xpath))
+		raise InvalidXPath(selector)
+
+	def getByXPath(self, xpath):
+		return self.resolveXPath(xpath[0]).getByXPath(xpath[1:])
+
+	def setByXPath(self, xpath, object):
+		self.resolveXPath(xpath[0]).setByXPath(xpath[1:], object)

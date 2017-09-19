@@ -122,24 +122,22 @@ class MathVariable(object):
 	def writeSbml(self, sbml_variable, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		self.writeSbmlVariable(sbml_variable, sbml_level, sbml_version)
 
-
 	def getValue(self):
 		if self.isInitialized:
 			return self.value.getValueMathFormula()
-
 
 	def setValue(self, value):
 		if value is None:
 			self.isInitialized = False
 			self.value.setInternalMathFormula(None)
 
-		else:
-			if isinstance(value, int) or isinstance(value, float):
-				self.isInitialized = True
-				self.value.setValueMathFormula(value)
-			elif isinstance(value, str):
-				self.isInitialized = True
-				self.value.setPrettyPrintMathFormula(value)
+		elif isinstance(value, int) or isinstance(value, float):
+			self.isInitialized = True
+			self.value.setValueMathFormula(value)
+
+		elif isinstance(value, str):
+			self.isInitialized = True
+			self.value.setPrettyPrintMathFormula(value)
 
 	def setDerivativeValue(self, value):
 		if isinstance(value, int) or isinstance(value, float):
