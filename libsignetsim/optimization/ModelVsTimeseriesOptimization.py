@@ -48,6 +48,7 @@ class ModelVsTimeseriesOptimization(Optimization, CWriterModelVsDataOptimization
 			p_mix=Settings.defaultPlsaMixInterval,
 			p_initial_moves=Settings.defaultPlsaInitialMoves,
 			p_tau=Settings.defaultPlsaTau,
+			p_freeze_count=Settings.defaultPlsaFreezeCount,
 			s_neg_penalty=Settings.defaultScoreNegativePenalty,
 	):
 
@@ -72,7 +73,7 @@ class ModelVsTimeseriesOptimization(Optimization, CWriterModelVsDataOptimization
 			self, workingModel, self.listOfExperiments, mapping, parameters_to_fit,
 			p_lambda=p_lambda, p_criterion=p_criterion, p_initial_temperature=p_initial_temperature,
 			p_gain=p_gain, p_interval=p_interval, p_mix=p_mix, p_initial_moves=p_initial_moves, p_tau=p_tau,
-			s_neg_penalty=s_neg_penalty
+			p_freeze_count=p_freeze_count, s_neg_penalty=s_neg_penalty
 		)
 		NoiseGenerator.__init__(self, self.listOfExperiments, noise, sampling)
 

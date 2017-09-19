@@ -39,6 +39,7 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 				p_mix=Settings.defaultPlsaMixInterval,
 				p_initial_moves=Settings.defaultPlsaInitialMoves,
 				p_tau=Settings.defaultPlsaTau,
+				p_freeze_count=Settings.defaultPlsaFreezeCount,
 				s_neg_penalty=Settings.defaultScoreNegativePenalty,
 	):
 
@@ -58,7 +59,8 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 			p_lambda=p_lambda, p_criterion=p_criterion,
 			p_initial_temperature=p_initial_temperature,
 			p_gain=p_gain, p_interval=p_interval, p_tau=p_tau,
-			p_mix=p_mix, p_initial_moves=p_initial_moves
+			p_mix=p_mix, p_initial_moves=p_initial_moves,
+			p_freeze_count=p_freeze_count
 		)
 
 	def findSimulationSettings(self):

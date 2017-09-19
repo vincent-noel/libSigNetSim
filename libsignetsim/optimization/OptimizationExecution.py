@@ -81,7 +81,7 @@ class OptimizationExecution(object):
 		res_comp = call(cmd_comp,
 								stdout=open("%sout_optim_comp" % self.getTempDirectory(),"w"),
 								stderr=open("%serr_optim_comp" % self.getTempDirectory(),"w"),
-								shell=True,preexec_fn=setpgrp,close_fds=True)
+								shell=True, preexec_fn=setpgrp, close_fds=True)
 
 		if res_comp != 0 or getsize(self.getTempDirectory() + "err_optim_comp") > 0:
 			return self.OPTIM_FAILURE
@@ -128,7 +128,6 @@ class OptimizationExecution(object):
 
 		if (getsize(self.getTempDirectory() + "err_optim") > 0 or
 			not isfile(self.getTempDirectory() + "logs/score/score")):
-
 
 			err = open(self.getTempDirectory() + "err_optim")
 

@@ -41,6 +41,7 @@ class CWriterOptimization(object):
 				p_mix=Settings.defaultPlsaMixInterval,
 				p_initial_moves=Settings.defaultPlsaInitialMoves,
 				p_tau=Settings.defaultPlsaTau,
+				p_freeze_count=Settings.defaultPlsaFreezeCount,
 	):
 
 		self.workingModel = workingModel
@@ -53,6 +54,7 @@ class CWriterOptimization(object):
 		self.pMix = p_mix
 		self.pInitialMoves = p_initial_moves
 		self.pTau = p_tau
+		self.pFreezeCount = p_freeze_count
 
 	def writeOptimizationFiles(self, nb_procs):
 
@@ -142,6 +144,7 @@ class CWriterOptimization(object):
 		f_c.write("#endif\n")
 		f_c.write("\tsettings->lambda = %g;\n" % self.pLambda)
 		f_c.write("\tsettings->criterion = %g;\n" % self.pCriterion)
+		f_c.write("\tsettings->freeze_count = %d;\n" % self.pFreezeCount)
 		f_c.write("}")
 
 
