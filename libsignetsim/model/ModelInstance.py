@@ -39,7 +39,7 @@ class ModelInstance(Model):
 	def __init__(self, model, document):
 		""" Constructor of model class """
 
-		Model.__init__(self, parent_doc=document, is_model_instance=True, is_main_model=True)
+		Model.__init__(self, parent_doc=document)
 		self.__mainModel = model
 		self.__document = document
 		self.__submodelInstances = {}
