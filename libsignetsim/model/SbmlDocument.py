@@ -347,6 +347,9 @@ class SbmlDocument(object):
 
 	def getByXPath(self, xpath):
 
+		if xpath.startswith("/"):
+			xpath = xpath[1:]
+
 		tokens = xpath.split("/")
 
 		try:
@@ -361,6 +364,9 @@ class SbmlDocument(object):
 			raise InvalidXPath(xpath)
 
 	def setByXPath(self, xpath, object):
+
+		if xpath.startswith("/"):
+			xpath = xpath[1:]
 
 		tokens = xpath.split("/")
 		try:

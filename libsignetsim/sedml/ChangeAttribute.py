@@ -54,10 +54,5 @@ class ChangeAttribute(Change):
 		return self.__newValue
 
 	def applyChange(self, sbml_model):
+		self.getTarget().changeModelObject(sbml_model, self.__newValue)
 
-		object = self.getTarget().getModelObject(sbml_model)
-
-		if object is None:
-			raise SedmlModelObjectNotFound("Model object %s not found" % self.getTarget().getTargetName())
-		else:
-			object.setValue(self.__newValue)

@@ -27,9 +27,6 @@ from libsignetsim.model.sbml.Compartment import Compartment
 from libsignetsim.model.sbml.Parameter import Parameter
 from libsignetsim.model.sbml.Reaction import Reaction
 
-from re import match
-
-
 class XPath(object):
 
 	VALUE = "value"
@@ -41,124 +38,45 @@ class XPath(object):
 	def __init__(self, document):
 
 		self.__document = document
-
-		self.__path = None
-
-		self.__containers = None
-		self.__variable = None
-		self.__attribute = None
-
-		self.__varType = None
-		self.__refType = None
-		self.__ref = None
-
+		self.__rawXPath = None
 
 	def readSedml(self, xpath, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		if xpath is not None:
-			t_path = xpath.split('/')
-
-			last_ind = len(t_path)-1
-			if t_path[last_ind].startswith("@"):
-				self.__attribute = t_path[last_ind][1:]
-				last_ind -= 1
-
-			self.readRef(t_path[last_ind])
-
-	def readRef(self, string):
-
-		res_match = match(r"([a-zA-Z\:\*]+)\[@([a-zA-Z]+)=[\'\"](.*)[\'\"]\]", string)
-
-		self.__varType = res_match.groups()[0]
-		if self.__varType != "descendant::*" and ":" not in self.__varType:
-			self.__varType = "sbml:" + self.__varType
-
-		self.__refType = res_match.groups()[1]
-		self.__ref = res_match.groups()[2]
+		self.__rawXPath = xpath
 
 	def getModelObject(self, sbml_model):
 
-		t_container = None
-		if self.__varType == "descendant::*":
-			if self.__refType == "id":
-				t_container = sbml_model.listOfVariables
-			else:
-				t_container = sbml_model.listOfSbmlObjects
+		return sbml_model.parentDoc.getByXPath(self.__rawXPath)
 
-		elif self.__varType.endswith(":species"):
-			t_container = sbml_model.listOfSpecies
-
-		elif self.__varType.endswith(":compartment"):
-			t_container = sbml_model.listOfCompartments
-
-		elif self.__varType.endswith(":parameter"):
-			t_container = sbml_model.listOfParameters
-
-		elif self.__varType.endswith(":reaction"):
-			t_container = sbml_model.listOfReactions
-
-		if t_container is not None:
-			if self.__refType == "id":
-				return t_container.getBySbmlId(self.__ref)
-
-			elif self.__refType == "name":
-				return t_container.getByName(self.__ref)
+	def changeModelObject(self, sbml_model, value):
+		sbml_model.parentDoc.setByXPath(self.__rawXPath, value)
 
 	def setModelObject(self, object, attribute=None):
 
-		if object.getModel().sbmlLevel == 1:
-			self.__refType = "name"
-			self.__ref = object.getName()
-		else:
-			self.__refType = "id"
-			self.__ref = object.getSbmlId()
+		self.__rawXPath = "sbml:sbml/sbml:model/"
 
 		if isinstance(object, Compartment):
-			self.__varType = "sbml:compartment"
+			self.__rawXPath += "sbml:listOfCompartments/sbml:compartment"
 
 		elif isinstance(object, Species):
-			self.__varType = "sbml:species"
+			self.__rawXPath += "sbml:listOfSpecies/sbml:species"
 
 		elif isinstance(object, Parameter):
-			self.__varType = "sbml:parameter"
+			self.__rawXPath += "sbml:listOfParameters/sbml:parameter"
 
 		elif isinstance(object, Reaction):
-			self.__varType = "sbml:reaction"
+			self.__rawXPath += "sbml:listOfReactions/sbml:reaction"
 
-		self.__attribute = attribute
+		if object.getModel().sbmlLevel == 1:
+			self.__rawXPath += "[@name='%s']" % object.getName()
+		else:
+			self.__rawXPath += "[@id='%s']" % object.getSbmlId()
+
+		if attribute is not None:
+			self.__rawXPath += "/@%s" % attribute
 
 	def writeSedml(self, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
-		return self.getXPath()
+		return self.__rawXPath
 
 	def getXPath(self):
-
-		if self.__varType is not None and self.__refType is not None and self.__ref is not None:
-
-			str = "/sbml:sbml/sbml:model"
-			if self.__varType == "descendant::*":
-				str += "/" + self.__varType
-
-			else:
-				if self.__varType.endswith(":species"):
-					str += "/sbml:listOfSpecies/sbml:species"
-
-				elif self.__varType.endswith(":compartment"):
-					str += "/sbml:listOfCompartments/sbml:compartment"
-
-				elif self.__varType.endswith(":parameter"):
-					str += "/sbml:listOfParameters/sbml:parameter"
-
-				elif self.__varType.endswith(":reaction"):
-					str += "/sbml:listOfReactions/sbml:reaction"
-
-			str += ("[@%s='%s']" % (self.__refType, self.__ref))
-			if self.__attribute is not None:
-				str += "/@%s" % self.__attribute
-
-			return str
-
-	def getAttribute(self):
-		return self.__attribute
-
-	def getTargetName(self):
-		return self.__ref
+		return self.__rawXPath
