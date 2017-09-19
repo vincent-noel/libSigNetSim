@@ -106,3 +106,6 @@ class TestXPaths(TestCase):
 		self.assertEqual(doc_comp.getByXPath("sbml:sbml/sbml:listOfModelDefinitions/modelDefinition[@id='submodel_0']/listOfParameters/parameter[@name='Kinetic constant']"), sub_p1)
 		self.assertEqual(doc_comp.getByXPath("sbml:sbml/sbml:listOfModelDefinitions/modelDefinition[@id='submodel_0']/listOfParameters/parameter[@id='parameter_0']"), sub_p1)
 
+		self.assertEqual(doc.getByXPath("sbml:sbml/sbml:model/descendant::*[@id='species_0']"), s1)
+		self.assertEqual(s1.getXPath(), "sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='species_0']")
+		self.assertEqual(s1.getXPath("value"), "sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='species_0']/@value")

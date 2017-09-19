@@ -29,6 +29,7 @@ from libsignetsim.model.Variable import Variable
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.sbml.HasUnits import HasUnits
 from libsignetsim.model.sbml.HasConversionFactor import HasConversionFactor
+from libsignetsim.model.sbml.HasParentObj import HasParentObj
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.sympy_shortcuts import SympyFloat
@@ -36,13 +37,14 @@ from libsignetsim.model.ModelException import InvalidXPath
 
 
 class Species(SbmlObject, Variable, InitiallyAssignedVariable,
-						RuledVariable, EventAssignedVariable, HasUnits, HasConversionFactor):
+						RuledVariable, EventAssignedVariable, HasUnits, HasConversionFactor, HasParentObj):
 
-	def __init__(self, model, objId):
+	def __init__(self, model, parent_obj, objId):
 
 		self.__model = model
 		self.objId = objId
 
+		HasParentObj.__init__(self, parent_obj)
 		Variable.__init__(self, model, Variable.SPECIES)
 		SbmlObject.__init__(self, model)
 		InitiallyAssignedVariable.__init__(self, model)
@@ -403,3 +405,16 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 		elif xpath[0] == "@id":
 			return self.setSbmlId(object)
+
+	def getXPath(self, attribute=None):
+
+		xpath = "sbml:species"
+		if self.__model.sbmlLevel == 1:
+			xpath += "[@name='%s']" % self.getSbmlId()
+		else:
+			xpath += "[@id='%s']" % self.getSbmlId()
+
+		if attribute is not None:
+			xpath += "/@%s" % attribute
+
+		return "/".join([self.getParentObj().getXPath(), xpath])

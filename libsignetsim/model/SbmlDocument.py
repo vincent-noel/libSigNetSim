@@ -22,11 +22,8 @@
 
 """
 
-
-
 from libsignetsim.model.Model import Model
-
-from libsignetsim.model.Variable import Variable
+from libsignetsim.model.sbml.HasParentObj import HasParentObj
 from libsignetsim.model.sbml.container.ListOfModelDefinitions import ListOfModelDefinitions
 from libsignetsim.model.sbml.container.ListOfExternalModelDefinitions import ListOfExternalModelDefinitions
 from libsignetsim.model.ModelInstance import ModelInstance
@@ -35,7 +32,7 @@ from libsignetsim.model.ModelException import (
 )
 from libsignetsim.settings.Settings import Settings
 
-from os.path import isfile, isabs, dirname, join, basename
+from os.path import isfile, dirname, join, basename
 from libsbml import SBMLReader, SBMLDocument, writeSBMLToFile,\
 					XMLFileUnreadable, XMLFileOperationError, \
 					LIBSBML_CAT_UNITS_CONSISTENCY, LIBSBML_SEV_INFO, \
@@ -45,13 +42,14 @@ from time import time
 from bioservices import BioModels
 
 
-class SbmlDocument(object):
+class SbmlDocument(HasParentObj):
 	""" Sbml model class """
 
 
-	def __init__ (self, model=None, path=None):
+	def __init__ (self, model=None, path=None, parent_obj=None):
 		""" Constructor of model class """
 
+		HasParentObj.__init__(self, parent_obj)
 		self.useCompPackage = False
 		self.modelInstance = None
 		self.sbmlLevel = Settings.defaultSbmlLevel
@@ -65,7 +63,7 @@ class SbmlDocument(object):
 		self.isCompatible = None
 
 		if model is None:
-			self.model = Model(parent_doc=self)
+			self.model = Model(parent_doc=self, parent_obj=self)
 
 		else:
 			self.model = model
@@ -380,3 +378,9 @@ class SbmlDocument(object):
 		except InvalidXPath:
 			raise InvalidXPath(xpath)
 
+
+	def getXPath(self):
+		if self.getParentObj() is not None:
+			return "/".join([self.getParentObj().getXPath(), "sbml:sbml"])
+		else:
+			return "sbml:sbml"

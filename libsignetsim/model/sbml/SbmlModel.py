@@ -42,20 +42,24 @@ from libsignetsim.model.sbml.ModelUnits import ModelUnits
 from libsignetsim.model.sbml.SbmlModelAnnotation import SbmlModelAnnotation
 from libsignetsim.model.sbml.HasId import HasId
 from libsignetsim.model.sbml.HasConversionFactor import HasConversionFactor
+from libsignetsim.model.sbml.HasParentObj import HasParentObj
 from libsignetsim.model.ModelException import InvalidXPath
 
 from time import time
+from re import match
 
-class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversionFactor):
+
+class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversionFactor, HasParentObj):
 	""" Sbml model class """
 
 
-	def __init__ (self, parent_document, obj_id=0):
+	def __init__ (self, parent_document, parent_obj, obj_id=0):
 		""" Constructor of model class """
 
 		self.objId = obj_id
 		self.parentDoc = parent_document
 
+		HasParentObj.__init__(self, parent_obj)
 		HasId.__init__(self, self)
 		self.listOfSbmlObjects = ListOfSbmlObjects(self)
 		SbmlObject.__init__(self, self)
@@ -63,7 +67,7 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 		ModelUnits.__init__(self)
 		HasConversionFactor.__init__(self, self)
 
-		self.listOfSpecies = ListOfSpecies(self)
+		self.listOfSpecies = ListOfSpecies(self, self)
 		self.listOfParameters = ListOfParameters(self)
 		self.listOfReactions = ListOfReactions(self)
 		self.listOfCompartments = ListOfCompartments(self)
@@ -220,6 +224,21 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 		if selector in ["sbml:listOfEvents", "listOfEvents"]:
 			return self.listOfEvents
 
+		if selector.startswith("descendant::"):
+			res_match = match(r"descendant::\*\[@(.*)=\'(.*)\'\]", selector)
+			if res_match is None:
+				raise InvalidXPath(selector)
+
+			res = res_match.groups()
+			if res[0] == "id":
+				return self.listOfVariables.getBySbmlId(res[1])
+
+			elif res[0] == "name":
+				return self.listOfVariables.getByName(res[1])
+
+			elif res[0] == "metaid":
+				return self.listOfSbmlObjects.getByMetaId(res[1])
+
 		raise InvalidXPath(selector)
 
 	def getByXPath(self, xpath):
@@ -227,3 +246,9 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 
 	def setByXPath(self, xpath, object):
 		self.resolveXPath(xpath[0]).setByXPath(xpath[1:], object)
+
+	def getXPath(self):
+		if self.getParentObj() is not None:
+			return "/".join([self.getParentObj().getXPath(), "sbml:model"])
+		else:
+			return "sbml:model"

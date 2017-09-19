@@ -26,6 +26,7 @@
 from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.model.sbml.container.HasIds import HasIds
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
+from libsignetsim.model.sbml.HasParentObj import HasParentObj
 
 from libsignetsim.model.sbml.Species import Species
 from libsignetsim.model.ModelException import CannotDeleteException, InvalidXPath
@@ -33,11 +34,13 @@ from libsignetsim.settings.Settings import Settings
 
 from re import match
 
-class ListOfSpecies(ListOf, HasIds, SbmlObject):
+class ListOfSpecies(ListOf, HasIds, SbmlObject, HasParentObj):
 
-	def __init__ (self, model=None):
+	def __init__ (self, model, parent_obj):
 
 		self.__model = model
+
+		HasParentObj.__init__(self, parent_obj)
 		ListOf.__init__(self, model)
 		HasIds.__init__(self, model)
 		SbmlObject.__init__(self, model)
@@ -48,7 +51,7 @@ class ListOfSpecies(ListOf, HasIds, SbmlObject):
 					sbml_version=Settings.defaultSbmlVersion):
 
 		for sbml_species in sbml_listOfSpecies:
-			t_species = Species(self.__model, self.nextId())
+			t_species = Species(self.__model, self, self.nextId())
 			t_species.readSbml(sbml_species, sbml_level, sbml_version)
 			ListOf.add(self, t_species)
 
@@ -69,7 +72,7 @@ class ListOfSpecies(ListOf, HasIds, SbmlObject):
 	def new(self, name=None, compartment=None, value=0, unit=None,
 			 constant=False, boundaryCondition=False, hasOnlySubstanceUnits=False):
 
-		t_species = Species(self.__model, self.nextId())
+		t_species = Species(self.__model, self, self.nextId())
 		t_species.new(name, compartment, value, unit, constant,
 							boundaryCondition, hasOnlySubstanceUnits)
 		ListOf.add(self, t_species)
@@ -84,7 +87,7 @@ class ListOfSpecies(ListOf, HasIds, SbmlObject):
 
 				if species not in deletions:
 
-					t_species = Species(self.__model, self.nextId())
+					t_species = Species(self.__model, self, self.nextId())
 					t_species.copy(
 						species,
 						sids_subs=sids_subs,
@@ -164,4 +167,10 @@ class ListOfSpecies(ListOf, HasIds, SbmlObject):
 
 	def setByXPath(self, xpath, object):
 		self.resolveXPath(xpath[0]).setByXPath(xpath[1:], object)
+
+	def getXPath(self):
+
+		return "/".join([self.getParentObj().getXPath(), "sbml:listOfSpecies"])
+
+
 
