@@ -44,9 +44,9 @@ class XPath(object):
 
 		self.__rawXPath = xpath
 
-	def getModelObject(self, sbml_model):
+	def getModelObject(self, sbml_model, instance=False):
 
-		return sbml_model.parentDoc.getByXPath(self.__rawXPath)
+		return sbml_model.parentDoc.getByXPath(self.__rawXPath, instance)
 
 	def changeModelObject(self, sbml_model, value):
 		sbml_model.parentDoc.setByXPath(self.__rawXPath, value)

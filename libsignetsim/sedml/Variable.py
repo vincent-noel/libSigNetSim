@@ -105,7 +105,7 @@ class Variable(SedBase, HasId):
 
 		elif self.__target.getXPath() is not None:
 			sbml_model = simulation.getModel()
-			sbml_object = self.__target.getModelObject(sbml_model)
+			sbml_object = self.__target.getModelObject(sbml_model, instance=True)
 			return {self.getSympySymbol(): simulation.getResultsByVariable(sbml_object.getSbmlId())}
 
 	def setTaskReference(self, task_reference):

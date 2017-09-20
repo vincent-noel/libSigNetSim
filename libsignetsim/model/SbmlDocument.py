@@ -331,19 +331,25 @@ class SbmlDocument(HasParentObj):
 				else:
 					document.writeSbmlToFile(path=path)
 
+	def resolveXPath(self, selector, instance=False):
 
-	def resolveXPath(self, selector):
-
-		if selector == "sbml:model":
-			return self.model
-
-		elif selector == "sbml:listOfModelDefinitions" and self.useCompPackage:
-			return self.listOfModelDefinitions
+		if instance:
+			if selector == "sbml:model":
+				return self.getModelInstance()
+			else:
+				raise InvalidXPath(selector)
 
 		else:
-			raise InvalidXPath(selector)
+			if selector == "sbml:model":
+				return self.model
 
-	def getByXPath(self, xpath):
+			elif selector == "sbml:listOfModelDefinitions" and self.useCompPackage:
+				return self.listOfModelDefinitions
+
+			else:
+				raise InvalidXPath(selector)
+
+	def getByXPath(self, xpath, instance=False):
 
 		if xpath.startswith("/"):
 			xpath = xpath[1:]
@@ -352,9 +358,9 @@ class SbmlDocument(HasParentObj):
 
 		try:
 			if tokens[0] == "sbml:sbml":
-				return self.resolveXPath(tokens[1]).getByXPath(tokens[2:])
+				return self.resolveXPath(tokens[1], instance).getByXPath(tokens[2:])
 			elif tokens[0] == "sbml:model":
-				return self.resolveXPath(tokens[0]).getByXPath(tokens[1:])
+				return self.resolveXPath(tokens[0], instance).getByXPath(tokens[1:])
 			else:
 				raise InvalidXPath(xpath)
 
