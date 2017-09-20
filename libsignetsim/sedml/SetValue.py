@@ -22,6 +22,8 @@
 
 """
 from libsignetsim.sedml.ComputeChange import ComputeChange
+from libsignetsim.sedml.SedmlException import SedmlUnknownXPATH
+from libsignetsim.model.ModelException import InvalidXPath
 from libsignetsim.settings.Settings import Settings
 
 
@@ -86,11 +88,14 @@ class SetValue(ComputeChange):
 	def getValueChange(self):
 
 		if self.isTargetChange():
-			model = self.__document.listOfModels.getSbmlModelByReference(self.__modelReference)
-			target = self.getTarget().getModelObject(model)
+			try:
+				model = self.__document.listOfModels.getSbmlModelByReference(self.__modelReference)
+				target = self.getTarget().getModelObject(model)
 
-			range = self.__repeatedTask.listOfRanges.getByRangeId(self.__range)
-			array_values = range.getValuesArray()
+				range = self.__repeatedTask.listOfRanges.getByRangeId(self.__range)
+				array_values = range.getValuesArray()
 
-			return {target: array_values}
+				return {target: array_values}
+			except InvalidXPath as e:
+				raise SedmlUnknownXPATH("Unknown XPath : %s" % e.message)
 

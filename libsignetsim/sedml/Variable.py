@@ -26,7 +26,8 @@ from libsignetsim.sedml.HasId import HasId
 from libsignetsim.sedml.XPath import XPath
 from libsignetsim.sedml.URI import URI
 from libsignetsim.settings.Settings import Settings
-
+from libsignetsim.model.ModelException import InvalidXPath
+from libsignetsim.sedml.SedmlException import SedmlUnknownXPATH
 from libsignetsim.sedml.math.sympy_shortcuts import SympySymbol
 
 class Variable(SedBase, HasId):
@@ -104,9 +105,12 @@ class Variable(SedBase, HasId):
 			# return {self.getSymbol().getSymbol(): simulation.getTimes()}
 
 		elif self.__target.getXPath() is not None:
-			sbml_model = simulation.getModel()
-			sbml_object = self.__target.getModelObject(sbml_model, instance=True)
-			return {self.getSympySymbol(): simulation.getResultsByVariable(sbml_object.getSbmlId())}
+			try:
+				sbml_model = simulation.getModel()
+				sbml_object = self.__target.getModelObject(sbml_model, instance=True)
+				return {self.getSympySymbol(): simulation.getResultsByVariable(sbml_object.getSbmlId())}
+			except InvalidXPath:
+				raise SedmlUnknownXPATH("Unkown XPath : " + self.__target.getXPath())
 
 	def setTaskReference(self, task_reference):
 		self.__taskReference = task_reference

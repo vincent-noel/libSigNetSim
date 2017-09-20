@@ -152,17 +152,22 @@ class ListOfSpecies(ListOf, HasIds, SbmlObject, HasParentObj):
 		if len(tokens) != 3:
 			raise InvalidXPath(selector)
 
+		object = None
 		if tokens[1] == "id":
-			return self.getBySbmlId(tokens[2][1:-1])
+			object = self.getBySbmlId(tokens[2][1:-1])
 		elif tokens[1] == "name":
-			return self.getByName(tokens[2][1:-1])
+			object = self.getByName(tokens[2][1:-1])
 		elif tokens[1] == "metaid":
-			return self.getByMetaId(tokens[2][1:-1])
+			object = self.getByMetaId(tokens[2][1:-1])
+
+		if object is not None:
+			return object
 
 		# If not returned yet
 		raise InvalidXPath(selector)
 
 	def getByXPath(self, xpath):
+		print xpath
 		return self.resolveXPath(xpath[0]).getByXPath(xpath[1:])
 
 	def setByXPath(self, xpath, object):
