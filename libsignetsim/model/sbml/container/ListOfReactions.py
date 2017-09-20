@@ -27,6 +27,7 @@
 from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.model.sbml.container.HasIds import HasIds
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
+from libsignetsim.model.sbml.HasParentObj import HasParentObj
 from libsignetsim.model.sbml.Reaction import Reaction
 from libsignetsim.model.ModelException import InvalidXPath
 from libsignetsim.settings.Settings import Settings
@@ -34,16 +35,16 @@ from libsignetsim.settings.Settings import Settings
 from re import match
 
 
-class ListOfReactions(ListOf, HasIds, SbmlObject):
+class ListOfReactions(ListOf, HasIds, SbmlObject, HasParentObj):
 	""" Class for the list of reactions in a sbml model """
 
-	def __init__ (self, model=None):
+	def __init__ (self, model, parent_obj):
 
 		self.__model = model
 		ListOf.__init__(self, model)
 		HasIds.__init__(self, model)
 		SbmlObject.__init__(self, model)
-
+		HasParentObj.__init__(self, parent_obj)
 
 	def readSbml(self, sbml_listOfReactions,
 					sbml_level=Settings.defaultSbmlLevel,
@@ -51,7 +52,7 @@ class ListOfReactions(ListOf, HasIds, SbmlObject):
 		""" Reads a list of reactions from a sbml file """
 
 		for sbml_reaction in sbml_listOfReactions:
-			t_reaction = Reaction(self.__model, self.nextId())
+			t_reaction = Reaction(self.__model, self, self.nextId())
 			ListOf.add(self, t_reaction)
 			t_reaction.readSbml(sbml_reaction, sbml_level, sbml_version)
 
@@ -69,14 +70,12 @@ class ListOfReactions(ListOf, HasIds, SbmlObject):
 		if len(ListOf.values(self)):
 			SbmlObject.writeSbml(self, sbml_model.getListOfReactions(), sbml_level, sbml_version)
 
-
 	def new(self, name=None):
 
-		t_reaction = Reaction(self.__model, self.nextId())
+		t_reaction = Reaction(self.__model, self, self.nextId())
 		t_reaction.new(name)
 		ListOf.add(self, t_reaction)
 		return t_reaction
-
 
 	def copy(self, obj, deletions=[], sids_subs={}, symbols_subs={}, usids_subs={}, conversion_factors={},
 				extent_conversion=None, time_conversion=None):
@@ -86,7 +85,7 @@ class ListOfReactions(ListOf, HasIds, SbmlObject):
 			for reaction in obj.values():
 				if reaction not in deletions:
 
-					t_reaction = Reaction(self.__model, self.nextId())
+					t_reaction = Reaction(self.__model, self, self.nextId())
 					t_reaction.copy(
 						reaction,
 						deletions=deletions,
@@ -99,12 +98,10 @@ class ListOfReactions(ListOf, HasIds, SbmlObject):
 					)
 					ListOf.add(self, t_reaction)
 
-
 	def remove(self, reaction):
 
 		self.__model.listOfVariables.removeVariable(reaction)
 		ListOf.remove(self, reaction)
-
 
 	def containsVariable(self, variable):
 		for reaction in ListOf.values(self):
@@ -189,3 +186,7 @@ class ListOfReactions(ListOf, HasIds, SbmlObject):
 
 	def setByXPath(self, xpath, object):
 		self.resolveXPath(xpath[0]).setByXPath(xpath[1:], object)
+
+	def getXPath(self):
+		return "/".join([self.getParentObj().getXPath(), "sbml:listOfReactions"])
+

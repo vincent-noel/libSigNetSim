@@ -26,22 +26,23 @@
 from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.model.sbml.container.HasIds import HasIds
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
+from libsignetsim.model.sbml.HasParentObj import HasParentObj
 from libsignetsim.model.ModelException import InvalidXPath
 from libsignetsim.model.sbml.Event import Event
 from libsignetsim.settings.Settings import Settings
 
 from re import match
 
-class ListOfEvents(ListOf, HasIds, SbmlObject):
+class ListOfEvents(ListOf, HasIds, SbmlObject, HasParentObj):
 	""" Class for the listOfEvents in a sbml model """
 
-	def __init__ (self, model=None):
+	def __init__ (self, model, parent_obj):
 
 		self.__model = model
 		ListOf.__init__(self, model)
 		HasIds.__init__(self, model)
 		SbmlObject.__init__(self, model)
-
+		HasParentObj.__init__(self, parent_obj)
 
 	def readSbml(self, sbml_list_of_events,
 					sbmlLevel=Settings.defaultSbmlLevel,
@@ -49,7 +50,7 @@ class ListOfEvents(ListOf, HasIds, SbmlObject):
 		""" Reads the list of events from a sbml model """
 
 		for sbml_event in sbml_list_of_events:
-			event = Event(self.__model, self.nextId())
+			event = Event(self.__model, self, self.nextId())
 			event.readSbml(sbml_event, sbmlLevel, sbmlVersion)
 			ListOf.add(self, event)
 
@@ -68,7 +69,7 @@ class ListOfEvents(ListOf, HasIds, SbmlObject):
 
 
 	def new(self, name=None):
-		event = Event(self.__model, self.nextId())
+		event = Event(self.__model, self, self.nextId())
 		event.new(name)
 		ListOf.add(self, event)
 		# SbmlObject.new(event)
@@ -84,7 +85,7 @@ class ListOfEvents(ListOf, HasIds, SbmlObject):
 			for event in obj.values():
 				if event not in deletions:
 
-					t_event = Event(self.__model, self.nextId())
+					t_event = Event(self.__model, self, self.nextId())
 					t_event.copy(
 						event,
 						deletions=deletions,
@@ -192,3 +193,6 @@ class ListOfEvents(ListOf, HasIds, SbmlObject):
 
 	def setByXPath(self, xpath, object):
 		self.resolveXPath(xpath[0]).setByXPath(xpath[1:], object)
+
+	def getXPath(self):
+		return "/".join([self.getParentObj().getXPath(), "sbml:listOfEvents"])

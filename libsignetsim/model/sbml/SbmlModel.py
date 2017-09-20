@@ -68,13 +68,13 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 		HasConversionFactor.__init__(self, self)
 
 		self.listOfSpecies = ListOfSpecies(self, self)
-		self.listOfParameters = ListOfParameters(self)
-		self.listOfReactions = ListOfReactions(self)
-		self.listOfCompartments = ListOfCompartments(self)
+		self.listOfParameters = ListOfParameters(self, self)
+		self.listOfReactions = ListOfReactions(self, self)
+		self.listOfCompartments = ListOfCompartments(self, self)
 		self.listOfFunctionDefinitions = ListOfFunctionDefinitions(self)
 		self.listOfUnitDefinitions = ListOfUnitDefinitions(self)
 		self.listOfRules = ListOfRules(self)
-		self.listOfEvents = ListOfEvents(self)
+		self.listOfEvents = ListOfEvents(self, self)
 		self.listOfConstraints = ListOfConstraints(self)
 		self.listOfInitialAssignments = ListOfInitialAssignments(self)
 

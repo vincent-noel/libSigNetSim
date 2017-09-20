@@ -109,3 +109,8 @@ class TestXPaths(TestCase):
 		self.assertEqual(doc.getByXPath("sbml:sbml/sbml:model/descendant::*[@id='species_0']"), s1)
 		self.assertEqual(s1.getXPath(), "sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='species_0']")
 		self.assertEqual(s1.getXPath("value"), "sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='species_0']/@value")
+
+		self.assertEqual(c.getXPath(), "sbml:sbml/sbml:model/sbml:listOfCompartments/sbml:compartment[@id='compartment_0']")
+		self.assertEqual(r1.getXPath(), "sbml:sbml/sbml:model/sbml:listOfReactions/sbml:reaction[@id='reaction_0']")
+		self.assertEqual(p1.getXPath(), "sbml:sbml/sbml:model/sbml:listOfParameters/sbml:parameter[@id='kdeg']")
+		self.assertEqual(e1.getXPath(), "sbml:sbml/sbml:model/sbml:listOfEvents/sbml:event[@id='event_0']")

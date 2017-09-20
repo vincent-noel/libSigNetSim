@@ -28,19 +28,21 @@ from libsignetsim.model.sbml.RuledVariable import RuledVariable
 from libsignetsim.model.Variable import Variable
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.sbml.HasUnits import HasUnits
+from libsignetsim.model.sbml.HasParentObj import HasParentObj
+from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.ModelException import InvalidXPath
 from libsignetsim.settings.Settings import Settings
 
 
 class Compartment(Variable, SbmlObject, InitiallyAssignedVariable,
-						RuledVariable, EventAssignedVariable, HasUnits):
+						RuledVariable, EventAssignedVariable, HasUnits, HasParentObj):
 	""" Compartment definition """
 
 
-	def __init__ (self, model, obj_id):
+	def __init__ (self, model, parent_obj, obj_id):
 
 
-		self.model = model
+		self.__model = model
 		self.objId = obj_id
 
 		SbmlObject.__init__(self, model)
@@ -49,7 +51,7 @@ class Compartment(Variable, SbmlObject, InitiallyAssignedVariable,
 		RuledVariable.__init__(self, model)
 		EventAssignedVariable.__init__(self, model)
 		HasUnits.__init__(self, model)
-
+		HasParentObj.__init__(self, parent_obj)
 		self.spatialDimensions = None
 
 
@@ -64,7 +66,7 @@ class Compartment(Variable, SbmlObject, InitiallyAssignedVariable,
 
 		self.setValue(value)
 		self.constant = constant
-		self.setUnits(self.model.getCompartmentUnits())
+		self.setUnits(self.__model.getCompartmentUnits())
 
 
 	def copy(self, compartment, sids_subs={}, symbols_subs={}, usids_subs={}, conversion_factors=None):
@@ -192,25 +194,28 @@ class Compartment(Variable, SbmlObject, InitiallyAssignedVariable,
 	def setSize(self , value):
 
 		if self.value is None:
-			self.value = MathFormula(self.model)
+			self.value = MathFormula(self.__model)
 
 		self.value.setPrettyPrintMathFormula(value)
 
-	# def setSbmlId(self, sbml_id):
-	#     # for species in self.model.listOfSpecies.values():
-	#     #     if species.getCompartment() == self:
-	#     #         species.renameSbmlId(self.getSbmlId(), sbml_id)
-	#     #
-	#     # for reaction in self.model.listOfReactions.values():
-	#     #     reaction.renameSbmlId(self.getSbmlId(), sbml_id)
-	#
-	#
-	#     Variable.setSbmlId(self, sbml_id)
+
+	def getXPath(self, attribute=None):
+
+		xpath = "sbml:species"
+		if self.__model.sbmlLevel == 1:
+			xpath += "[@name='%s']" % self.getSbmlId()
+		else:
+			xpath += "[@id='%s']" % self.getSbmlId()
+
+		if attribute is not None:
+			xpath += "/@%s" % attribute
+
+		return "/".join([self.getParentObj().getXPath(), xpath])
 
 	def getSpecies(self):
 
 		all_species = []
-		for species in self.model.listOfSpecies.values():
+		for species in self.__model.listOfSpecies.values():
 			if species.getCompartment() == self:
 				all_species.append(species)
 
@@ -220,7 +225,7 @@ class Compartment(Variable, SbmlObject, InitiallyAssignedVariable,
 	def getNbSpecies(self):
 
 		count = 0
-		for species in self.model.listOfSpecies.values():
+		for species in self.__model.listOfSpecies.values():
 			if species.getCompartment() == self:
 				count += 1
 		return count
@@ -258,3 +263,16 @@ class Compartment(Variable, SbmlObject, InitiallyAssignedVariable,
 
 		elif xpath[0] == "@id":
 			return self.setSbmlId(object)
+
+	def getXPath(self, attribute=None):
+
+		xpath = "sbml:compartment"
+		if self.__model.sbmlLevel == 1:
+			xpath += "[@name='%s']" % self.getSbmlId()
+		else:
+			xpath += "[@id='%s']" % self.getSbmlId()
+
+		if attribute is not None:
+			xpath += "/@%s" % attribute
+
+		return "/".join([self.getParentObj().getXPath(), xpath])

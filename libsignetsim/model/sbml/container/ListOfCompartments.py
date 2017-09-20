@@ -25,6 +25,7 @@
 
 from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.model.sbml.container.HasIds import HasIds
+from libsignetsim.model.sbml.HasParentObj import HasParentObj
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.sbml.Compartment import Compartment
 from libsignetsim.model.ModelException import CannotDeleteException, InvalidXPath
@@ -33,16 +34,17 @@ from libsignetsim.settings.Settings import Settings
 from re import match
 
 
-class ListOfCompartments(ListOf, HasIds, SbmlObject):
+class ListOfCompartments(ListOf, HasIds, SbmlObject, HasParentObj):
 	""" Class for the listOfCompartments in a sbml model """
 
-	def __init__ (self, model=None):
+	def __init__ (self, model, parent_obj):
 
 		self.__model = model
+
 		ListOf.__init__(self, model)
 		HasIds.__init__(self, model)
 		SbmlObject.__init__(self, model)
-
+		HasParentObj.__init__(self, parent_obj)
 
 	def readSbml(self, sbml_compartments,
 					sbml_level=Settings.defaultSbmlLevel,
@@ -50,7 +52,7 @@ class ListOfCompartments(ListOf, HasIds, SbmlObject):
 		""" Reads compartments' list from a sbml file """
 
 		for compartment in sbml_compartments:
-			t_compartment = Compartment(self.__model, self.nextId())
+			t_compartment = Compartment(self.__model, self, self.nextId())
 			t_compartment.readSbml(compartment, sbml_level, sbml_version)
 			ListOf.add(self, t_compartment)
 
@@ -72,7 +74,7 @@ class ListOfCompartments(ListOf, HasIds, SbmlObject):
 	def new(self, name=None, sbml_id=None, value=1, constant=True, unit=None):
 		""" Creates a new compartment """
 
-		t_compartment = Compartment(self.__model, self.nextId())
+		t_compartment = Compartment(self.__model, self, self.nextId())
 		t_compartment.new(name, sbml_id, value, constant, unit)
 		ListOf.add(self, t_compartment)
 		return t_compartment
@@ -86,7 +88,7 @@ class ListOfCompartments(ListOf, HasIds, SbmlObject):
 			for compartment in obj.values():
 				if compartment not in deletions:
 
-					t_compartment = Compartment(self.__model, self.nextId())
+					t_compartment = Compartment(self.__model, self, self.nextId())
 					t_compartment.copy(
 						compartment,
 						sids_subs=sids_subs,
@@ -146,3 +148,6 @@ class ListOfCompartments(ListOf, HasIds, SbmlObject):
 
 	def setByXPath(self, xpath, object):
 		self.resolveXPath(xpath[0]).setByXPath(xpath[1:], object)
+
+	def getXPath(self):
+		return "/".join([self.getParentObj().getXPath(), "sbml:listOfCompartments"])

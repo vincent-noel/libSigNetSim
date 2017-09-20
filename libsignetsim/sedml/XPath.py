@@ -52,28 +52,7 @@ class XPath(object):
 		sbml_model.parentDoc.setByXPath(self.__rawXPath, value)
 
 	def setModelObject(self, object, attribute=None):
-
-		self.__rawXPath = "sbml:sbml/sbml:model/"
-
-		if isinstance(object, Compartment):
-			self.__rawXPath += "sbml:listOfCompartments/sbml:compartment"
-
-		elif isinstance(object, Species):
-			self.__rawXPath += "sbml:listOfSpecies/sbml:species"
-
-		elif isinstance(object, Parameter):
-			self.__rawXPath += "sbml:listOfParameters/sbml:parameter"
-
-		elif isinstance(object, Reaction):
-			self.__rawXPath += "sbml:listOfReactions/sbml:reaction"
-
-		if object.getModel().sbmlLevel == 1:
-			self.__rawXPath += "[@name='%s']" % object.getName()
-		else:
-			self.__rawXPath += "[@id='%s']" % object.getSbmlId()
-
-		if attribute is not None:
-			self.__rawXPath += "/@%s" % attribute
+		self.__rawXPath = object.getXPath(attribute)
 
 	def writeSedml(self, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 		return self.__rawXPath

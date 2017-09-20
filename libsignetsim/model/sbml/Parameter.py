@@ -29,13 +29,14 @@ from libsignetsim.model.sbml.RuledVariable import RuledVariable
 from libsignetsim.model.Variable import Variable
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.sbml.HasUnits import HasUnits
+from libsignetsim.model.sbml.HasParentObj import HasParentObj
 from libsignetsim.model.ModelException import InvalidXPath
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger
 
 class Parameter(Variable, SbmlObject, InitiallyAssignedVariable,
 						RuledVariable, EventAssignedVariable,
-						HasUnits):
+						HasUnits, HasParentObj):
 	#
 	# BACKWARD = 0
 	# FORWARD = 1
@@ -43,7 +44,7 @@ class Parameter(Variable, SbmlObject, InitiallyAssignedVariable,
 	# MICHAELIS = 3
 	#
 
-	def __init__(self, model, obj_id, name=None,
+	def __init__(self, model, parent_obj, obj_id, name=None,
 					local_parameter=False, reaction=None):
 
 		SbmlObject.__init__(self, model)
@@ -51,8 +52,9 @@ class Parameter(Variable, SbmlObject, InitiallyAssignedVariable,
 		RuledVariable.__init__(self, model)
 		EventAssignedVariable.__init__(self, model)
 		HasUnits.__init__(self, model)
+		HasParentObj.__init__(self, parent_obj)
 
-		self.model = model
+		self.__model = model
 		self.objId = obj_id
 
 		self.localParameter = local_parameter
@@ -188,3 +190,16 @@ class Parameter(Variable, SbmlObject, InitiallyAssignedVariable,
 		elif xpath[0] == "@id":
 			return self.setSbmlId(object)
 
+
+	def getXPath(self, attribute=None):
+
+		xpath = "sbml:parameter"
+		if self.__model.sbmlLevel == 1:
+			xpath += "[@name='%s']" % self.getSbmlId()
+		else:
+			xpath += "[@id='%s']" % self.getSbmlId()
+
+		if attribute is not None:
+			xpath += "/@%s" % attribute
+
+		return "/".join([self.getParentObj().getXPath(), xpath])

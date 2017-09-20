@@ -167,14 +167,12 @@ class ListOfSpecies(ListOf, HasIds, SbmlObject, HasParentObj):
 		raise InvalidXPath(selector)
 
 	def getByXPath(self, xpath):
-		print xpath
 		return self.resolveXPath(xpath[0]).getByXPath(xpath[1:])
 
 	def setByXPath(self, xpath, object):
 		self.resolveXPath(xpath[0]).setByXPath(xpath[1:], object)
 
 	def getXPath(self):
-
 		return "/".join([self.getParentObj().getXPath(), "sbml:listOfSpecies"])
 
 

@@ -32,24 +32,26 @@ from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 from libsignetsim.model.sbml.HasUnits import HasUnits
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.Variable import Variable
+from libsignetsim.model.sbml.HasParentObj import HasParentObj
 from libsignetsim.settings.Settings import Settings
 from sympy import zeros
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol
 from libsignetsim.model.ModelException import InvalidXPath
 
 
-class Reaction(Variable, SbmlObject, HasUnits):
+class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 	""" Parent class for Sbml reaction """
 
 
-	def __init__ (self, model, obj_id, name=None, reaction_type=KineticLaw.UNDEFINED):
+	def __init__ (self, model, parent_obj, obj_id, name=None, reaction_type=KineticLaw.UNDEFINED):
 
-		self.model = model
+		self.__model = model
 		self.objId = obj_id
 
 		HasUnits.__init__(self, model)
 		Variable.__init__(self, model, Variable.REACTION)
 		SbmlObject.__init__(self, model)
+		HasParentObj.__init__(self, parent_obj)
 
 		self.reversible = True
 		self.fast = False
@@ -60,13 +62,13 @@ class Reaction(Variable, SbmlObject, HasUnits):
 		self.listOfReactants = ListOfSpeciesReference(model)
 		self.listOfModifiers = ListOfSpeciesReference(model)
 		self.listOfProducts = ListOfSpeciesReference(model)
-		self.listOfLocalParameters = ListOfParameters(model, are_local_parameters=True, reaction=self)
+		self.listOfLocalParameters = ListOfParameters(model, self, are_local_parameters=True, reaction=self)
 
 
 	def new(self, name=None):
 
 		Variable.new(self, name, Variable.REACTION)
-		self.kineticLaw = KineticLaw(self.model, self)
+		self.kineticLaw = KineticLaw(self.__model, self)
 		SbmlObject.new(self)
 
 	def copy(self, obj, deletions=[], sids_subs={}, symbols_subs=[], usids_subs={}, conversion_factors={},
@@ -114,7 +116,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 				symbols_subs.update({local_param.symbol.getSymbol(): new_symbol})
 
 		if obj.kineticLaw is not None:
-			self.kineticLaw = KineticLaw(self.model, self)
+			self.kineticLaw = KineticLaw(self.__model, self)
 			self.kineticLaw.copy(
 				obj,
 				symbols_subs=symbols_subs,
@@ -122,7 +124,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 				extent_conversion=extent_conversion,
 				time_conversion=time_conversion)
 
-			self.value = MathFormula(self.model)
+			self.value = MathFormula(self.__model)
 			t_formula = self.kineticLaw.getDefinition(rawFormula=True).getInternalMathFormula()
 
 			if extent_conversion is not None:
@@ -141,9 +143,9 @@ class Reaction(Variable, SbmlObject, HasUnits):
 		""" Reads an sbml reaction from sbml model """
 
 		if sbml_level < 3:
-			self.setUnits(self.model.substanceUnits)
+			self.setUnits(self.__model.substanceUnits)
 		else:
-			self.setUnits(self.model.extentUnits)
+			self.setUnits(self.__model.extentUnits)
 
 		SbmlObject.readSbml(self, reaction, sbml_level, sbml_version)
 
@@ -167,7 +169,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 			t_params = reaction.getKineticLaw().getListOfParameters()
 			self.listOfLocalParameters.readSbml(t_params,
 												sbml_level, sbml_version)
-			self.kineticLaw = KineticLaw(self.model, self)
+			self.kineticLaw = KineticLaw(self.__model, self)
 			self.kineticLaw.readSbml(reaction.getKineticLaw().getMath(),
 										sbml_level, sbml_version)
 
@@ -239,20 +241,20 @@ class Reaction(Variable, SbmlObject, HasUnits):
 		self.reversible = reversible
 
 		if reaction_type == KineticLaw.UNDEFINED and math is not None:
-			self.kineticLaw = KineticLaw(self.model, self)
+			self.kineticLaw = KineticLaw(self.__model, self)
 			self.kineticLaw.setPrettyPrintMathFormula(math, forcedConcentration=True)
 
 		elif parameters is not None:
 			if reaction_type == KineticLaw.MASS_ACTION:
-				self.kineticLaw = KineticLaw(self.model, self)
+				self.kineticLaw = KineticLaw(self.__model, self)
 				self.kineticLaw.setMassAction(parameters, reversible)
 
 			elif reaction_type == KineticLaw.MICHAELIS:
-				self.kineticLaw = KineticLaw(self.model, self)
+				self.kineticLaw = KineticLaw(self.__model, self)
 				self.kineticLaw.setMichaelis(parameters)
 
 			elif reaction_type == KineticLaw.HILL:
-				self.kineticLaw = KineticLaw(self.model, self)
+				self.kineticLaw = KineticLaw(self.__model, self)
 				self.kineticLaw.setHill(parameters)
 
 		self.value = self.kineticLaw.getDefinition()
@@ -407,7 +409,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 				ode += t_ode
 
-		t_formula = MathFormula(self.model)
+		t_formula = MathFormula(self.__model)
 		t_formula.setInternalMathFormula(ode)
 
 		return t_formula
@@ -415,13 +417,13 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 	def getStoichiometryMatrix(self):
 
-		front = [MathFormula(self.model, MathFormula.MATH_ZERO) for _ in self.model.listOfSpecies.keys()]
+		front = [MathFormula(self.__model, MathFormula.MATH_ZERO) for _ in self.__model.listOfSpecies.keys()]
 
 		if self.listOfReactants:
 			for reactant in self.listOfReactants.values():
 				if not reactant.getSpecies().boundaryCondition:
-					t_formula = MathFormula(self.model)
-					t_index = self.model.listOfSpecies.values().index(reactant.getSpecies())
+					t_formula = MathFormula(self.__model)
+					t_index = self.__model.listOfSpecies.values().index(reactant.getSpecies())
 					t_formula.setInternalMathFormula(
 							- reactant.stoichiometry.getDeveloppedInternalMathFormula()
 							+ front[t_index].getDeveloppedInternalMathFormula()
@@ -433,8 +435,8 @@ class Reaction(Variable, SbmlObject, HasUnits):
 		if self.listOfProducts:
 			for product in self.listOfProducts.values():
 				if not product.getSpecies().boundaryCondition:
-					t_formula = MathFormula(self.model)
-					t_index = self.model.listOfSpecies.values().index(product.getSpecies())
+					t_formula = MathFormula(self.__model)
+					t_index = self.__model.listOfSpecies.values().index(product.getSpecies())
 					t_formula.setInternalMathFormula(
 							product.stoichiometry.getDeveloppedInternalMathFormula()
 							+ front[t_index].getDeveloppedInternalMathFormula()
@@ -445,13 +447,13 @@ class Reaction(Variable, SbmlObject, HasUnits):
 			return [front]
 
 		else:
-			back = [MathFormula(self.model, MathFormula.MATH_ZERO) for _ in self.model.listOfSpecies.keys()]
+			back = [MathFormula(self.__model, MathFormula.MATH_ZERO) for _ in self.__model.listOfSpecies.keys()]
 
 			if self.listOfReactants:
 				for reactant in self.listOfReactants.values():
 					if not reactant.getSpecies().boundaryCondition:
-						t_formula = MathFormula(self.model)
-						t_index = self.model.listOfSpecies.values().index(reactant.getSpecies())
+						t_formula = MathFormula(self.__model)
+						t_index = self.__model.listOfSpecies.values().index(reactant.getSpecies())
 						t_formula.setInternalMathFormula(
 							reactant.stoichiometry.getDeveloppedInternalMathFormula()
 							+ back[t_index].getDeveloppedInternalMathFormula()
@@ -462,8 +464,8 @@ class Reaction(Variable, SbmlObject, HasUnits):
 			if self.listOfProducts:
 				for product in self.listOfProducts.values():
 					if not product.getSpecies().boundaryCondition:
-						t_formula = MathFormula(self.model)
-						t_index = self.model.listOfSpecies.values().index(product.getSpecies())
+						t_formula = MathFormula(self.__model)
+						t_index = self.__model.listOfSpecies.values().index(product.getSpecies())
 						t_formula.setInternalMathFormula(
 							- product.stoichiometry.getDeveloppedInternalMathFormula()
 							+ back[t_index].getDeveloppedInternalMathFormula()
@@ -476,7 +478,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 	def getRawStoichiometryMatrix(self, subs={}, including_fast_reactions=True, including_slow_reactions=True, include_variable_stoichiometry=False):
 
-		front = zeros(1, self.model.nbOdes)
+		front = zeros(1, self.__model.nbOdes)
 
 		if (
 						not self.hasVariableStoichiometry() or include_variable_stoichiometry
@@ -522,7 +524,7 @@ class Reaction(Variable, SbmlObject, HasUnits):
 			return front
 
 		else:
-			back = zeros(1, self.model.nbOdes)
+			back = zeros(1, self.__model.nbOdes)
 			if (
 				not self.hasVariableStoichiometry() or include_variable_stoichiometry
 			) and (
@@ -608,3 +610,16 @@ class Reaction(Variable, SbmlObject, HasUnits):
 
 		elif xpath[0] == "@id":
 			return self.getSbmlId()
+
+	def getXPath(self, attribute=None):
+
+		xpath = "sbml:reaction"
+		if self.__model.sbmlLevel == 1:
+			xpath += "[@name='%s']" % self.getSbmlId()
+		else:
+			xpath += "[@id='%s']" % self.getSbmlId()
+
+		if attribute is not None:
+			xpath += "/@%s" % attribute
+
+		return "/".join([self.getParentObj().getXPath(), xpath])

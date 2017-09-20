@@ -26,6 +26,7 @@
 from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.model.sbml.container.HasIds import HasIds
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
+from libsignetsim.model.sbml.HasParentObj import HasParentObj
 from libsignetsim.model.ModelException import CannotDeleteException, InvalidXPath
 from libsignetsim.model.sbml.Parameter import Parameter
 from libsignetsim.settings.Settings import Settings
@@ -33,16 +34,17 @@ from libsignetsim.settings.Settings import Settings
 from re import match
 
 
-class ListOfParameters(ListOf, HasIds, SbmlObject):
+class ListOfParameters(ListOf, HasIds, SbmlObject, HasParentObj):
 	""" Class for the ListOfParameters in a sbml model """
 
-	def __init__ (self, model, are_local_parameters=False, reaction=None):
+	def __init__ (self, model, parent_obj, are_local_parameters=False, reaction=None):
 
 		self.__model = model
 
 		ListOf.__init__(self, model)
 		HasIds.__init__(self, model)
 		SbmlObject.__init__(self, model)
+		HasParentObj.__init__(self, parent_obj)
 
 		self.are_local_parameters = are_local_parameters
 		self.reaction = reaction
@@ -52,7 +54,7 @@ class ListOfParameters(ListOf, HasIds, SbmlObject):
 		""" Reads parameters' list from a sbml file """
 
 		for sbml_parameter in sbml_list_of_parameters:
-			t_parameter = Parameter(self.__model, self.nextId(),
+			t_parameter = Parameter(self.__model, self, self.nextId(),
 									local_parameter=self.are_local_parameters,
 									reaction=self.reaction)
 			t_parameter.readSbml(sbml_parameter, sbml_level, sbml_version)
@@ -74,7 +76,7 @@ class ListOfParameters(ListOf, HasIds, SbmlObject):
 	def new(self, parameter=None, value=None):
 		""" Creates new parameter """
 
-		t_parameter = Parameter(self.__model, self.nextId(),
+		t_parameter = Parameter(self.__model, self, self.nextId(),
 								local_parameter=self.are_local_parameters,
 								reaction=self.reaction)
 		t_parameter.new(parameter, value=value)
@@ -92,7 +94,7 @@ class ListOfParameters(ListOf, HasIds, SbmlObject):
 
 				if parameter not in deletions:
 					t_parameter = Parameter(
-						self.__model, self.nextId(),
+						self.__model, self, self.nextId(),
 						local_parameter=parameter.localParameter,
 						reaction=parameter.reaction
 					)
@@ -160,3 +162,6 @@ class ListOfParameters(ListOf, HasIds, SbmlObject):
 
 	def setByXPath(self, xpath, object):
 		self.resolveXPath(xpath[0]).setByXPath(xpath[1:], object)
+
+	def getXPath(self):
+		return "/".join([self.getParentObj().getXPath(), "sbml:listOfParameters"])

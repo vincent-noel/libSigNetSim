@@ -25,6 +25,7 @@
 
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.Variable import Variable
+from libsignetsim.model.sbml.HasParentObj import HasParentObj
 from libsignetsim.model.sbml.EventAssignment import EventAssignment
 from libsignetsim.model.sbml.EventTrigger import EventTrigger
 from libsignetsim.model.sbml.EventDelay import EventDelay
@@ -34,17 +35,18 @@ from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.ModelException import InvalidXPath
 
 
-class Event(Variable, SbmlObject):
+class Event(Variable, SbmlObject, HasParentObj):
 
 	""" Events definition """
 
-	def __init__ (self, model, obj_id):
+	def __init__ (self, model, parent_obj, obj_id):
 
 		self.__model = model
 		self.objId = obj_id
 
 		Variable.__init__(self, model, Variable.EVENT)
 		SbmlObject.__init__(self, model)
+		HasParentObj.__init__(self, parent_obj)
 
 		self.trigger = EventTrigger(model)
 		self.listOfEventAssignments = []
@@ -301,3 +303,17 @@ class Event(Variable, SbmlObject):
 
 		elif xpath[0] == "@id":
 			return self.getSbmlId()
+
+
+	def getXPath(self, attribute=None):
+
+		xpath = "sbml:event"
+		if self.__model.sbmlLevel == 1:
+			xpath += "[@name='%s']" % self.getSbmlId()
+		else:
+			xpath += "[@id='%s']" % self.getSbmlId()
+
+		if attribute is not None:
+			xpath += "/@%s" % attribute
+
+		return "/".join([self.getParentObj().getXPath(), xpath])
