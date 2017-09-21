@@ -23,7 +23,7 @@
 """
 
 from libsignetsim.model.SbmlDocument import SbmlDocument
-from libsignetsim.sedml.SedmlDocument import SedmlDocument
+# from libsignetsim.sedml.SedmlDocument import SedmlDocument
 
 from unittest import TestCase
 from os.path import join, dirname, isdir
@@ -45,7 +45,7 @@ class TestReduceModel(TestCase):
 		sbml_model.stoichiometryMatrix.build()
 		sbml_model.listOfConservationLaws.build()
 		sbml_model.assymetricModel.build()
-
+		#
 		# print sbml_model.listOfConservationLaws
 		# print sbml_model.prettyPrint()
 		# print sbml_model.assymetricModel.prettyPrint()

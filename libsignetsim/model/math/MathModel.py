@@ -32,7 +32,8 @@ from libsignetsim.model.math.container.ListOfDAEs import ListOfDAEs
 from libsignetsim.model.math.MathStoichiometryMatrix import MathStoichiometryMatrix
 from libsignetsim.model.math.MathSlowModel import MathSlowModel
 from libsignetsim.model.math.MathSlowModel_v2 import MathSlowModel_v2
-from libsignetsim.model.math.MathAsymmetricModel import MathAsymmetricModel
+# from libsignetsim.model.math.MathAsymmetricModel import MathAsymmetricModel
+from libsignetsim.model.math.MathAsymmetricModel_v2 import MathAsymmetricModel
 
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyFloat
@@ -113,6 +114,8 @@ class MathModel(CModelWriter):
 			self.listOfDAEs.solveInitialConditions(tmin)
 			self.listOfDAEs.solveDAEs()
 
+		if len(self.listOfEvents) > 0:
+			self.buildReducedModel()
 
 	def buildConservationLaws(self):
 
