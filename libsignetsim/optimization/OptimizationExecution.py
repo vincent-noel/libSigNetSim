@@ -106,7 +106,7 @@ class OptimizationExecution(object):
 		present_dir = getcwd()
 
 		if nb_procs > 1:
-			target = "cd %s; mpirun --allow-run-as-root -np %d ./lsa.mpi; cd %s" % (self.getTempDirectory(), nb_procs, present_dir)
+			target = "cd %s; mpirun -np %d ./lsa.mpi; cd %s" % (self.getTempDirectory(), nb_procs, present_dir)
 
 		else:
 			target = "cd %s; ./lsa; cd %s" % (self.getTempDirectory(), present_dir)
