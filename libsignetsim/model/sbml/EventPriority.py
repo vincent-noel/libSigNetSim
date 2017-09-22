@@ -32,12 +32,14 @@ from libsignetsim.model.math.sympy_shortcuts import SympySymbol
 class EventPriority(SimpleSbmlObject, MathFormula):
 	""" Events priority's definition """
 
-	def __init__ (self, model):
+	def __init__(self, model, math_only=False):
 
 		self.__model = model
-		SimpleSbmlObject.__init__(self, model)
 		MathFormula.__init__(self, model)
 
+		self.mathOnly = math_only
+		if not self.mathOnly:
+			SimpleSbmlObject.__init__(self, model)
 
 	def readSbml(self, sbml_priority,
 					sbml_level=Settings.defaultSbmlLevel,
@@ -60,7 +62,9 @@ class EventPriority(SimpleSbmlObject, MathFormula):
 
 	def copy(self, obj, symbols_subs={}, conversion_factors={}):
 
-		SimpleSbmlObject.copy(self, obj)
+		if not self.mathOnly:
+			SimpleSbmlObject.copy(self, obj)
+
 		t_convs = {}
 		for var, conversion in conversion_factors.items():
 			t_convs.update({var: var/conversion})
@@ -68,3 +72,9 @@ class EventPriority(SimpleSbmlObject, MathFormula):
 		t_formula = unevaluatedSubs(obj.getInternalMathFormula(rawFormula=False), symbols_subs)
 		t_formula = unevaluatedSubs(t_formula, t_convs)
 		MathFormula.setInternalMathFormula(self, t_formula)
+
+
+
+	def copySubmodel(self, obj):
+		MathFormula.setInternalMathFormula(self, obj.getDeveloppedInternalMathFormula())
+

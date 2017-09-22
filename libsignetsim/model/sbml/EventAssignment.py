@@ -36,15 +36,18 @@ from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 class EventAssignment(SbmlObject):
 	""" Class definition for event assignments """
 
-	def __init__(self, model, obj_id, event=None):
+	def __init__(self, model, obj_id, event=None, math_only=False):
 
 		self.__model = model
 		self.objId = obj_id
-		SbmlObject.__init__(self, model)
 		self.event = event
 		self.__var = None
 		self.__definition = MathFormula(model, MathFormula.MATH_EVENTASSIGNMENT)
 
+		# For math submodels, where objects are not sbml objects
+		self.mathOnly = math_only
+		if not self.mathOnly:
+			SbmlObject.__init__(self, model)
 
 	def readSbml(self, sbml_event_assignment, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Reads event assignment from a sbml file """
@@ -90,7 +93,9 @@ class EventAssignment(SbmlObject):
 
 
 	def copy(self, obj, sids_subs={}, symbols_subs={}, conversion_factors={}, time_conversion=None):
-		SbmlObject.copy(self, obj)
+
+		if not self.mathOnly:
+			SbmlObject.copy(self, obj)
 
 		if obj.getVariable().getSbmlId() in sids_subs.keys():
 			self.__var = sids_subs[obj.getVariable().getSbmlId()]
@@ -113,6 +118,9 @@ class EventAssignment(SbmlObject):
 
 		self.__definition.setInternalMathFormula(t_definition)
 
+	def copySubmodel(self, obj):
+		self.__var = self.__model.listOfVariables.getBySymbol(obj.getVariable().symbol.getSymbol())
+		self.__definition.setInternalMathFormula(obj.getDefinition().getDeveloppedInternalMathFormula())
 
 	def getVariable(self):
 		return self.__model.listOfVariables.getBySbmlId(self.__var)

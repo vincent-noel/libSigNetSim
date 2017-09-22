@@ -44,7 +44,7 @@ class MathSubmodel(object):
 		self.listOfCFEs = ListOfCFEs(self)
 		self.listOfDAEs = ListOfDAEs(self)
 		self.listOfVariables = ListOfVariables(self)
-		# self.listOfEvents = ListOfEvents(self)
+		self.listOfEvents = ListOfEvents(self, self, math_only=True)
 		self.solvedInitialConditions = {}
 
 		self.nbOdes = None
@@ -76,7 +76,7 @@ class MathSubmodel(object):
 			t_value.setInternalMathFormula(value.getInternalMathFormula())
 			self.solvedInitialConditions.update({variable: t_value})
 
-		# self.listOfEvents.copySubmodel(self.parentModel.listOfEvents)
+		self.listOfEvents.copySubmodel(self.parentModel.listOfEvents)
 
 
 	def prettyPrint(self):

@@ -33,12 +33,15 @@ from libsignetsim.model.math.sympy_shortcuts import SympySymbol
 class EventDelay(SbmlObject, MathFormula):
 	""" Events priority's definition """
 
-	def __init__ (self, model):
+	def __init__(self, model, math_only=False):
 
 		self.__model = model
-		SbmlObject.__init__(self, model)
 		MathFormula.__init__(self, model)
 
+		# For math submodels, where objects are not sbml objects
+		self.mathOnly = math_only
+		if not self.mathOnly:
+			SbmlObject.__init__(self, model)
 
 	def readSbml(self, sbml_delay,
 					sbml_level=Settings.defaultSbmlLevel,
@@ -58,12 +61,10 @@ class EventDelay(SbmlObject, MathFormula):
 		SbmlObject.writeSbml(self, sbml_delay, sbml_level, sbml_version)
 		sbml_delay.setMath(MathFormula.writeSbml(self, sbml_level, sbml_version))
 
-
-
-
 	def copy(self, obj, symbols_subs={}, conversion_factors={}, time_conversion=None):
 
-		SbmlObject.copy(self, obj)
+		if not self.mathOnly:
+			SbmlObject.copy(self, obj)
 
 		t_convs = {}
 		for var, conversion in conversion_factors.items():
@@ -76,4 +77,8 @@ class EventDelay(SbmlObject, MathFormula):
 			t_formula *= time_conversion.getInternalMathFormula()
 
 		self.setInternalMathFormula(t_formula)
+
+	def copySubmodel(self, obj):
+		MathFormula.setInternalMathFormula(self, obj.getDeveloppedInternalMathFormula())
+
 

@@ -36,13 +36,17 @@ from re import match
 class ListOfEvents(ListOf, HasIds, SbmlObject, HasParentObj):
 	""" Class for the listOfEvents in a sbml model """
 
-	def __init__ (self, model, parent_obj):
+	def __init__(self, model, parent_obj, math_only=False):
 
 		self.__model = model
 		ListOf.__init__(self, model)
 		HasIds.__init__(self, model)
-		SbmlObject.__init__(self, model)
 		HasParentObj.__init__(self, parent_obj)
+
+		# For math submodels, where objects are not sbml objects
+		self.mathOnly = math_only
+		if not self.mathOnly:
+			SbmlObject.__init__(self, model)
 
 	def readSbml(self, sbml_list_of_events,
 					sbmlLevel=Settings.defaultSbmlLevel,
@@ -80,12 +84,13 @@ class ListOfEvents(ListOf, HasIds, SbmlObject, HasParentObj):
 
 		if obj not in deletions:
 
-			SbmlObject.copy(self, obj)
+			if not self.mathOnly:
+				SbmlObject.copy(self, obj)
 
 			for event in obj.values():
 				if event not in deletions:
 
-					t_event = Event(self.__model, self, self.nextId())
+					t_event = Event(self.__model, self, self.nextId(), math_only=self.mathOnly)
 					t_event.copy(
 						event,
 						deletions=deletions,
@@ -95,6 +100,13 @@ class ListOfEvents(ListOf, HasIds, SbmlObject, HasParentObj):
 						time_conversion=time_conversion
 					)
 					ListOf.add(self, t_event)
+
+	def copySubmodel(self, obj):
+
+		for event in obj.values():
+			t_event = Event(self.__model, event.objId)
+			t_event.copySubmodel(event)
+			ListOf.add(self, t_event)
 
 	def withDelay(self):
 		return [obj.objId for obj in self.validEvents() if obj.delay is not None]

@@ -112,8 +112,8 @@ class MathModel(CModelWriter):
 			self.listOfDAEs.solveInitialConditions(tmin)
 			self.listOfDAEs.solveDAEs()
 
-		if len(self.listOfEvents) > 0:
-			self.buildReducedModel()
+		# if len(self.listOfEvents) == 0:
+		self.buildReducedModel()
 
 	def buildConservationLaws(self):
 
@@ -133,7 +133,7 @@ class MathModel(CModelWriter):
 		if not len(self.listOfEvents) > 0:
 			self.stoichiometryMatrix.build()
 			self.listOfConservationLaws.build()
-			self.assymetricModel.build(vars_to_keep=vars_to_keep)
+			self.assymetricModel.build(treated_variables=vars_to_keep)
 
 
 	def prettyPrint(self):
