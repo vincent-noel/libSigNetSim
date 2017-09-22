@@ -31,9 +31,7 @@ from libsignetsim.model.math.container.ListOfDAEs import ListOfDAEs
 
 from libsignetsim.model.math.MathStoichiometryMatrix import MathStoichiometryMatrix
 from libsignetsim.model.math.MathSlowModel import MathSlowModel
-from libsignetsim.model.math.MathSlowModel_v2 import MathSlowModel_v2
-# from libsignetsim.model.math.MathAsymmetricModel import MathAsymmetricModel
-from libsignetsim.model.math.MathAsymmetricModel_v2 import MathAsymmetricModel
+from libsignetsim.model.math.MathAsymmetricModel import MathAsymmetricModel
 
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyFloat
@@ -62,7 +60,7 @@ class MathModel(CModelWriter):
 		self.assymetricModel = MathAsymmetricModel(self)
 		self.stoichiometryMatrix = MathStoichiometryMatrix(self)
 		self.listOfConservationLaws = ListOfConservationLaws(self)
-		self.slowModel_v2 = MathSlowModel_v2(self, self.assymetricModel)
+		self.slowModel = MathSlowModel(self, self.assymetricModel)
 
 		self.nbOdes = None
 		self.nbAssignments = None
@@ -85,8 +83,8 @@ class MathModel(CModelWriter):
 
 	def getMathModel(self):
 
-		if self.slowModel_v2.isUpToDate():
-			return self.slowModel_v2
+		if self.slowModel.isUpToDate():
+			return self.slowModel
 
 		elif self.assymetricModel.isUpToDate():
 			return self.assymetricModel
