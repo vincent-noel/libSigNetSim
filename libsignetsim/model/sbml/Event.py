@@ -146,22 +146,22 @@ class Event(Variable, SbmlObject, HasParentObj):
 
 		Variable.copy(self, obj, sids_subs=sids_subs, symbols_subs=symbols_subs)
 
-		if not self.mathOnly:
-			SbmlObject.copy(self, obj)
+		# if not self.mathOnly:
+		SbmlObject.copy(self, obj)
 
 		self.trigger.copy(obj.trigger, symbols_subs=symbols_subs, conversion_factors=conversion_factors)
 
 		if obj.delay is not None and obj.delay not in deletions:
-			self.delay = EventDelay(self.__model, math_only=self.mathOnly)
+			self.delay = EventDelay(self.__model)
 			self.delay.copy(obj.delay, symbols_subs=symbols_subs, conversion_factors=conversion_factors, time_conversion=time_conversion)
 
 		if obj.priority is not None and obj.priority not in deletions:
-			self.priority = EventPriority(self.__model, math_only=self.mathOnly)
+			self.priority = EventPriority(self.__model)
 			self.priority.copy(obj.priority, symbols_subs=symbols_subs, conversion_factors=conversion_factors)
 
 		for event_assignment in obj.listOfEventAssignments:
 			if event_assignment not in deletions:
-				t_event_assignment = EventAssignment(self.__model, len(self.listOfEventAssignments), self, math_only=self.mathOnly)
+				t_event_assignment = EventAssignment(self.__model, len(self.listOfEventAssignments), self)
 				t_event_assignment.copy(
 					event_assignment,
 					sids_subs=sids_subs,
@@ -182,15 +182,15 @@ class Event(Variable, SbmlObject, HasParentObj):
 		self.trigger.copySubmodel(obj.trigger)
 
 		if obj.delay is not None:
-			self.delay = EventDelay(self.__model)
+			self.delay = EventDelay(self.__model, math_only=self.mathOnly)
 			self.delay.copySubmodel(obj.delay)
 
 		if obj.priority is not None:
-			self.priority = EventPriority(self.__model)
+			self.priority = EventPriority(self.__model, math_only=self.mathOnly)
 			self.priority.copySubmodel(obj.priority)
 
 		for event_assignment in obj.listOfEventAssignments:
-				t_event_assignment = EventAssignment(self.__model, event_assignment.objId, self)
+				t_event_assignment = EventAssignment(self.__model, event_assignment.objId, self, math_only=self.mathOnly)
 				t_event_assignment.copySubmodel(event_assignment)
 				self.listOfEventAssignments.append(t_event_assignment)
 		self.useValuesFromTriggerTime = obj.useValuesFromTriggerTime

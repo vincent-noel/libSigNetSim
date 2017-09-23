@@ -61,10 +61,10 @@ class MathAsymmetricModel(MathSubmodel):
 
 	def build(self, treated_variables=[]):
 
-		self.parentModel.stoichiometryMatrix.build()
-		self.parentModel.listOfConservationLaws.build()
+		# self.parentModel.stoichiometryMatrix.build()
+		# self.parentModel.listOfConservationLaws.build()
 
-		# print self.parentModel.listOfConservationLaws
+		print self.parentModel.listOfConservationLaws
 
 		forbidden_variables = []
 		for species in self.parentModel.variablesOdes:
@@ -85,7 +85,7 @@ class MathAsymmetricModel(MathSubmodel):
 				for var in forbidden_variables:
 					if var in cons_law.getFormula().atoms(SympySymbol):
 						can_reduce = False
-						print "Refused conservation law : %s" % cons_law
+						# print "Refused conservation law : %s" % cons_law
 
 				if can_reduce:
 
@@ -107,7 +107,7 @@ class MathAsymmetricModel(MathSubmodel):
 
 
 			if len(independent_species) > 0:
-				# print "we can reduce !"
+				print "we can reduce !"
 				self.copyVariables()
 				self.copyEquations()
 				for var in self.parentModel.variablesOdes:

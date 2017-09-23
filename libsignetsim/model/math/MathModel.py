@@ -130,10 +130,10 @@ class MathModel(CModelWriter):
 
 	def buildReducedModel(self, vars_to_keep=[]):
 
-		if not len(self.listOfEvents) > 0:
-			self.stoichiometryMatrix.build()
-			self.listOfConservationLaws.build()
-			self.assymetricModel.build(treated_variables=vars_to_keep)
+		# if not len(self.listOfEvents) > 0:
+		self.stoichiometryMatrix.build()
+		self.listOfConservationLaws.build()
+		self.assymetricModel.build(treated_variables=vars_to_keep)
 
 
 	def prettyPrint(self):

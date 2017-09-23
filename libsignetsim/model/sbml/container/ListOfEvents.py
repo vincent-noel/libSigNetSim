@@ -84,13 +84,12 @@ class ListOfEvents(ListOf, HasIds, SbmlObject, HasParentObj):
 
 		if obj not in deletions:
 
-			if not self.mathOnly:
-				SbmlObject.copy(self, obj)
+			SbmlObject.copy(self, obj)
 
 			for event in obj.values():
 				if event not in deletions:
 
-					t_event = Event(self.__model, self, self.nextId(), math_only=self.mathOnly)
+					t_event = Event(self.__model, self, self.nextId())
 					t_event.copy(
 						event,
 						deletions=deletions,
@@ -104,7 +103,7 @@ class ListOfEvents(ListOf, HasIds, SbmlObject, HasParentObj):
 	def copySubmodel(self, obj):
 
 		for event in obj.values():
-			t_event = Event(self.__model, event.objId)
+			t_event = Event(self.__model, self, event.objId, math_only=self.mathOnly)
 			t_event.copySubmodel(event)
 			ListOf.add(self, t_event)
 
