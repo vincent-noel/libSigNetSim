@@ -82,23 +82,26 @@ class ListOfModelDefinitions(ListOf, HasIds):
 			res.append(internal_model)
 		return res
 
+	def resolveXPath(self, selector):
 
-	def getByXPath(self, xpath):
+		if selector.startswith("modelDefinition") or selector.startswith("sbml:modelDefinition"):
 
-		first = xpath[0]
-		xpath.pop(0)
-
-		if first.startswith("modelDefinition") or first.startswith("sbml:modelDefinition"):
-
-			res_match = match(r'(.+)\[@(.+)=(.+)\]', first)
+			res_match = match(r'(.+)\[@(.+)=\'(.+)\'\]', selector)
 			if res_match is not None:
 				tokens = res_match.groups()
 
 				if len(tokens) == 3:
 					if tokens[1] == "id":
-						return self.getBySbmlId(tokens[2][1:-1]).getByXPath(xpath)
+						return self.getBySbmlId(tokens[2])
 					elif tokens[1] == "name":
-						return self.getByName(tokens[2][1:-1]).getByXPath(xpath)
+						return self.getByName(tokens[2])
 
 		# If not returned yet
-		raise InvalidXPath(first)
+		raise InvalidXPath(selector)
+
+
+	def getByXPath(self, xpath):
+		return self.resolveXPath(xpath[0]).getByXPath(xpath[1:])
+
+	def setByXPath(self, xpath, value):
+		self.resolveXPath(xpath[0]).setByXPath(xpath[1:], value)

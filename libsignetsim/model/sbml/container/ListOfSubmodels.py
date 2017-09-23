@@ -25,10 +25,11 @@
 
 from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.model.sbml.container.HasIds import HasIds
-from libsignetsim.model.sbml.SbmlObject import SbmlObject
-from libsignetsim.model.ModelException import CannotDeleteException
+from libsignetsim.model.ModelException import CannotDeleteException, InvalidXPath
 from libsignetsim.model.sbml.SubModel import SubModel
 from libsignetsim.settings.Settings import Settings
+from re import match
+
 
 class ListOfSubmodels(ListOf, HasIds):#, SbmlObject):
 	""" Class for the listOfModelDefinition in a sbml model """
@@ -96,10 +97,42 @@ class ListOfSubmodels(ListOf, HasIds):#, SbmlObject):
 
 		return res
 
-	def getBySbmlIdRef(self, sbml_id_ref):
+	def getBySbmlId(self, sbml_id_ref):
 		return HasIds.getBySbmlId(self, sbml_id_ref)
 
-	def getBySbmlId(self, sbml_id):
+	def getBySbmlIdRef(self, sbml_id):
 		for submodel in ListOf.values(self):
 			if submodel.getModelObject().getSbmlId() == sbml_id:
 				return submodel
+
+	def resolveXPath(self, selector):
+
+		if not (selector.startswith("submodel") or selector.startswith("sbml:submodel")):
+			raise InvalidXPath(selector)
+
+		res_match = match(r'(.*)\[@(.*)=\'(.*)\'\]', selector)
+		if res_match is None:
+			raise InvalidXPath(selector)
+
+
+		tokens = res_match.groups()
+		if len(tokens) != 3:
+			raise InvalidXPath(selector)
+
+		object = None
+		if tokens[1] == "id":
+			object = HasIds.getBySbmlId(self, tokens[2])
+		elif tokens[1] == "name":
+			object = HasIds.getByName(self, tokens[2])
+
+		if object is not None:
+			return object
+
+		# If not returned yet
+		raise InvalidXPath(selector)
+
+	def getByXPath(self, xpath):
+		return self.resolveXPath(xpath[0]).getByXPath(xpath[1:])
+
+	def setByXPath(self, xpath, object):
+		self.resolveXPath(xpath[0]).setByXPath(xpath[1:], object)

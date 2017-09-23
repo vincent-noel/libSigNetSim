@@ -212,19 +212,23 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 		if selector in ["sbml:listOfSpecies", "listOfSpecies"]:
 			return self.listOfSpecies
 
-		if selector in ["sbml:listOfParameters", "listOfParameters"]:
+		elif selector in ["sbml:listOfParameters", "listOfParameters"]:
 			return self.listOfParameters
 
-		if selector in ["sbml:listOfCompartments", "listOfCompartments"]:
+		elif selector in ["sbml:listOfCompartments", "listOfCompartments"]:
 			return self.listOfCompartments
 
-		if selector in ["sbml:listOfReactions", "listOfReactions"]:
+		elif selector in ["sbml:listOfReactions", "listOfReactions"]:
 			return self.listOfReactions
 
-		if selector in ["sbml:listOfEvents", "listOfEvents"]:
+		elif selector in ["sbml:listOfEvents", "listOfEvents"]:
 			return self.listOfEvents
 
-		if selector.startswith("descendant::"):
+		elif selector == "sbml:listOfSubmodels" and self.parentDoc.useCompPackage:
+			return self.listOfSubmodels
+
+
+		elif selector.startswith("descendant::"):
 			res_match = match(r"descendant::\*\[@(.*)=\'(.*)\'\]", selector)
 			if res_match is None:
 				raise InvalidXPath(selector)

@@ -346,6 +346,9 @@ class SbmlDocument(HasParentObj):
 			elif selector == "sbml:listOfModelDefinitions" and self.useCompPackage:
 				return self.listOfModelDefinitions
 
+			elif selector == "sbml:listOfExternalModelDefinitions" and self.useCompPackage:
+				return self.listOfExternalModelDefinitions
+
 			else:
 				raise InvalidXPath(selector)
 

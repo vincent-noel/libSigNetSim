@@ -134,3 +134,9 @@ class SubModel(HasId):
 	def getModelInstance(self):
 		from libsignetsim.model.ModelInstance import ModelInstance
 		return ModelInstance(self.getModelObject(), self.__model.parentDoc)
+
+	def getByXPath(self, xpath):
+		return self.getModelObject().getByXPath(xpath)
+
+	def setByXPath(self, xpath, object):
+		self.getModelObject().setByXPath(xpath, object)

@@ -25,15 +25,16 @@
 
 from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.model.sbml.container.HasIds import HasIds
-from libsignetsim.model.sbml.SbmlObject import SbmlObject
+from libsignetsim.model.ModelException import InvalidXPath
 
 from libsignetsim.model.sbml.ExternalModelDefinition import ExternalModelDefinition
 from libsignetsim.settings.Settings import Settings
+from re import match
 
-class ListOfExternalModelDefinitions(ListOf, HasIds):#, SbmlObject):
+class ListOfExternalModelDefinitions(ListOf, HasIds):
 	""" Class for the listOfExternalModelDefinition in a sbml model """
 
-	def __init__ (self, model=None):
+	def __init__(self, model=None):
 
 		self.__model = model
 		ListOf.__init__(self, model)
@@ -92,3 +93,28 @@ class ListOfExternalModelDefinitions(ListOf, HasIds):#, SbmlObject):
 		for external_model in ListOf.values(self):
 			res.append(external_model)
 		return res
+
+
+	def resolveXPath(self, selector):
+
+		if selector.startswith("externalModelDefinition") or selector.startswith("sbml:externalModelDefinition"):
+
+			res_match = match(r'(.+)\[@(.+)=\'(.+)\'\]', selector)
+
+			if res_match is not None:
+				tokens = res_match.groups()
+				if len(tokens) == 3:
+					if tokens[1] == "id":
+						return self.getBySbmlId(tokens[2])
+					elif tokens[1] == "name":
+						return self.getByName(tokens[2])
+
+		# If not returned yet
+		raise InvalidXPath(selector)
+
+	def getByXPath(self, xpath):
+		return self.resolveXPath(xpath[0]).getByXPath(xpath[1:])
+
+	def setByXPath(self, xpath, value):
+
+		self.resolveXPath(xpath[0]).setByXPath(xpath[1:], value)

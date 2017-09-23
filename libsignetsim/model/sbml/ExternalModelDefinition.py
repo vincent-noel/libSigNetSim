@@ -23,7 +23,10 @@
 
 from libsignetsim.model.sbml.HasId import HasId
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
+from libsignetsim.model.ModelException import InvalidXPath
 from libsignetsim.settings.Settings import Settings
+from re import match
+
 
 class ExternalModelDefinition(HasId, SbmlObject):
 
@@ -38,9 +41,7 @@ class ExternalModelDefinition(HasId, SbmlObject):
 		self.__modelRef = None
 
 		self.__source = None
-		self.modelDefinition = None #Model(obj_id=self.objId, parent_doc=self.__model.parentDoc)
-
-
+		self.modelDefinition = None
 
 	def readSbml(self, sbml_model_definition,
 					sbml_level=Settings.defaultSbmlLevel,
@@ -63,7 +64,6 @@ class ExternalModelDefinition(HasId, SbmlObject):
 		else:
 			self.modelDefinition = t_document.model
 
-
 	def writeSbml(self, sbml_model_definition,
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
@@ -78,15 +78,12 @@ class ExternalModelDefinition(HasId, SbmlObject):
 
 		SbmlObject.writeSbml(self, sbml_model_definition, sbml_level, sbml_version)
 
-
-
 	def getSource(self):
 		return self.__source
 
 	def setSource(self, source):
 		self.__source = source
 		self.updateModelDefinition()
-
 
 	def hasModelRef(self):
 		return self.__modelRef is not None
@@ -97,7 +94,6 @@ class ExternalModelDefinition(HasId, SbmlObject):
 	def setModelRef(self, model_ref):
 		self.__modelRef = model_ref
 		self.updateModelDefinition()
-
 
 	def updateModelDefinition(self):
 
@@ -111,3 +107,37 @@ class ExternalModelDefinition(HasId, SbmlObject):
 			self.modelDefinition = t_document.getSubmodel(self.__modelRef)
 		else:
 			self.modelDefinition = t_document.model
+
+	# def resolveXPath(self, selector):
+	#
+	# 	if not (selector.startswith("externalModelDefinition") or selector.startswith("sbml:externalModelDefinition")):
+	# 		raise InvalidXPath(selector)
+	#
+	# 	if "[@" in selector:
+	# 		res_match = match(r'(.*)\[@(.*)=(.*)\]', selector)
+	# 		if res_match is None:
+	# 			raise InvalidXPath(selector)
+	#
+	# 		tokens = res_match.groups()
+	# 		if len(tokens) != 3:
+	# 			raise InvalidXPath(selector)
+	#
+	# 		object = None
+	# 		if tokens[1] == "id":
+	# 			object = self.getBySbmlId(tokens[2][1:-1])
+	# 		elif tokens[1] == "name":
+	# 			object = self.getByName(tokens[2][1:-1])
+	#
+	# 		if object is not None:
+	# 			return object
+	# 	else:
+	#
+	#
+	# 	# If not returned yet
+	# 	raise InvalidXPath(selector)
+	#
+	def getByXPath(self, xpath):
+		return self.modelDefinition.getByXPath(xpath)
+
+	def setByXPath(self, xpath, object):
+		self.modelDefinition.setByXPath(xpath, object)
