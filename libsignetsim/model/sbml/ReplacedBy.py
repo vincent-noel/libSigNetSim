@@ -74,19 +74,19 @@ class ReplacedBy(HasRef):
 				tt_instance = model_instance
 
 			else:
-				tt_model = self.__model.listOfSubmodels.getBySbmlIdRef(self.getSubmodelRef()).getModelObject()
+				tt_model = self.__model.listOfSubmodels.getBySbmlId(self.getSubmodelRef()).getModelObject()
 				tt_instance = model_instance.getSubmodelInstance(self.getSubmodelRef())
 
 			if self.hasIdRef():
 
 				if self.hasSBaseRef():
 
-					ttt_model = tt_model.listOfSubmodels.getBySbmlIdRef(self.getIdRef()).getModelObject()
+					ttt_model = tt_model.listOfSubmodels.getBySbmlId(self.getIdRef()).getModelObject()
 					ttt_instance = tt_instance.getSubmodelInstance(self.getIdRef())
 					refs = self.getSBaseRef().getRef(ttt_model)
 					obj_dicts = [ttt_instance.objectsDictionnary]
 					while len(refs) > 1:
-						ttt_model = ttt_model.listOfSubmodels.getBySbmlIdRef(refs[0]).getModelObject()
+						ttt_model = ttt_model.listOfSubmodels.getBySbmlId(refs[0]).getModelObject()
 						ttt_instance = ttt_instance.getSubmodelInstance(refs[0])
 						obj_dicts.append(ttt_instance.objectsDictionnary)
 						refs = refs[-1:]
@@ -125,17 +125,17 @@ class ReplacedBy(HasRef):
 				tt_model = self.__model
 
 			else:
-				tt_model = self.__model.listOfSubmodels.getBySbmlIdRef(self.getSubmodelRef()).getModelObject()
+				tt_model = self.__model.listOfSubmodels.getBySbmlId(self.getSubmodelRef()).getModelObject()
 
 			if self.hasIdRef():
 
 				if self.hasSBaseRef():
 
-					ttt_model = tt_model.listOfSubmodels.getBySbmlIdRef(self.getIdRef()).getModelObject()
+					ttt_model = tt_model.listOfSubmodels.getBySbmlId(self.getIdRef()).getModelObject()
 					refs = self.getSBaseRef().getRef(ttt_model)
 
 					while len(refs) > 1:
-						ttt_model = ttt_model.listOfSubmodels.getBySbmlIdRef(refs[0]).getModelObject()
+						ttt_model = ttt_model.listOfSubmodels.getBySbmlId(refs[0]).getModelObject()
 						refs = refs[-1:]
 
 					return ttt_model.listOfSbmlObjects.getByMetaId(refs[0])

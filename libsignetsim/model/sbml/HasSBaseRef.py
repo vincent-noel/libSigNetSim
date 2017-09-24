@@ -103,7 +103,7 @@ class HasSBaseRef(object):
 		t_sbase_ref = []
 		if self.hasIdRef():
 			if self.hasSBaseRef():
-				tt_model = t_model.listOfSubmodels.getBySbmlIdRef(self.getIdRef()).getModelObject()
+				tt_model = t_model.listOfSubmodels.getBySbmlId(self.getIdRef()).getModelObject()
 				t_sbase_ref = self.getSBaseRef().getRef(tt_model)
 				return [self.getIdRef()] + t_sbase_ref
 

@@ -62,7 +62,7 @@ class Deletion(HasId, HasRef):
 
 		if self.hasIdRef():
 			if self.hasSBaseRef():
-				tt_model = self.parentSubmodel.getModelObject().listOfSubmodels.getBySbmlIdRef(self.getIdRef()).getModelObject()
+				tt_model = self.parentSubmodel.getModelObject().listOfSubmodels.getBySbmlId(self.getIdRef()).getModelObject()
 				tt_instance = model_instance.getSubmodelInstance(self.getIdRef())
 				t_object = tt_model.listOfSbmlObjects.getByMetaId(self.getSBaseRef().getRef(tt_model))
 				return model_instance.listOfSbmlObjects.getByMetaId(tt_instance.objectsDictionnary[t_object.getMetaId()])
