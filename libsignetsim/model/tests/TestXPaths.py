@@ -147,4 +147,4 @@ class TestXPaths(TestCase):
 		self.assertEqual(doc_comp_external.getByXPath("sbml:sbml/sbml:model/sbml:listOfSubmodels/sbml:submodel[@id='sos_mod']/sbml:listOfSpecies/sbml:species[@id='sos']/@name"), "Son of Sevenless")
 		doc_comp_external.setByXPath(
 			"sbml:sbml/sbml:model/sbml:listOfSubmodels/sbml:submodel[@id='sos_mod']/sbml:listOfSpecies/sbml:species[@id='sos']/@name", "SOS")
-		self.assertEqual(doc_comp_external.model.listOfSubmodels.getBySbmlId("sos_mod").getModelObject().listOfSpecies.getBySbmlId("sos").getName(), "SOS")
+		self.assertEqual(doc_comp_external.model.listOfSubmodels.getBySbmlIdRef("sos_mod").getModelObject().listOfSpecies.getBySbmlId("sos").getName(), "SOS")

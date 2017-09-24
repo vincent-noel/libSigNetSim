@@ -97,10 +97,10 @@ class ListOfSubmodels(ListOf, HasIds):#, SbmlObject):
 
 		return res
 
-	def getBySbmlId(self, sbml_id_ref):
+	def getBySbmlIdRef(self, sbml_id_ref):
 		return HasIds.getBySbmlId(self, sbml_id_ref)
 
-	def getBySbmlIdRef(self, sbml_id):
+	def getBySbmlId(self, sbml_id):
 		for submodel in ListOf.values(self):
 			if submodel.getModelObject().getSbmlId() == sbml_id:
 				return submodel
