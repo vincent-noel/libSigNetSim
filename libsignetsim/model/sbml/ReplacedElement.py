@@ -72,14 +72,6 @@ class ReplacedElement(HasRef):
 		if self.__conversionFactor is not None:
 			sbml_replaced_element.setConversionFactor(self.__conversionFactor)
 
-	def copy(self, obj, prefix="", shift=0):
-
-		HasRef.copy(self, obj, prefix, shift)
-		self.setSubmodelRef(obj.getSubmodelRef())
-		self.setDeletion(obj.getDeletion())
-		self.setConversionFactor(obj.getConversionFactor(), prefix)
-
-
 	def getDeletion(self):
 		return self.__deletion
 

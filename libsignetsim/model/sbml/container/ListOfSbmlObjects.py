@@ -22,10 +22,8 @@
 
 """
 
-
 from libsignetsim.model.sbml.container.ListOf_v2 import ListOf_v2
 from libsignetsim.model.sbml.container.HasMetaIds import HasMetaIds
-from libsignetsim.model.sbml.container.ListOfReplacedElements import ListOfReplacedElements
 
 
 class ListOfSbmlObjects(ListOf_v2, HasMetaIds):
@@ -60,17 +58,6 @@ class ListOfSbmlObjects(ListOf_v2, HasMetaIds):
 
 		return sbml_object
 
-
-	def listReplacedElements(self):
-
-		res = []
-		for obj in ListOf_v2.values(self):
-			if not isinstance(obj, ListOfReplacedElements) and obj.hasReplacedElements():
-				for replaced_element in obj.getReplacedElements():
-					res.append(replaced_element)
-		return res
-
-
 	def getListOfSubstitutions(self):
 
 		res = []
@@ -82,75 +69,3 @@ class ListOfSbmlObjects(ListOf_v2, HasMetaIds):
 				res.append(obj.getReplacedBy())
 
 		return res
-
-	def getListOfSubstitutions_old(self):
-
-		res = []
-		type_substitutions = []
-		for obj in ListOf_v2.values(self):
-			if obj.hasReplacedElements():
-				for replaced_element in obj.getReplacedElements():
-
-					model_object = obj
-					submodels, submodel_object = replaced_element.getReplacedElementSubmodelAndObject()
-					res.append((0, model_object, submodels, submodel_object))
-			if obj.isReplaced():
-				t_rp = obj.getReplacedBy()
-				model_object = obj
-				submodels, submodel_object = t_rp.getReplacingElementSubmodelAndObject()
-				res.append((1, model_object, submodels, submodel_object))
-		return res
-
-	def getListOfElementsToBeReplaced(self):
-
-		res = []
-		for obj in ListOf_v2.values(self):
-			if not isinstance(obj, ListOfReplacedElements) and obj.hasReplacedElements():
-				for replaced_element in obj.getReplacedElements():
-					if replaced_element.getSubmodelRef() == self.__model.getSbmlId():
-						t_object = self.__model.listOfVariables.getBySbmlId(replaced_element.getIdRef())
-						res.append(t_object)
-
-					else:
-						t_model = self.__model.listOfSubmodels.getBySbmlId(replaced_element.getSubmodelRef()).getModelObject()
-						t_object = t_model.listOfVariables.getBySbmlId(replaced_element.getIdRef())
-						res.append(t_object)
-
-		return res
-
-
-	def hasToBeReplaced(self, ask_object):
-
-		for obj in ListOf_v2.values(self):
-			if not isinstance(obj, ListOfReplacedElements) and obj.hasReplacedElements():
-				for replaced_element in obj.getReplacedElements():
-					if replaced_element.getSubmodelRef() == self.__model.getSbmlId():
-						t_object = self.__model.listOfVariables.getBySbmlId(replaced_element.getIdRef())
-						if t_object == ask_object:
-							return True
-
-					else:
-						t_model = self.__model.listOfSubmodels.getBySbmlId(replaced_element.getSubmodelRef()).getModelObject()
-						t_object = t_model.listOfVariables.getBySbmlId(replaced_element.getIdRef())
-						if t_object == ask_object:
-							return True
-		return False
-
-
-	def getReplacedBy(self, ask_object):
-
-		for obj in ListOf_v2.values(self):
-			if not isinstance(obj, ListOfReplacedElements) and not isinstance(obj, Model) and obj.hasReplacedElements():
-				for replaced_element in obj.getReplacedElements():
-					if replaced_element.getSubmodelRef() == self.__model.getSbmlId():
-						t_object = self.__model.listOfVariables.getBySbmlId(replaced_element.getIdRef())
-						if t_object == ask_object:
-							return obj
-
-					else:
-						t_model = self.__model.listOfSubmodels.getBySbmlId(replaced_element.getSubmodelRef()).getModelObject()
-						t_object = t_model.listOfVariables.getBySbmlId(replaced_element.getIdRef())
-						if t_object == ask_object:
-							return obj
-
-

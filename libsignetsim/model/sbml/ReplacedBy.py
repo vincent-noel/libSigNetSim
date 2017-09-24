@@ -150,11 +150,5 @@ class ReplacedBy(HasRef):
 			elif self.hasMetaId():
 				return tt_model.listOfSbmlObjects.getByMetaId(self.getMetaIdRef())
 
-
-
-	def copy(self, obj, prefix="", shift=0):
-		HasRef.copy(self, obj, prefix, shift)
-		self.setSubmodelRef(obj.getSubmodelRef())
-
 	def getParentObject(self):
 		return self.__parentObj
