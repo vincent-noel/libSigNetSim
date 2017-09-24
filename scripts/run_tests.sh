@@ -38,6 +38,7 @@ elif [ $1 = "models" ]; then
     coverage run -a -m unittest libsignetsim.model.tests.TestUnits || exit 1;
     coverage run -a -m unittest libsignetsim.model.math.tests.TestMath || exit 1;
     coverage run -a -m unittest libsignetsim.model.tests.TestXPaths || exit 1;
+    coverage run -a -m unittest libsignetsim.model.tests.TestSubstitutions || exit 1;
 
 elif [ $1 = "optimization" ]; then
     coverage run -a -m unittest libsignetsim.optimization.tests.TestOptimization || exit 1;
