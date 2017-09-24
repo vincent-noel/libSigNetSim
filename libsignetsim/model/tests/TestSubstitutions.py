@@ -37,7 +37,7 @@ class TestSubstitutions(TestCase):
 		doc_comp_external = SbmlDocument()
 		doc_comp_external.readSbmlFromFile(join(dirname(__file__), "files", "comp_model", "modelz9xdww.xml"))
 
-		subs = doc_comp_external.model.getListOfSubstitutions()
+		subs = doc_comp_external.model.listOfSbmlObjects.getListOfSubstitutions()
 		for substitution in subs:
 			if isinstance(substitution, ReplacedElement):
 				obj = substitution.getReplacedElementObject()
