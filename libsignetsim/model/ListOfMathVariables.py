@@ -190,6 +190,38 @@ class ListOfMathVariables(object):
 		for i, var in enumerate(self.__model.variablesAlgebraic):
 			var.ind = i
 
+	def copySubmodel(self, model):
+		# First we copy the variables list
+		for variable in model.listOfVariables.values():
+			new_var = MathVariable(self.__model)
+			new_var.copy(variable)
+			new_var_id = new_var.symbol.getPrettyPrintMathFormula()
+			self.update({new_var_id: new_var})
+
+		self.__model.nbOdes = model.nbOdes
+		self.__model.nbAssignments = model.nbAssignments
+		self.__model.nbConstants = model.nbConstants
+		self.__model.nbAlgebraics = model.nbAlgebraics
+
+		self.__model.variablesOdes = []
+		for var_ode in model.variablesOdes:
+			t_var = self.__model.listOfVariables.getBySymbol(var_ode.symbol.getSymbol())
+			self.__model.variablesOdes.append(t_var)
+
+		self.__model.variablesAssignment = []
+		for var_ass in model.variablesAssignment:
+			t_var = self.__model.listOfVariables.getBySymbol(var_ass.symbol.getSymbol())
+			self.__model.variablesAssignment.append(t_var)
+
+		self.__model.variablesConstant = []
+		for var_cst in model.variablesConstant:
+			t_var = self.__model.listOfVariables.getBySymbol(var_cst.symbol.getSymbol())
+			self.__model.variablesConstant.append(t_var)
+
+		self.__model.variablesAlgebraic = []
+		for var_alg in model.variablesAlgebraic:
+			t_var = self.__model.listOfVariables.getBySymbol(var_alg.symbol.getSymbol())
+			self.__model.variablesAlgebraic.append(t_var)
 	# 
 	# 
 	# def getInternalToFinal(self, forcedConcentration=False):

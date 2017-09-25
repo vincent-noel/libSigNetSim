@@ -31,7 +31,6 @@ from libsignetsim.model.math.container.ListOfDAEs import ListOfDAEs
 
 from libsignetsim.model.math.MathStoichiometryMatrix import MathStoichiometryMatrix
 from libsignetsim.model.math.MathSlowModel import MathSlowModel
-from libsignetsim.model.math.MathSlowModel_v2 import MathSlowModel_v2
 from libsignetsim.model.math.MathAsymmetricModel import MathAsymmetricModel
 
 from libsignetsim.model.math.MathFormula import MathFormula
@@ -61,7 +60,7 @@ class MathModel(CModelWriter):
 		self.assymetricModel = MathAsymmetricModel(self)
 		self.stoichiometryMatrix = MathStoichiometryMatrix(self)
 		self.listOfConservationLaws = ListOfConservationLaws(self)
-		self.slowModel_v2 = MathSlowModel_v2(self, self.assymetricModel)
+		self.slowModel = MathSlowModel(self, self.assymetricModel)
 
 		self.nbOdes = None
 		self.nbAssignments = None
@@ -84,8 +83,8 @@ class MathModel(CModelWriter):
 
 	def getMathModel(self):
 
-		if self.slowModel_v2.isUpToDate():
-			return self.slowModel_v2
+		if self.slowModel.isUpToDate():
+			return self.slowModel
 
 		elif self.assymetricModel.isUpToDate():
 			return self.assymetricModel
@@ -113,6 +112,11 @@ class MathModel(CModelWriter):
 			self.listOfDAEs.solveInitialConditions(tmin)
 			self.listOfDAEs.solveDAEs()
 
+		self.buildReducedModel()
+
+		if len(self.listOfEvents) == 0 and self.listOfReactions.hasFastReaction():
+			self.slowModel.build()
+
 
 	def buildConservationLaws(self):
 
@@ -129,11 +133,14 @@ class MathModel(CModelWriter):
 
 	def buildReducedModel(self, vars_to_keep=[]):
 
-		if not len(self.listOfEvents) > 0:
+		# There is still something very wrong about the reductions for systems with events.
+		# For choices of variable to reduce which shouldn't matter, it does.
+		# Like for test cases 348, we *should* be able to remove S1 or S3. But only removing S3 works
+		if len(self.listOfEvents) == 0:
 			self.stoichiometryMatrix.build()
 			self.listOfConservationLaws.build()
-			self.assymetricModel.build(vars_to_keep=vars_to_keep)
-
+			self.assymetricModel.build(treated_variables=vars_to_keep)
+			# self.assymetricModel.prettyPrint()
 
 	def prettyPrint(self):
 

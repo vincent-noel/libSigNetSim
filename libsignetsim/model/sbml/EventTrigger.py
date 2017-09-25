@@ -24,6 +24,7 @@
 
 
 from libsignetsim.model.math.MathFormula import MathFormula
+from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.ModelException import SbmlException
 from libsignetsim.model.math.MathException import MathException
 from libsignetsim.settings.Settings import Settings
@@ -37,22 +38,24 @@ from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 from libsbml import parseL3Formula
 from sympy import srepr, simplify
 
-class EventTrigger(MathFormula):
+class EventTrigger(MathFormula, SbmlObject):
 	""" Events definition """
 
-	def __init__ (self, model):
+	def __init__(self, model, math_only=False):
 
 		self.__model = model
 
 		MathFormula.__init__(self, model, MathFormula.MATH_EQUATION)
-
 		self.initialValue = False
 		self.isPersistent = True
-
+		self.mathOnly = math_only
+		if not self.mathOnly:
+			SbmlObject.__init__(self, model)
 
 	def readSbml(self, sbml_trigger, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Reads an event definition from a sbml file """
 
+		SbmlObject.readSbml(self, sbml_trigger, sbml_level, sbml_version)
 		MathFormula.readSbml(self, sbml_trigger.getMath(), sbml_level, sbml_version)
 
 		if sbml_level >= 3:
@@ -64,6 +67,8 @@ class EventTrigger(MathFormula):
 		""" Writes an event definition to a sbml file """
 
 		sbml_trigger = sbml_event.createTrigger()
+		SbmlObject.writeSbml(self, sbml_trigger, sbml_level, sbml_version)
+
 		sbml_trigger.setMath(MathFormula.writeSbml(self, sbml_level, sbml_version))
 
 		if sbml_level >= 3:
@@ -75,6 +80,9 @@ class EventTrigger(MathFormula):
 
 	def copy(self, obj, symbols_subs={}, conversion_factors={}):
 
+		if not self.mathOnly:
+			SbmlObject.copy(self, obj)
+
 		t_convs = {}
 		for var, conversion in conversion_factors.items():
 			t_convs.update({var: var/conversion})
@@ -83,6 +91,12 @@ class EventTrigger(MathFormula):
 		t_formula = unevaluatedSubs(t_formula, t_convs)
 		MathFormula.setInternalMathFormula(self, t_formula)
 
+		self.initialValue = obj.initialValue
+		self.isPersistent = obj.isPersistent
+
+	def copySubmodel(self, obj):
+
+		MathFormula.setInternalMathFormula(self, obj.getDeveloppedInternalMathFormula())
 		self.initialValue = obj.initialValue
 		self.isPersistent = obj.isPersistent
 

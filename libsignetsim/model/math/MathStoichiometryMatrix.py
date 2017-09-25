@@ -73,7 +73,7 @@ class MathStoichiometryMatrix(object):
 				matrix = matrix.col_join(reaction_matrix)
 
 		self.rawStoichiometryMatrix = matrix
-
+		# print self.rawStoichiometryMatrix
 		if Settings.verboseTiming >= 2:
 			print "reaction matrix built in %.2gs" % (time()-t0)
 
@@ -106,6 +106,7 @@ class MathStoichiometryMatrix(object):
 
 		t0 = time()
 		res = self.getRawNullspace()
+		# print res
 		if Settings.verboseTiming >= 2:
 			print "> generated fixed nullspace in %.2gs" % (time()-t0)
 

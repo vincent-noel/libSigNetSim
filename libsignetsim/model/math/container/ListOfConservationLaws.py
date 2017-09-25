@@ -56,8 +56,6 @@ class ListOfConservationLaws(list):
 		if stoichiometry_matrix is None:
 			stoichiometry_matrix = self.__model.stoichiometryMatrix
 		if stoichiometry_matrix.hasNullSpace():
-			# print stoichiometry_matrix.getSimpleNullspace()
-			# for i, t_res in enumerate(stoichiometry_matrix.getRawNullspace()):
 			for i, t_res in enumerate(stoichiometry_matrix.getSimpleNullspace()):
 				t_law = MathFormula.ZERO
 				t_value = MathFormula.ZERO
@@ -65,7 +63,7 @@ class ListOfConservationLaws(list):
 				unknowns = []
 				t_vars = []
 				nb_vars = 0
-				# print t_res
+
 				for ii, tt_res in enumerate(t_res):
 
 					tt_symbol = stoichiometry_matrix.listOfSpecies[ii]
@@ -74,14 +72,12 @@ class ListOfConservationLaws(list):
 
 					if t_species.isSpecies() and not t_species.hasOnlySubstanceUnits:
 						tt_symbol_formula /= t_species.getCompartment().symbol.getSymbol()
-					# print tt_symbol_formula
 
 					if tt_symbol in self.__model.solvedInitialConditions.keys():
 						tt_value = self.__model.solvedInitialConditions[tt_symbol].getDeveloppedInternalMathFormula()
 						if t_species.isSpecies() and not t_species.hasOnlySubstanceUnits:
-						# 	tt_value /= self.__model.solvedInitialConditions[t_species.getCompartment().symbol.getSymbol()].getDeveloppedInternalMathFormula()
 							tt_value /= t_species.getCompartment().symbol.getSymbol()
-					#
+
 					else:
 						t_unknown = SympySymbol("_%s_0_" % str(tt_symbol))
 						tt_value = t_unknown
@@ -112,8 +108,6 @@ class ListOfConservationLaws(list):
 					for t_atom in t_law.atoms(SympySymbol):
 
 						if not self.__model.listOfVariables.getBySymbol(t_atom).isCompartment():
-							# t_var = MathFormula(self.__model, MathFormula.MATH_VARIABLE)
-							# t_var.setInternalMathFormula(t_atom)
 							t_vars.append(t_atom)
 
 					t_lhs = MathFormula(self.__model)
@@ -133,11 +127,7 @@ class ListOfConservationLaws(list):
 					for t_atom in t_law.atoms(SympySymbol):
 
 						if not self.__model.listOfVariables.getBySymbol(t_atom).isCompartment():
-							# t_var = MathFormula(self.__model, MathFormula.MATH_VARIABLE)
-							# t_var.setInternalMathFormula(t_atom)
 							t_vars.append(t_atom)
-					# t_var = self.__model.listOfVariables.getBySymbol(t_law)
-					# if t_var.isDerivative():
 
 					t_lhs = MathFormula(self.__model)
 					t_lhs.setInternalMathFormula(t_law)
@@ -152,49 +142,6 @@ class ListOfConservationLaws(list):
 					t_conservation_law.new(t_lhs, t_rhs, [t_vars])
 					list.append(self, t_conservation_law)
 
-		# print "law generated in %.2gs" % (time()-t0)
-	# 
-	# def findReducibleVariables(self, vars_to_keep=[]):
-	# 
-	# 	odes_vars_in_laws = []
-	# 	for law in self.LHSs_v2:
-	# 		t_vars = []
-	# 		for var in law.getDeveloppedInternalMathFormula().atoms(SympySymbol):
-	# 			t_variable = self.listOfVariables[str(var)]
-	# 			if t_variable.isDerivative() and not t_variable.isCompartment():
-	# 				t_vars.append(var)
-	# 		odes_vars_in_laws.append(t_vars)
-	# 
-	# 
-	# 	system = []
-	# 	for i, law in enumerate(self.LHSs_v2):
-	# 		t_law = law.getDeveloppedInternalMathFormula()
-	# 		t_value = self.RHSs_v2[i].getDeveloppedInternalMathFormula()
-	# 		system.append(SympyEqual(t_law, t_value))
-	# 
-	# 
-	# 	vars_to_extract = []
-	# 	for i, ode_var in enumerate(odes_vars_in_laws):
-	# 
-	# 		j=0
-	# 		while j < len(ode_var) and (
-	# 			(len(vars_to_extract) > 0 and ode_var[j] in vars_to_extract)
-	# 			or (len(vars_to_keep) > 0 and str(ode_var[j]) in vars_to_keep)):
-	# 			j += 1
-	# 
-	# 		if j < len(ode_var):
-	# 			vars_to_extract.append(ode_var[j])
-	# 
-	# 	# print [equ for equ in system]
-	# 	# print vars_to_extract[1]
-	# 
-	# 	# print solve(system, vars_to_extract[1])
-	# 	solutions = solve(system, vars_to_extract)
-	# 	# print solutions
-	# 	if len(solutions) > 0:
-	# 		self.reducibleVariables = solutions
-	# 	else:
-	# 		self.reducibleVariables = {}
 
 	def __str__(self):
 		res = ""

@@ -22,102 +22,26 @@
 
 """
 
-from libsignetsim.model.math.container.ListOfODEs import ListOfODEs
-from libsignetsim.model.math.container.ListOfCFEs import ListOfCFEs
-from libsignetsim.model.math.container.ListOfDAEs import ListOfDAEs
 from libsignetsim.model.math.DAE import DAE
 from libsignetsim.model.math.CFE import CFE
 from libsignetsim.model.math.ODE import ODE
-from libsignetsim.model.ListOfVariables import ListOfVariables
+from libsignetsim.model.math.MathSubmodel import MathSubmodel
 from libsignetsim.model.math.MathVariable import MathVariable
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol
-from libsignetsim.model.math.MathStoichiometryMatrix import MathStoichiometryMatrix
-from libsignetsim.model.math.container.ListOfConservationLaws import ListOfConservationLaws
-from sympy import solve
-class MathAsymmetricModel(object):
+from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
+from sympy import solve, simplify
+
+
+class MathAsymmetricModel(MathSubmodel):
 	""" Sbml model class """
 
 	def __init__ (self, parent_model=None):
 		""" Constructor of model class """
 
-		# MathModel.__init__(self)
-		self.parentModel = parent_model
-		self.sbmlLevel = self.parentModel.sbmlLevel
-		self.sbmlVersion = self.parentModel.sbmlVersion
+		MathSubmodel.__init__(self, parent_model=parent_model)
 
-		self.listOfODEs = ListOfODEs(self)
-		self.listOfCFEs = ListOfCFEs(self)
-		self.listOfDAEs = ListOfDAEs(self)
-		self.listOfVariables = ListOfVariables(self)
-
-		self.listOfConservationLaws = ListOfConservationLaws(self)
-
-		self.solvedInitialConditions = {}
-
-		self.nbOdes = None
-		self.nbAssignments = None
-		self.nbConstants = None
-		self.nbAlgebraics = None
-
-		self.variablesOdes = None
-		self.variablesAssignment = None
-		self.variablesConstant = None
-		self.variablesAlgebraic = None
-
-		# self.hasDAEs = self.parentModel.hasDAEs
-		self.__upToDate = False
-
-
-	def isUpToDate(self):
-		return self.__upToDate
-
-	def setUpToDate(self, value):
-		self.__upToDate = value
-
-	def copyVariables(self):
-		""" Copies the listOfVariables and the solvedInitialConditions """
-
-		# First we copy the variables list
-		for variable in self.parentModel.listOfVariables.values():
-			new_var = MathVariable(self)
-			new_var.copy(variable)
-			new_var_id = new_var.symbol.getPrettyPrintMathFormula()
-			self.listOfVariables.update({new_var_id:new_var})
-
-		for variable, value in self.parentModel.solvedInitialConditions.items():
-			t_value = MathFormula(self)
-			t_value.setInternalMathFormula(value.getInternalMathFormula())
-			self.solvedInitialConditions.update({variable: t_value})
-			# print "old: %s : %s" % (variable, value.getInternalMathFormula())
-			# print "new: %s : %s" % (variable, t_value.getInternalMathFormula())
-		# print self.solvedInitialConditions.items()
-
-		self.nbOdes = self.parentModel.nbOdes
-		self.nbAssignments = self.parentModel.nbAssignments
-		self.nbConstants = self.parentModel.nbConstants
-		self.nbAlgebraics = self.parentModel.nbAlgebraics
-
-		self.variablesOdes = []
-		for i, var_ode in enumerate(self.parentModel.variablesOdes):
-			t_var = self.listOfVariables.getBySymbol(var_ode.symbol.getSymbol())
-			self.variablesOdes.append(t_var)
-
-		self.variablesAssignment = []
-		for var_ass in self.parentModel.variablesAssignment:
-			t_var = self.listOfVariables.getBySymbol(var_ass.symbol.getSymbol())
-			self.variablesAssignment.append(t_var)
-
-		self.variablesConstant = []
-		for var_cst in self.parentModel.variablesConstant:
-			t_var = self.listOfVariables.getBySymbol(var_cst.symbol.getSymbol())
-			self.variablesConstant.append(t_var)
-
-		self.variablesAlgebraic = []
-		for var_alg in self.parentModel.variablesAlgebraic:
-			t_var = self.listOfVariables.getBySymbol(var_alg.symbol.getSymbol())
-			self.variablesAlgebraic.append(t_var)
-
+	def copyEquations(self):
 		for cfe in self.parentModel.listOfCFEs:
 			t_var = self.listOfVariables.getBySymbol(cfe.getVariable().symbol.getSymbol())
 			t_cfe_formula = MathFormula(self)
@@ -133,58 +57,53 @@ class MathAsymmetricModel(object):
 			t_dae.new(t_dae_formula)
 			self.listOfDAEs.append(t_dae)
 
-	def build(self, treated_variables=[], vars_to_keep=[]):
+		self.listOfEvents.copySubmodel(self.parentModel.listOfEvents)
 
-		self.parentModel.stoichiometryMatrix.build()
-		self.parentModel.listOfConservationLaws.build()
+	def build(self, treated_variables=[]):
 
 		forbidden_variables = []
 		for species in self.parentModel.variablesOdes:
 			if (str(species.symbol.getSymbol()) in treated_variables) or (species.hasEventAssignment()):
 				forbidden_variables.append(species.symbol.getSymbol())
-				print "%s : %s" % (species.getNameOrSbmlId(), species.hasEventAssignment())
 
-		print str(vars_to_keep)
-		if self.parentModel.stoichiometryMatrix.hasNullSpace():
-			nullspace = self.parentModel.stoichiometryMatrix.getSimpleNullspace()
+		if len(self.parentModel.listOfConservationLaws) > 0:
 
 			independent_species = []
 			independent_species_formula = []
-			for i_cons, cons in enumerate(nullspace):
+			solutions_subs = {}
 
-				cons_law = self.parentModel.listOfConservationLaws[i_cons]
+			for i_cons, cons_law in enumerate(self.parentModel.listOfConservationLaws):
 
 				can_reduce = True
 				for var in forbidden_variables:
-					# symbol = SympySymbol(var)
-					# model_var = self.listOfVariables.getBySymbol(symbol)
 					if var in cons_law.getFormula().atoms(SympySymbol):
 						can_reduce = False
 						# print "Refused conservation law : %s" % cons_law
 
 				if can_reduce:
-					for i, species in enumerate(self.parentModel.variablesOdes):
+
+					for i_ode, species in enumerate(self.parentModel.variablesOdes):
+
 						if (
-							cons[i] == 1
-							and species.symbol.getSymbol() not in independent_species
-							and str(species.symbol.getSymbol()) not in vars_to_keep
+							species.symbol.getSymbol() not in independent_species
 							and cons_law.getNbVars() > 1
-							# and species.symbol.getSymbol() not in [SympySymbol('A3'), SympySymbol('A'), SympySymbol('A4')]
-							and not (species.isDerivative() and species.hasEventAssignment())
+							and not species.hasEventAssignment()
 						):
-							# print species.hasEventAssignment()
-							independent_species.append(species.symbol.getSymbol())
-							independent_species_formula.append(
-								solve(
-									cons_law.getFormula(),
+							solution = solve(
+									unevaluatedSubs(cons_law.getFormula(), solutions_subs),
 									species.symbol.getSymbol()
 								)
-							)
-							break
+							if len(solution) > 0:
+								independent_species.append(species.symbol.getSymbol())
+								independent_species_formula.append(solution[0])
+								solutions_subs.update({species.symbol.getSymbol(): solution[0]})
+								break
+
 
 			if len(independent_species) > 0:
-				# print "we can reduce !"
+
 				self.copyVariables()
+				self.copyEquations()
 
 				for var in self.parentModel.variablesOdes:
 					new_var = self.listOfVariables.getBySymbol(var.symbol.getSymbol())
@@ -193,7 +112,7 @@ class MathAsymmetricModel(object):
 						t_formula = MathFormula(self)
 
 						t_formula.setInternalMathFormula(
-							independent_species_formula[independent_species.index(var.symbol.getSymbol())][0]
+							independent_species_formula[independent_species.index(var.symbol.getSymbol())]
 						)
 
 						t_cfe = CFE(self)
@@ -212,13 +131,5 @@ class MathAsymmetricModel(object):
 						t_ode.new(new_var, t_formula)
 						self.listOfODEs.append(t_ode)
 
-				self.__upToDate = True
+				self.setUpToDate(True)
 				self.listOfCFEs.developCFEs()
-
-	def prettyPrint(self):
-
-		print "\n> Full system : "
-		print self.listOfCFEs
-		print self.listOfDAEs
-		print self.listOfODEs
-		print "-----------------------------"

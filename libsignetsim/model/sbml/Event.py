@@ -39,21 +39,25 @@ class Event(Variable, SbmlObject, HasParentObj):
 
 	""" Events definition """
 
-	def __init__ (self, model, parent_obj, obj_id):
+	def __init__ (self, model, parent_obj, obj_id, math_only=False):
 
 		self.__model = model
 		self.objId = obj_id
 
 		Variable.__init__(self, model, Variable.EVENT)
-		SbmlObject.__init__(self, model)
 		HasParentObj.__init__(self, parent_obj)
 
-		self.trigger = EventTrigger(model)
+		self.trigger = EventTrigger(model, math_only=math_only)
 		self.listOfEventAssignments = []
 
 		self.delay = None
 		self.priority = None
 		self.useValuesFromTriggerTime = True
+
+		# For math submodels, where objects are not sbml objects
+		self.mathOnly = math_only
+		if not self.mathOnly:
+			SbmlObject.__init__(self, model)
 
 	def new(self, name=None):
 
@@ -141,6 +145,8 @@ class Event(Variable, SbmlObject, HasParentObj):
 				conversion_factors={}, time_conversion=None):
 
 		Variable.copy(self, obj, sids_subs=sids_subs, symbols_subs=symbols_subs)
+
+		# if not self.mathOnly:
 		SbmlObject.copy(self, obj)
 
 		self.trigger.copy(obj.trigger, symbols_subs=symbols_subs, conversion_factors=conversion_factors)
@@ -171,6 +177,23 @@ class Event(Variable, SbmlObject, HasParentObj):
 		self.value.setInternalMathFormula(self.trigger.getInternalMathFormula())
 		self.constant = obj.constant
 
+	def copySubmodel(self, obj):
+
+		self.trigger.copySubmodel(obj.trigger)
+
+		if obj.delay is not None:
+			self.delay = EventDelay(self.__model, math_only=self.mathOnly)
+			self.delay.copySubmodel(obj.delay)
+
+		if obj.priority is not None:
+			self.priority = EventPriority(self.__model, math_only=self.mathOnly)
+			self.priority.copySubmodel(obj.priority)
+
+		for event_assignment in obj.listOfEventAssignments:
+				t_event_assignment = EventAssignment(self.__model, event_assignment.objId, self, math_only=self.mathOnly)
+				t_event_assignment.copySubmodel(event_assignment)
+				self.listOfEventAssignments.append(t_event_assignment)
+		self.useValuesFromTriggerTime = obj.useValuesFromTriggerTime
 
 	def setTrigger(self, trigger):
 
