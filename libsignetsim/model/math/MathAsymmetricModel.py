@@ -68,6 +68,7 @@ class MathAsymmetricModel(MathSubmodel):
 
 		if len(self.parentModel.listOfConservationLaws) > 0:
 
+			nullspace = self.parentModel.stoichiometryMatrix.getSimpleNullspace()
 			independent_species = []
 			independent_species_formula = []
 			solutions_subs = {}
@@ -85,7 +86,8 @@ class MathAsymmetricModel(MathSubmodel):
 					for i_ode, species in enumerate(self.parentModel.variablesOdes):
 
 						if (
-							species.symbol.getSymbol() not in independent_species
+							nullspace[i_cons][i_ode] == 1
+							and species.symbol.getSymbol() not in independent_species
 							and cons_law.getNbVars() > 1
 							and not species.hasEventAssignment()
 						):
