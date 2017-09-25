@@ -34,18 +34,24 @@ class TestSuite(object):
 
 	TODO_CASES = []
 	TODO_VERSIONS = []
-	TODO_TAGS = [
+	TODO_TAGS = []
 
-	]
 	INCOMPATIBLE_CASES = [1504, 1505, 1506, 1507, 1508, 1511, 1512, 1575, 1589, 1590]
 
 	# Cases incompatible with model reduction
 	INCOMPATIBLE_CASES += [
-		1500, 1501, 1642, 1643, 1645, 1646, 1648, 1649, 1651, 1652,
+		1500, 1501, 1634, 1642, 1643, 1645, 1646, 1648, 1649, 1651, 1652,
 		1724, 1725, 1730, 1731, 1733, 1734, 1739, 1740, 1775, 1776
 	]
+
+	# Cases incompatible with fast reactions
+	INCOMPATIBLE_CASES += [
+		874, 986, 987, 988, 1396, 1398, 1399, 1544, 1545, 1546, 1547, 1548, 1549, 1550, 1551,
+		1558, 1559, 1560, 1565, 1567, 1568, 1569, 1570, 1571
+	]
+
 	INCOMPATIBLE_TAGS = [
-		'CSymbolDelay', 'FastReaction',
+		'CSymbolDelay',
 	]
 
 

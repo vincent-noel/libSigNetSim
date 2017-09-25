@@ -114,6 +114,10 @@ class MathModel(CModelWriter):
 
 		self.buildReducedModel()
 
+		if len(self.listOfEvents) == 0 and self.listOfReactions.hasFastReaction():
+			self.slowModel.build()
+
+
 	def buildConservationLaws(self):
 
 		t0 = time()
