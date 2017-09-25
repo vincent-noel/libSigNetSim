@@ -73,7 +73,7 @@ elif [ $1 = "uris" ]; then
 
 elif [ $1 = "others" ]; then
     $0 models || exit 1;
-    $0 timeseries || exit 1;
+    $0 simulation || exit 1;
     $0 optimization || exit 1;
     $0 sedml || exit 1;
     $0 combine || exit 1;
@@ -81,4 +81,6 @@ elif [ $1 = "others" ]; then
     $0 data || exit 1;
     $0 numl || exit 1;
 
+else
+    exit 1;
 fi

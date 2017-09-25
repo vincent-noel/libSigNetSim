@@ -90,7 +90,10 @@ class CWriterSimulation(CWriterModels, CWriterData):
 				elif self.workingModel.listOfCompartments.containsName(name):
 					treated_variables.append(self.workingModel.listOfCompartments.getByName(name).getSbmlId())
 
-			model.build(vars_to_keep=treated_variables, tmin=self.timeMin[modelInd])
+			dont_reduce = False
+			if (treated_variables) > 0:
+				dont_reduce = True
+			model.build(vars_to_keep=treated_variables, dont_reduce=dont_reduce, tmin=self.timeMin[modelInd])
 
 		start = time()
 		self.writeModelFiles()

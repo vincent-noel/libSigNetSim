@@ -27,7 +27,7 @@ from libsignetsim.model.SbmlDocument import SbmlDocument
 from libsignetsim.simulation.TimeseriesSimulation import TimeseriesSimulation
 from libsignetsim.settings.Settings import Settings
 from unittest import TestCase
-from os.path import exists
+from os.path import exists, join, dirname
 
 
 class TestTimeseries(TestCase):
@@ -123,7 +123,7 @@ class TestTimeseries(TestCase):
 
 	def testCellCycle(self):
 
-		sbml_path = "libsignetsim/simulation/tests/models/modelXZknew.xml"
+		sbml_path = join(dirname(__file__), "models", "modelXZknew.xml")
 		self.assertTrue(exists(sbml_path))
 
 		doc = SbmlDocument()

@@ -111,7 +111,7 @@ int simulate_model(int model_id, char * folder)
           nb_runs++;
 
         int i_run;
-        for (i_run = 0; i_run < nb_runs; i_run++)
+        for (i_run = 0; i_run <= nb_runs; i_run++)
         {
             int indice_condition = i_run*nb_procs + my_proc;
             if (indice_condition < nb_conditions)
