@@ -112,10 +112,11 @@ class MathModel(CModelWriter):
 			self.listOfDAEs.solveInitialConditions(tmin)
 			self.listOfDAEs.solveDAEs()
 
-		self.buildReducedModel()
+		if not dont_reduce:
+			self.buildReducedModel(vars_to_keep=vars_to_keep)
 
-		if len(self.listOfEvents) == 0 and self.listOfReactions.hasFastReaction():
-			self.slowModel.build()
+			if len(self.listOfEvents) == 0 and self.listOfReactions.hasFastReaction():
+				self.slowModel.build()
 
 
 	def buildConservationLaws(self):
