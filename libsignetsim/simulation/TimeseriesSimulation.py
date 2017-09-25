@@ -156,7 +156,7 @@ class TimeseriesSimulation(Simulation):
 			t_var = self.listOfModels[0].listOfVariables.getBySymbol(SympySymbol(name))
 			if not t_var.isConstant():
 				ax.plot(t, t_trajs[i_species], '-',
-					color=SigNetSimFigure.color_scheme[i_species % len(self.color_scheme)],
+					color=SigNetSimFigure.color_scheme[i_species % len(SigNetSimFigure.color_scheme)],
 					linewidth=int(5 * figure.w),
 					label=str(t_var.getNameOrSbmlId()))
 

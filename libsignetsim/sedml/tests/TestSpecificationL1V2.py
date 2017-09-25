@@ -2031,7 +2031,8 @@ class TestSpecificationL1V2(TestCase):
 		sedml_doc.run()
 		simulated_data = sedml_doc.listOfOutputs.getReports()[0].getData()
 
-
+		# Just running it to see if it fails
+		sedml_doc.showFigures()
 
 		for var, values in self.expected_data.items():
 			for i, value in enumerate(values):

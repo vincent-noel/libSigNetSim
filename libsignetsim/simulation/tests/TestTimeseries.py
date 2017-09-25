@@ -78,7 +78,8 @@ class TestTimeseries(TestCase):
 		for i, t_data in enumerate(reference_data):
 			self.assertAlmostEqual(t_data, model_data[i], delta=1e-4)
 
-
+		# Running just to see if it fails
+		sim.plot()
 
 	def testZeroResults(self):
 
