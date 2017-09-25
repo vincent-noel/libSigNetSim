@@ -209,7 +209,7 @@ class Simulation(CWriterSimulation):
 					flags, present_dir)
 
 		else:
-			cmd_sim = "cd %s; mpirun --allow-run-as-root -np %d ./sim-parallel %s; cd %s" % (
+			cmd_sim = "cd %s; mpirun -np %d ./sim-parallel %s; cd %s" % (
 					self.getTempDirectory(),
 					nb_procs, flags,
 					present_dir)

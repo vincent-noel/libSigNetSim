@@ -91,7 +91,7 @@ class CWriterSimulation(CWriterModels, CWriterData):
 					treated_variables.append(self.workingModel.listOfCompartments.getByName(name).getSbmlId())
 
 			dont_reduce = False
-			if (treated_variables) > 0:
+			if len(treated_variables) > 0:
 				dont_reduce = True
 			model.build(vars_to_keep=treated_variables, dont_reduce=dont_reduce, tmin=self.timeMin[modelInd])
 
