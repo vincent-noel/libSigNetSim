@@ -112,7 +112,6 @@ class MathModel(CModelWriter):
 			self.listOfDAEs.solveInitialConditions(tmin)
 			self.listOfDAEs.solveDAEs()
 
-		# if len(self.listOfEvents) == 0:
 		self.buildReducedModel()
 
 	def buildConservationLaws(self):
@@ -130,11 +129,14 @@ class MathModel(CModelWriter):
 
 	def buildReducedModel(self, vars_to_keep=[]):
 
-		# if not len(self.listOfEvents) > 0:
-		self.stoichiometryMatrix.build()
-		self.listOfConservationLaws.build()
-		self.assymetricModel.build(treated_variables=vars_to_keep)
-
+		# There is still something very wrong about the reductions for systems with events.
+		# For choices of variable to reduce which shouldn't matter, it does.
+		# Like for test cases 348, we *should* be able to remove S1 or S3. But only removing S3 works
+		if len(self.listOfEvents) == 0:
+			self.stoichiometryMatrix.build()
+			self.listOfConservationLaws.build()
+			self.assymetricModel.build(treated_variables=vars_to_keep)
+			# self.assymetricModel.prettyPrint()
 
 	def prettyPrint(self):
 

@@ -57,21 +57,14 @@ class MathAsymmetricModel(MathSubmodel):
 			t_dae.new(t_dae_formula)
 			self.listOfDAEs.append(t_dae)
 
-		# self.listOfEvents.copySubmodel(self.parentModel.listOfEvents)
+		self.listOfEvents.copySubmodel(self.parentModel.listOfEvents)
 
 	def build(self, treated_variables=[]):
-
-		# self.parentModel.stoichiometryMatrix.build()
-		# self.parentModel.listOfConservationLaws.build()
-
-		print self.parentModel.listOfConservationLaws
 
 		forbidden_variables = []
 		for species in self.parentModel.variablesOdes:
 			if (str(species.symbol.getSymbol()) in treated_variables) or (species.hasEventAssignment()):
 				forbidden_variables.append(species.symbol.getSymbol())
-
-		# print "Forbidden : %s" % str(forbidden_variables)
 
 		if len(self.parentModel.listOfConservationLaws) > 0:
 
@@ -90,10 +83,11 @@ class MathAsymmetricModel(MathSubmodel):
 				if can_reduce:
 
 					for i_ode, species in enumerate(self.parentModel.variablesOdes):
+
 						if (
 							species.symbol.getSymbol() not in independent_species
 							and cons_law.getNbVars() > 1
-							and not (species.hasEventAssignment())
+							and not species.hasEventAssignment()
 						):
 							solution = solve(
 									unevaluatedSubs(cons_law.getFormula(), solutions_subs),
@@ -107,9 +101,10 @@ class MathAsymmetricModel(MathSubmodel):
 
 
 			if len(independent_species) > 0:
-				print "we can reduce !"
+
 				self.copyVariables()
 				self.copyEquations()
+
 				for var in self.parentModel.variablesOdes:
 					new_var = self.listOfVariables.getBySymbol(var.symbol.getSymbol())
 					if var.symbol.getSymbol() in independent_species:
