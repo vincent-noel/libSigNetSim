@@ -36,7 +36,7 @@ from sympy import solve, simplify
 class MathAsymmetricModel(MathSubmodel):
 	""" Sbml model class """
 
-	def __init__ (self, parent_model=None):
+	def __init__(self, parent_model=None):
 		""" Constructor of model class """
 
 		MathSubmodel.__init__(self, parent_model=parent_model)

@@ -42,7 +42,7 @@ class Model(SbmlModel, MathModel):
 		MathModel.__init__(self, obj_id)
 		self.listOfVariables = ListOfVariables(self)
 
-	def build(self, vars_to_keep=[], dont_reduce=False, tmin=0):
+	def build(self, vars_to_keep=[], dont_reduce=(not Settings.reduceByDefault), tmin=0):
 
 		t0 = time()
 		self.listOfVariables.classifyVariables()

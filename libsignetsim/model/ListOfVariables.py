@@ -26,7 +26,7 @@ from libsignetsim.model.ListOfMathVariables import ListOfMathVariables
 from libsignetsim.model.ListOfSbmlVariables import ListOfSbmlVariables
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol
 
-class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
+class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, list):
 	""" Parent class for all the ListOf_ containers in a sbml model """
 
 	def __init__(self, model):
@@ -34,45 +34,37 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 		self.__model = model
 		ListOfMathVariables.__init__(self, model)
 		ListOfSbmlVariables.__init__(self, model)
-		dict.__init__(self)
+		list.__init__(self)
 
-	def keys(self):
-		""" Override keys() to sort by id """
-		return sorted(dict.keys(self),
-					  key=lambda sbmlObj: str(dict.__getitem__(self, sbmlObj).symbol.getInternalMathFormula()))
 	def values(self):
 		""" Override values() to sort by id """
-		return [dict.__getitem__(self, obj) for obj in self.keys()]
+		return self
 
 	# Add/Remove variables
 	def addVariable(self, variable, string=None):
 
 		t_sbmlId = ListOfSbmlVariables.newSbmlId(self, variable, string)
-		dict.update(self, {t_sbmlId: variable})
-
+		list.append(self, variable)
 		return t_sbmlId
 
 	def removeVariable(self, variable):
-
-		for key, value in self.items():
-			if variable == value:
-				dict.__delitem__(self, key)
+		list.remove(self, variable)
 
 	# Symbols
 	def symbols(self):
 		""" Return a set of symbols of the sbml variables """
-		return [obj.symbol.getInternalMathFormula() for obj in self.values()]
+		return [obj.symbol.getInternalMathFormula() for obj in self]
 
 	def containsSymbol(self, symbol):
 		""" Returns if a symbol is in the list of sbml variables"""
-		for var in dict.values(self):
+		for var in self:
 			if var.symbol.getSymbol() == symbol:
 				return True
 		return False
 
 	def getBySymbol(self, symbol):
 		""" Get a sbml variable by his symbol"""
-		for var in dict.values(self):
+		for var in self:
 			if var.symbol.getSymbol() == symbol:
 				return var
 
@@ -82,8 +74,10 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 		if old_symbol in self.symbols():
 			t_var = self.getBySymbol(old_symbol)
 			t_var.renameSymbol(old_sbml_id, new_sbml_id)
-			dict.__delitem__(self, old_sbml_id)
-			dict.update(self, {new_sbml_id: t_var})
 
-		for var in dict.values(self):
+		for var in self:
 			var.renameSbmlIdInValue(old_sbml_id, new_sbml_id)
+
+
+	def clear(self):
+		list.__init__(self)

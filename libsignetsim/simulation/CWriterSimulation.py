@@ -90,7 +90,7 @@ class CWriterSimulation(CWriterModels, CWriterData):
 				elif self.workingModel.listOfCompartments.containsName(name):
 					treated_variables.append(self.workingModel.listOfCompartments.getByName(name).getSbmlId())
 
-			dont_reduce = False
+			dont_reduce = not Settings.reduceByDefault
 			if len(treated_variables) > 0:
 				dont_reduce = True
 

@@ -74,13 +74,11 @@ class ListOfReplacedElements(ListOf):#, SimpleSbmlObject):
 			ListOf.add(self, t_re)
 
 	def remove(self, obj):
-		""" Remove an object from the list """
-
-		dict.__delitem__(self, obj.objId)
-
-	def removeById(self, obj_id):
-		""" Remove an object from the list """
-		self.remove(self.getById(obj_id))
+		""" 
+			Remove an object from the list 
+			Using list base method to avoid having to remove it from the listOfSbmlObjects (it's not there) 
+		"""
+		list.remove(self, obj)
 
 	def getByReplacedElementObject(self, re_object):
 

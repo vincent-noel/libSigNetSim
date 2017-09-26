@@ -93,16 +93,12 @@ class MathModel(CModelWriter):
 
 
 
-	def buildModel(self, vars_to_keep=[], dont_reduce=False, tmin=0):
+	def buildModel(self, vars_to_keep=[], dont_reduce=(not Settings.reduceByDefault), tmin=0):
 
-		# print "Building CFEs"
 		self.listOfCFEs.build()
-		# print "Building ODEs"
 		self.listOfODEs.build()
-		# print "Building DAEss"
 		self.listOfDAEs.build()
-		# self.prettyPrint()
-		# self.solveInitialConditions(tmin)
+
 		t0 = time()
 		self.solveSimpleInitialConditions(tmin)
 		if Settings.verboseTiming >= 2:
@@ -117,7 +113,6 @@ class MathModel(CModelWriter):
 
 			if len(self.listOfEvents) == 0 and self.listOfReactions.hasFastReaction():
 				self.slowModel.build()
-
 
 	def buildConservationLaws(self):
 
@@ -141,7 +136,6 @@ class MathModel(CModelWriter):
 			self.stoichiometryMatrix.build()
 			self.listOfConservationLaws.build()
 			self.assymetricModel.build(treated_variables=vars_to_keep)
-			# self.assymetricModel.prettyPrint()
 
 	def prettyPrint(self):
 

@@ -28,7 +28,7 @@ from re import sub
 class ListOfSbmlVariables(object):
 	""" Parent class for all the ListOf_ containers in a sbml model """
 
-	def __init__ (self, model):
+	def __init__(self, model):
 
 		self.__model = model
 
@@ -36,7 +36,7 @@ class ListOfSbmlVariables(object):
 	def containsName(self, name):
 		""" Test if a name is in the list """
 
-		for obj in dict.values(self):
+		for obj in self:
 			if name == obj.getName():
 				return True
 		return False
@@ -44,23 +44,23 @@ class ListOfSbmlVariables(object):
 
 	def getByName(self, name, pos=0):
 		""" Find sbml objects by their name """
-		return [obj for obj in dict.values(self) if obj.getName() == name][pos]
+		return [obj for obj in self if obj.getName() == name][pos]
 
 
 	def sbmlIds(self):
 		""" Return a set of ids of the sbml objects """
-		return [obj.getSbmlId() for obj in self.values()]
+		return [obj.getSbmlId() for obj in self]
 
 
 	def containsSbmlId(self, sbml_id):
-		for var in dict.values(self):
+		for var in self:
 			# We have a risk of conflict with local parameters, who have a special scope. So we just ignore them here
 			if var.getSbmlId() == sbml_id and not (var.isParameter() and var.isLocalParameter()):
 				return True
 		return False
 
 	def getBySbmlId(self, sbml_id):
-		for var in dict.values(self):
+		for var in self:
 			# We have a risk of conflict with local parameters, who have a special scope. So we just ignore them here
 			if var.getSbmlId() == sbml_id and not (var.isParameter() and var.isLocalParameter()):
 				return var

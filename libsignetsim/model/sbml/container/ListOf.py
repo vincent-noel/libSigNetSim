@@ -26,13 +26,12 @@
 class ListOf(list):
 	""" Parent class for all the ListOf.* containers in a sbml model """
 
-	def __init__ (self, model=None):
+	def __init__(self, model=None):
 
 		list.__init__(self)
 		self.__model = model
 		self.isListOfSbmlObjects = False
 		self.currentObjId = -1
-
 
 	def nextId(self):
 		self.currentObjId += 1
@@ -46,7 +45,7 @@ class ListOf(list):
 		return self
 
 	def index(self, object):
-		return self.index(object)
+		return list.index(self, object)
 
 	def ids(self):
 		""" Return a set of ids of the sbml objects """
@@ -79,6 +78,10 @@ class ListOf(list):
 			self.__model.listOfSbmlObjects.remove(sbml_obj)
 		list.remove(self, sbml_obj)
 
+	def removeById(self, obj_id):
+		""" Remove an object from the list """
+		self.remove(self.getById(obj_id))
+
 	def clear(self):
-		self = []
 		self.currentObjId = -1
+		list.__init__(self)

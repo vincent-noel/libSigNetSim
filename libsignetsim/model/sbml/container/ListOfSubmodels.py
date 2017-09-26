@@ -81,13 +81,11 @@ class ListOfSubmodels(ListOf, HasIds):#, SbmlObject):
 			if object.hasReplacedElements() and object.getListOfReplacedElements().containsSubmodel(sbml_obj.getSbmlId()):
 				raise CannotDeleteException("Submodel %s is used. Please remove the substitutions first" % sbml_obj.getNameOrSbmlId())
 
-		# ListOf.remove(self, comp)
-		dict.__delitem__(self, sbml_obj.objId)
-
+		list.remove(self, sbml_obj)
 
 	def removeById(self, obj_id):
 		""" Remove an object from the list """
-		dict.__delitem__(self, obj_id)
+		self.remove(self.getById(obj_id))
 
 	def getSubmodels(self):
 

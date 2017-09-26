@@ -54,7 +54,6 @@ class ListOfExternalModelDefinitions(ListOf, HasIds):
 
 		# SbmlObject.writeSbml(self, sbml_external_models, sbml_level, sbml_version)
 
-
 	def writeSbml(self, sbml_document,
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
@@ -66,7 +65,6 @@ class ListOfExternalModelDefinitions(ListOf, HasIds):
 
 		# SbmlObject.writeSbml(self, sbml_document, sbml_level, sbml_version)
 
-
 	def new(self):
 		""" Creates a new external model definition """
 
@@ -74,26 +72,11 @@ class ListOfExternalModelDefinitions(ListOf, HasIds):
 		ListOf.add(self, t_model)
 		return t_model
 
-
-	def remove(self, comp):
-		""" Remove an object from the list """
-
-		dict.__delitem__(self, comp.objId)
-		# ListOf.remove(self, comp)
-
-
-	def removeById(self, obj_id):
-		""" Remove an object from the list """
-		dict.__delitem__(self, obj_id)
-		# self.remove(self.getById(obj_id))
-
-
 	def getListOfModelDefinitions(self):
 		res = []
 		for external_model in ListOf.values(self):
 			res.append(external_model)
 		return res
-
 
 	def resolveXPath(self, selector):
 
