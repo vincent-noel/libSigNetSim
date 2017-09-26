@@ -243,7 +243,7 @@ class Simulation(CWriterSimulation):
 				f_out_sim.close()
 
 
-	def runSimulation(self, progress_signal=None, steady_states=False, nb_procs=4):
+	def runSimulation(self, progress_signal=None, steady_states=False, nb_procs=Settings.defaultMaxProcNumbers):
 
 		start = time()
 		self.__compile__(nb_procs=nb_procs)

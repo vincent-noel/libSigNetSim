@@ -76,6 +76,7 @@ typedef struct IntegrationResult
 typedef struct SteadyStatesIntegrationResult
 {
 	double    *             y;                          /* Array for values */
+	char 	  **			names;
 
 	int                     nb_dimensions;              /* number of dimensions */
 	int                     nb_derivative_variables;

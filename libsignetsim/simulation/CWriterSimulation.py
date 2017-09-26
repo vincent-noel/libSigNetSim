@@ -93,6 +93,7 @@ class CWriterSimulation(CWriterModels, CWriterData):
 			dont_reduce = False
 			if len(treated_variables) > 0:
 				dont_reduce = True
+
 			model.build(vars_to_keep=treated_variables, dont_reduce=dont_reduce, tmin=self.timeMin[modelInd])
 
 		start = time()

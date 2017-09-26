@@ -132,10 +132,8 @@ IntegrationResult * InitializeIntegrationResult(ModelDefinition * model)
 
 	for (i=0; i < model->integration_settings->nb_samples; i++)
 	{
-//		printf("initialization sample %d : %g\n", i, model->integration_settings->list_samples[i]);
 		integration_result->list_samples[i] = model->integration_settings->list_samples[i];
 	}
-//  }
 
   integration_result->return_code = 1;
   integration_result->t = malloc(sizeof(double)*integration_result->nb_samples);
@@ -146,7 +144,6 @@ IntegrationResult * InitializeIntegrationResult(ModelDefinition * model)
   integration_result->names = malloc(sizeof(char *)*integration_result->nb_dimensions);
   for  (i=0; i < integration_result->nb_dimensions; i++)
   {
-	//   integration_results->names = malloc(sizeof(char)*255);
 	  if (i < model->nb_derivative_variables)
 		  integration_result->names[i] = model->derivative_variables[i].name;
 	  else if (i < model->nb_derivative_variables + model->nb_algebraic_variables)
@@ -190,6 +187,19 @@ SteadyStatesIntegrationResult * InitializeSteadyStatesIntegrationResult(ModelDef
 
   integration_result->return_code = 1;
   integration_result->y = malloc(sizeof(double)*integration_result->nb_dimensions);
+  integration_result->names = malloc(sizeof(char *)*integration_result->nb_dimensions);
+  int i;
+  for  (i=0; i < integration_result->nb_dimensions; i++)
+  {
+	  if (i < model->nb_derivative_variables)
+		  integration_result->names[i] = model->derivative_variables[i].name;
+	  else if (i < model->nb_derivative_variables + model->nb_algebraic_variables)
+		  integration_result->names[i] = model->algebraic_variables[i-model->nb_derivative_variables].name;
+	  else if  (i < model->nb_derivative_variables + model->nb_algebraic_variables + model->nb_assignment_variables)
+		  integration_result->names[i] = model->assignment_variables[i-model->nb_derivative_variables-model->nb_algebraic_variables].name;
+	  else if  (i < model->nb_derivative_variables + model->nb_algebraic_variables + model->nb_assignment_variables+model->nb_constant_variables)
+		  integration_result->names[i] = model->constant_variables[i-model->nb_derivative_variables-model->nb_algebraic_variables-model->nb_assignment_variables].name;
+  }
 
   return integration_result;
 
@@ -199,6 +209,7 @@ SteadyStatesIntegrationResult * InitializeSteadyStatesIntegrationResult(ModelDef
 void FinalizeSteadyStatesIntegrationResult(SteadyStatesIntegrationResult * integration_result)
 {
   free(integration_result->y);
+  free(integration_result->names);
   free(integration_result);
 }
 
@@ -229,6 +240,11 @@ void WriteSteadyStates(SteadyStatesIntegrationResult * result, char * fileName)
 	int y;
 	FILE * f_res = fopen(fileName,"w");
 
+	for(y=0;y < result->nb_dimensions;y++){
+	    if (y == 0)	fprintf(f_res, "%s", result->names[y]);
+	    else fprintf(f_res, " %s", result->names[y]);
+	}
+	fprintf(f_res, "\n");
 
 	for(y=0;y < result->nb_dimensions;y++)
 		fprintf(f_res, "%.16g ",result->y[y]);

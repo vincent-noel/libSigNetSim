@@ -111,7 +111,7 @@ class SteadyStatesSimulation(Simulation):
         for variable in t_model.listOfVariables.values():
             self.rawData.update({variable.getSbmlId(): []})
 
-        if len(self.listOfInitialValues) > 0:
+        if len(self.listOfInitialValues) > 1:
 
             for i_initial_values, _ in enumerate(self.listOfInitialValues):
 
@@ -122,18 +122,7 @@ class SteadyStatesSimulation(Simulation):
                 )
 
                 if isfile(t_file):
-
-                    resultsFile = open(t_file, "r")
-
-                    for line in resultsFile:
-                        data = line.split()
-
-                        for variable in t_model.listOfVariables.values():
-                            t_array = self.rawData[variable.getSbmlId()]
-                            t_array.append(float(data[variable.getPos()]))
-                            self.rawData.update({variable.getSbmlId(): t_array})
-
-                    resultsFile.close()
+                    self.readFile(t_file)
 
         else:
             t_file = join(
@@ -143,15 +132,21 @@ class SteadyStatesSimulation(Simulation):
             )
 
             if isfile(t_file):
+                self.readFile(t_file)
 
-                resultsFile = open(t_file, "r")
+    def readFile(self, filename):
+        resultsFile = open(filename, "r")
+        variables = []
+        for i, line in enumerate(resultsFile):
+            data = line.split()
 
-                for line in resultsFile:
-                    data = line.split()
+            if i == 0:
+                variables = data
+            else:
+                for i_value, value in enumerate(data):
+                    f_value = float(value)
+                    array = self.rawData[variables[i_value]]
+                    array.append(f_value)
+                    self.rawData.update({variables[i_value]: array})
 
-                    for variable in t_model.listOfVariables.values():
-                        t_array = self.rawData[variable.getSbmlId()]
-                        t_array.append(float(data[variable.getPos()]))
-                        self.rawData.update({variable.getSbmlId(): t_array})
-
-                resultsFile.close()
+        resultsFile.close()
