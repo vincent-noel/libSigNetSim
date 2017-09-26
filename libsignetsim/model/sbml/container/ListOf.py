@@ -23,14 +23,12 @@
 """
 
 
-# from libsignetsim.model.sbml.container.ListOfSbmlObjects import ListOfSbmlObjects
-
-class ListOf(dict):
+class ListOf(list):
 	""" Parent class for all the ListOf.* containers in a sbml model """
 
 	def __init__ (self, model=None):
 
-		dict.__init__(self)
+		list.__init__(self)
 		self.__model = model
 		self.isListOfSbmlObjects = False
 		self.currentObjId = -1
@@ -40,39 +38,25 @@ class ListOf(dict):
 		self.currentObjId += 1
 		return self.currentObjId
 
-
 	def add(self, sbml_object):
-		dict.update(self, {sbml_object.objId: sbml_object})
-
-
-	# Overloading standard methods to get ordering
-	def keys(self):
-		""" Override keys() to sort by id """
-		return sorted(dict.keys(self),
-					  key=lambda sbmlObj: dict.__getitem__(self, sbmlObj).objId)
-
-	def items(self):
-		""" Override items() to sort by id """
-		return [(obj, dict.__getitem__(self, obj)) for obj in self.keys()]
+		list.append(self, sbml_object)
 
 	def values(self):
 		""" Override values() to sort by id """
-		return [dict.__getitem__(self, obj) for obj in self.keys()]
+		return self
 
 	def index(self, object):
-		return self.values().index(object)
+		return self.index(object)
 
 	def ids(self):
 		""" Return a set of ids of the sbml objects """
-		return [obj.objId for obj in self.values()]
-
-
+		return [obj.objId for obj in self]
 
 	def getById(self, obj_id, pos=0):
 		""" Find sbml objects by their import Id """
 
 		res = []
-		for obj in self.values():
+		for obj in self:
 			if obj.objId == obj_id:
 				res.append(obj)
 
@@ -81,25 +65,20 @@ class ListOf(dict):
 		else:
 			return None
 
-
-
 	def getByPos(self, pos):
 		""" Find sbml objects by their position """
-		return self.values()[pos]
-
+		return list.__getitem__(self, pos)
 
 	def getPosById(self, id):
-		return self.keys().index(id)
-
+		return self.index(self.getById(id))
 
 	def remove(self, sbml_obj):
 		""" Remove an object from the list """
 
 		if not self.isListOfSbmlObjects:
 			self.__model.listOfSbmlObjects.remove(sbml_obj)
-		dict.__delitem__(self, sbml_obj.objId)
-
+		list.remove(self, sbml_obj)
 
 	def clear(self):
-		dict.clear(self)
+		self = []
 		self.currentObjId = -1

@@ -206,19 +206,19 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 			sbml_reaction.setFast(False)
 
 		if self.listOfModifiers:
-			for modifier in self.listOfModifiers.keys():
+			for modifier in self.listOfModifiers.values():
 				sbml_modifier = sbml_reaction.createModifier()
-				self.listOfModifiers[modifier].writeSbml(sbml_modifier, sbml_level, sbml_version)
+				modifier.writeSbml(sbml_modifier, sbml_level, sbml_version)
 
 		if self.listOfReactants:
-			for reactant in self.listOfReactants.keys():
+			for reactant in self.listOfReactants.values():
 				sbml_reactant = sbml_reaction.createReactant()
-				self.listOfReactants[reactant].writeSbml(sbml_reactant, sbml_level, sbml_version)
+				reactant.writeSbml(sbml_reactant, sbml_level, sbml_version)
 
 		if self.listOfProducts:
-			for product in self.listOfProducts.keys():
+			for product in self.listOfProducts.values():
 				sbml_product = sbml_reaction.createProduct()
-				self.listOfProducts[product].writeSbml(sbml_product, sbml_level, sbml_version)
+				product.writeSbml(sbml_product, sbml_level, sbml_version)
 
 		if self.kineticLaw is not None:
 			kinetic_law = sbml_reaction.createKineticLaw()

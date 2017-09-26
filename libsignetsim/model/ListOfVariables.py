@@ -29,7 +29,7 @@ from libsignetsim.model.math.sympy_shortcuts import SympySymbol
 class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, dict):
 	""" Parent class for all the ListOf_ containers in a sbml model """
 
-	def __init__ (self, model):
+	def __init__(self, model):
 
 		self.__model = model
 		ListOfMathVariables.__init__(self, model)

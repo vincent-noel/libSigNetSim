@@ -214,7 +214,7 @@ class CModelWriter(object):
 		if self.listOfEvents.nbRoots() > 0:
 			f_c.write("  free(%s.roots_operators);\n" % variable_name)
 
-		if len(self.listOfEvents.keys()) > 0:
+		if len(self.listOfEvents) > 0:
 			f_c.write("  free(%s.events_init);\n" % variable_name)
 			f_c.write("  free(%s.memory_size_per_event);\n" % variable_name)
 			f_c.write("  free(%s.events_has_priority);\n" % variable_name)

@@ -22,17 +22,17 @@
 
 """
 
-from libsignetsim.model.sbml.container.ListOf_v2 import ListOf_v2
+from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.model.sbml.container.HasMetaIds import HasMetaIds
 
 
-class ListOfSbmlObjects(ListOf_v2, HasMetaIds):
+class ListOfSbmlObjects(ListOf, HasMetaIds):
 	""" Class for the listOfModelDefinition in a sbml model """
 
 	def __init__ (self, model=None):
 
 		self.__model = model
-		ListOf_v2.__init__(self, model)
+		ListOf.__init__(self, model)
 		HasMetaIds.__init__(self, model)
 		self.isListOfSbmlObjects = True
 		self.currentObjId = -1
@@ -61,7 +61,7 @@ class ListOfSbmlObjects(ListOf_v2, HasMetaIds):
 	def getListOfSubstitutions(self):
 
 		res = []
-		for obj in ListOf_v2.values(self):
+		for obj in ListOf.values(self):
 			if obj.hasReplacedElements():
 				res += obj.getReplacedElements()
 
