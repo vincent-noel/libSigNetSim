@@ -18,17 +18,16 @@
 # You should have received a copy of the GNU General Public License
 # along with libSigNetSim.  If not, see <http://www.gnu.org/licenses/>.
 
-""" CombineArchive.py
+"""
 
-	Initialization of the combine archive module
+	Combine archive main object. 
 
 """
 
-from libsignetsim.combine.Manifest import Manifest
 from libsignetsim.combine.ListOfFiles import ListOfFiles
 from libsignetsim.combine.CombineException import (
-	FileNotFoundException, NotAZipFileException, NoMasterSedmlFoundException,
-	NoSedmlFoundException
+	FileNotFoundException, NotAZipFileException, NoMasterSedmlFoundException, NoMasterSbmlFoundException,
+	NoMasterNumlFoundException, NoSedmlFoundException
 )
 from libsignetsim.sedml.SedmlDocument import SedmlDocument
 from libsignetsim.settings.Settings import Settings
@@ -36,10 +35,14 @@ from libsignetsim.settings.Settings import Settings
 from zipfile import is_zipfile, ZipFile
 from random import choice
 from string import ascii_uppercase, ascii_lowercase, digits
-from os.path import exists, join, isdir
+from os.path import exists, join, isdir, basename
 from os import mkdir
+from shutil import copy
+
 
 class CombineArchive(object):
+	""" Combine archive main object. """
+
 
 	OMEX = "Default combine archive"
 	SEDX = "SED-ML archive"
@@ -71,7 +74,7 @@ class CombineArchive(object):
 		self.__extension = None
 
 	def readArchive(self, file):
-
+		""" Reads a combine archive file """
 		if not exists(file):
 			raise FileNotFoundException("File %s not found" % file)
 
@@ -82,18 +85,19 @@ class CombineArchive(object):
 		self.__extension = file.split(".")[-1]
 		self.__listOfFiles.readListOfFiles(self.__file)
 
-		self.extractArchive()
+		self.__extractArchive()
 		#TODO : browse the manifest, check if the archive exists, then create add the file to the list of files ?
 
 	def getListOfFiles(self):
+		""" Returns the list of files inside the combine archive """
 		return self.__listOfFiles
 
-	def extractArchive(self):
+	def __extractArchive(self):
 		self.__file.extractall(self.__path)
 
 	def writeArchive(self, filename):
-
-		manifest_file= open(join(self.__path, "manifest.xml"), "w")
+		""" Writes the combine archive as a file """
+		manifest_file = open(join(self.__path, "manifest.xml"), "w")
 		manifest_file.write(self.__listOfFiles.writeManifest())
 		manifest_file.close()
 
@@ -107,27 +111,27 @@ class CombineArchive(object):
 		self.__file.close()
 
 	def getMasterSedml(self):
-
+		""" Returns the master SEDML filename """
 		if self.__listOfFiles.getMasterSedml() is not None:
 			return join(self.__path, self.__listOfFiles.getMasterSedml().getFilename())
 		else:
 			raise NoMasterSedmlFoundException("No master Sedml found")
 
-
 	def getAllSedmls(self):
+		""" Returns all the SEDML filenames """
 
 		all_sedmls = self.__listOfFiles.getAllSedmls()
 		return [join(self.__path, sedml.getFilename()) for sedml in all_sedmls]
 
 	def runMasterSedml(self):
-
+		""" Execute the master SEDML and returns the SedmlDocument object """
 		filename = self.getMasterSedml()
 
 		if exists(filename):
 			return self.runSedml(filename)
 
 	def runAllSedmls(self):
-
+		""" Execute all the SEDML documents and returns the SedmlDocument objects """
 		all_sedmls = self.__listOfFiles.getAllSedmls()
 		sedml_docs = []
 
@@ -144,37 +148,47 @@ class CombineArchive(object):
 			raise NoSedmlFoundException()
 
 	def getMasterSedmlDoc(self):
-
+		""" Returns the master SEDML as a SedmlDocument object """
 		filename = self.getMasterSedml()
 
 		if exists(filename):
-			return self.getSedmlDoc(filename)
+			return self.__getSedmlDoc(filename)
 
-	def getSedmlDoc(self, filename):
+	def __getSedmlDoc(self, filename):
 
 		sedml_doc = SedmlDocument()
 		sedml_doc.readSedmlFromFile(filename)
 		return sedml_doc
 
 	def runSedml(self, filename):
-
-		sedml_doc = self.getSedmlDoc(filename)
+		""" Run the Sedml document """
+		sedml_doc = self.__getSedmlDoc(filename)
 		sedml_doc.run()
 		return sedml_doc
 
-
 	def getAllSbmls(self):
-
+		""" Returns all the SBML filenames """
 		all_sbmls = self.__listOfFiles.getAllSbmls()
 		return [join(self.__path, sbml.getFilename()) for sbml in all_sbmls]
 
-	def getAllNumls(self):
+	def getMasterSbml(self):
+		""" Returns the master SBML filename """
+		if self.__listOfFiles.getMasterSbml() is not None:
+			return join(self.__path, self.__listOfFiles.getMasterSbml().getFilename())
+		else:
+			raise NoMasterSbmlFoundException("No master SBML found")
 
+	def getAllNumls(self):
+		""" Returns all the NuML filenames """
 		all_numls = self.__listOfFiles.getAllNumls()
 		return [join(self.__path, numl.getFilename()) for numl in all_numls]
 
-	def getPath(self):
-		return self.__path
+	def getMasterNuml(self):
+		""" Returns the master NuML filename """
+		if self.__listOfFiles.getMasterNuml() is not None:
+			return join(self.__path, self.__listOfFiles.getMasterNuml().getFilename())
+		else:
+			raise NoMasterNumlFoundException("No master NuML found")
 
 	def isDefaultCombineArchive(self):
 		return self.__extension in self.ARCHIVE_EXTENSIONS and self.ARCHIVE_EXTENSIONS[self.__extension] == self.OMEX
@@ -198,5 +212,5 @@ class CombineArchive(object):
 		return self.__extension in self.ARCHIVE_EXTENSIONS and self.ARCHIVE_EXTENSIONS[self.__extension] == self.SBOX
 
 	def addFile(self, filename):
-
-		self.__listOfFiles.addFile(filename)
+		copy(filename, join(self.__path, basename(filename)))
+		return self.__listOfFiles.addFile(filename)

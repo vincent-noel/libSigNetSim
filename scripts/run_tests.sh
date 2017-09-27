@@ -52,6 +52,7 @@ elif [ $1 = "combine" ]; then
     coverage run -a -m unittest libsignetsim.combine.tests.TestRunSedmls || exit 1;
     coverage run -a -m unittest libsignetsim.combine.tests.TestShowCase || exit 1;
     coverage run -a -m unittest libsignetsim.combine.tests.TestNoManifest || exit 1;
+    coverage run -a -m unittest libsignetsim.combine.tests.TestCreateArchive || exit 1;
 
 elif [ $1 = "sedml" ]; then
     coverage run -a -m unittest libsignetsim.sedml.tests.TestBiomodelsURI || exit 1;

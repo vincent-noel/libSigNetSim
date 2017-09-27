@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with libSigNetSim.  If not, see <http://www.gnu.org/licenses/>.
 
-""" ListOfFiles.py
+"""
 
 	Initialization of the combine archive module
 
@@ -60,13 +60,12 @@ class ListOfFiles(list):
 				new_master = self.getAllSedmls()[0]
 				new_master.setMaster()
 
-
-
 	def addFile(self, filename):
 
 		file = File(self.__archive, self.__manifest)
 		file.newFile(filename)
 		list.append(self, file)
+		return file
 
 	def writeManifest(self):
 		return self.__manifest.writeManifest()
@@ -82,12 +81,21 @@ class ListOfFiles(list):
 			if file.isMaster() and file.isSedml():
 				return file
 
-
 	def getAllSedmls(self):
 		return [file for file in self if file.isSedml()]
+
+	def getMasterSbml(self):
+		for file in self:
+			if file.isMaster() and file.isSbml():
+				return file
 
 	def getAllSbmls(self):
 		return [file for file in self if file.isSbml()]
 
 	def getAllNumls(self):
 		return [file for file in self if file.isNuml()]
+
+	def getMasterNuml(self):
+		for file in self:
+			if file.isMaster() and file.isNuml():
+				return file

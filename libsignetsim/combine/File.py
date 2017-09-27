@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with libSigNetSim.  If not, see <http://www.gnu.org/licenses/>.
 
-""" File.py
+"""
 
 	Initialization of the combine archive module
 
@@ -116,7 +116,6 @@ class File(object):
 		if self.__format is None:
 			self.__format = self.UNKNOWN
 
-		copy(filename, join(self.__archive.getPath(), self.__filename))
 		self.__manifest.addInManifest(self.__filename, self.__format)
 
 

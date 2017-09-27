@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with libSigNetSim.  If not, see <http://www.gnu.org/licenses/>.
 
-""" CombineException.py
+"""
 
 	This file ...
 
@@ -40,6 +40,12 @@ class NoManifestFoundException(CombineException):
 	pass
 
 class NoMasterSedmlFoundException(CombineException):
+	pass
+
+class NoMasterSbmlFoundException(CombineException):
+	pass
+
+class NoMasterNumlFoundException(CombineException):
 	pass
 
 class NoSedmlFoundException(CombineException):
