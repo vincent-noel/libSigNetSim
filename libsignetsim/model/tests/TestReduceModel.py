@@ -48,6 +48,6 @@ class TestReduceModel(TestCase):
 		# print sbml_model.listOfConservationLaws
 
 
-		sbml_model.assymetricModel.build()
-		# print sbml_model.assymetricModel.prettyPrint()
+		sbml_model.asymetricModel.build()
+		# print sbml_model.asymetricModel.prettyPrint()
 

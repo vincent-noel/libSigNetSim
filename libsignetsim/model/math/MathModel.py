@@ -57,10 +57,10 @@ class MathModel(CModelWriter):
 		self.solvedInitialConditions = None
 		# self.hasDAEs = False
 		self.slowModel = None
-		self.assymetricModel = MathAsymmetricModel(self)
+		self.asymetricModel = MathAsymmetricModel(self)
 		self.stoichiometryMatrix = MathStoichiometryMatrix(self)
 		self.listOfConservationLaws = ListOfConservationLaws(self)
-		self.slowModel = MathSlowModel(self, self.assymetricModel)
+		self.slowModel = MathSlowModel(self, self.asymetricModel)
 
 		self.nbOdes = None
 		self.nbAssignments = None
@@ -86,8 +86,8 @@ class MathModel(CModelWriter):
 		if self.slowModel.isUpToDate():
 			return self.slowModel
 
-		elif self.assymetricModel.isUpToDate():
-			return self.assymetricModel
+		elif self.asymetricModel.isUpToDate():
+			return self.asymetricModel
 		else:
 			return self
 
@@ -111,8 +111,8 @@ class MathModel(CModelWriter):
 		if not dont_reduce:
 			self.buildReducedModel(vars_to_keep=vars_to_keep)
 
-			if len(self.listOfEvents) == 0 and self.listOfReactions.hasFastReaction():
-				self.slowModel.build()
+		if len(self.listOfEvents) == 0 and self.listOfReactions.hasFastReaction():
+			self.buildSlowModel()
 
 	def buildConservationLaws(self):
 
@@ -135,7 +135,14 @@ class MathModel(CModelWriter):
 		if len(self.listOfEvents) == 0:
 			self.stoichiometryMatrix.build()
 			self.listOfConservationLaws.build()
-			self.assymetricModel.build(treated_variables=vars_to_keep)
+			self.asymetricModel = MathAsymmetricModel(self)
+			self.asymetricModel.build(treated_variables=vars_to_keep)
+
+	def buildSlowModel(self):
+
+		self.buildReducedModel()
+		self.slowModel = MathSlowModel(self, self.asymetricModel)
+		self.slowModel.build()
 
 	def prettyPrint(self):
 

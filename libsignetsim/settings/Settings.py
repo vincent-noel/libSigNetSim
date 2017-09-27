@@ -103,7 +103,7 @@ class Settings(object):
 	verbose = 0
 	verboseTiming = 0
 	showSbmlErrors = False
-	reduceByDefault = True
+	reduceByDefault = False
 
 
 	sbmlTestCasesPath = join('/', 'tmp',"sbml-test-suite", "cases", "semantic")
