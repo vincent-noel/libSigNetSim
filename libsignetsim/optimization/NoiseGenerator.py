@@ -27,15 +27,15 @@
 from math import exp
 from numpy.random import normal
 
+
 class NoiseGenerator(object):
 
-	def __init__ (self, list_of_experimental_data={}, noise=0, sampling=None):
+	def __init__(self, list_of_experimental_data={}, noise=0, sampling=None):
 
 		self.listOfExperimentalData = list_of_experimental_data
 
 		self.noise = noise
 		self.sampling = sampling
-
 
 	def applyNoiseToData(self):
 
@@ -50,7 +50,7 @@ class NoiseGenerator(object):
 			if self.sampling is not None:
 				for j,t_time in enumerate(t_experimental_data.t):
 
-					if not (abs((float(t_time)/self.sampling - round(float(t_time)/self.sampling,0))) > 1e-12 and float(t_time) > 0):
+					if not (abs((float(t_time)/self.sampling - round(float(t_time)/self.sampling, 0))) > 1e-12 and float(t_time) > 0):
 						t_filtered_t.append(float(t_time))
 						t_filtered_values.append(float(t_experimental_data.values[j]))
 
@@ -60,8 +60,8 @@ class NoiseGenerator(object):
 
 			# Add noise to all variables
 			if self.noise > 0:
-				for j,value in enumerate(t_filtered_values):
-					noise = math.exp(normal(0,self.noise))
+				for j, value in enumerate(t_filtered_values):
+					noise = exp(normal(0, self.noise))
 					t_filtered_values[j] = t_filtered_values[j] * noise
 
 			self.listOfExperimentalData[experimental_data].size = len(t_filtered_t)

@@ -25,7 +25,7 @@
 """
 
 class HasMetaIds(object):
-	""" Parent class for all the ListOf_ containers in a sbml model """
+	""" Parent class for all the ListOf containers in a sbml model """
 
 	def __init__ (self, model=None):
 

@@ -9,9 +9,9 @@ __pycache__/
 # PyCharm stuff
 .idea/
 
-# Biomodels test results
-results_simulated.csv
 
 # Notebooks checkpoints
 */.ipynb_checkpoints/*
+
+docs/build/*
 

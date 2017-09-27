@@ -24,8 +24,9 @@
 
 """
 
-from Settings import Settings
-from threading import thread
+from libsignetsim.settings.Settings import Settings
+from threading import Thread
+
 from time import sleep, time
 from os.path import isfile
 from math import isnan
@@ -34,7 +35,7 @@ from numpy import log10
 
 class OptimizationMonitor(Thread):
 
-	def __init__ (self, parent_optimization): #, referenceModel=None, referenceData=None):
+	def __init__(self, parent_optimization): #, referenceModel=None, referenceData=None):
 
 		Thread.__init__(self)
 		self.daemon = True
