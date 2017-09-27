@@ -1,95 +1,26 @@
 #!/usr/bin/env python
-""" __init__.py
+# -*- coding: utf-8 -*-
+#
+# Copyright 2014-2017 Vincent Noel (vincent.noel@butantan.gov.br)
+#
+# This file is part of libSigNetSim.
+#
+# libSigNetSim is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# libSigNetSim is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with libSigNetSim.  If not, see <http://www.gnu.org/licenses/>.
 
+""" __init__.py
 
 	Initialization of the module SigNetSim/SbmlModel
 
-
-	Copyright (C) 2016 Vincent Noel (vincent.noel@butantan.gov.br)
-
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program. If not, see <http://www.gnu.org/licenses/>.
-
 """
 
-#
-# from sbmlobject import SimpleSbmlObject
-# from sbmlobject import SbmlObject
-# from sbmlobject import AlgebraicRule
-# from sbmlobject import AssignmentRule
-# from sbmlobject import Compartment
-# from sbmlobject import Constraint
-# from sbmlobject import Event
-# from sbmlobject import EventAssignedVariable
-# from sbmlobject import EventAssignment
-# from sbmlobject import EventTrigger
-# from sbmlobject import FunctionDefinition
-# from sbmlobject import HasId
-# from sbmlobject import HasRef
-# from sbmlobject import HasReplacedElements
-# from sbmlobject import HasUnits
-# from sbmlobject import InitialAssignment
-# from sbmlobject import InitiallyAssignedVariable
-# from sbmlobject import Parameter
-# from sbmlobject import RateRule
-# from sbmlobject import Reaction
-# from sbmlobject import Rule
-# from sbmlobject import RuledVariable
-# from sbmlobject import Deletion
-# from sbmlobject import ExternalModelDefinition
-# from sbmlobject import SbmlModel
-# from sbmlobject import ModelDefinition
-# from sbmlobject import Port
-# from sbmlobject import ReplacedBy
-# from sbmlobject import ReplacedElement
-# from sbmlobject import SubModel
-# from sbmlobject import SbmlVariable
-# from sbmlobject import Species
-# from sbmlobject import SpeciesReference
-# from sbmlobject import UnitDefinition
-#
-# from math import CMathWriter
-# from math import KineticLawIdentifier
-# from math import MathAlgebraicRule
-# from math import MathAssignmentRule
-# from math import MathCFEs
-# from math import MathConservationLaws
-# from math import MathDAEs
-# from math import MathDevelopper
-# from math import MathEquation
-# from math import MathEventAssignment
-# from math import MathEventTrigger
-# from math import MathFormula
-# from math import MathFunctionDefinition
-# from math import MathInitialAssignment
-# from math import MathJacobianMatrix
-# from math import MathKineticLaw
-# from math import MathModel
-# from math import MathODEs
-# from math import MathRateRule
-# from math import MathStoichiometryMatrix
-# # from math import MathSpecies
-# from math import MathSymbol
-# from math import MathVariable
-# from math import SbmlMathReader
-# from math import SbmlMathWriter
-#
-
-#
-#
-# from ListOfMathVariables import ListOfMathVariables
-# from ListOfSbmlVariables import ListOfSbmlVariables
-# from ListOfVariables import ListOfVariables
-# from Model import Model
-# from ModelException import ModelException
-# from Variable import Variable
