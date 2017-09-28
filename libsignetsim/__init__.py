@@ -25,6 +25,8 @@
 """
 
 from combine import CombineArchive
+from settings import Settings
+
 
 import matplotlib
 matplotlib.use("agg", warn=False)
