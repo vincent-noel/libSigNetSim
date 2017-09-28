@@ -29,7 +29,8 @@ from libsignetsim.model.sbml.KineticLaw import KineticLaw
 
 from unittest import TestCase
 from os.path import join, dirname
-from os import getcwd
+
+
 class TestXPaths(TestCase):
 	""" Tests high level functions """
 

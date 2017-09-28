@@ -25,11 +25,11 @@
 """
 
 from libsignetsim.data.Experiment import Experiment
-from libsignetsim.numl.NuMLDocument import NuMLDocument
 
 from unittest import TestCase
 from os.path import join, dirname, isdir
 from os import mkdir
+
 
 class TestReadWriteData(TestCase):
 	""" Tests high level functions """

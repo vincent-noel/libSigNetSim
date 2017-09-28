@@ -25,12 +25,10 @@
 """
 
 from libsignetsim.model.SbmlDocument import SbmlDocument
-from libsignetsim.uris.URI import URI
 from unittest import TestCase
-from os.path import join, dirname, isdir
-from os import mkdir, getcwd
+from os.path import join, dirname
+from os import getcwd
 
-from libsignetsim.settings.Settings import Settings
 
 class TestMetaIds(TestCase):
 	""" Tests high level functions """

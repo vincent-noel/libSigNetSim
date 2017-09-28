@@ -30,6 +30,7 @@ from unittest import TestCase
 from os.path import join, dirname, isdir
 from os import mkdir
 
+
 class TestExample(TestCase):
 	""" Tests high level functions """
 

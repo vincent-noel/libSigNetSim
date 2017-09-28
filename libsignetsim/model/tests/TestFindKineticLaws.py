@@ -27,8 +27,8 @@
 from libsignetsim.model.SbmlDocument import SbmlDocument
 from libsignetsim.model.sbml.KineticLawIdentifier import KineticLawIdentifier as kli
 from unittest import TestCase
-from os.path import join, dirname, isdir
-from os import mkdir, getcwd
+from os.path import join, dirname
+from os import getcwd
 
 
 class TestFindKineticLaws(TestCase):

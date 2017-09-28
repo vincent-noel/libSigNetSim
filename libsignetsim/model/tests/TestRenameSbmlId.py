@@ -27,9 +27,11 @@
 from libsignetsim.model.Model import Model
 from libsignetsim.model.sbml.KineticLaw import KineticLaw
 from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.math.sympy_shortcuts import SympyEqual, SympyZero
+
 from unittest import TestCase
 from sympy import simplify
+
+
 class TestRenameSbmlId(TestCase):
 	""" Tests high level functions """
 

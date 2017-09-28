@@ -30,7 +30,7 @@ from unittest import TestCase
 from os.path import join, dirname, isdir
 from os import mkdir, getcwd
 
-from libsignetsim.settings.Settings import Settings
+from libsignetsim import Settings
 
 class TestAnnotation(TestCase):
 	""" Tests high level functions """

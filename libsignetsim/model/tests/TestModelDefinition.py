@@ -30,6 +30,8 @@ from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.sympy_shortcuts import SympyEqual, SympyZero
 from unittest import TestCase
 from sympy import simplify
+
+
 class TestModelDefinition(TestCase):
 	""" Tests high level functions """
 

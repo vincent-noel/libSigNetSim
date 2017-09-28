@@ -26,7 +26,7 @@
 
 from libsignetsim.model.SbmlDocument import SbmlDocument
 from libsignetsim.sedml.SedmlDocument import SedmlDocument
-from libsignetsim.settings.Settings import Settings
+from libsignetsim import Settings
 
 from unittest import TestCase
 from os.path import join, dirname, isdir

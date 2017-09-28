@@ -24,8 +24,7 @@
 
 """
 
-from libsignetsim.settings.Settings import Settings
-from libsignetsim import CombineArchive
+from libsignetsim import Settings, CombineArchive
 from unittest import TestCase
 from os.path import join, dirname
 

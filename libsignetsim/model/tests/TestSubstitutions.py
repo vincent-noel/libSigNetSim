@@ -31,6 +31,7 @@ from libsignetsim.model.sbml.ReplacedBy import ReplacedBy
 from unittest import TestCase
 from os.path import join, dirname
 
+
 class TestSubstitutions(TestCase):
 	""" Tests high level functions """
 

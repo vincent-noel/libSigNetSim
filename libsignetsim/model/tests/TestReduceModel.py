@@ -25,11 +25,11 @@
 """
 
 from libsignetsim.model.SbmlDocument import SbmlDocument
-# from libsignetsim.sedml.SedmlDocument import SedmlDocument
 
 from unittest import TestCase
-from os.path import join, dirname, isdir
-from os import mkdir, getcwd
+from os.path import join, dirname
+from os import getcwd
+
 
 class TestReduceModel(TestCase):
 	""" Tests high level functions """

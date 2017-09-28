@@ -31,6 +31,7 @@ from unittest import TestCase
 from os.path import join, dirname, isdir
 from os import mkdir, getcwd
 
+
 class TestMath(TestCase):
 	""" Tests high level functions """
 

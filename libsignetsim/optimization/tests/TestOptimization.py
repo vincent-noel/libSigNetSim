@@ -25,12 +25,7 @@
 """
 
 from libsignetsim.model.Model import Model
-
 from libsignetsim.data.Experiment import Experiment as Experiment
-from libsignetsim.data.ExperimentalCondition import ExperimentalCondition
-from libsignetsim.data.ListOfExperimentalData import ListOfExperimentalData
-from libsignetsim.data.ExperimentalData import ExperimentalData
-
 from libsignetsim.optimization.ModelVsTimeseriesOptimization import ModelVsTimeseriesOptimization
 
 from unittest import TestCase
@@ -72,23 +67,14 @@ class TestOptimization(TestCase):
 		p.setValue(0)
 
 		# Building the experiment
-		list_of_treatments = ListOfExperimentalData()
-		list_of_observations = ListOfExperimentalData()
-		for i, data in enumerate(reference_data):
-			t_observation = ExperimentalData()
-			t_observation.readDB('P', reference_times[i], data)
-			list_of_observations.add(t_observation)
-
-		condition = ExperimentalCondition()
-		condition.read(list_of_treatments, list_of_observations)
-
 		experiment = Experiment()
-		experiment.addCondition(condition)
+		condition = experiment.createCondition()
+		for i, data in enumerate(reference_data):
+			condition.addObservation(reference_times[i], 'P', data)
 
 		selected_parameters = []
 		for parameter in m.listOfParameters.values():
 			selected_parameters.append((parameter, 1, 1e-6, 1e+6))
-
 
 		fit = ModelVsTimeseriesOptimization(workingModel=m,
 										list_of_experiments=[experiment],
@@ -102,8 +88,6 @@ class TestOptimization(TestCase):
 		self.assertEqual(score, 0.001)
 		self.assertAlmostEqual(parameters[m.listOfParameters.getBySbmlId('vmax')], 0.211, delta=1e-3)
 		self.assertAlmostEqual(parameters[m.listOfParameters.getBySbmlId('km')], 1.233, delta=1e-3)
-
-
 
 	def testOptimizeMichaelisMentenLocalParameters(self):
 
@@ -125,7 +109,6 @@ class TestOptimization(TestCase):
 		s = m.listOfSpecies.new("S")
 		p = m.listOfSpecies.new("P")
 
-
 		r = m.listOfReactions.new("Enzymatic reaction")
 		r.listOfReactants.add(s)
 		r.listOfModifiers.add(e)
@@ -140,25 +123,15 @@ class TestOptimization(TestCase):
 		s.setValue(12)
 		p.setValue(0)
 
-
 		# Building the experiment
-		list_of_treatments = ListOfExperimentalData()
-		list_of_observations = ListOfExperimentalData()
-		for i, data in enumerate(reference_data):
-			t_observation = ExperimentalData()
-			t_observation.readDB('P', reference_times[i], data)
-			list_of_observations.add(t_observation)
-
-		condition = ExperimentalCondition()
-		condition.read(list_of_treatments, list_of_observations)
-
 		experiment = Experiment()
-		experiment.addCondition(condition)
+		condition = experiment.createCondition()
+		for i, data in enumerate(reference_data):
+			condition.addObservation(reference_times[i], 'P', data)
 
 		selected_parameters = []
 		for parameter in r.listOfLocalParameters.values():
 			selected_parameters.append((parameter, 1, 1e-6, 1e+6))
-
 
 		fit = ModelVsTimeseriesOptimization(workingModel=m,
 										list_of_experiments=[experiment],

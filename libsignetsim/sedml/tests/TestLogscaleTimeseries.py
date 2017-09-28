@@ -24,12 +24,12 @@
 
 """
 
-from libsignetsim.model.SbmlDocument import SbmlDocument
 from libsignetsim.sedml.SedmlDocument import SedmlDocument
 
 from unittest import TestCase
 from os.path import join, dirname, isdir
 from os import mkdir
+
 
 class TestSteadyStatesScan(TestCase):
 	""" Tests high level functions """
