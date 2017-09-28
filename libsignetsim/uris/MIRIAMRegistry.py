@@ -24,6 +24,9 @@
 
 """
 
+# import zeep
+
+
 class MIRIAMRegistry(object):
 
 	WSDL_URL = "http://www.ebi.ac.uk/miriamws/main/MiriamWebServices?wsdl"
