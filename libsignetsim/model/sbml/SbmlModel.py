@@ -59,7 +59,15 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 		""" Constructor of model class """
 
 		self.objId = obj_id
-		self.parentDoc = parent_document
+
+		self.sbmlLevel = Settings.defaultSbmlLevel
+		self.sbmlVersion = Settings.defaultSbmlVersion
+
+		if parent_document is None:
+			from libsignetsim.model.SbmlDocument import SbmlDocument
+			self.parentDoc = SbmlDocument(self)
+		else:
+			self.parentDoc = parent_document
 
 		HasParentObj.__init__(self, parent_obj)
 		HasId.__init__(self, self)
@@ -84,9 +92,6 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 		self.listOfPorts = ListOfPorts(self)
 
 		self.defaultCompartment = None
-
-		self.sbmlLevel = Settings.defaultSbmlLevel
-		self.sbmlVersion = Settings.defaultSbmlVersion
 
 	def newModel(self, name):
 
