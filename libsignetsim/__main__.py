@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with libSigNetSim.  If not, see <http://www.gnu.org/licenses/>.
 
-""" __main__.py
+"""
 
 	This file is made to be called by the SBML Test Suite
 

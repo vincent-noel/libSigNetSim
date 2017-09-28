@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with libSigNetSim.  If not, see <http://www.gnu.org/licenses/>.
 
-""" TestMetaIds.py
+"""
 
 	Testing the reading/writing of miriam annotations of the model
 

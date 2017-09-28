@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with libSigNetSim.  If not, see <http://www.gnu.org/licenses/>.
 
-""" CWriterOptimization.py
+"""
 
 	This file the CWriterOptimization class definition, which writes
 	the common code for the different optimizations.

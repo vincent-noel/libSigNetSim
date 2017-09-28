@@ -4,30 +4,11 @@ libsignetsim\.numl\.container package
 Submodules
 ----------
 
-libsignetsim\.numl\.container\.ListOf module
---------------------------------------------
+.. toctree::
 
-.. automodule:: libsignetsim.numl.container.ListOf
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-libsignetsim\.numl\.container\.ListOfOntologyTerms module
----------------------------------------------------------
-
-.. automodule:: libsignetsim.numl.container.ListOfOntologyTerms
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-libsignetsim\.numl\.container\.ListOfResultComponents module
-------------------------------------------------------------
-
-.. automodule:: libsignetsim.numl.container.ListOfResultComponents
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   libsignetsim.numl.container.ListOf
+   libsignetsim.numl.container.ListOfOntologyTerms
+   libsignetsim.numl.container.ListOfResultComponents
 
 Module contents
 ---------------

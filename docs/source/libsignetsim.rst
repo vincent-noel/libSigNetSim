@@ -17,20 +17,14 @@ Subpackages
     libsignetsim.sedml
     libsignetsim.settings
     libsignetsim.simulation
-    libsignetsim.tests
     libsignetsim.uris
 
 Submodules
 ----------
 
-libsignetsim\.LibSigNetSimException module
-------------------------------------------
+.. toctree::
 
-.. automodule:: libsignetsim.LibSigNetSimException
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   libsignetsim.LibSigNetSimException
 
 Module contents
 ---------------

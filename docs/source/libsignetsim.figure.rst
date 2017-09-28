@@ -4,14 +4,9 @@ libsignetsim\.figure package
 Submodules
 ----------
 
-libsignetsim\.figure\.SigNetSimFigure module
---------------------------------------------
+.. toctree::
 
-.. automodule:: libsignetsim.figure.SigNetSimFigure
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   libsignetsim.figure.SigNetSimFigure
 
 Module contents
 ---------------

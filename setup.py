@@ -28,21 +28,17 @@ setup(name='libsignetsim',
 	install_requires=[
 		'matplotlib',
 		'python-libsbml',
-		'python-libnuml==1.1.0',
+		'python-libnuml',
 		'sympy',
 		'numpy',
 		'pydstool',
 		'mpld3',
 		'jinja2',
-		'python-libsedml==0.4.2',
+		'python-libsedml',
 		'bioservices',
 		'pandas',
 		'lxml',
 		'coveralls<1.2.0'
-	],
-	dependency_links=[
-		'git+https://github.com/vincent-noel/python-libsedml.git@master#egg=python-libsedml-0.4.2'
-		'git+https://github.com/vincent-noel/python-libnuml.git@master#egg=python-libnuml-1.1.0'
 	],
 	cmdclass={'install': MyInstall}
 )

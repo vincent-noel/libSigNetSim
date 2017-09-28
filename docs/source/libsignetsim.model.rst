@@ -8,75 +8,20 @@ Subpackages
 
     libsignetsim.model.math
     libsignetsim.model.sbml
-    libsignetsim.model.tests
 
 Submodules
 ----------
 
-libsignetsim\.model\.ListOfMathVariables module
------------------------------------------------
+.. toctree::
 
-.. automodule:: libsignetsim.model.ListOfMathVariables
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-libsignetsim\.model\.ListOfSbmlVariables module
------------------------------------------------
-
-.. automodule:: libsignetsim.model.ListOfSbmlVariables
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-libsignetsim\.model\.ListOfVariables module
--------------------------------------------
-
-.. automodule:: libsignetsim.model.ListOfVariables
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-libsignetsim\.model\.Model module
----------------------------------
-
-.. automodule:: libsignetsim.model.Model
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-libsignetsim\.model\.ModelException module
-------------------------------------------
-
-.. automodule:: libsignetsim.model.ModelException
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-libsignetsim\.model\.ModelInstance module
------------------------------------------
-
-.. automodule:: libsignetsim.model.ModelInstance
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-libsignetsim\.model\.SbmlDocument module
-----------------------------------------
-
-.. automodule:: libsignetsim.model.SbmlDocument
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-libsignetsim\.model\.Variable module
-------------------------------------
-
-.. automodule:: libsignetsim.model.Variable
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   libsignetsim.model.ListOfMathVariables
+   libsignetsim.model.ListOfSbmlVariables
+   libsignetsim.model.ListOfVariables
+   libsignetsim.model.Model
+   libsignetsim.model.ModelException
+   libsignetsim.model.ModelInstance
+   libsignetsim.model.SbmlDocument
+   libsignetsim.model.Variable
 
 Module contents
 ---------------

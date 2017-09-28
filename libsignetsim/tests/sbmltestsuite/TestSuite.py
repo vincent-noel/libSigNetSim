@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with libSigNetSim.  If not, see <http://www.gnu.org/licenses/>.
 
-""" TestSuite.py
+"""
 
 	This file is made for the test cases from the SED-ML files
 	in the SBmL Test Suite

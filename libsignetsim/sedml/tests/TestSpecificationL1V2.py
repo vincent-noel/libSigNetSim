@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with libSigNetSim.  If not, see <http://www.gnu.org/licenses/>.
 
-""" TestSpecificationL1V2.py
+"""
 
 	Test of combine archive of the Sedml L1V2 example, using notably MAX()
 

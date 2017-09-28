@@ -1,48 +1,15 @@
 libsignetsim\.data package
 ==========================
 
-Subpackages
------------
-
-.. toctree::
-
-    libsignetsim.data.tests
-
 Submodules
 ----------
 
-libsignetsim\.data\.Experiment module
--------------------------------------
+.. toctree::
 
-.. automodule:: libsignetsim.data.Experiment
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-libsignetsim\.data\.ExperimentalCondition module
-------------------------------------------------
-
-.. automodule:: libsignetsim.data.ExperimentalCondition
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-libsignetsim\.data\.ExperimentalData module
--------------------------------------------
-
-.. automodule:: libsignetsim.data.ExperimentalData
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-libsignetsim\.data\.ListOfExperimentalData module
--------------------------------------------------
-
-.. automodule:: libsignetsim.data.ListOfExperimentalData
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   libsignetsim.data.Experiment
+   libsignetsim.data.ExperimentalCondition
+   libsignetsim.data.ExperimentalData
+   libsignetsim.data.ListOfExperimentalData
 
 Module contents
 ---------------

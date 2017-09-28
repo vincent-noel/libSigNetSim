@@ -4,38 +4,12 @@ libsignetsim\.model\.math\.container package
 Submodules
 ----------
 
-libsignetsim\.model\.math\.container\.ListOfCFEs module
--------------------------------------------------------
+.. toctree::
 
-.. automodule:: libsignetsim.model.math.container.ListOfCFEs
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-libsignetsim\.model\.math\.container\.ListOfConservationLaws module
--------------------------------------------------------------------
-
-.. automodule:: libsignetsim.model.math.container.ListOfConservationLaws
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-libsignetsim\.model\.math\.container\.ListOfDAEs module
--------------------------------------------------------
-
-.. automodule:: libsignetsim.model.math.container.ListOfDAEs
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-libsignetsim\.model\.math\.container\.ListOfODEs module
--------------------------------------------------------
-
-.. automodule:: libsignetsim.model.math.container.ListOfODEs
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   libsignetsim.model.math.container.ListOfCFEs
+   libsignetsim.model.math.container.ListOfConservationLaws
+   libsignetsim.model.math.container.ListOfDAEs
+   libsignetsim.model.math.container.ListOfODEs
 
 Module contents
 ---------------

@@ -1,0 +1,11 @@
+matplotlib
+python-libsbml
+python-libsedml
+python-libnuml
+numpy
+PyDSTool
+sympy
+bioservices
+pandas
+lxml
+jinja2

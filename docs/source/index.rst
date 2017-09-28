@@ -10,7 +10,7 @@ Welcome to libSigNetSim's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+   libsignetsim
 
 Indices and tables
 ==================

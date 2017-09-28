@@ -4,14 +4,9 @@ libsignetsim\.model\.math\.tests package
 Submodules
 ----------
 
-libsignetsim\.model\.math\.tests\.TestMath module
--------------------------------------------------
+.. toctree::
 
-.. automodule:: libsignetsim.model.math.tests.TestMath
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   libsignetsim.model.math.tests.TestMath
 
 Module contents
 ---------------

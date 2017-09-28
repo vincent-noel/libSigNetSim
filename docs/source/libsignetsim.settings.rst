@@ -4,14 +4,9 @@ libsignetsim\.settings package
 Submodules
 ----------
 
-libsignetsim\.settings\.Settings module
----------------------------------------
+.. toctree::
 
-.. automodule:: libsignetsim.settings.Settings
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   libsignetsim.settings.Settings
 
 Module contents
 ---------------

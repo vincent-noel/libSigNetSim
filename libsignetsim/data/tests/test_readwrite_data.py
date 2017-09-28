@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with libSigNetSim.  If not, see <http://www.gnu.org/licenses/>.
 
-""" test_readwrite_data.py
+"""
 
 	This file is a test for writing the SigNetSim data structure into a NuML document
 

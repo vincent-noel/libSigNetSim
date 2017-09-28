@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with libSigNetSim.  If not, see <http://www.gnu.org/licenses/>.
 
-""" test_example_notes.py
+"""
 
 	This file is a simple example of reading and writing a basic NuML doc
 
