@@ -20,15 +20,15 @@
 
 """
 
-	Test of combine archive : run all sedml files
+	Test of combine archive : run COMBINE archive showcase file
 
 """
 
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.combine.CombineArchive import CombineArchive
+from libsignetsim import CombineArchive
 from unittest import TestCase
-from os.path import join, dirname, isdir
-from os import mkdir
+from os.path import join, dirname
+
 
 class TestShowCase(TestCase):
 
@@ -42,7 +42,7 @@ class TestShowCase(TestCase):
 
 		ca = CombineArchive()
 		ca.readArchive(join(join(dirname(__file__), "files"), "CombineArchiveShowCase.omex"))
-		sedml_doc = ca.runMasterSedml()
+		ca.runMasterSedml()
 
 	def testValues(self):
 

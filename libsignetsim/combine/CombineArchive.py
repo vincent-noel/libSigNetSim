@@ -24,8 +24,8 @@
 
 """
 
-from libsignetsim.combine.ListOfFiles import ListOfFiles
-from libsignetsim.combine.CombineException import (
+from .ListOfFiles import ListOfFiles
+from .CombineException import (
 	FileNotFoundException, NotAZipFileException, NoMasterSedmlFoundException, NoMasterSbmlFoundException,
 	NoMasterNumlFoundException, NoSedmlFoundException
 )

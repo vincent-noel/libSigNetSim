@@ -24,9 +24,8 @@
 
 """
 
-from libsignetsim.combine.CombineArchive import CombineArchive
+from libsignetsim import CombineArchive
 from unittest import TestCase
-
 from os.path import join, dirname, basename
 
 class TestCreateArchive(TestCase):

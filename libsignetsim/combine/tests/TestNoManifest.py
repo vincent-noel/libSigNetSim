@@ -20,15 +20,14 @@
 
 """
 
-	Test of combine archive : run all sedml files
+	Test of combine archive : open a COMBINE archive without manifest. Recreating it
 
 """
 
-from libsignetsim.settings.Settings import Settings
-from libsignetsim.combine.CombineArchive import CombineArchive
+from libsignetsim import CombineArchive
 from unittest import TestCase
-from os.path import join, dirname, isdir
-from os import mkdir
+from os.path import join, dirname
+
 
 class TestNoManifest(TestCase):
 

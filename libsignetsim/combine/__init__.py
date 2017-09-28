@@ -24,3 +24,15 @@
 
 """
 
+from CombineArchive import CombineArchive
+from CombineException import (
+	FileNotFoundException, NotAZipFileException, NoManifestFoundException,
+	NoMasterSedmlFoundException, NoMasterSbmlFoundException, NoMasterNumlFoundException,
+	NoSedmlFoundException
+)
+__all__ = [
+	'CombineArchive',
+	'FileNotFoundException', 'NotAZipFileException', 'NoManifestFoundException',
+	'NoMasterSedmlFoundException', 'NoMasterSbmlFoundException', 'NoMasterNumlFoundException',
+	'NoSedmlFoundException'
+]

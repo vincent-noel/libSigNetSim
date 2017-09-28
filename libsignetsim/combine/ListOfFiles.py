@@ -24,10 +24,10 @@
 
 """
 
-from libsignetsim.combine.Manifest import Manifest
-from libsignetsim.combine.File import File
+from .Manifest import Manifest
+from .File import File
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.combine.CombineException import NoManifestFoundException
+from .CombineException import NoManifestFoundException
 
 class ListOfFiles(list):
 

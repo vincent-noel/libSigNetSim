@@ -24,5 +24,7 @@
 
 """
 
+from combine import CombineArchive
+
 import matplotlib
 matplotlib.use("agg", warn=False)
