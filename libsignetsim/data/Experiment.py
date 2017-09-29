@@ -72,7 +72,10 @@ class Experiment(object):
 
 		self.writeNuMLDescription(result)
 		experiment = result.createCompositeValue(result.getDimensionsDescriptions()[0], self.name)
-		experiment.setNotes(self.notes)
+
+		if self.notes is not None and len(self.notes) > 0:
+			experiment.setNotes(self.notes)
+
 		for condition in self.listOfConditions.values():
 			t_condition = experiment.createCompositeValue(experiment.getDescription().getContent(), condition.name)
 

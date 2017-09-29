@@ -28,7 +28,7 @@ import re
 
 class ExperimentalData(object):
 
-	def __init__(self, t=0, name="", value=0, value_dev=0, quantification_ratio=1):
+	def __init__(self, t=0, name="", value=0, value_dev=None, quantification_ratio=1):
 
 		self.name = name
 		self.t = t
@@ -54,10 +54,10 @@ class ExperimentalData(object):
 		self.name = res.groups()[0]
 		tuple = composite_value.getContents()[0].getContents()[0].getAtomicValues()
 
+		self.value = float(tuple[0].getValue())
 
-		self.value = tuple[0].getValue()
-		self.value_dev = tuple[1].getValue()
-		# print "t=%.2g, var=%s, value=%s, dev=%s" % (self.t, self.name, str(self.value), str(self.value_dev))
+		if tuple[1].getValue() is not None:
+			self.value_dev = float(tuple[1].getValue())
 
 	def writeNuML(self, composite_value):
 
@@ -76,14 +76,20 @@ class ExperimentalData(object):
 		value_desc = tuple_desc.getAtomicDescriptions()[0]
 		value = tuple.createAtomicValue(
 			value_desc,
-			self.value
+			str(self.value)
 		)
 
 		std_desc = tuple_desc.getAtomicDescriptions()[1]
-		std = tuple.createAtomicValue(
-			std_desc,
-			self.value_dev
-		)
+		if self.value_dev is not None:
+			std = tuple.createAtomicValue(
+				std_desc,
+				str(self.value_dev)
+			)
+		else:
+			std = tuple.createAtomicValue(
+				std_desc,
+				""
+			)
 
 	def readDB(self, name, time, value, value_dev=0, steady_state=False,
 				min_steady_state=0, max_steady_state=0, quantification_ratio=1):

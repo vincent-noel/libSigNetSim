@@ -68,7 +68,9 @@ class ExperimentalCondition(object):
 
 	def writeNuML(self, condition):
 
-		condition.setNotes(self.notes)
+		if self.notes is not None and len(self.notes) > 0:
+			condition.setNotes(self.notes)
+
 		list_of_initial_values = condition.createCompositeValue(condition.getDescription().getContent(), "initial_values")
 		self.listOfInitialConditions.writeNuML(list_of_initial_values)
 
