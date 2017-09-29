@@ -42,6 +42,7 @@ elif [ $1 = "models" ]; then
 
 elif [ $1 = "optimization" ]; then
     coverage run -a -m unittest libsignetsim.optimization.tests.TestOptimization || exit 1;
+    coverage run -a -m unittest libsignetsim.optimization.tests.TestOptimizationComp || exit 1;
 
 
 elif [ $1 = "simulation" ]; then
