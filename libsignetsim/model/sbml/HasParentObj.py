@@ -40,3 +40,6 @@ class HasParentObj(object):
 
 	def getParentObj(self):
 		return self.__parentObj
+
+	def setParentObj(self, parent_obj):
+		self.__parentObj = parent_obj

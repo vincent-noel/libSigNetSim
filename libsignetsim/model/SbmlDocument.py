@@ -73,7 +73,7 @@ class SbmlDocument(HasParentObj):
 			self.sbmlVersion = model.sbmlVersion
 
 		self.listOfModelDefinitions = ListOfModelDefinitions(self.model)
-		self.listOfExternalModelDefinitions = ListOfExternalModelDefinitions(self.model)
+		self.listOfExternalModelDefinitions = ListOfExternalModelDefinitions(self.model, self)
 
 
 	def getSubmodel(self, submodel_id):
@@ -126,20 +126,23 @@ class SbmlDocument(HasParentObj):
 		if self.sbmlLevel == 3 and sbmlDoc.isSetPackageRequired("comp"):
 			self.useCompPackage = True
 
-		self.model.readSbml(sbmlDoc.getModel(), self.sbmlLevel, self.sbmlVersion)
-
-		if self.useCompPackage:
-
 			sbmlCompPlugin = sbmlDoc.getPlugin("comp")
 
 			try:
 				self.loadExternalDocumentDependencies(sbmlDoc)
-				self.listOfModelDefinitions.readSbml(sbmlCompPlugin.getListOfModelDefinitions(), self.sbmlLevel, self.sbmlVersion)
-				self.listOfExternalModelDefinitions.readSbml(sbmlCompPlugin.getListOfExternalModelDefinitions(), self.sbmlLevel, self.sbmlVersion)
+				self.listOfModelDefinitions.readSbml(
+					sbmlCompPlugin.getListOfModelDefinitions(),
+					self.sbmlLevel, self.sbmlVersion
+				)
+				self.listOfExternalModelDefinitions.readSbml(
+					sbmlCompPlugin.getListOfExternalModelDefinitions(),
+					self.sbmlLevel, self.sbmlVersion
+				)
 
 			except MissingModelException as e:
 				raise MissingSubmodelException(e.filename)
 
+		self.model.readSbml(sbmlDoc.getModel(), self.sbmlLevel, self.sbmlVersion)
 
 	def readSbmlFromFile(self, sbml_filename):
 		# print "> Opening SBML file : %s" % sbml_filename
@@ -316,8 +319,7 @@ class SbmlDocument(HasParentObj):
 				self.getExternalDocumentDependencies(sbml_doc)
 
 			self.documentDependencies = []
-			# print self.documentDependenciesPaths
-			# print self.documentPath
+
 			for path in self.documentDependenciesPaths:
 				t_document = SbmlDocument()
 				t_document.readSbmlFromFile(join(self.documentPath, path))

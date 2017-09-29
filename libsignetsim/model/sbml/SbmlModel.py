@@ -69,7 +69,11 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 		else:
 			self.parentDoc = parent_document
 
-		HasParentObj.__init__(self, parent_obj)
+		if parent_obj is None:
+			HasParentObj.__init__(self, self.parentDoc)
+		else:
+			HasParentObj.__init__(self, parent_obj)
+
 		HasId.__init__(self, self)
 		self.listOfSbmlObjects = ListOfSbmlObjects(self)
 		SbmlObject.__init__(self, self)
