@@ -27,6 +27,7 @@
 from libsignetsim.data.ExperimentalData import ExperimentalData
 from libsignetsim.data.ExperimentalCondition import ExperimentalCondition
 from libsignetsim.data.Experiment import Experiment
+from libsignetsim.model.ModelInstance import ModelInstance
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.optimization.Optimization import Optimization
 from libsignetsim.optimization.NoiseGenerator import NoiseGenerator
@@ -53,25 +54,28 @@ class ModelVsTimeseriesOptimization(Optimization, CWriterModelVsDataOptimization
 			s_neg_penalty=Settings.defaultScoreNegativePenalty,
 	):
 
-		self.workingModel = workingModel
+		if workingModel.parentDoc.isCompEnabled() and not isinstance(workingModel, ModelInstance):
+			self.workingModel = workingModel.parentDoc.getModelInstance()
+			self.parameters = []
+			for parameter, init_val, lower_bound, upper_bound in parameters_to_fit:
+				self.parameters.append((
+					self.workingModel.getInstanceVariable(parameter), init_val, lower_bound, upper_bound
+				))
+
+		else:
+			self.parameters = parameters_to_fit
+			self.workingModel = workingModel
 
 		if list_of_experiments is not None:
 			self.listOfExperiments = list_of_experiments
-		# else:
-		# 	self.listOfExperiments = {}
-		#
-		# 	if reference_data is not None:
-		# 		# self.workingModel.build
-		# 		self.setReferenceData(reference_data)
-
 
 		Optimization.__init__(self,
-			workingModel=workingModel,
-			parameters_to_fit=parameters_to_fit,
+			workingModel=self.workingModel,
+			parameters_to_fit=self.parameters,
 			optimization_type=Optimization.MODEL_VS_DATA)
 
 		CWriterModelVsDataOptimization.__init__(
-			self, workingModel, self.listOfExperiments, mapping, parameters_to_fit,
+			self, self.workingModel, self.listOfExperiments, mapping, self.parameters,
 			p_lambda=p_lambda, p_criterion=p_criterion, p_initial_temperature=p_initial_temperature,
 			p_gain=p_gain, p_interval=p_interval, p_mix=p_mix, p_initial_moves=p_initial_moves, p_tau=p_tau,
 			p_freeze_count=p_freeze_count, s_neg_penalty=s_neg_penalty

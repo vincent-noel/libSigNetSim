@@ -25,26 +25,26 @@
 """
 
 from libsignetsim.model.Model import Model
-from libsignetsim.data.Experiment import Experiment as Experiment
+from libsignetsim.model.SbmlDocument import SbmlDocument
+from libsignetsim.data.Experiment import Experiment
 from libsignetsim.optimization.ModelVsTimeseriesOptimization import ModelVsTimeseriesOptimization
 
 from unittest import TestCase
+from os.path import join, dirname
 
 
 class TestOptimization(TestCase):
 	""" Tests high level functions """
 
-
 	def testOptimizeMichaelisMenten(self):
 
-		reference_times = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
-		reference_data = [0.0, 1.897738450655051, 3.756955074247717,
-						5.56216742392093, 7.287473256778753, 8.886428870529057,
-						10.27109002756082, 11.2877220979055, 11.80436967759331,
-						11.95991169490768, 11.99256430291778, 11.99865017124369,
-						11.99975594720175, 11.99995589772631, 11.99999202708974,
-						11.99999855444305, 11.99999973767934, 11.99999993029574,
-						11.99999999125534, 11.99999999568526, 12.00000000008859]
+		reference_times = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+		reference_data = [
+			0.0, 1.897738450655051, 3.756955074247717, 5.56216742392093, 7.287473256778753, 8.886428870529057,
+			10.27109002756082, 11.2877220979055, 11.80436967759331, 11.95991169490768, 11.99256430291778,
+			11.99865017124369, 11.99975594720175, 11.99995589772631, 11.99999202708974, 11.99999855444305,
+			11.99999973767934, 11.99999993029574, 11.99999999125534, 11.99999999568526, 12.00000000008859
+		]
 
 		m = Model()
 		m.setName("Enzymatic Reaction")
@@ -53,8 +53,8 @@ class TestOptimization(TestCase):
 		s = m.listOfSpecies.new("S")
 		p = m.listOfSpecies.new("P")
 
-		vmax = m.listOfParameters.new("vmax")
-		km = m.listOfParameters.new("km")
+		m.listOfParameters.new("vmax")
+		m.listOfParameters.new("km")
 
 		r = m.listOfReactions.new("Enzymatic reaction")
 		r.listOfReactants.add(s)
@@ -76,11 +76,12 @@ class TestOptimization(TestCase):
 		for parameter in m.listOfParameters.values():
 			selected_parameters.append((parameter, 1, 1e-6, 1e+6))
 
-		fit = ModelVsTimeseriesOptimization(workingModel=m,
-										list_of_experiments=[experiment],
-										mapping=None,
-										parameters_to_fit=selected_parameters,
-										nb_procs=2)
+		fit = ModelVsTimeseriesOptimization(
+			workingModel=m,
+			list_of_experiments=[experiment],
+			parameters_to_fit=selected_parameters,
+			nb_procs=2
+		)
 
 		score = fit.runOptimization(2)
 		parameters = fit.readOptimizationOutput()
@@ -92,14 +93,13 @@ class TestOptimization(TestCase):
 	def testOptimizeMichaelisMentenLocalParameters(self):
 
 		# Reference data to fit against
-		reference_times = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
-		reference_data = [0.0, 1.897738450655051, 3.756955074247717,
-						5.56216742392093, 7.287473256778753, 8.886428870529057,
-						10.27109002756082, 11.2877220979055, 11.80436967759331,
-						11.95991169490768, 11.99256430291778, 11.99865017124369,
-						11.99975594720175, 11.99995589772631, 11.99999202708974,
-						11.99999855444305, 11.99999973767934, 11.99999993029574,
-						11.99999999125534, 11.99999999568526, 12.00000000008859]
+		reference_times = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+		reference_data = [
+			0.0, 1.897738450655051, 3.756955074247717, 5.56216742392093, 7.287473256778753, 8.886428870529057,
+			10.27109002756082, 11.2877220979055, 11.80436967759331, 11.95991169490768, 11.99256430291778,
+			11.99865017124369, 11.99975594720175, 11.99995589772631, 11.99999202708974, 11.99999855444305,
+			11.99999973767934, 11.99999993029574, 11.99999999125534, 11.99999999568526, 12.00000000008859
+		]
 
 		# Buildng the model
 		m = Model()
@@ -114,8 +114,8 @@ class TestOptimization(TestCase):
 		r.listOfModifiers.add(e)
 		r.listOfProducts.add(p)
 
-		vmax = r.listOfLocalParameters.new("vmax")
-		km = r.listOfLocalParameters.new("km")
+		r.listOfLocalParameters.new("vmax")
+		r.listOfLocalParameters.new("km")
 
 		r.kineticLaw.setPrettyPrintMathFormula("vmax*E*S/(km+S)")
 
@@ -133,11 +133,12 @@ class TestOptimization(TestCase):
 		for parameter in r.listOfLocalParameters.values():
 			selected_parameters.append((parameter, 1, 1e-6, 1e+6))
 
-		fit = ModelVsTimeseriesOptimization(workingModel=m,
-										list_of_experiments=[experiment],
-										mapping=None,
-										parameters_to_fit=selected_parameters,
-										nb_procs=2)
+		fit = ModelVsTimeseriesOptimization(
+			workingModel=m,
+			list_of_experiments=[experiment],
+			parameters_to_fit=selected_parameters,
+			nb_procs=2
+		)
 
 		score = fit.runOptimization(2)
 		parameters = fit.readOptimizationOutput()
@@ -145,3 +146,46 @@ class TestOptimization(TestCase):
 		self.assertEqual(score, 0.001)
 		self.assertAlmostEqual(parameters[r.listOfLocalParameters.getBySbmlId('vmax')], 0.211, delta=1e-3)
 		self.assertAlmostEqual(parameters[r.listOfLocalParameters.getBySbmlId('km')], 1.233, delta=1e-3)
+
+	def testOptimizeCompModel(self):
+
+		doc = SbmlDocument()
+		doc.readSbmlFromFile(join(dirname(__file__), "files", "comp_model", "modelz9xdww.xml"))
+
+		experiment = Experiment()
+		experiment.readNuMLFromFile(join(join(dirname(__file__), "files"), "ras_data.xml"))
+
+		model_instance = doc.getModelInstance()
+
+		# Fitting the model instance directly
+		param_def = model_instance.listOfParameters.getByName("SOS inactivation by Mapk catalytic constant")
+		selected_parameters = [(param_def, 1, 1e-6, 1e+6)]
+
+		fit = ModelVsTimeseriesOptimization(
+			workingModel=model_instance,
+			list_of_experiments=[experiment],
+			parameters_to_fit=selected_parameters,
+			p_lambda=1, p_freeze_count=1
+		)
+
+		score_def = fit.runOptimization(2)
+		res_def = fit.readOptimizationOutput().values()[0]
+
+		# Fitting the hierarchical model
+		sos_submodel = doc.model.listOfSubmodels.getBySbmlId("sos_mod").getModelObject()
+		param_inst = sos_submodel.listOfParameters.getByName("SOS inactivation by Mapk catalytic constant")
+
+		selected_parameters = [(param_inst, 1, 1e-6, 1e+6)]
+
+		fit = ModelVsTimeseriesOptimization(
+			workingModel=doc.model,
+			list_of_experiments=[experiment],
+			parameters_to_fit=selected_parameters,
+			p_lambda=1, p_freeze_count=1
+		)
+
+		score_inst = fit.runOptimization(2)
+		res_inst = fit.readOptimizationOutput().values()[0]
+
+		self.assertAlmostEqual(score_def, score_inst, delta=score_def*1e-4)
+		self.assertAlmostEqual(res_def, res_inst, delta=res_def*1e-4)

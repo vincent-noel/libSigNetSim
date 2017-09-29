@@ -47,6 +47,7 @@ class ModelInstance(Model):
 		self.sbmlLevel = model.sbmlLevel
 		self.sbmlVersion = model.sbmlVersion
 		self.objectsDictionnary = {}
+		self.variablesDictionnary = {}
 		self.deletions = []
 
 		self.submodel_sids_subs = {}
@@ -373,5 +374,23 @@ class ModelInstance(Model):
 				time_conversion=self.submodel_timeConversionFactor[submodel.getSbmlId()],
 			)
 
+		for variable in self.__mainModel.listOfVariables.values():
+			self.variablesDictionnary.update({
+				variable: self.listOfVariables.getBySbmlId(variable.getSbmlId())
+			})
+
+		for submodel in self.__mainModel.listOfSubmodels.values():
+			submodel_instance = self.__submodelInstances[submodel.getSbmlId()]
+
+			for variable_def, variable_instance in submodel_instance.variablesDictionnary.items():
+				self.variablesDictionnary.update({
+					variable_def: self.listOfVariables.getBySbmlId(
+						self.submodel_sids_subs[submodel.getSbmlId()][variable_instance.getSbmlId()]
+					)
+				})
+
 	def getSubmodelInstance(self, submodel_ref):
 		return self.__submodelInstances[submodel_ref]
+
+	def getInstanceVariable(self, variable):
+		return self.variablesDictionnary[variable]
