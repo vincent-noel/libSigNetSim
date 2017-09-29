@@ -95,7 +95,7 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 		self.writeOptimizationGlobals(f_c, f_h)
 		self.writeOptimizationGlobalMethods(f_c, f_h)
 		self.writeOptimizationParameters(f_c, f_h)
-		self.writeOptimizationSettings(f_c, f_h, nb_procs)
+		self.writeOptimizationSettings(f_c, f_h)
 		self.writeOptimizationScoreSettings(f_c, f_h)
 
 		f_c.close()

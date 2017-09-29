@@ -25,12 +25,10 @@
 """
 
 from libsignetsim.model.Model import Model
-from libsignetsim.model.SbmlDocument import SbmlDocument
 from libsignetsim.data.Experiment import Experiment
 from libsignetsim.optimization.ModelVsTimeseriesOptimization import ModelVsTimeseriesOptimization
 
 from unittest import TestCase
-from os.path import join, dirname
 
 
 class TestOptimization(TestCase):
@@ -101,7 +99,7 @@ class TestOptimization(TestCase):
 			11.99999973767934, 11.99999993029574, 11.99999999125534, 11.99999999568526, 12.00000000008859
 		]
 
-		# Buildng the model
+		# Building the model
 		m = Model()
 		m.setName("Enzymatic Reaction")
 
@@ -146,46 +144,3 @@ class TestOptimization(TestCase):
 		self.assertEqual(score, 0.001)
 		self.assertAlmostEqual(parameters[r.listOfLocalParameters.getBySbmlId('vmax')], 0.211, delta=1e-3)
 		self.assertAlmostEqual(parameters[r.listOfLocalParameters.getBySbmlId('km')], 1.233, delta=1e-3)
-
-	def testOptimizeCompModel(self):
-
-		doc = SbmlDocument()
-		doc.readSbmlFromFile(join(dirname(__file__), "files", "comp_model", "modelz9xdww.xml"))
-
-		experiment = Experiment()
-		experiment.readNuMLFromFile(join(join(dirname(__file__), "files"), "ras_data.xml"))
-
-		model_instance = doc.getModelInstance()
-
-		# Fitting the model instance directly
-		param_def = model_instance.listOfParameters.getByName("SOS inactivation by Mapk catalytic constant")
-		selected_parameters = [(param_def, 1, 1e-6, 1e+6)]
-
-		fit = ModelVsTimeseriesOptimization(
-			workingModel=model_instance,
-			list_of_experiments=[experiment],
-			parameters_to_fit=selected_parameters,
-			p_lambda=1, p_freeze_count=1
-		)
-
-		score_def = fit.runOptimization(2)
-		res_def = fit.readOptimizationOutput().values()[0]
-
-		# Fitting the hierarchical model
-		sos_submodel = doc.model.listOfSubmodels.getBySbmlId("sos_mod").getModelObject()
-		param_inst = sos_submodel.listOfParameters.getByName("SOS inactivation by Mapk catalytic constant")
-
-		selected_parameters = [(param_inst, 1, 1e-6, 1e+6)]
-
-		fit = ModelVsTimeseriesOptimization(
-			workingModel=doc.model,
-			list_of_experiments=[experiment],
-			parameters_to_fit=selected_parameters,
-			p_lambda=1, p_freeze_count=1
-		)
-
-		score_inst = fit.runOptimization(2)
-		res_inst = fit.readOptimizationOutput().values()[0]
-
-		self.assertAlmostEqual(score_def, score_inst, delta=score_def*1e-4)
-		self.assertAlmostEqual(res_def, res_inst, delta=res_def*1e-4)
