@@ -141,7 +141,7 @@ class ExternalModelDefinition(HasId, SbmlObject, HasParentObj):
 	# 	raise InvalidXPath(selector)
 	#
 	def getByXPath(self, xpath):
-		return self.modelDefinition.getByXPath(xpath)
+		return self.modelDefinition.parentDoc.getByXPath("/".join(xpath))
 
 	def setByXPath(self, xpath, object):
 		self.modelDefinition.setByXPath(xpath, object)

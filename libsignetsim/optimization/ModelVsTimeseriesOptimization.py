@@ -57,7 +57,7 @@ class ModelVsTimeseriesOptimization(Optimization, CWriterModelVsDataOptimization
 			self.parameters = []
 			for parameter, init_val, lower_bound, upper_bound in parameters_to_fit:
 				self.parameters.append((
-					self.workingModel.getInstanceVariable(parameter), init_val, lower_bound, upper_bound
+					self.workingModel.getInstanceVariableByXPath(parameter.getXPath()), init_val, lower_bound, upper_bound
 				))
 
 		else:

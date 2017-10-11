@@ -58,7 +58,7 @@ class ModelInstance(Model):
 		self.conv_factors = {}
 
 		if self.DEBUG:
-			print "\n\n> Instanciating model %s, parent doc is %s" % (model.getSbmlId(), document.documentFilename)
+			print "\n\n> Instanciating model %s, parent doc is %s" % (model.getNameOrSbmlId(), document.documentFilename)
 
 
 		if len(self.__mainModel.listOfSubmodels) > 0:
@@ -148,7 +148,6 @@ class ModelInstance(Model):
 			print self.listOfVariables.symbols()
 
 			print "> Returning instance %s\n" % model.getSbmlId()
-
 
 	def findReplacements(self):
 
@@ -402,6 +401,10 @@ class ModelInstance(Model):
 	def getInstanceVariable(self, variable):
 		return self.variablesDictionnary[variable]
 
+	def getInstanceVariableByXPath(self, xpath):
+		variable = self.__mainModel.parentDoc.getByXPath(xpath)
+		return self.getInstanceVariable(variable)
+
 	def getDefinitionVariable(self, variable):
 		res = []
 		for key, value in self.variablesDictionnary.items():
@@ -409,3 +412,6 @@ class ModelInstance(Model):
 				res.append(key)
 		return res
 
+	def getDefinitionVariableByXPath(self, xpath):
+		variable = self.parentDoc.getByXPath(xpath, instance=True)
+		return self.getDefinitionVariable(variable)
