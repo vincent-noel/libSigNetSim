@@ -138,11 +138,11 @@ class TestXPaths(TestCase):
 		doc_comp_external.readSbmlFromFile(join(dirname(__file__), "files", "comp_model", "modelz9xdww.xml"))
 		sos = doc_comp_external.listOfExternalModelDefinitions.getBySbmlId("sos_mod_def").modelDefinition.listOfSpecies.getBySbmlId("sos")
 		self.assertEqual(
-			doc_comp_external.getByXPath("sbml:sbml/sbml:listOfExternalModelDefinitions/externalModelDefinition[@id='sos_mod_def']/listOfSpecies/species[@id='sos']"),
+			doc_comp_external.getByXPath("sbml:sbml/sbml:listOfExternalModelDefinitions/externalModelDefinition[@id='sos_mod_def']/sbml:sbml/sbml:model/listOfSpecies/species[@id='sos']"),
 			sos
 		)
 
-		doc_comp_external.setByXPath("sbml:sbml/sbml:listOfExternalModelDefinitions/externalModelDefinition[@id='sos_mod_def']/listOfSpecies/species[@id='sos']/@name", "Son of Sevenless"),
+		doc_comp_external.setByXPath("sbml:sbml/sbml:listOfExternalModelDefinitions/externalModelDefinition[@id='sos_mod_def']/sbml:sbml/sbml:model/listOfSpecies/species[@id='sos']/@name", "Son of Sevenless"),
 		self.assertEqual(sos.getName(), "Son of Sevenless")
 
 		self.assertEqual(doc_comp_external.getByXPath("sbml:sbml/sbml:model/sbml:listOfSubmodels/sbml:submodel[@id='sos_mod']/sbml:listOfSpecies/sbml:species[@id='sos']/@name"), "Son of Sevenless")
@@ -154,3 +154,5 @@ class TestXPaths(TestCase):
 			"sbml:sbml/sbml:listOfExternalModelDefinitions/sbml:externalModelDefinition[@id='sos_mod_def']/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='sos']",
 			sos.getXPath()
 		)
+
+

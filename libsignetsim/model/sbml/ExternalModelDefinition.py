@@ -144,7 +144,7 @@ class ExternalModelDefinition(HasId, SbmlObject, HasParentObj):
 		return self.modelDefinition.parentDoc.getByXPath("/".join(xpath))
 
 	def setByXPath(self, xpath, object):
-		self.modelDefinition.setByXPath(xpath, object)
+		self.modelDefinition.parentDoc.setByXPath("/".join(xpath), object)
 
 	def getXPath(self, attribute=None):
 
