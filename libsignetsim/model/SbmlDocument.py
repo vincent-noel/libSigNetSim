@@ -173,7 +173,6 @@ class SbmlDocument(HasParentObj):
 
 	def readSbmlFromString(self, string):
 
-
 		sbmlReader = SBMLReader()
 		if sbmlReader == None:
 			raise SbmlException("Error instanciating the SBMLReader !")
@@ -250,10 +249,10 @@ class SbmlDocument(HasParentObj):
 		else:
 			raise FileException("Failed to write %s" % join(self.documentPath, self.documentFilename))
 
-			return False
-
-		if Settings.verboseTiming >= 1:
-			print "Writing document %s into directory %s in %.2gs" % (self.documentFilename, self.documentPath, time()-t0)
+		# 	return False
+		#
+		# if Settings.verboseTiming >= 1:
+		# 	print "Writing document %s into directory %s in %.2gs" % (self.documentFilename, self.documentPath, time()-t0)
 
 
 	def getModelInstance(self, rebuild=True):
@@ -375,7 +374,7 @@ class SbmlDocument(HasParentObj):
 		except InvalidXPath:
 			raise InvalidXPath(xpath)
 
-	def setByXPath(self, xpath, object):
+	def setByXPath(self, xpath, object, instance=False):
 
 		if xpath.startswith("/"):
 			xpath = xpath[1:]
@@ -383,9 +382,9 @@ class SbmlDocument(HasParentObj):
 		tokens = xpath.split("/")
 		try:
 			if tokens[0] == "sbml:sbml":
-				return self.resolveXPath(tokens[1]).setByXPath(tokens[2:], object)
+				return self.resolveXPath(tokens[1], instance).setByXPath(tokens[2:], object)
 			elif tokens[0] == "sbml:model":
-				return self.resolveXPath(tokens[0]).setByXPath(tokens[1:], object)
+				return self.resolveXPath(tokens[0], instance).setByXPath(tokens[1:], object)
 			else:
 				raise InvalidXPath(xpath)
 

@@ -39,20 +39,17 @@ class XPath(object):
 
 
 	def __init__(self, document):
-
 		self.__document = document
 		self.__rawXPath = None
 
 	def readSedml(self, xpath, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
-
 		self.__rawXPath = xpath
 
 	def getModelObject(self, sbml_model, instance=False):
-
 		return sbml_model.parentDoc.getByXPath(self.__rawXPath, instance)
 
 	def changeModelObject(self, sbml_model, value):
-		sbml_model.parentDoc.setByXPath(self.__rawXPath, value)
+		sbml_model.parentDoc.setByXPath(self.__rawXPath, value, instance=True)
 
 	def setModelObject(self, object, attribute=None):
 		self.__rawXPath = object.getXPath(attribute)
