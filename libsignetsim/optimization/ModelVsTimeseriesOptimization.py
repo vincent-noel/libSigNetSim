@@ -61,7 +61,14 @@ class ModelVsTimeseriesOptimization(Optimization, CWriterModelVsDataOptimization
 				))
 
 		else:
-			self.parameters = parameters_to_fit
+
+			self.workingModel = workingModel
+			self.parameters = []
+			for parameter, init_val, lower_bound, upper_bound in parameters_to_fit:
+				self.parameters.append((
+					workingModel.parentDoc.getByXPath(parameter.getXPath()), init_val, lower_bound, upper_bound
+				))
+
 			self.workingModel = workingModel
 
 		if list_of_experiments is not None:
