@@ -12,9 +12,3 @@ then
 fi
 
 easy_install -U distribute
-
-# Installing dependencies for python-libsedml
-curl -sL https://raw.githubusercontent.com/vincent-noel/python-libsedml/master/scripts/install_dep.sh | bash -
-
-# Installing dependencies for python-libnuml
-curl -sL https://raw.githubusercontent.com/vincent-noel/python-libnuml/master/scripts/install_dep.sh | bash -

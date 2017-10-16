@@ -255,9 +255,9 @@ class SbmlDocument(HasParentObj):
 		# 	print "Writing document %s into directory %s in %.2gs" % (self.documentFilename, self.documentPath, time()-t0)
 
 
-	def getModelInstance(self, rebuild=True):
+	def getModelInstance(self, rebuild=False):
 		if self.useCompPackage:
-			if rebuild:
+			if rebuild or self.modelInstance is None:
 				t0 = time()
 				self.modelInstance = ModelInstance(self.model, self)
 				t1 = time()
@@ -339,7 +339,7 @@ class SbmlDocument(HasParentObj):
 
 		if instance:
 			if selector == "sbml:model":
-				return self.getModelInstance(rebuild=False)
+				return self.getModelInstance()
 			else:
 				raise InvalidXPath(selector)
 
