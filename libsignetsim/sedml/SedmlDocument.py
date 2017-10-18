@@ -31,6 +31,7 @@ from libsignetsim.sedml.container.ListOfSimulations import ListOfSimulations
 from libsignetsim.sedml.container.ListOfTasks import ListOfTasks
 from libsignetsim.sedml.container.ListOfDataGenerators import ListOfDataGenerators
 from libsignetsim.sedml.container.ListOfOutputs import ListOfOutputs
+from libsignetsim.sedml.container.ListOfIds import ListOfIds
 
 from libsignetsim.sedml.SedmlException import SedmlFileNotFound
 
@@ -61,6 +62,7 @@ class SedmlDocument(SedBase):
 		self.listOfDataGenerators = ListOfDataGenerators(self)
 		self.listOfOutputs = ListOfOutputs(self)
 
+		self.listOfIds = ListOfIds(self)
 
 	def readSedmlFromFile(self, filename):
 

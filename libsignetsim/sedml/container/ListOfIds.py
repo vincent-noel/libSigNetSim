@@ -24,41 +24,38 @@
 
 """
 
+from libsignetsim.sedml.SedBase import SedBase
 from libsignetsim.settings.Settings import Settings
 
-class HasId(object):
+
+class ListOfIds(list):
 
 	def __init__(self, document):
 
+		list.__init__(self)
 		self.__document = document
-		self.__id = None
-		self.__name = None
-		self.__document.listOfIds.append(self)
 
-	def readSedml(self, has_id_object, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+	def ids(self):
+		""" Return a set of ids of the sedml objects """
+		return [obj.getId() for obj in self]
 
-		if has_id_object.isSetId():
-			self.__id = has_id_object.getId()
+	def getById(self, sedml_id, pos=0):
+		""" Find sedml objects by their Id """
 
-		if has_id_object.isSetName():
-			self.__name = has_id_object.getName()
+		res = []
+		for obj in self:
+			if obj.getId() == sedml_id:
+				res.append(obj)
 
-	def writeSedml(self, has_id_object, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+		if len(res) > 0:
+			return res[pos]
 
-		if self.__id is not None:
-			has_id_object.setId(self.__id)
+	def containsId(self, sedml_id):
+		""" Test if an sbml id is in the list """
 
-		if self.__name is not None:
-			has_id_object.setName(self.__name)
+		res = False
+		for obj in self:
+			if sedml_id == obj.getId():
+				res = True
 
-	def getId(self):
-		return self.__id
-
-	def getName(self):
-		return self.__name
-
-	def setId(self, id):
-		self.__id = id
-
-	def setName(self, name):
-		self.__name = name
+		return res

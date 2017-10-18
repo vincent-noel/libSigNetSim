@@ -105,15 +105,18 @@ class Variable(SedBase, HasId):
 
 		if self.__symbol.getSymbol() is not None and self.__symbol.isTime():
 			return {self.getSympySymbol(): simulation.getTimes()}
-			# return {self.getSymbol().getSymbol(): simulation.getTimes()}
 
 		elif self.__target.getXPath() is not None:
-			try:
-				sbml_model = simulation.getModel()
-				sbml_object = self.__target.getModelObject(sbml_model, instance=True)
-				return {self.getSympySymbol(): simulation.getResultsByVariable(sbml_object.getSbmlId())}
-			except InvalidXPath:
-				raise SedmlUnknownXPATH("Unkown XPath : " + self.__target.getXPath())
+			if self.__target.isModelObject():
+				try:
+					sbml_model = simulation.getModel()
+					sbml_object = self.__target.getModelObject(sbml_model, instance=True)
+					return {self.getSympySymbol(): simulation.getResultsByVariable(sbml_object.getSbmlId())}
+				except InvalidXPath:
+					raise SedmlUnknownXPATH("Unknown XPath : " + self.__target.getXPath())
+			# elif self.__target.isSedmlObject():
+			# 	sedml_object = self.__target.getSedmlObject()
+			# 	return {self.getSymbol(): []}
 
 	def setTaskReference(self, task_reference):
 		self.__taskReference = task_reference

@@ -45,14 +45,29 @@ class XPath(object):
 	def readSedml(self, xpath, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 		self.__rawXPath = xpath
 
+	def isModelObject(self):
+		return not self.__rawXPath.startswith("#")
+
+	def isSedmlObject(self):
+		return self.__rawXPath.startswith("#")
+
 	def getModelObject(self, sbml_model, instance=False):
-		return sbml_model.parentDoc.getByXPath(self.__rawXPath, instance)
+		if self.isModelObject():
+			return sbml_model.parentDoc.getByXPath(self.__rawXPath, instance)
 
 	def changeModelObject(self, sbml_model, value):
-		sbml_model.parentDoc.setByXPath(self.__rawXPath, value, instance=True)
+		if self.isModelObject():
+			sbml_model.parentDoc.setByXPath(self.__rawXPath, value, instance=True)
 
 	def setModelObject(self, object, attribute=None):
 		self.__rawXPath = object.getXPath(attribute)
+
+	def getSedmlObject(self):
+		if self.isSedmlObject():
+			return self.__document.listOfIds.getById(self.__rawXPath[1:])
+
+	def setSedmlObject(self, object, attribute=None):
+		self.__rawXPath = "#%s" % object.getId()
 
 	def writeSedml(self, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 		return self.__rawXPath
