@@ -37,7 +37,7 @@ from libsignetsim.sedml.SedmlException import SedmlFileNotFound
 from libsignetsim.settings.Settings import Settings
 
 import libsbml
-from libsedml import readSedMLFromFile, writeSedMLToFile, SedDocument
+from libsedml import readSedMLFromFile, writeSedMLToFile, SedDocument, writeSedMLToString
 reload(libsbml)
 
 from os.path import dirname, basename, exists
@@ -118,6 +118,16 @@ class SedmlDocument(SedBase):
 		document = self.writeSedml(level, version)
 
 		writeSedMLToFile(document, filename)
+
+	def writeSedmlToString(self,
+							level=Settings.defaultSedmlLevel,
+							version=Settings.defaultSedmlVersion,
+		):
+
+		document = self.writeSedml(level, version)
+
+		return writeSedMLToString(document)
+
 
 	def run(self):
 
