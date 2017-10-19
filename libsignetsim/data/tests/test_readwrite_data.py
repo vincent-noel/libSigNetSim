@@ -79,6 +79,9 @@ class TestReadWriteData(TestCase):
 
 	def testAttribute(self):
 
+		if not isdir(join(dirname(__file__), "files")):
+			mkdir(join(dirname(__file__), "files"))
+
 		experiment = Experiment("Ras-GTP, ERK1-2 quantifications")
 		experiment.notes = "Elisa quantifications for RAS-GTP, Western blot quanfitication for ERK1-2"
 		condition_0 = experiment.createCondition("Starved")
