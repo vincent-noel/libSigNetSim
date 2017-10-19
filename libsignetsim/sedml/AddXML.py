@@ -32,8 +32,6 @@ from lxml import etree
 
 class AddXML(Change):
 
-	SBML_NS = {'sbml': 'http://www.sbml.org/sbml/level3/version1/core'}
-
 	def __init__(self, document):
 
 		Change.__init__(self, document)
@@ -53,8 +51,10 @@ class AddXML(Change):
 
 	def applyChange(self, sbml_tree):
 
-		if len(sbml_tree.xpath(self.getTarget().getXPath(), namespaces=self.SBML_NS)) == 0:
-			grand_parent = sbml_tree.xpath(self.getTarget().getParentXPath(), namespaces=self.SBML_NS)[0]
+		namespace = {etree.QName(sbml_tree).localname: etree.QName(sbml_tree).namespace}
+
+		if len(sbml_tree.xpath(self.getTarget().getXPath(), namespaces=namespace)) == 0:
+			grand_parent = sbml_tree.xpath(self.getTarget().getParentXPath(), namespaces=namespace)[0]
 			parent = etree.Element(self.getTarget().getElementTag())
 			grand_parent.append(parent)
 			new_child = etree.fromstring(self.__newXML.getAsString())
@@ -62,5 +62,5 @@ class AddXML(Change):
 
 		else:
 			new_child = etree.fromstring(self.__newXML.getAsString())
-			parent = sbml_tree.xpath(self.getTarget().getXPath(), namespaces=self.SBML_NS)[0]
+			parent = sbml_tree.xpath(self.getTarget().getXPath(), namespaces=namespace)[0]
 			parent.append(new_child)
