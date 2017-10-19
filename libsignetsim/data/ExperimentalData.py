@@ -28,12 +28,13 @@ import re
 
 class ExperimentalData(object):
 
-	def __init__(self, t=0, name="", value=0, value_dev=None, quantification_ratio=1):
+	def __init__(self, t=0, name="", value=0, value_dev=None, name_attribute="name", quantification_ratio=1):
 
 		self.name = name
 		self.t = t
 		self.value = value
 		self.value_dev = value_dev
+		self.name_attribute = name_attribute
 		self.quantification_ratio = quantification_ratio
 
 		self.steady_state = False
@@ -48,10 +49,11 @@ class ExperimentalData(object):
 	def readNuML(self, composite_value):
 		self.t = float(composite_value.getIndexValue())
 		res = re.match(
-			r"/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species\[@name=\'(.*)\'\]",
+			r"/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species\[@(.*)=\'(.*)\'\]",
 			composite_value.getContents()[0].getIndexValue()
 		)
-		self.name = res.groups()[0]
+		self.name_attribute = res.groups()[0]
+		self.name = res.groups()[1]
 		tuple = composite_value.getContents()[0].getContents()[0].getAtomicValues()
 
 		self.value = float(tuple[0].getValue())
@@ -67,7 +69,7 @@ class ExperimentalData(object):
 		species_desc = time_desc.getContent()
 		species_index = time_index.createCompositeValue(
 			species_desc,
-			"/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@name='%s']" % self.name
+			"/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@%s='%s']" % (self.name_attribute, self.name)
 		)
 
 		tuple_desc = species_desc.getContent()
@@ -91,15 +93,15 @@ class ExperimentalData(object):
 				""
 			)
 
-	def readDB(self, name, time, value, value_dev=0, steady_state=False,
-				min_steady_state=0, max_steady_state=0, quantification_ratio=1):
-
-		self.name = name
-		self.t = time
-		self.value = value
-		self.value_dev = value_dev
-		self.steady_state = steady_state
-		if steady_state:
-			self.min_steady_state = min_steady_state
-			self.max_steady_state = max_steady_state
-		self.quantification_ratio = quantification_ratio
+	# def readDB(self, name, time, value, value_dev=0, steady_state=False,
+	# 			min_steady_state=0, max_steady_state=0, quantification_ratio=1):
+	#
+	# 	self.name = name
+	# 	self.t = time
+	# 	self.value = value
+	# 	self.value_dev = value_dev
+	# 	self.steady_state = steady_state
+	# 	if steady_state:
+	# 		self.min_steady_state = min_steady_state
+	# 		self.max_steady_state = max_steady_state
+	# 	self.quantification_ratio = quantification_ratio
