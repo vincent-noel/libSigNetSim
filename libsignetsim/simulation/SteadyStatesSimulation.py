@@ -75,7 +75,8 @@ class SteadyStatesSimulation(Simulation):
 
                 t_experimental_data = ExperimentalData()
 
-                t_experimental_data.name = species_input.getName()
+                t_experimental_data.name = species_input.getSbmlId()
+                t_experimental_data.name_attribute = "id"
                 t_experimental_data.t = 0
                 t_experimental_data.value = initial_value
 
