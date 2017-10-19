@@ -61,6 +61,7 @@ elif [ $1 = "sedml" ]; then
     coverage run -a -m unittest libsignetsim.sedml.tests.TestLogscaleTimeseries || exit 1;
     coverage run -a -m unittest libsignetsim.sedml.tests.TestSpecificationL1V2 || exit 1;
     coverage run -a -m unittest libsignetsim.sedml.tests.TestMath || exit 1;
+    coverage run -a -m unittest libsignetsim.sedml.tests.TestXMLChanges || exit 1;
 
 elif [ $1 = "numl" ]; then
     coverage run -a -m unittest libsignetsim.numl.tests.test_example || exit 1;

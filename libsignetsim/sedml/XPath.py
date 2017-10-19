@@ -60,7 +60,9 @@ class XPath(object):
 			sbml_model.parentDoc.setByXPath(self.__rawXPath, value, instance=True)
 
 	def setModelObject(self, object, attribute=None):
-		self.__rawXPath = object.getXPath(attribute)
+		self.__rawXPath = object.getXPath()
+		if attribute is not None:
+			self.__rawXPath += "/@%s" % attribute
 
 	def getSedmlObject(self):
 		if self.isSedmlObject():
@@ -74,3 +76,27 @@ class XPath(object):
 
 	def getXPath(self):
 		return self.__rawXPath
+
+	def getParentXPath(self):
+		paths = self.__rawXPath.split("/")[:-1]
+		return "/".join(paths)
+
+	def getElementXPath(self):
+		return self.__rawXPath.split("/")[-1]
+
+	def getElementTag(self):
+		element = self.__rawXPath.split("/")[-1]
+		if ":" in element:
+			return element.split(":")[-1]
+		else:
+			return element
+
+	def getXPathWithoutPrefixes(self):
+		paths = self.__rawXPath.split("/")
+		res = []
+		for path in paths:
+			if ":" in path:
+				res.append(path.split(":")[1])
+			else:
+				res.append(path)
+		return "/".join(res)

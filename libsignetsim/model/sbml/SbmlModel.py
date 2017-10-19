@@ -90,7 +90,7 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 		self.listOfRules = ListOfRules(self)
 		self.listOfEvents = ListOfEvents(self, self)
 		self.listOfConstraints = ListOfConstraints(self)
-		self.listOfInitialAssignments = ListOfInitialAssignments(self)
+		self.listOfInitialAssignments = ListOfInitialAssignments(self, self)
 
 		self.listOfSubmodels = ListOfSubmodels(self)
 		self.listOfPorts = ListOfPorts(self)
@@ -232,8 +232,12 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 		elif selector in ["sbml:listOfReactions", "listOfReactions"]:
 			return self.listOfReactions
 
+		elif selector in ["sbml:listOfInitialAssignments", "listOfInitialAssignments"]:
+			return self.listOfInitialAssignments
+
 		elif selector in ["sbml:listOfEvents", "listOfEvents"]:
 			return self.listOfEvents
+
 
 		elif selector == "sbml:listOfSubmodels" and self.parentDoc.useCompPackage:
 			return self.listOfSubmodels

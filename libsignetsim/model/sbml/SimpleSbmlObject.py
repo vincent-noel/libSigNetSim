@@ -84,7 +84,6 @@ class SimpleSbmlObject(object):
 	def newMetaId(self):
 		self.__metaId = self.__model.listOfSbmlObjects.nextMetaId()
 
-
 	def setMetaId(self, meta_id, force=False):
 
 		if meta_id is not None:

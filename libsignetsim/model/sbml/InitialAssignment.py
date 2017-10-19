@@ -25,21 +25,24 @@
 """
 
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
+from libsignetsim.model.sbml.HasParentObj import HasParentObj
 from libsignetsim.model.math.MathFormula import MathFormula
+from libsignetsim.model.ModelException import InvalidXPath
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyMul, SympyPow
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 
 
-class InitialAssignment(SbmlObject):
+class InitialAssignment(SbmlObject, HasParentObj):
 	""" Initial assignment definition """
 
-	def __init__(self, model, obj_id):
+	def __init__(self, model, parent_obj, obj_id):
 
 		self.__model = model
 		self.objId = obj_id
 
 		SbmlObject.__init__(self, model)
+		HasParentObj.__init__(self, parent_obj)
 		self.__definition = MathFormula(model, MathFormula.MATH_ASSIGNMENTRULE)
 		self.__var = None
 
@@ -175,3 +178,32 @@ class InitialAssignment(SbmlObject):
 		return (variable.symbol.getInternalMathFormula() in self.__definition.getInternalMathFormula().atoms()
 				or (variable.isSpecies() and SympySymbol("_speciesForcedConcentration_%s_" % str(variable.symbol.getInternalMathFormula())) in self.__definition.getInternalMathFormula().atoms())
 				or variable.symbol.getInternalMathFormula() == self.getVariable().symbol.getInternalMathFormula())
+
+
+	def getByXPath(self, xpath):
+
+		if len(xpath) == 0:
+			return self
+
+		if len(xpath) > 1:
+			return InvalidXPath("/".join(xpath))
+
+		if xpath[0] == "@value":
+			return self.getValue()
+
+		elif xpath[0] == "@name":
+			return self.getName()
+
+		elif xpath[0] == "@id":
+			return self.getSbmlId()
+
+
+	def getXPath(self, attribute=None):
+
+		xpath = "sbml:initialAssignment"
+		xpath += "[@metaid='%s']" % self.getMetaId()
+
+		if attribute is not None:
+			xpath += "/@%s" % attribute
+
+		return "/".join([self.getParentObj().getXPath(), xpath])

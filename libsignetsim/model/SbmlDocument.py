@@ -145,8 +145,6 @@ class SbmlDocument(HasParentObj):
 		self.model.readSbml(sbmlDoc.getModel(), self.sbmlLevel, self.sbmlVersion)
 
 	def readSbmlFromFile(self, sbml_filename):
-		# print "> Opening SBML file : %s" % sbml_filename
-		t0 = time()
 
 		if self.documentPath is None and dirname(sbml_filename) != "":
 			self.documentPath = dirname(sbml_filename)
@@ -168,7 +166,6 @@ class SbmlDocument(HasParentObj):
 			raise SbmlException("Error instanciating the SBMLReader !")
 
 		sbmlDoc = sbmlReader.readSBML(t_filename)
-
 		self.readSbml(sbmlDoc)
 
 	def readSbmlFromString(self, string):
@@ -396,4 +393,4 @@ class SbmlDocument(HasParentObj):
 		if self.getParentObj() is not None:
 			return "/".join([self.getParentObj().getXPath(), "sbml:sbml"])
 		else:
-			return "sbml:sbml"
+			return "/sbml:sbml"

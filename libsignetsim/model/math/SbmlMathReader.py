@@ -30,6 +30,7 @@ from sympy import srepr
 from libsignetsim.model.math.sympy_shortcuts import *
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.ModelException import (SbmlException, TagNotImplementedModelException)
+from libsignetsim.model.math.MathException import MathException
 
 class SbmlMathReader(object):
 	""" Class for handling math formulaes """
@@ -651,7 +652,7 @@ class SbmlMathReader(object):
 		elif tree.getType() == libsbml.AST_NAME_TIME:
 			return SympySymbol("_time_")
 
-		elif tree.getType() == libsbml.AST_NAME_AVOGADRO or tree.getType() == libsbml.AST_TYPECODE_CSYMBOL_AVOGADRO:
+		elif tree.getType() == libsbml.AST_NAME_AVOGADRO:
 			return SympySymbol("_avogadro_")
 
 		else:
@@ -660,6 +661,6 @@ class SbmlMathReader(object):
 			else:
 				t_string = libsbml.formulaToL3String(tree)
 
-			raise SbmlMathReader("SbmlMathReader : Unknown mathematical term : %s" % t_string)
+			raise MathException("SbmlMathReader : Unknown mathematical term : %s" % t_string)
 
 			return SympySymbol("ERR_UNKNOWN_TYPE")

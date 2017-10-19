@@ -26,20 +26,22 @@
 
 from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
-
+from libsignetsim.model.sbml.HasParentObj import HasParentObj
+from libsignetsim.model.ModelException import InvalidXPath
 from libsignetsim.model.sbml.InitialAssignment import InitialAssignment
+
 from libsignetsim.settings.Settings import Settings
+from re import match
 
-
-class ListOfInitialAssignments(ListOf, SbmlObject):
+class ListOfInitialAssignments(ListOf, SbmlObject, HasParentObj):
 	""" Class for the listOfInitialAssignments in a sbml model """
 
-	def __init__ (self, model):
+	def __init__ (self, model, parent_obj):
 
 		self.__model = model
 		ListOf.__init__(self, model)
 		SbmlObject.__init__(self, model)
-
+		HasParentObj.__init__(self, parent_obj)
 
 	def readSbml(self, sbml_list_of_ia,
 					sbml_level=Settings.defaultSbmlLevel,
@@ -47,7 +49,7 @@ class ListOfInitialAssignments(ListOf, SbmlObject):
 		""" Reads initial assignments' list from a sbml file """
 
 		for init_ass in sbml_list_of_ia:
-			t_init_ass = InitialAssignment(self.__model, self.nextId())
+			t_init_ass = InitialAssignment(self.__model, self, self.nextId())
 			t_init_ass.readSbml(init_ass, sbml_level, sbml_version)
 			ListOf.add(self, t_init_ass)
 
@@ -69,7 +71,7 @@ class ListOfInitialAssignments(ListOf, SbmlObject):
 	def new(self, variable=None, expression=None, rawFormula=False):
 
 		if (variable is not None and expression is not None):
-			t_initial_assignment = InitialAssignment(self.__model, self.nextId())
+			t_initial_assignment = InitialAssignment(self.__model, self, self.nextId())
 			t_initial_assignment.setVariable(variable)
 			t_initial_assignment.setPrettyPrintDefinition(expression, rawFormula=rawFormula)
 			ListOf.add(self, t_initial_assignment)
@@ -85,7 +87,7 @@ class ListOfInitialAssignments(ListOf, SbmlObject):
 			for init_ass in obj.values():
 				if init_ass not in deletions:
 
-					t_init_ass = InitialAssignment(self.__model, self.nextId())
+					t_init_ass = InitialAssignment(self.__model, self, self.nextId())
 					t_init_ass.copy(init_ass, sids_subs=sids_subs, symbols_subs=symbols_subs, conversion_factors=conversion_factors)
 					ListOf.add(self, t_init_ass)
 
@@ -121,3 +123,38 @@ class ListOfInitialAssignments(ListOf, SbmlObject):
 		""" Remove an initial assignment from the list """
 
 		self.remove(self.getById(obj_id))
+
+	def resolveXPath(self, selector):
+
+		if not (selector.startswith("initialAssignment") or selector.startswith("sbml:initialAssignment")):
+			raise InvalidXPath(selector)
+
+		res_match = match(r'(.*)\[@(.*)=(.*)\]', selector)
+		if res_match is None:
+			raise InvalidXPath(selector)
+
+		tokens = res_match.groups()
+		if len(tokens) != 3:
+			raise InvalidXPath(selector)
+
+		object = None
+		if tokens[1] == "metaid":
+			object = self.getByMetaId(tokens[2][1:-1])
+
+		if object is not None:
+			return object
+
+		# If not returned yet
+		raise InvalidXPath(selector)
+
+	def getByXPath(self, xpath):
+		if len(xpath) > 0:
+			return self.resolveXPath(xpath[0]).getByXPath(xpath[1:])
+		else:
+			return self
+
+	def setByXPath(self, xpath, object):
+		self.resolveXPath(xpath[0]).setByXPath(xpath[1:], object)
+
+	def getXPath(self):
+		return "/".join([self.getParentObj().getXPath(), "sbml:listOfInitialAssignments"])
