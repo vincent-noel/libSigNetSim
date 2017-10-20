@@ -44,7 +44,7 @@ class CModelWriter(object):
 			print ">>> Initialization written in %.2gs" % (time()-t0)
 
 		self.writeSimulationFinalization(f_h, f_c, i_model)
-
+		self.writeInitialAssignments(f_h, f_c, i_model)
 		t0 = time()
 		if len(self.getMathModel().listOfDAEs) > 0:
 			self.writeIdaSimulationFunction(f_h, f_c, i_model)
@@ -128,7 +128,7 @@ class CModelWriter(object):
 				f_c.write("  %s.alg_der_variables[%d] = (ModelVariable) {RCONST(0.0), \"%s\", VAR_ALG_DER};\n" % (
 								variable_name, i_var, variable_alg.symbol.getPrettyPrintMathFormula()))
 
-		f_c.write("  %s.nb_init_assignments = 0;\n" % (variable_name))
+		f_c.write("  %s.nb_init_assignments = %d;\n" % (variable_name, len(self.listOfInitialAssignments)))
 		f_c.write("  %s.nb_events = %d;\n" % (variable_name, self.listOfEvents.nbValidEvents()))
 		f_c.write("  %s.nb_roots = %d;\n" % (variable_name, self.listOfEvents.nbRoots()))
 
@@ -164,7 +164,7 @@ class CModelWriter(object):
 		f_c.write("  %s.integration_settings->list_samples = t_list_samples;\n" % (variable_name))
 
 		f_c.write("  %s.integration_functions = malloc(sizeof(IntegrationFunctions));\n" % variable_name)
-
+		f_c.write("  %s.integration_functions->initAssPtr = &init_assignments_%d;\n" % (variable_name, model_id))
 		if len(self.getMathModel().listOfDAEs) > 0:
 			f_c.write("  %s.integration_functions->funcIdaPtr = &func_ida_%d;\n" % (variable_name, model_id))
 			f_c.write("  %s.integration_functions->isDAE = 1;\n" % variable_name)
@@ -226,6 +226,32 @@ class CModelWriter(object):
 
 		f_c.write("  free(%s.integration_options);\n" % variable_name)
 
+		f_c.write("}\n\n")
+
+
+
+	def writeInitialAssignments(self, f_h, f_c, model_id):
+		""" Writes the initial assignments in C files """
+
+		f_h.write("int init_assignments_%d(realtype t, N_Vector y, void * user_data);\n" % model_id)
+		f_c.write("int init_assignments_%d(realtype t, N_Vector y, void * user_data)\n" % model_id)
+		f_c.write("{\n")
+		f_c.write("  IntegrationData * data = (IntegrationData *) user_data;\n")
+		f_c.write("  N_Vector cst = data->constant_variables;\n")
+		f_c.write("  N_Vector ass = data->assignment_variables;\n")
+		f_c.write("  compute_rules_%d(t, y, user_data);\n" % model_id)
+
+		for variable in self.listOfVariables.values():
+			if not variable.isReaction() and not variable.isEvent() and variable.hasInitialAssignment():
+				t_init_assignment = variable.hasInitialAssignmentBy()
+				f_c.write("  %s = %s;\n\n" % (
+					t_init_assignment.getVariable().symbol.getCMathFormula(),
+					t_init_assignment.getDefinition(rawFormula=True).getCMathFormula()
+				))
+
+
+
+		f_c.write("  return 0;\n")
 		f_c.write("}\n\n")
 
 
