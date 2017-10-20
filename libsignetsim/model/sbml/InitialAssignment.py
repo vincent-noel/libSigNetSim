@@ -159,7 +159,7 @@ class InitialAssignment(SbmlObject, HasParentObj):
 
 	def getPrettyPrintDefinition(self):
 
-		if self.__var.isSpecies() and not self.getVariable().hasOnlySubstanceUnits:
+		if self.getVariable().isSpecies() and not self.getVariable().hasOnlySubstanceUnits:
 			t_comp = self.getVariable().getCompartment()
 			t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
 			t_math_formula.setInternalMathFormula(self.__definition.getInternalMathFormula()/t_comp.symbol.getInternalMathFormula())
