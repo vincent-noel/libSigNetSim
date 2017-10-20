@@ -53,10 +53,12 @@ class TestSuite(object):
 		1558, 1559, 1560, 1565, 1567, 1568, 1569, 1570, 1571, 1572
 	]
 
+	# Cases incompatible with the reintroduction of initial assignments into C code
+	INCOMPATIBLE_CASES += [1698, 1699]
+
 	INCOMPATIBLE_TAGS = [
 		'CSymbolDelay',
 	]
-
 
 	COMPATIBLE_PACKAGES = ['comp']
 
