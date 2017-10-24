@@ -25,19 +25,20 @@
 
 from libsignetsim.model.sbml.HasId import HasId
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
+from libsignetsim.model.sbml.HasParentObj import HasParentObj
 from libsignetsim.model.ModelException import InvalidXPath
 from libsignetsim.settings.Settings import Settings
 from re import match
 
 
-class ExternalModelDefinition(HasId, SbmlObject):
+class ExternalModelDefinition(HasId, SbmlObject, HasParentObj):
 
-	def __init__(self, model, obj_id):
+	def __init__(self, model, obj_id, parent_obj):
 
 		self.__model = model
 
 		self.objId = obj_id
-
+		HasParentObj.__init__(self, parent_obj)
 		HasId.__init__(self, model)
 		SbmlObject.__init__(self, model)
 		self.__modelRef = None
@@ -60,6 +61,7 @@ class ExternalModelDefinition(HasId, SbmlObject):
 
 		t_id_dep = self.__model.parentDoc.documentDependenciesPaths.index(self.__source)
 		t_document = self.__model.parentDoc.documentDependencies[t_id_dep]
+		t_document.setParentObj(self)
 
 		if self.__modelRef is not None:
 			self.modelDefinition = t_document.getSubmodel(self.__modelRef)
@@ -139,7 +141,20 @@ class ExternalModelDefinition(HasId, SbmlObject):
 	# 	raise InvalidXPath(selector)
 	#
 	def getByXPath(self, xpath):
-		return self.modelDefinition.getByXPath(xpath)
+		return self.modelDefinition.parentDoc.getByXPath("/".join(xpath))
 
 	def setByXPath(self, xpath, object):
-		self.modelDefinition.setByXPath(xpath, object)
+		self.modelDefinition.parentDoc.setByXPath("/".join(xpath), object)
+
+	def getXPath(self, attribute=None):
+
+		xpath = "sbml:externalModelDefinition"
+		if self.__model.sbmlLevel == 1:
+			xpath += "[@name='%s']" % self.getSbmlId()
+		else:
+			xpath += "[@id='%s']" % self.getSbmlId()
+
+		if attribute is not None:
+			xpath += "/@%s" % attribute
+
+		return "/".join([self.getParentObj().getXPath(), xpath])

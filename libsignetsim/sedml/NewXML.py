@@ -24,22 +24,30 @@
 
 """
 
-from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.ModelException import UnknownSIdRefException
+
+import libsbml
+from libsedml import XMLNode
+reload(libsbml)
 
 
-class HasParentObj(object):
-	""" HasParentObj property class """
+class NewXML(object):
 
+	def __init__(self, document):
+		self.__document = document
+		self.__xmlNode = None
 
-	def __init__ (self, parent_obj):
-		""" Constructor of class """
+	def readSedml(self, xml_node, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+		self.__xmlNode = xml_node
 
-		self.__parentObj = parent_obj
+	def writeSedml(self, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+		return self.__xmlNode
 
-	def getParentObj(self):
-		return self.__parentObj
+	def setFromString(self, xml_string):
+		self.__xmlNode = XMLNode.convertStringToXMLNode(xml_string)
 
-	def setParentObj(self, parent_obj):
-		self.__parentObj = parent_obj
+	def getAsString(self):
+		return XMLNode.convertXMLNodeToString(self.__xmlNode)
+
+	def getXMLNode(self):
+		return self.__xmlNode

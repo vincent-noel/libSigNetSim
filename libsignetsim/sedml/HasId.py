@@ -33,6 +33,7 @@ class HasId(object):
 		self.__document = document
 		self.__id = None
 		self.__name = None
+		self.__document.listOfIds.append(self)
 
 	def readSedml(self, has_id_object, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 

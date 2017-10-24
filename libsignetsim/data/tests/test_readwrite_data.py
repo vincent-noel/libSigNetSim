@@ -76,3 +76,45 @@ class TestReadWriteData(TestCase):
 		self.assertEqual(experiment_imported.getTreatedVariables(), ['FGF2'])
 
 		experiment_imported.writeNuMLToFile(join(join(dirname(__file__), "files"), "data_copy.xml"))
+
+	def testAttribute(self):
+
+		if not isdir(join(dirname(__file__), "files")):
+			mkdir(join(dirname(__file__), "files"))
+
+		experiment = Experiment("Ras-GTP, ERK1-2 quantifications")
+		experiment.notes = "Elisa quantifications for RAS-GTP, Western blot quanfitication for ERK1-2"
+		condition_0 = experiment.createCondition("Starved")
+
+		condition_0.addInitialCondition(0, "fgf2", 0, name_attribute="id")
+		condition_0.notes = "starved cells for 48h"
+		condition_0.addObservation(0, "total_ras_gtp", 40, name_attribute="id")
+		condition_0.addObservation(60, "total_ras_gtp", 40, name_attribute="id")
+		condition_0.addObservation(180, "total_ras_gtp", 40, name_attribute="id")
+		condition_0.addObservation(300, "total_ras_gtp", 40, name_attribute="id")
+		condition_0.addObservation(900, "total_ras_gtp", 40, name_attribute="id")
+		condition_0.addObservation(1800, "total_ras_gtp", 40, name_attribute="id")
+		condition_0.addObservation(3600, "total_ras_gtp", 40, name_attribute="id")
+
+		condition_1 = experiment.createCondition("fgf2")
+		condition_1.notes = "FGF2 treatment"
+		condition_1.addInitialCondition(0, "fgf2", 333, name_attribute="id")
+
+		condition_1.addObservation(0, "total_ras_gtp", 40, name_attribute="id")
+		condition_1.addObservation(60, "total_ras_gtp", 92, name_attribute="id")
+		condition_1.addObservation(180, "total_ras_gtp", 77, name_attribute="id")
+		condition_1.addObservation(300, "total_ras_gtp", 333, name_attribute="id")
+		condition_1.addObservation(900, "total_ras_gtp", 222, name_attribute="id")
+		condition_1.addObservation(1800, "total_ras_gtp", 68, name_attribute="id")
+		condition_1.addObservation(3600, "total_ras_gtp", 60, name_attribute="id")
+
+		experiment.writeNuMLToFile(join(join(dirname(__file__), "files"), "data_with_ids.xml"))
+
+		experiment_imported = Experiment()
+		experiment_imported.readNuMLFromFile(join(join(dirname(__file__), "files"), "data_with_ids.xml"))
+
+		self.assertEqual(experiment_imported.getMaxTime(), 3600.0)
+		self.assertEqual(experiment_imported.getTimes(), [0.0, 900.0, 1800.0, 300.0, 3600.0, 180.0, 60.0])
+		self.assertEqual(experiment_imported.getTreatedVariables(), ['fgf2'])
+
+		experiment_imported.writeNuMLToFile(join(join(dirname(__file__), "files"), "data_with_ids_copy.xml"))

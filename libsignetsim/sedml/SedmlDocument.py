@@ -31,13 +31,14 @@ from libsignetsim.sedml.container.ListOfSimulations import ListOfSimulations
 from libsignetsim.sedml.container.ListOfTasks import ListOfTasks
 from libsignetsim.sedml.container.ListOfDataGenerators import ListOfDataGenerators
 from libsignetsim.sedml.container.ListOfOutputs import ListOfOutputs
+from libsignetsim.sedml.container.ListOfIds import ListOfIds
 
 from libsignetsim.sedml.SedmlException import SedmlFileNotFound
 
 from libsignetsim.settings.Settings import Settings
 
 import libsbml
-from libsedml import readSedMLFromFile, writeSedMLToFile, SedDocument
+from libsedml import readSedMLFromFile, writeSedMLToFile, SedDocument, writeSedMLToString
 reload(libsbml)
 
 from os.path import dirname, basename, exists
@@ -61,6 +62,7 @@ class SedmlDocument(SedBase):
 		self.listOfDataGenerators = ListOfDataGenerators(self)
 		self.listOfOutputs = ListOfOutputs(self)
 
+		self.listOfIds = ListOfIds(self)
 
 	def readSedmlFromFile(self, filename):
 
@@ -118,6 +120,16 @@ class SedmlDocument(SedBase):
 		document = self.writeSedml(level, version)
 
 		writeSedMLToFile(document, filename)
+
+	def writeSedmlToString(self,
+							level=Settings.defaultSedmlLevel,
+							version=Settings.defaultSedmlVersion,
+		):
+
+		document = self.writeSedml(level, version)
+
+		return writeSedMLToString(document)
+
 
 	def run(self):
 

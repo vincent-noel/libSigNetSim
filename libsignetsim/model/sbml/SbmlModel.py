@@ -59,9 +59,21 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 		""" Constructor of model class """
 
 		self.objId = obj_id
-		self.parentDoc = parent_document
 
-		HasParentObj.__init__(self, parent_obj)
+		self.sbmlLevel = Settings.defaultSbmlLevel
+		self.sbmlVersion = Settings.defaultSbmlVersion
+
+		if parent_document is None:
+			from libsignetsim.model.SbmlDocument import SbmlDocument
+			self.parentDoc = SbmlDocument(self)
+		else:
+			self.parentDoc = parent_document
+
+		if parent_obj is None:
+			HasParentObj.__init__(self, self.parentDoc)
+		else:
+			HasParentObj.__init__(self, parent_obj)
+
 		HasId.__init__(self, self)
 		self.listOfSbmlObjects = ListOfSbmlObjects(self)
 		SbmlObject.__init__(self, self)
@@ -78,15 +90,12 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 		self.listOfRules = ListOfRules(self)
 		self.listOfEvents = ListOfEvents(self, self)
 		self.listOfConstraints = ListOfConstraints(self)
-		self.listOfInitialAssignments = ListOfInitialAssignments(self)
+		self.listOfInitialAssignments = ListOfInitialAssignments(self, self)
 
 		self.listOfSubmodels = ListOfSubmodels(self)
 		self.listOfPorts = ListOfPorts(self)
 
 		self.defaultCompartment = None
-
-		self.sbmlLevel = Settings.defaultSbmlLevel
-		self.sbmlVersion = Settings.defaultSbmlVersion
 
 	def newModel(self, name):
 
@@ -223,8 +232,12 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 		elif selector in ["sbml:listOfReactions", "listOfReactions"]:
 			return self.listOfReactions
 
+		elif selector in ["sbml:listOfInitialAssignments", "listOfInitialAssignments"]:
+			return self.listOfInitialAssignments
+
 		elif selector in ["sbml:listOfEvents", "listOfEvents"]:
 			return self.listOfEvents
+
 
 		elif selector == "sbml:listOfSubmodels" and self.parentDoc.useCompPackage:
 			return self.listOfSubmodels

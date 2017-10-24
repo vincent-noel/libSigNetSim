@@ -36,15 +36,15 @@ class ExperimentalCondition(object):
 		self.notes = ""
 
 
-	def addInitialCondition(self, t=0, name="", value=0, value_dev=None, quantification_ratio=1):
+	def addInitialCondition(self, t=0, name="", value=0, value_dev=None, name_attribute="name", quantification_ratio=1):
 
-		initial_condition = ExperimentalData(t, name, value, value_dev, quantification_ratio)
+		initial_condition = ExperimentalData(t, name, value, value_dev, name_attribute, quantification_ratio)
 		self.listOfInitialConditions.add(initial_condition)
 
 
-	def addObservation(self, t=0, name="", value=0, value_dev=0, quantification_ratio=1):
+	def addObservation(self, t=0, name="", value=0, value_dev=0, name_attribute="name", quantification_ratio=1):
 
-		observation = ExperimentalData(t, name, value, value_dev, quantification_ratio)
+		observation = ExperimentalData(t, name, value, value_dev, name_attribute, quantification_ratio)
 		self.listOfExperimentalData.add(observation)
 
 	def read(self, list_of_initial_values, list_of_observed_values, name=""):
@@ -68,7 +68,9 @@ class ExperimentalCondition(object):
 
 	def writeNuML(self, condition):
 
-		condition.setNotes(self.notes)
+		if self.notes is not None and len(self.notes) > 0:
+			condition.setNotes(self.notes)
+
 		list_of_initial_values = condition.createCompositeValue(condition.getDescription().getContent(), "initial_values")
 		self.listOfInitialConditions.writeNuML(list_of_initial_values)
 

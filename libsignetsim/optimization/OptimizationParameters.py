@@ -25,18 +25,19 @@
 """
 
 from os.path import join
-from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.math.sympy_shortcuts import SympySymbol
+
 
 class OptimizationParameters(object):
 
-	def __init__ (self, workingModel=None, parameters_to_fit=None):
-		pass
+	def __init__(self, workingModel=None, parameters_to_fit=None, model_instance=False):
+		self.__model = workingModel
+		self.__modelInstance = model_instance
+		self.__parameters = parameters_to_fit
 
 	def readOptimizationOutput(self):
 
 		f_optimized_parameters = open(join(self.getTempDirectory(), "logs/params/output"), 'r')
-		now_reading = 0
+
 		result = {}
 		for line in f_optimized_parameters:
 			# Comments
@@ -48,12 +49,14 @@ class OptimizationParameters(object):
 				pass
 
 			else:
+				data = line.strip().split(" : ")
+				t_var = self.workingModel.parentDoc.getByXPath(data[0].strip(), self.__modelInstance)
 
-				data = line.strip().split(":")
-
-				if self.workingModel.listOfVariables.containsSymbol(SympySymbol(data[0].strip())):
-					t_var = self.workingModel.listOfVariables.getBySymbol(SympySymbol(data[0].strip()))
+				if t_var is not None:
+					if self.__modelInstance:
+						t_var = self.workingModel.getDefinitionVariable(t_var)[0]
 					result.update({t_var: float(data[1].strip())})
 
 		f_optimized_parameters.close()
+
 		return result

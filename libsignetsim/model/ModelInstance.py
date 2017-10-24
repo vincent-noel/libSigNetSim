@@ -47,6 +47,7 @@ class ModelInstance(Model):
 		self.sbmlLevel = model.sbmlLevel
 		self.sbmlVersion = model.sbmlVersion
 		self.objectsDictionnary = {}
+		self.variablesDictionnary = {}
 		self.deletions = []
 
 		self.submodel_sids_subs = {}
@@ -57,7 +58,7 @@ class ModelInstance(Model):
 		self.conv_factors = {}
 
 		if self.DEBUG:
-			print "\n\n> Instanciating model %s, parent doc is %s" % (model.getSbmlId(), document.documentFilename)
+			print "\n\n> Instanciating model %s, parent doc is %s" % (model.getNameOrSbmlId(), document.documentFilename)
 
 
 		if len(self.__mainModel.listOfSubmodels) > 0:
@@ -147,7 +148,6 @@ class ModelInstance(Model):
 			print self.listOfVariables.symbols()
 
 			print "> Returning instance %s\n" % model.getSbmlId()
-
 
 	def findReplacements(self):
 
@@ -373,5 +373,45 @@ class ModelInstance(Model):
 				time_conversion=self.submodel_timeConversionFactor[submodel.getSbmlId()],
 			)
 
+		for variable in self.__mainModel.listOfVariables.values():
+			if self.listOfVariables.containsSbmlId(variable.getSbmlId()):
+				self.variablesDictionnary.update({
+					variable: self.listOfVariables.getBySbmlId(variable.getSbmlId())
+				})
+
+		for submodel in self.__mainModel.listOfSubmodels.values():
+			submodel_instance = self.__submodelInstances[submodel.getSbmlId()]
+
+			for variable_def, variable_instance in submodel_instance.variablesDictionnary.items():
+				sids_subs = self.submodel_sids_subs[submodel.getSbmlId()]
+
+				if (
+					variable_instance.getSbmlId() in sids_subs.keys()
+					and self.listOfVariables.containsSbmlId(sids_subs[variable_instance.getSbmlId()])
+				):
+					self.variablesDictionnary.update({
+						variable_def: self.listOfVariables.getBySbmlId(
+							sids_subs[variable_instance.getSbmlId()]
+						)
+					})
+
 	def getSubmodelInstance(self, submodel_ref):
 		return self.__submodelInstances[submodel_ref]
+
+	def getInstanceVariable(self, variable):
+		return self.variablesDictionnary[variable]
+
+	def getInstanceVariableByXPath(self, xpath):
+		variable = self.__mainModel.parentDoc.getByXPath(xpath)
+		return self.getInstanceVariable(variable)
+
+	def getDefinitionVariable(self, variable):
+		res = []
+		for key, value in self.variablesDictionnary.items():
+			if value == variable:
+				res.append(key)
+		return res
+
+	def getDefinitionVariableByXPath(self, xpath):
+		variable = self.parentDoc.getByXPath(xpath, instance=True)
+		return self.getDefinitionVariable(variable)

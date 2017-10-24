@@ -601,6 +601,9 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 			return self
 
 		if len(xpath) > 1:
+			if xpath[0] in ["sbml:listOfParameters", "listOfParameters"]:
+				return self.listOfLocalParameters.getByXPath(xpath[1:])
+
 			return InvalidXPath("/".join(xpath))
 
 		if xpath[0] == "@value":

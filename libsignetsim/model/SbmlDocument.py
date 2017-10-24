@@ -73,7 +73,7 @@ class SbmlDocument(HasParentObj):
 			self.sbmlVersion = model.sbmlVersion
 
 		self.listOfModelDefinitions = ListOfModelDefinitions(self.model)
-		self.listOfExternalModelDefinitions = ListOfExternalModelDefinitions(self.model)
+		self.listOfExternalModelDefinitions = ListOfExternalModelDefinitions(self.model, self)
 
 
 	def getSubmodel(self, submodel_id):
@@ -126,24 +126,25 @@ class SbmlDocument(HasParentObj):
 		if self.sbmlLevel == 3 and sbmlDoc.isSetPackageRequired("comp"):
 			self.useCompPackage = True
 
-		self.model.readSbml(sbmlDoc.getModel(), self.sbmlLevel, self.sbmlVersion)
-
-		if self.useCompPackage:
-
 			sbmlCompPlugin = sbmlDoc.getPlugin("comp")
 
 			try:
 				self.loadExternalDocumentDependencies(sbmlDoc)
-				self.listOfModelDefinitions.readSbml(sbmlCompPlugin.getListOfModelDefinitions(), self.sbmlLevel, self.sbmlVersion)
-				self.listOfExternalModelDefinitions.readSbml(sbmlCompPlugin.getListOfExternalModelDefinitions(), self.sbmlLevel, self.sbmlVersion)
+				self.listOfModelDefinitions.readSbml(
+					sbmlCompPlugin.getListOfModelDefinitions(),
+					self.sbmlLevel, self.sbmlVersion
+				)
+				self.listOfExternalModelDefinitions.readSbml(
+					sbmlCompPlugin.getListOfExternalModelDefinitions(),
+					self.sbmlLevel, self.sbmlVersion
+				)
 
 			except MissingModelException as e:
 				raise MissingSubmodelException(e.filename)
 
+		self.model.readSbml(sbmlDoc.getModel(), self.sbmlLevel, self.sbmlVersion)
 
 	def readSbmlFromFile(self, sbml_filename):
-		# print "> Opening SBML file : %s" % sbml_filename
-		t0 = time()
 
 		if self.documentPath is None and dirname(sbml_filename) != "":
 			self.documentPath = dirname(sbml_filename)
@@ -165,11 +166,9 @@ class SbmlDocument(HasParentObj):
 			raise SbmlException("Error instanciating the SBMLReader !")
 
 		sbmlDoc = sbmlReader.readSBML(t_filename)
-
 		self.readSbml(sbmlDoc)
 
 	def readSbmlFromString(self, string):
-
 
 		sbmlReader = SBMLReader()
 		if sbmlReader == None:
@@ -247,22 +246,23 @@ class SbmlDocument(HasParentObj):
 		else:
 			raise FileException("Failed to write %s" % join(self.documentPath, self.documentFilename))
 
-			return False
+		# 	return False
+		#
+		# if Settings.verboseTiming >= 1:
+		# 	print "Writing document %s into directory %s in %.2gs" % (self.documentFilename, self.documentPath, time()-t0)
 
-		if Settings.verboseTiming >= 1:
-			print "Writing document %s into directory %s in %.2gs" % (self.documentFilename, self.documentPath, time()-t0)
 
-
-	def getModelInstance(self):
+	def getModelInstance(self, rebuild=False):
 		if self.useCompPackage:
-			t0 = time()
-			t_instance = ModelInstance(self.model, self)
-			t1 = time()
+			if rebuild or self.modelInstance is None:
+				t0 = time()
+				self.modelInstance = ModelInstance(self.model, self)
+				t1 = time()
 
-			if Settings.verboseTiming >= 1:
-				print "> Instance produced in %.2gs" % (t1-t0)
+				if Settings.verboseTiming >= 1:
+					print "> Instance produced in %.2gs" % (t1-t0)
 
-			return t_instance
+			return self.modelInstance
 		else:
 			return self.model
 
@@ -316,8 +316,7 @@ class SbmlDocument(HasParentObj):
 				self.getExternalDocumentDependencies(sbml_doc)
 
 			self.documentDependencies = []
-			# print self.documentDependenciesPaths
-			# print self.documentPath
+
 			for path in self.documentDependenciesPaths:
 				t_document = SbmlDocument()
 				t_document.readSbmlFromFile(join(self.documentPath, path))
@@ -372,7 +371,7 @@ class SbmlDocument(HasParentObj):
 		except InvalidXPath:
 			raise InvalidXPath(xpath)
 
-	def setByXPath(self, xpath, object):
+	def setByXPath(self, xpath, object, instance=False):
 
 		if xpath.startswith("/"):
 			xpath = xpath[1:]
@@ -380,9 +379,9 @@ class SbmlDocument(HasParentObj):
 		tokens = xpath.split("/")
 		try:
 			if tokens[0] == "sbml:sbml":
-				return self.resolveXPath(tokens[1]).setByXPath(tokens[2:], object)
+				return self.resolveXPath(tokens[1], instance).setByXPath(tokens[2:], object)
 			elif tokens[0] == "sbml:model":
-				return self.resolveXPath(tokens[0]).setByXPath(tokens[1:], object)
+				return self.resolveXPath(tokens[0], instance).setByXPath(tokens[1:], object)
 			else:
 				raise InvalidXPath(xpath)
 
@@ -394,4 +393,4 @@ class SbmlDocument(HasParentObj):
 		if self.getParentObj() is not None:
 			return "/".join([self.getParentObj().getXPath(), "sbml:sbml"])
 		else:
-			return "sbml:sbml"
+			return "/sbml:sbml"

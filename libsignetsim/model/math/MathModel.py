@@ -47,7 +47,7 @@ from time import time
 class MathModel(CModelWriter):
 	""" Sbml model class """
 
-	def __init__ (self, obj_id=0):
+	def __init__(self, obj_id=0):
 		""" Constructor of model class """
 
 		CModelWriter.__init__(self, obj_id)
@@ -79,7 +79,7 @@ class MathModel(CModelWriter):
 	def isUpToDate(self):
 		return self.__upToDate
 
-	def setUpToDate(self, value):
+	def setUpToDate(self, value=True):
 		self.__upToDate = value
 
 
@@ -115,6 +115,8 @@ class MathModel(CModelWriter):
 
 		if len(self.listOfEvents) == 0 and self.listOfReactions.hasFastReaction():
 			self.buildSlowModel()
+
+		self.setUpToDate()
 
 	def buildConservationLaws(self):
 

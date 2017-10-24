@@ -159,10 +159,20 @@ class ListOfParameters(ListOf, HasIds, SbmlObject, HasParentObj):
 		raise InvalidXPath(selector)
 
 	def getByXPath(self, xpath):
-		return self.resolveXPath(xpath[0]).getByXPath(xpath[1:])
+		if len(xpath) > 0:
+			return self.resolveXPath(xpath[0]).getByXPath(xpath[1:])
+		else:
+			return self
 
 	def setByXPath(self, xpath, object):
 		self.resolveXPath(xpath[0]).setByXPath(xpath[1:], object)
 
 	def getXPath(self):
 		return "/".join([self.getParentObj().getXPath(), "sbml:listOfParameters"])
+
+	def addXML(self, xml_node):
+		t_parameter = Parameter(self.__model, self, self.nextId(),
+								local_parameter=self.are_local_parameters,
+								reaction=self.reaction)
+		t_parameter.readXML(xml_node)
+		ListOf.add(self, t_parameter)

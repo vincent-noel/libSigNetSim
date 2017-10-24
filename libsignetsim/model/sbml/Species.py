@@ -393,8 +393,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 	def setByXPath(self, xpath, object):
 
+		# In this case, we assume it points to the value
 		if len(xpath) == 0:
-			return InvalidXPath("/".join(xpath))
+			return self.setValue(object)
 
 		if len(xpath) > 1:
 			return InvalidXPath("/".join(xpath))
@@ -407,6 +408,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 		elif xpath[0] == "@id":
 			return self.setSbmlId(object)
+
+		else:
+			return InvalidXPath("/".join(xpath))
 
 	def getXPath(self, attribute=None):
 

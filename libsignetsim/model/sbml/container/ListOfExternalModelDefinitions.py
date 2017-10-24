@@ -26,18 +26,20 @@
 
 from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.model.sbml.container.HasIds import HasIds
+from libsignetsim.model.sbml.HasParentObj import HasParentObj
 from libsignetsim.model.ModelException import InvalidXPath
 
 from libsignetsim.model.sbml.ExternalModelDefinition import ExternalModelDefinition
 from libsignetsim.settings.Settings import Settings
 from re import match
 
-class ListOfExternalModelDefinitions(ListOf, HasIds):
+class ListOfExternalModelDefinitions(ListOf, HasIds, HasParentObj):
 	""" Class for the listOfExternalModelDefinition in a sbml model """
 
-	def __init__(self, model=None):
+	def __init__(self, model, parent_obj):
 
 		self.__model = model
+		HasParentObj.__init__(self, parent_obj)
 		ListOf.__init__(self, model)
 		HasIds.__init__(self, model)
 		# SbmlObject.__init__(self, model)
@@ -49,7 +51,7 @@ class ListOfExternalModelDefinitions(ListOf, HasIds):
 		""" Reads external model definitions' list from a sbml file """
 
 		for model in sbml_external_models:
-			t_model = ExternalModelDefinition(self.__model, self.nextId())
+			t_model = ExternalModelDefinition(self.__model, self.nextId(), self)
 			t_model.readSbml(model, sbml_level, sbml_version)
 			ListOf.add(self, t_model)
 
@@ -69,7 +71,7 @@ class ListOfExternalModelDefinitions(ListOf, HasIds):
 	def new(self):
 		""" Creates a new external model definition """
 
-		t_model = ExternalModelDefinition(self.__model, self.nextId())
+		t_model = ExternalModelDefinition(self.__model, self.nextId(), self)
 		ListOf.add(self, t_model)
 		return t_model
 
@@ -100,5 +102,8 @@ class ListOfExternalModelDefinitions(ListOf, HasIds):
 		return self.resolveXPath(xpath[0]).getByXPath(xpath[1:])
 
 	def setByXPath(self, xpath, value):
-
 		self.resolveXPath(xpath[0]).setByXPath(xpath[1:], value)
+
+	def getXPath(self):
+		return "/".join([self.getParentObj().getXPath(), "sbml:listOfExternalModelDefinitions"])
+

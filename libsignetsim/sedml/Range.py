@@ -25,6 +25,7 @@
 """
 
 from libsignetsim.sedml.HasId import HasId
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol
 from libsignetsim.settings.Settings import Settings
 
 
@@ -40,3 +41,6 @@ class Range(HasId):
 
 	def writeSedml(self, abstract_range, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 		HasId.writeSedml(self, abstract_range, level, version)
+
+	def getSymbol(self):
+		return SympySymbol(self.getId())

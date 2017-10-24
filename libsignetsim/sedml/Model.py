@@ -32,6 +32,7 @@ from libsignetsim.sedml.SedmlException import SedmlModelLanguageNotSupported
 from libsignetsim.model.SbmlDocument import SbmlDocument
 from libsignetsim.settings.Settings import Settings
 from os.path import exists, join, basename
+from lxml import etree
 
 
 class Model(SedBase, HasId):
@@ -98,9 +99,15 @@ class Model(SedBase, HasId):
 		return self.__sbmlModel
 
 	def __loadModel(self):
-
 		sbml_doc = SbmlDocument()
-		sbml_doc.readSbmlFromFile(self.__source.getFilename())
+
+		if self.listOfChanges.nbXMLChanges() > 0:
+			with open(self.__source.getFilename(), 'r') as sbml_file:
+				sbmlTree = etree.fromstring(sbml_file.read())
+				self.listOfChanges.applyXMLChanges(sbmlTree)
+				sbml_doc.readSbmlFromString(etree.tostring(sbmlTree))
+		else:
+			sbml_doc.readSbmlFromFile(self.__source.getFilename())
 
 		self.__sbmlModel = sbml_doc.getModelInstance()
 

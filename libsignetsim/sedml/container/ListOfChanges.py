@@ -28,11 +28,11 @@ from libsignetsim.sedml.container.ListOf import ListOf
 
 from libsignetsim.sedml.ChangeAttribute import ChangeAttribute
 from libsignetsim.sedml.ComputeChange import ComputeChange
-
+from libsignetsim.sedml.AddXML import AddXML
 from libsignetsim.settings.Settings import Settings
 
 import libsbml
-from libsedml import SEDML_CHANGE_ATTRIBUTE, SEDML_CHANGE_COMPUTECHANGE
+from libsedml import SEDML_CHANGE_ATTRIBUTE, SEDML_CHANGE_COMPUTECHANGE, SEDML_CHANGE_ADDXML
 reload(libsbml)
 
 class ListOfChanges(ListOf):
@@ -64,13 +64,21 @@ class ListOfChanges(ListOf):
 			self.__changeCounter += 1
 			return t_change
 
-		print len(self)
+		elif change_type == SEDML_CHANGE_ADDXML:
+			t_change = AddXML(self.__document)
+			t_change.setId(t_change_id)
+			ListOf.append(self, t_change)
+			self.__changeCounter += 1
+			return t_change
 
 	def createChangeAttribute(self, change_id=None):
 		return self.new(SEDML_CHANGE_ATTRIBUTE, change_id)
 
 	def createComputeChange(self, change_id=None):
 		return self.new(SEDML_CHANGE_COMPUTECHANGE, change_id)
+
+	def createAddXML(self, change_id=None):
+		return self.new(SEDML_CHANGE_ADDXML, change_id)
 
 	def readSedml(self, list_of_changes, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
@@ -90,6 +98,12 @@ class ListOfChanges(ListOf):
 				ListOf.append(self, t_change)
 				self.__changeCounter += 1
 
+			elif change.getTypeCode() == SEDML_CHANGE_ADDXML:
+				t_change = AddXML(self.__document)
+				t_change.readSedml(change, level, version)
+				ListOf.append(self, t_change)
+				self.__changeCounter += 1
+
 	def writeSedml(self, list_of_changes, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
 		ListOf.writeSedml(self, list_of_changes, level, version)
@@ -103,7 +117,25 @@ class ListOfChanges(ListOf):
 				t_change = list_of_changes.createComputeChange()
 				change.writeSedml(t_change, level, version)
 
+			elif isinstance(change, AddXML):
+				t_change = list_of_changes.createAddXML()
+				change.writeSedml(t_change, level, version)
+
 	def applyChanges(self, sbml_model):
 
 		for change in self:
-			change.applyChange(sbml_model)
+			if isinstance(change, ChangeAttribute) or isinstance(change, ComputeChange):
+				change.applyChange(sbml_model)
+
+	def applyXMLChanges(self, sbml_tree):
+		for change in self:
+			if isinstance(change, AddXML):
+				change.applyChange(sbml_tree)
+
+	def nbXMLChanges(self):
+
+		counter = 0
+		for change in self:
+			if isinstance(change, AddXML):
+				counter += 1
+		return counter

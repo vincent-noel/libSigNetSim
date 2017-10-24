@@ -12,6 +12,3 @@ then
 fi
 
 easy_install -U distribute
-
-# Installing dependencies for python-libsedml
-curl -sL https://raw.githubusercontent.com/vincent-noel/python-libsedml/master/scripts/install_dep_fedora.sh | bash -

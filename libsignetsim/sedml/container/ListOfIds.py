@@ -24,22 +24,38 @@
 
 """
 
-from libsignetsim.model.math.MathFormula import MathFormula
+from libsignetsim.sedml.SedBase import SedBase
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.ModelException import UnknownSIdRefException
 
 
-class HasParentObj(object):
-	""" HasParentObj property class """
+class ListOfIds(list):
 
+	def __init__(self, document):
 
-	def __init__ (self, parent_obj):
-		""" Constructor of class """
+		list.__init__(self)
+		self.__document = document
 
-		self.__parentObj = parent_obj
+	def ids(self):
+		""" Return a set of ids of the sedml objects """
+		return [obj.getId() for obj in self]
 
-	def getParentObj(self):
-		return self.__parentObj
+	def getById(self, sedml_id, pos=0):
+		""" Find sedml objects by their Id """
 
-	def setParentObj(self, parent_obj):
-		self.__parentObj = parent_obj
+		res = []
+		for obj in self:
+			if obj.getId() == sedml_id:
+				res.append(obj)
+
+		if len(res) > 0:
+			return res[pos]
+
+	def containsId(self, sedml_id):
+		""" Test if an sbml id is in the list """
+
+		res = False
+		for obj in self:
+			if sedml_id == obj.getId():
+				res = True
+
+		return res

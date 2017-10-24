@@ -38,13 +38,13 @@ class Optimization(OptimizationExecution, OptimizationParameters):
 	MODEL_VS_DATA = 1
 	MODEL_VS_STEADYSTATES = 2
 
-	def __init__ (self, SigNetSim=None, workingModel=None, parameters_to_fit=None, optimization_type=MODEL_VS_DATA):
+	def __init__(self, workingModel=None, parameters_to_fit=None, optimization_type=MODEL_VS_DATA, model_instance=False):
 
 		self.workingModel = workingModel
 		self.optimizationType = optimization_type
 
 		OptimizationExecution.__init__(self)
-		OptimizationParameters.__init__(self, workingModel, parameters_to_fit)
+		OptimizationParameters.__init__(self, workingModel, parameters_to_fit, model_instance)
 
 
 	def writeOptimizationFilesMain(self, nb_procs=1):

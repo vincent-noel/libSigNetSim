@@ -167,25 +167,41 @@ class CWriterData(object):
 
 							t_variable = None
 
-							treatment_name = None
-							if self.workingModel.listOfSpecies.containsName(treatment.name):
-								treatment_name = self.workingModel.listOfSpecies.getByName(treatment.name).getSbmlId()
-							elif self.workingModel.listOfParameters.containsName(treatment.name):
-								treatment_name = self.workingModel.listOfParameters.getByName(treatment.name).getSbmlId()
-							elif self.workingModel.listOfCompartments.containsName(treatment.name):
-								treatment_name = self.workingModel.listOfCompartments.getByName(treatment.name).getSbmlId()
+							if treatment.name_attribute == "name":
+								if self.workingModel.listOfVariables.containsName(treatment.name):
+									t_variable = self.workingModel.listOfVariables.getByName(treatment.name)
+								else:
+									raise UnknownTreatmentException("Cannot find a variable called %s" % treatment.name)
+
+							elif treatment.name_attribute == "id":
+								if self.workingModel.listOfVariables.containsSbmlId(treatment.name):
+									t_variable = self.workingModel.listOfVariables.getBySbmlId(treatment.name)
+								else:
+									raise UnknownTreatmentException("Cannot find a variable called %s" % treatment.name)
+
 							else:
-								raise UnknownTreatmentException("Cannot find a variable called %s" % treatment.name)
-								# print "Cannot find treatment with a name : %s" % treatment.name
+								raise UnknownTreatmentException("Unknown attribute for variable : %s" % treatment.name_attribute)
 
+							#
+							#
+							# if self.workingModel.listOfSpecies.containsName(treatment.name):
+							# 	treatment_name = self.workingModel.listOfSpecies.getByName(treatment.name).getSbmlId()
+							# elif self.workingModel.listOfParameters.containsName(treatment.name):
+							# 	treatment_name = self.workingModel.listOfParameters.getByName(treatment.name).getSbmlId()
+							# elif self.workingModel.listOfCompartments.containsName(treatment.name):
+							# 	treatment_name = self.workingModel.listOfCompartments.getByName(treatment.name).getSbmlId()
+							# else:
+							# 	raise UnknownTreatmentException("Cannot find a variable called %s" % treatment.name)
+							# 	# print "Cannot find treatment with a name : %s" % treatment.name
+							#
+							#
+							# if self.workingModel.getMathModel().listOfVariables.containsSymbol(SympySymbol(treatment_name)):
+							# 	t_variable = self.workingModel.getMathModel().listOfVariables.getBySymbol(SympySymbol(treatment_name))
 
-							if self.workingModel.getMathModel().listOfVariables.containsSymbol(SympySymbol(treatment_name)):
-								t_variable = self.workingModel.getMathModel().listOfVariables.getBySymbol(SympySymbol(treatment_name))
+							# if t_variable is not None:
 
-							if t_variable is not None:
-
-								f_c.write("  experiments[%d].conditions[%d].timed_treatments[%d].treatments[%d] = (Treatment) {%g, %d, %d};\n" % (
-												i, j, k, l, treatment.value, t_variable.type, t_variable.ind))
+							f_c.write("  experiments[%d].conditions[%d].timed_treatments[%d].treatments[%d] = (Treatment) {%g, %d, %d};\n" % (
+											i, j, k, l, treatment.value, t_variable.type, t_variable.ind))
 							# else:
 							# 	print "> ERROR: Couldn't find variable %s" % observed_value.name
 
@@ -200,34 +216,53 @@ class CWriterData(object):
 
 						# print "Observed values %d" % k
 						observed_name = None
-						if self.workingModel.listOfSpecies.containsName(observed_value.name):
-							observed_name = self.workingModel.listOfSpecies.getByName(observed_value.name).getSbmlId()
-						elif self.workingModel.listOfParameters.containsName(observed_value.name):
-							observed_name = self.workingModel.listOfParameters.getByName(observed_value.name).getSbmlId()
-						elif self.workingModel.listOfCompartments.containsName(observed_value.name):
-							observed_name = self.workingModel.listOfCompartments.getByName(observed_value.name).getSbmlId()
+
+						#
+						# if self.workingModel.listOfSpecies.containsName(observed_value.name):
+						# 	observed_name = self.workingModel.listOfSpecies.getByName(observed_value.name).getSbmlId()
+						# elif self.workingModel.listOfParameters.containsName(observed_value.name):
+						# 	observed_name = self.workingModel.listOfParameters.getByName(observed_value.name).getSbmlId()
+						# elif self.workingModel.listOfCompartments.containsName(observed_value.name):
+						# 	observed_name = self.workingModel.listOfCompartments.getByName(observed_value.name).getSbmlId()
+						# else:
+						# 	raise UnknownObservationException("Cannot find a variable called %s" % observed_value.name)
+						#
+						#
+						# t_variable = None
+						# if self.workingModel.getMathModel().listOfVariables.containsSymbol(SympySymbol(observed_name)):
+						# 	t_variable = self.workingModel.getMathModel().listOfVariables.getBySymbol(SympySymbol(observed_name))
+
+						if observed_value.name_attribute == "name":
+							if self.workingModel.listOfVariables.containsName(observed_value.name):
+								t_variable = self.workingModel.listOfVariables.getByName(observed_value.name)
+							else:
+								raise UnknownTreatmentException("Cannot find a variable called %s" % observed_value.name)
+
+						elif observed_value.name_attribute == "id":
+							if self.workingModel.listOfVariables.containsSbmlId(observed_value.name):
+								t_variable = self.workingModel.listOfVariables.getBySbmlId(observed_value.name)
+							else:
+								raise UnknownTreatmentException("Cannot find a variable called %s" % observed_value.name)
+
 						else:
-							raise UnknownObservationException("Cannot find a variable called %s" % observed_value.name)
+							raise UnknownTreatmentException(
+								"Unknown attribute for variable : %s" % observed_value.name_attribute)
 
-
-						t_variable = None
-						if self.workingModel.getMathModel().listOfVariables.containsSymbol(SympySymbol(observed_name)):
-							t_variable = self.workingModel.getMathModel().listOfVariables.getBySymbol(SympySymbol(observed_name))
 
 
 						if t_variable not in vars_observed.keys():
 							vars_observed.update({t_variable: len(vars_observed.keys()) })
 
-						if t_variable is not None:
-							t_variable_id = t_variable.getPos()
+						# if t_variable is not None:
+						t_variable_id = t_variable.getPos()
 
-							f_c.write("    experiments[%d].conditions[%d].observed_values[%d] = (ExperimentalObservation) {%g, %g, %g, %d, %g, %g, %d, %d, %d, %d};\n" % (
-											i,j,k,
-											observed_value.t, observed_value.value, observed_value.value_dev,
-											int(observed_value.steady_state), float(observed_value.min_steady_state), float(observed_value.max_steady_state),
-											t_variable.type, t_variable.ind, t_variable_id, vars_observed[t_variable]))
-						else:
-							print "> ERROR: Couldn't find variable %s" % observed_value.name
+						f_c.write("    experiments[%d].conditions[%d].observed_values[%d] = (ExperimentalObservation) {%g, %g, %g, %d, %g, %g, %d, %d, %d, %d};\n" % (
+										i,j,k,
+										observed_value.t, observed_value.value, observed_value.value_dev,
+										int(observed_value.steady_state), float(observed_value.min_steady_state), float(observed_value.max_steady_state),
+										t_variable.type, t_variable.ind, t_variable_id, vars_observed[t_variable]))
+						# else:
+						# 	print "> ERROR: Couldn't find variable %s" % observed_value.name
 		else:
 			f_c.write("    nb_experiments = 0;\n")
 			f_c.write("\n")

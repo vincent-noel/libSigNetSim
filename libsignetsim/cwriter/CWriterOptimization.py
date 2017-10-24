@@ -63,7 +63,6 @@ class CWriterOptimization(object):
 		mkdir(join(self.getTempDirectory(), "src"))
 		mkdir(join(self.getTempDirectory(), "lib"))
 
-
 		# First the code
 		mkdir(join(self.getTempDirectory(), "src/integrate"))
 		copyfile(join(Settings.basePath, "lib/integrate/src/integrate.h"), join(self.getTempDirectory(), "src/integrate/integrate.h"))
@@ -80,7 +79,6 @@ class CWriterOptimization(object):
 		copyfile(join(Settings.basePath, "lib/scoreFunctions.h"), join(self.getTempDirectory(), "src/scoreFunctions.h"))
 		copyfile(join(Settings.basePath, "lib/scoreFunctions.c"), join(self.getTempDirectory(), "src/scoreFunctions.c"))
 
-
 		# Then the shared libraries
 		copyfile(join(Settings.basePath, "lib/plsa/libplsa-serial.so"), join(self.getTempDirectory(), "lib/libplsa-serial.so"))
 		copyfile(join(Settings.basePath, "lib/plsa/libplsa-parallel.so"), join(self.getTempDirectory(), "lib/libplsa-parallel.so"))
@@ -88,9 +86,6 @@ class CWriterOptimization(object):
 
 		copyfile(join(Settings.basePath, "lib/templates/data_optimization/Makefile"), join(self.getTempDirectory(), "Makefile") )
 		copyfile(join(Settings.basePath, "lib/templates/data_optimization/main.c"), join(self.getTempDirectory(), "src/main.c") )
-
-
-
 
 	def writeOptimizationFilesHeaders(self, f_c, f_h):
 
@@ -102,12 +97,9 @@ class CWriterOptimization(object):
 		f_h.write("#include \"integrate/models.h\"\n")
 		f_h.write("#include \"scoreFunctions.h\"\n")
 
-
-
 	def writeOptimizationGlobals(self, f_c, f_h):
 
 		f_c.write("PArrPtr * my_plist;\n")
-
 
 	def writeOptimizationGlobalMethods(self, f_c, f_h):
 
@@ -115,22 +107,19 @@ class CWriterOptimization(object):
 		f_c.write("PArrPtr * getOptimParameters(void)\n")
 		f_c.write("{\n\treturn my_plist;\n}\n\n")
 
-
 	def writeOptimizationParameters(self, f_c, f_h):
 
 		f_h.write("void init_params(ModelDefinition * model);\n")
 		f_c.write("void init_params(ModelDefinition * model)\n{\n")
 
-
 		f_c.write("\tmy_plist = InitPLSAParameters(%d);\n" % len(self.parameters))
 
 		for (i_param, (param, value, lb, ub)) in enumerate(self.parameters):
-			f_c.write("\tmy_plist->array[%d] = (ParamList) {&(model->constant_variables[%d].value), %g, (Range) {%g, %g}, \"%s\"};\n" % (i_param, param.ind, value, lb, ub, param.symbol.getPrettyPrintMathFormula()))
+			f_c.write("\tmy_plist->array[%d] = (ParamList) {&(model->constant_variables[%d].value), %g, (Range) {%g, %g}, \"%s\"};\n" % (i_param, param.ind, value, lb, ub, param.getXPath()))
 
 		f_c.write("}")
 
-
-	def writeOptimizationSettings(self, f_c, f_h, nb_procs):
+	def writeOptimizationSettings(self, f_c, f_h):
 
 		f_h.write("void init_settings(SAType * settings);\n")
 		f_c.write("void init_settings(SAType * settings)\n{\n")
@@ -151,4 +140,4 @@ class CWriterOptimization(object):
 
 
 	def randomPlsaSeed(self):
-		return randrange(-2147483647,+2147483647)
+		return randrange(-2147483647, +2147483647)
