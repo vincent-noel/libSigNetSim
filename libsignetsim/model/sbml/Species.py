@@ -186,7 +186,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		if sbml_level >= 3 and self.isSetConversionFactor():
 			HasConversionFactor.writeSbml(self, sbml_sp, sbml_level, sbml_version)
 
-	def isInReactions(self, including_fast_reactions=False):
+	def isInReactions(self, including_fast_reactions=False, including_modifiers=False):
 		""" The purpose of this function is to test is the species's amount
 			is actually modified by a reaction. Thus not checking the Modifiers
 			makes sense.
@@ -214,7 +214,11 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 						# print ">>> product #%d : %s" % (i, product.getSpecies().getSbmlId())
 						if product.getSpecies() == self:
 							return True
-
+				if including_modifiers and reaction.listOfModifiers:
+					for i, modifier in enumerate(reaction.listOfModifiers.values()):
+						# print ">>> product #%d : %s" % (i, product.getSpecies().getSbmlId())
+						if modifier.getSpecies() == self:
+							return True
 		return False
 
 	def isInFastReactions(self):
