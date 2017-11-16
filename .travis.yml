@@ -7,8 +7,6 @@ language: python
 python: 2.7
 
 env:
-  global:
-    secure: "doIjzlMDo9o/VXXzqzWLe5Fg0fAh5qiakceM08HotzxOpI7MW83HIfE7TNKRrYNUHHc5PLMOnjXZg0zVatpakaRh7f6Aw+wOlQ01MZgTNyMwXdwy2wuugzmFRKDFR6VuiG++WlNYGoY5dHxpXe+WeWvXX5a9BrOq3CuKA7wLjAyja5Ni2ye+gAGufgPhllylfJlAT+j+nOdGTRhPsdJ+BVk2GwD+mxUWo77L7OWmAjexkNEK7S3kwpY5o+h6UO4g1/Ff3NjmbM0CkrQXPguTJKeoNGFgGudM33XMaKGaenYn+QGiPtZ25h2VvBcaFHLBxP2oXykEhjjY6+KM1UA35LfelJjbgVPAFPBlMc/RZy+K/PrJWhFRbZkjUrXAFMn3qkvxUyV3d55HpOK63qvja6U64NwjOsBynjbfn9pAIErMk6X3PMv6hAP9y+BMcOWjB7bsbuLBOoqpiQHBsczXhI+n7C7ACV8IOH1bSRR9fxfFzAhBHuLG7el/2KrqE3QRmEbxiRxlrMpQDoQt/Df143LKKfgUfAOfTujnSGtG7itouI4p2dNivqQflKQUMC6s8BnApr/v2MO3lncH8M4u0gqeioNV7W90O23Vvsbm9dVKki9nNfQVwSSgIBfn0tqeLJ3GLoN9SCc3Kd5JZ2m5V2lZmnpKkkJx93lF0VY8htE="
   - TEST_SUITE=sbml-test-suite VERSION=3.1
   - TEST_SUITE=sbml-test-suite VERSION=2.5
   - TEST_SUITE=sbml-test-suite VERSION=2.4
@@ -17,7 +15,7 @@ env:
   - TEST_SUITE=sbml-test-suite VERSION=2.1
   - TEST_SUITE=sbml-test-suite VERSION=1.2
   - TEST_SUITE=others
-  - TEST_SUITE=docker VERSION=$PASSWORD
+  - TEST_SUITE=docker secure: "KVIkF5zhVfJOjtrQEMWjbbql2I3H7iuWJ7uJoO2OdgdvRT6eCuFoZdEg0A+STjAiBYoTeR4H3DThmJUF+P+vOj1sbarz55a/25zksc8d3fF3HNr6GkkQBXCuyCMPi5aCuPA8aJfFzjfxz1ZH0bjEHBgOVhAUAc4lnM7oCjMxKPs4NwmTkFyJYV/8vb3nJRlXGt2FaDBz3Bus7IgwyPn5oitxDTAJ4uB9I9Nq1N/E4cQEFCXzDCHhJvR6lfWMhGLUA4F4j1bMVo69hfsP26ug8unLO2UWULsWdca45Tkr+zee1J+QyQOrmW6UU9is/dfoc4HbM8HYMPOdvHbEukLvFnA5xnkuMNUJgBf8AlFq7rJiXit1WmGvC967q2wcTFT3Z1E4hx9oKUU7R9ZN1ksVaLJT8j9qDz6BgUFHMymIxvLAFs45AJgG6p6Roi/uXJKehUKmRvFXW34fPZsdx8m7QBFHdHdVIEFeP1z2Kjf1GWkTZfk58gHq+VN6jjbSK/ijTQe8nRnNE7zczicowsxScSX0CJcSNfxmHix+ACtmWtxIoWxuXS886aTtfJZb56SPsVFWXqfv8i6VKjUs/lU3lO1zzsxiS1p8wsXKsjJorPguigNdzv+9a2sQlFFS4+6dNXUrw9xNfmKX/uocexwxT9tADHlwZl6l0hWTGM736jw="
 
 before_install:
 - /bin/bash travis_run.sh before_install $TESTSUITE $VERSION
