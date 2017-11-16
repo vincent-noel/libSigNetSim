@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Extension
 from setuptools.command.install import install
 from os.path import dirname, join
 import subprocess
@@ -12,7 +12,7 @@ class MyInstall(install):
 		subprocess.call(['make', '-C', 'libsignetsim/lib/plsa', 'all'])
 
 		#Compiling the numerical integration code
-		subprocess.call(['make', '-C', 'libsignetsim/lib/integrate'])
+		# subprocess.call(['make', '-C', 'libsignetsim/lib/integrate'])
 
 		install.do_egg_install(self)
 
@@ -39,6 +39,19 @@ setup(name='libsignetsim',
 		'pandas',
 		'lxml',
 		'coveralls<1.2.0'
+	],
+	ext_modules=[
+		Extension(
+			'libsignetsim.lib.integrate.integrate',
+			sources=[
+				'libsignetsim/lib/integrate/src/shared.c',
+				'libsignetsim/lib/integrate/src/events.c',
+				'libsignetsim/lib/integrate/src/ode.c',
+				'libsignetsim/lib/integrate/src/dae.c',
+				'libsignetsim/lib/integrate/src/integrate.c',
+				'libsignetsim/lib/integrate/src/realtype_math.c',
+			]
+		),
 	],
 	cmdclass={'install': MyInstall}
 )
