@@ -47,7 +47,7 @@ class TestCreateArchive(TestCase):
 		archive.writeArchive(join(Settings.tempDirectory, "test_00001.omex"))
 
 		create_archive = CombineArchive()
-		create_archive.readArchive(join(Settings.tempDirectory, "files", "test_00001.omex"))
+		create_archive.readArchive(join(Settings.tempDirectory, "test_00001.omex"))
 
 		files = create_archive.getListOfFiles()
 		for file in files:

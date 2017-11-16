@@ -43,7 +43,7 @@ class TestAnnotation(TestCase):
 		sbml_doc = SbmlDocument()
 		sbml_doc.readSbmlFromFile(join(testfiles_path, "BIOMD0000000001.xml"))
 		sbml_doc.writeSbmlToFile(join(Settings.tempDirectory, "BIOMD0000000001.xml"))
-		sbml_doc.readSbmlFromFile(join(Settings.tempDirectory, "BIOMD0000000001.xml"))
+		sbml_doc.readSbmlFromFile(join(testfiles_path, "BIOMD0000000001.xml"))
 
 		sbml_model = sbml_doc.getModelInstance()
 
