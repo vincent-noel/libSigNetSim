@@ -9,7 +9,7 @@ class MyInstall(install):
 
 	def run(self):
 		#Downloading and compiling plsa library
-		subprocess.call(['git', 'clone', 'https://github.com/vincent-noel/plsa.git', 'libsignetsim/lib/plsa'])
+		# subprocess.call(['git', 'clone', 'https://github.com/vincent-noel/plsa.git', 'libsignetsim/lib/plsa'])
 		subprocess.call(['make', '-C', 'libsignetsim/lib/plsa', 'all'])
 
 		#Compiling the numerical integration code
