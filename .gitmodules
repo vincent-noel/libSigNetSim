@@ -1,0 +1,3 @@
+[submodule "libsignetsim/lib/plsa"]
+	path = libsignetsim/lib/plsa
+	url = https://github.com/vincent-noel/plsa
