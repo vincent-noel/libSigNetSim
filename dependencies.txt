@@ -3,4 +3,3 @@ libsundials-serial
 libopenmpi-dev
 openmpi-bin
 python-pip
-git
