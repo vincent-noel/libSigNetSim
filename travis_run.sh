@@ -1,4 +1,6 @@
 #!/bin/bash
+echo $1
+echo $2
 
 if [ $2 = "docker" ]; then
     if [ $1 = "install" ]; then
