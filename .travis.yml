@@ -27,7 +27,7 @@ install:
 - docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; scripts/install.sh"
 
 script:
-- docker exec -u www-data test_env /bin/bash -c "cd /; bash /home/travis/build/vincent-noel/libSigNetSim/scripts/run_tests.sh $TEST_SUITE $VERSION"
+- docker exec -u www-data test_env /bin/bash -c "cd; bash /home/travis/build/vincent-noel/libSigNetSim/scripts/run_tests.sh $TEST_SUITE $VERSION"
 
 after_script:
 - coveralls

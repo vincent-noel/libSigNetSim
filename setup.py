@@ -1,20 +1,7 @@
 #!/usr/bin/env python
 
 from setuptools import setup, find_packages, Extension
-# from setuptools.command.install import install
 from os.path import dirname, join
-# import subprocess
-
-# class MyInstall(install):
-#
-# 	def run(self):
-# 		#compiling plsa library
-# 		subprocess.call(['make', '-C', 'libsignetsim/lib/plsa', 'all'])
-#
-# 		#Compiling the numerical integration code
-# 		# subprocess.call(['make', '-C', 'libsignetsim/lib/integrate'])
-#
-# 		install.do_egg_install(self)
 
 setup(name='libsignetsim',
 	version=open(join(dirname(__file__), 'VERSION')).read(),
@@ -52,6 +39,43 @@ setup(name='libsignetsim',
 				'libsignetsim/lib/integrate/src/realtype_math.c',
 			]
 		),
+		Extension(
+			'libsignetsim.lib.plsa.libplsa-serial',
+			sources=[
+				'libsignetsim/lib/plsa/src/config.c',
+				'libsignetsim/lib/plsa/src/error.c',
+				'libsignetsim/lib/plsa/src/distributions.c',
+				'libsignetsim/lib/plsa/src/random.c',
+				'libsignetsim/lib/plsa/src/plsa.c',
+				'libsignetsim/lib/plsa/src/lsa.c',
+				'libsignetsim/lib/plsa/src/moves.c',
+				'libsignetsim/lib/plsa/src/state.c',
+				'libsignetsim/lib/plsa/src/score.c',
+			]
+		),
+		Extension(
+			'libsignetsim.lib.plsa.libplsa-parallel',
+			sources=[
+				'libsignetsim/lib/plsa/src/config.c',
+				'libsignetsim/lib/plsa/src/error.c',
+				'libsignetsim/lib/plsa/src/distributions.c',
+				'libsignetsim/lib/plsa/src/random.c',
+				'libsignetsim/lib/plsa/src/plsa.c',
+				'libsignetsim/lib/plsa/src/lsa.c',
+				'libsignetsim/lib/plsa/src/moves.c',
+				'libsignetsim/lib/plsa/src/state.c',
+				'libsignetsim/lib/plsa/src/score.c',
+				'libsignetsim/lib/plsa/src/mixing.c',
+				'libsignetsim/lib/plsa/src/tuning.c',
+			],
+			include_dirs=[
+				"/usr/lib/openmpi/include/openmpi/opal/mca/event/libevent2021/libevent",
+				"/usr/lib/openmpi/include/openmpi/opal/mca/event/libevent2021/libevent/include",
+				"/usr/lib/openmpi/include",
+				"/usr/lib/openmpi/include/openmpi",
+			],
+			define_macros=[("MPI", None)],
+			extra_compile_args=["-pthread"]
+		)
 	],
-	#cmdclass={'install': MyInstall}
 )
