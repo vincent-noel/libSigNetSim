@@ -26,7 +26,7 @@
 
 from libsignetsim.model.SbmlDocument import SbmlDocument
 from libsignetsim.sedml.SedmlDocument import SedmlDocument
-
+from libsignetsim import Settings
 from unittest import TestCase
 from os.path import join, dirname, isdir
 from os import mkdir, getcwd
@@ -49,7 +49,7 @@ class TestXMLChanges(TestCase):
 
 		s = m.listOfSpecies.new("S", value=5)
 		p0 = m.listOfParameters.new("P0")
-		sbml_filename = join(testfiles_path, "testChanges.sbml")
+		sbml_filename = join(Settings.tempDirectory, "testChanges.sbml")
 		sbml_doc.writeSbmlToFile(sbml_filename)
 
 		sedml_doc = SedmlDocument()
@@ -111,7 +111,7 @@ class TestXMLChanges(TestCase):
 		self.assertEqual(sedml_doc.listOfOutputs[0].listOfCurves[0].getXData(),	[0, 1])
 		self.assertEqual(sedml_doc.listOfOutputs[0].listOfCurves[0].getYData(), [2, 2])
 
-		sedml_filename = join(testfiles_path, "testChanges.sedml")
+		sedml_filename = join(Settings.tempDirectory, "testChanges.sedml")
 		sedml_doc.writeSedmlToFile(sedml_filename)
 
 		sedml_doc_2 = SedmlDocument()

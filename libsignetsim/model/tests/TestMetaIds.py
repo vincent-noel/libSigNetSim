@@ -25,6 +25,8 @@
 """
 
 from libsignetsim.model.SbmlDocument import SbmlDocument
+from libsignetsim import Settings
+
 from unittest import TestCase
 from os.path import join, dirname
 from os import getcwd
@@ -47,7 +49,7 @@ class TestMetaIds(TestCase):
 
 
 		# Writing with defaults meta ids
-		sbml_doc.writeSbmlToFile(join(testfiles_path, "test_meta_ids_1.xml"))
+		sbml_doc.writeSbmlToFile(join(Settings.tempDirectory, "test_meta_ids_1.xml"))
 
 		# Forcing s2 to meta id '_meta_id_0_', which force the renaming of the existing one (the model)
 		s2.setMetaId("_meta_id_0_", force=True)
@@ -59,13 +61,13 @@ class TestMetaIds(TestCase):
 		model.unsetMetaId()
 		self.assertEqual(model.getMetaId(), None)
 
-		sbml_doc.writeSbmlToFile(join(testfiles_path, "test_meta_ids_2.xml"))
+		sbml_doc.writeSbmlToFile(join(Settings.tempDirectory, "test_meta_ids_2.xml"))
 
 		# During reading, compartment should get the default '_meta_id_0_' meta id. But when reading s2,
 		# it should be renamed
 
 		sbml_doc_2 = SbmlDocument()
-		sbml_doc_2.readSbmlFromFile(join(testfiles_path, "test_meta_ids_2.xml"))
+		sbml_doc_2.readSbmlFromFile(join(Settings.tempDirectory, "test_meta_ids_2.xml"))
 		model_2 = sbml_doc_2.getModelInstance()
 
 		# for key, obj in model_2.listOfSbmlObjects.items():
@@ -75,10 +77,10 @@ class TestMetaIds(TestCase):
 		self.assertEqual(s2.getMetaId(), "_meta_id_0_")
 		self.assertEqual(model_2.getMetaId(), "_meta_id_16_")
 
-		sbml_doc_2.writeSbmlToFile(join(testfiles_path, "test_meta_ids_3.xml"))
+		sbml_doc_2.writeSbmlToFile(join(Settings.tempDirectory, "test_meta_ids_3.xml"))
 
 		sbml_doc_3 = SbmlDocument()
-		sbml_doc_3.readSbmlFromFile(join(testfiles_path, "test_meta_ids_3.xml"))
+		sbml_doc_3.readSbmlFromFile(join(Settings.tempDirectory, "test_meta_ids_3.xml"))
 		model_3 = sbml_doc_3.getModelInstance()
 
 		s2 = model_3.listOfSpecies.getByName("B")

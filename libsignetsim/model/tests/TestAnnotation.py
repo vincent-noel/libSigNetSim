@@ -26,11 +26,12 @@
 
 from libsignetsim.model.SbmlDocument import SbmlDocument
 from libsignetsim.uris.URI import URI
+from libsignetsim import Settings
+
 from unittest import TestCase
 from os.path import join, dirname, isdir
 from os import mkdir, getcwd
 
-from libsignetsim import Settings
 
 class TestAnnotation(TestCase):
 	""" Tests high level functions """
@@ -42,7 +43,7 @@ class TestAnnotation(TestCase):
 		sbml_doc = SbmlDocument()
 		sbml_doc.readSbmlFromFile(join(testfiles_path, "BIOMD0000000001.xml"))
 		sbml_doc.writeSbmlToFile(join(Settings.tempDirectory, "BIOMD0000000001.xml"))
-		sbml_doc.readSbmlFromFile(join(testfiles_path, "BIOMD0000000001.xml"))
+		sbml_doc.readSbmlFromFile(join(Settings.tempDirectory, "BIOMD0000000001.xml"))
 
 		sbml_model = sbml_doc.getModelInstance()
 

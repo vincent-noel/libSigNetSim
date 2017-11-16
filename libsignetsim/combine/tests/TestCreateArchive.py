@@ -24,9 +24,11 @@
 
 """
 
-from libsignetsim import CombineArchive
+from libsignetsim import CombineArchive, Settings
+
 from unittest import TestCase
 from os.path import join, dirname, basename
+
 
 class TestCreateArchive(TestCase):
 
@@ -42,10 +44,10 @@ class TestCreateArchive(TestCase):
 		numl_file = archive.addFile(join(dirname(__file__), "files", "experiment_0.xml"))
 		numl_file.setMaster()
 
-		archive.writeArchive(join(dirname(__file__), "files", "test_00001.omex"))
+		archive.writeArchive(join(Settings.tempDirectory, "test_00001.omex"))
 
 		create_archive = CombineArchive()
-		create_archive.readArchive(join(dirname(__file__), "files", "test_00001.omex"))
+		create_archive.readArchive(join(Settings.tempDirectory, "files", "test_00001.omex"))
 
 		files = create_archive.getListOfFiles()
 		for file in files:

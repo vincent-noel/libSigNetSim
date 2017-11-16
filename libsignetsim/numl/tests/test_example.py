@@ -25,6 +25,7 @@
 """
 
 from libsignetsim.numl.NuMLDocument import NuMLDocument
+from libsignetsim import Settings
 
 from unittest import TestCase
 from os.path import join, dirname, isdir
@@ -59,10 +60,10 @@ class TestExample(TestCase):
 		tuple_value.createAtomicValue(root_square_mean, 0.158123)
 		tuple_value.createAtomicValue(standard_deviation, 0.159242)
 
-		numl_doc.writeNuMLToFile(join(join(dirname(__file__), "files"), "example_copy.xml"))
+		numl_doc.writeNuMLToFile(join(Settings.tempDirectory, "example_copy.xml"))
 		numl_doc = NuMLDocument()
-		numl_doc.readNuMLFromFile(join(join(dirname(__file__), "files"), "example_copy.xml"))
-		numl_doc.writeNuMLToFile(join(join(dirname(__file__), "files"), "example_copy_copy.xml"))
+		numl_doc.readNuMLFromFile(join(Settings.tempDirectory, "example_copy.xml"))
+		numl_doc.writeNuMLToFile(join(Settings.tempDirectory, "example_copy_copy.xml"))
 
 
 

@@ -25,7 +25,7 @@
 """
 import libnuml
 from libnuml import readNUMLFromFile, writeNUML, writeNUMLToString, XMLNode, NUMLDocument, readNUMLFromString
-
+from libsignetsim import Settings
 from unittest import TestCase
 from os.path import join, dirname
 
@@ -45,21 +45,15 @@ class TestExampleNotes(TestCase):
 		time_term.setOntologyURI("http://www.ebi.ac.uk/sbo/")
 		notes = "<notes><body xmlns=\"http://www.w3.org/1999/xhtml\"><p>This needs to be noted</p></body></notes>"
 		xml_notes = XMLNode.convertStringToXMLNode(notes)
-		print type(xml_notes)
-		print XMLNode.convertXMLNodeToString(xml_notes.getChild(0).getChild(0))
 		# print XMLNode.convertXMLNodeToString(xml_notes)
 		numl_doc.setNotes(xml_notes)
 
-		print XMLNode.convertXMLNodeToString(numl_doc.getNotes().getChild(0).getChild(0))
 		numl_doc_string = writeNUMLToString(numl_doc)
 		#
 		numl_doc_copy = readNUMLFromString(numl_doc_string)
-		print type(numl_doc_copy.getNotes())
-		print XMLNode.convertXMLNodeToString(numl_doc_copy.getNotes().getChild(0).getChild(0))
 
-		numl_doc_filename = join(dirname(__file__), "files", "example_notes.xml")
+		numl_doc_filename = join(Settings.tempDirectory, "example_notes.xml")
 		writeNUML(numl_doc, numl_doc_filename)
 
 		numl_doc_copy_file = readNUMLFromFile(numl_doc_filename)
-		print XMLNode.convertXMLNodeToString(numl_doc_copy_file.getNotes().getChild(0).getChild(0))
 
