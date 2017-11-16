@@ -18,13 +18,13 @@ env:
   - TEST_SUITE=docker secure: "KVIkF5zhVfJOjtrQEMWjbbql2I3H7iuWJ7uJoO2OdgdvRT6eCuFoZdEg0A+STjAiBYoTeR4H3DThmJUF+P+vOj1sbarz55a/25zksc8d3fF3HNr6GkkQBXCuyCMPi5aCuPA8aJfFzjfxz1ZH0bjEHBgOVhAUAc4lnM7oCjMxKPs4NwmTkFyJYV/8vb3nJRlXGt2FaDBz3Bus7IgwyPn5oitxDTAJ4uB9I9Nq1N/E4cQEFCXzDCHhJvR6lfWMhGLUA4F4j1bMVo69hfsP26ug8unLO2UWULsWdca45Tkr+zee1J+QyQOrmW6UU9is/dfoc4HbM8HYMPOdvHbEukLvFnA5xnkuMNUJgBf8AlFq7rJiXit1WmGvC967q2wcTFT3Z1E4hx9oKUU7R9ZN1ksVaLJT8j9qDz6BgUFHMymIxvLAFs45AJgG6p6Roi/uXJKehUKmRvFXW34fPZsdx8m7QBFHdHdVIEFeP1z2Kjf1GWkTZfk58gHq+VN6jjbSK/ijTQe8nRnNE7zczicowsxScSX0CJcSNfxmHix+ACtmWtxIoWxuXS886aTtfJZb56SPsVFWXqfv8i6VKjUs/lU3lO1zzsxiS1p8wsXKsjJorPguigNdzv+9a2sQlFFS4+6dNXUrw9xNfmKX/uocexwxT9tADHlwZl6l0hWTGM736jw="
 
 before_install:
-- /bin/bash travis_run.sh before_install $TESTSUITE $VERSION
+- /bin/bash travis_run.sh before_install $TEST_SUITE $VERSION
 
 install:
-- /bin/bash travis_run.sh install $TESTSUITE $VERSION
+- /bin/bash travis_run.sh install $TEST_SUITE $VERSION
 
 script:
-- /bin/bash travis_run.sh script $TESTSUITE $VERSION
+- /bin/bash travis_run.sh script $TEST_SUITE $VERSION
 
 after_script:
-- /bin/bash travis_run.sh after_script $TESTSUITE $VERSION
+- /bin/bash travis_run.sh after_script $TEST_SUITE $VERSION
