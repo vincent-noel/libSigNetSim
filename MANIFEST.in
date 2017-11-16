@@ -1,1 +1,1 @@
-recursive-include libsignetsim *.c *.h *.so Makefile
+recursive-include libsignetsim *.xml *.omex *.sdex *.c *.h *.so Makefile
