@@ -7,24 +7,24 @@ language: python
 python: 2.7
 
 env:
-  - TEST_SUITE=sbml-test-suite VERSION=3.1
-  - TEST_SUITE=sbml-test-suite VERSION=2.5
-  - TEST_SUITE=sbml-test-suite VERSION=2.4
-  - TEST_SUITE=sbml-test-suite VERSION=2.3
-  - TEST_SUITE=sbml-test-suite VERSION=2.2
-  - TEST_SUITE=sbml-test-suite VERSION=2.1
-  - TEST_SUITE=sbml-test-suite VERSION=1.2
-  - TEST_SUITE=others
-  - TEST_SUITE=docker secure: "KVIkF5zhVfJOjtrQEMWjbbql2I3H7iuWJ7uJoO2OdgdvRT6eCuFoZdEg0A+STjAiBYoTeR4H3DThmJUF+P+vOj1sbarz55a/25zksc8d3fF3HNr6GkkQBXCuyCMPi5aCuPA8aJfFzjfxz1ZH0bjEHBgOVhAUAc4lnM7oCjMxKPs4NwmTkFyJYV/8vb3nJRlXGt2FaDBz3Bus7IgwyPn5oitxDTAJ4uB9I9Nq1N/E4cQEFCXzDCHhJvR6lfWMhGLUA4F4j1bMVo69hfsP26ug8unLO2UWULsWdca45Tkr+zee1J+QyQOrmW6UU9is/dfoc4HbM8HYMPOdvHbEukLvFnA5xnkuMNUJgBf8AlFq7rJiXit1WmGvC967q2wcTFT3Z1E4hx9oKUU7R9ZN1ksVaLJT8j9qDz6BgUFHMymIxvLAFs45AJgG6p6Roi/uXJKehUKmRvFXW34fPZsdx8m7QBFHdHdVIEFeP1z2Kjf1GWkTZfk58gHq+VN6jjbSK/ijTQe8nRnNE7zczicowsxScSX0CJcSNfxmHix+ACtmWtxIoWxuXS886aTtfJZb56SPsVFWXqfv8i6VKjUs/lU3lO1zzsxiS1p8wsXKsjJorPguigNdzv+9a2sQlFFS4+6dNXUrw9xNfmKX/uocexwxT9tADHlwZl6l0hWTGM736jw="
-
+  - JOB=sbml-test-suite ARG=3.1
+  - JOB=sbml-test-suite ARG=2.5
+  - JOB=sbml-test-suite ARG=2.4
+  - JOB=sbml-test-suite ARG=2.3
+  - JOB=sbml-test-suite ARG=2.2
+  - JOB=sbml-test-suite ARG=2.1
+  - JOB=sbml-test-suite ARG=1.2
+  - JOB=others
+  - secure: "FPYoBFdmbc5kPuE16lqGRnlm/qwZ6eONcm33auAWIkp7JiSiLD4bZKYx+mBBiOy8bFI58pnXijQ0ruUDtHagFU9t7ozMXgaQAJjvxKqyJSwJpojTnveOKwUIaakbymAQa6+2cBC+IJ/yTlpqnxhWUolDc+9iTi0ZP91dVttxATJIguYtngVkcJsnMYWadThhjvfERkdHswDyGzB8Io725peA1xJwY5fDqmPTULsVMJs/XYBhGQEowURR3guxCsp5ghqXmxeqzlpMTGbgMZTQ++FGzfIC5ZVNqLFEXD/RrU5qxb9NHzff8WjGQo7mU1vALKkbFCHrCIJX/TTbLYIZg8r5hzbetFUh9YHtRCJIBfs+je1QdYO2GEHxgx2aHpnRwqH6EjefWglDWo9dBkdkkHg4R0p5CY2037vTmkWFcgtdZ7SR+AzV3dA37ETGFZSwIq/9OUqbKJ+5jofvGPQo+9Ol0fhQhNNueHKl+yfQ2rHbLwTUOZUjHiLTGdNO0WL7dSewh2KwACMKX+AiTQzCM/xgDZjdzVdquXb/H7lQcFWRJ0+4OqmjqIuQR9MKArxnoe5rHFzo+Yz8gYPSulI+qOQeSC7uboypNiFOzLcI89h7astges6cKe71yaxfIWoQ3cwvPHM4Q5Ej2zYWo9Sa7AsVTG6eAEGalRIV49A0UWY="
+  
 before_install:
-- /bin/bash travis_run.sh before_install $TEST_SUITE $VERSION
+- /bin/bash travis_run.sh before_install $JOB $ARG
 
 install:
-- /bin/bash travis_run.sh install $TEST_SUITE $VERSION
+- /bin/bash travis_run.sh install $JOB $ARG
 
 script:
-- /bin/bash travis_run.sh script $TEST_SUITE $VERSION
+- /bin/bash travis_run.sh script $JOB $ARG
 
 after_script:
-- /bin/bash travis_run.sh after_script $TEST_SUITE $VERSION
+- /bin/bash travis_run.sh after_script $JOB $ARG
