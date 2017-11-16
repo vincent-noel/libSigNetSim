@@ -5,4 +5,4 @@ INSTALL_DIR=`dirname $DIR`
 
 pip install -r $INSTALL_DIR/requirements.txt
 
-python $INSTALL_DIR/setup.py install
+pip install $INSTALL_DIR
