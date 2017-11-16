@@ -9,16 +9,15 @@ python: 2.7
 env:
   global:
     secure: "doIjzlMDo9o/VXXzqzWLe5Fg0fAh5qiakceM08HotzxOpI7MW83HIfE7TNKRrYNUHHc5PLMOnjXZg0zVatpakaRh7f6Aw+wOlQ01MZgTNyMwXdwy2wuugzmFRKDFR6VuiG++WlNYGoY5dHxpXe+WeWvXX5a9BrOq3CuKA7wLjAyja5Ni2ye+gAGufgPhllylfJlAT+j+nOdGTRhPsdJ+BVk2GwD+mxUWo77L7OWmAjexkNEK7S3kwpY5o+h6UO4g1/Ff3NjmbM0CkrQXPguTJKeoNGFgGudM33XMaKGaenYn+QGiPtZ25h2VvBcaFHLBxP2oXykEhjjY6+KM1UA35LfelJjbgVPAFPBlMc/RZy+K/PrJWhFRbZkjUrXAFMn3qkvxUyV3d55HpOK63qvja6U64NwjOsBynjbfn9pAIErMk6X3PMv6hAP9y+BMcOWjB7bsbuLBOoqpiQHBsczXhI+n7C7ACV8IOH1bSRR9fxfFzAhBHuLG7el/2KrqE3QRmEbxiRxlrMpQDoQt/Df143LKKfgUfAOfTujnSGtG7itouI4p2dNivqQflKQUMC6s8BnApr/v2MO3lncH8M4u0gqeioNV7W90O23Vvsbm9dVKki9nNfQVwSSgIBfn0tqeLJ3GLoN9SCc3Kd5JZ2m5V2lZmnpKkkJx93lF0VY8htE="
-  matrix:
-    - TEST_SUITE=sbml-test-suite VERSION=3.1
-    - TEST_SUITE=sbml-test-suite VERSION=2.5
-    - TEST_SUITE=sbml-test-suite VERSION=2.4
-    - TEST_SUITE=sbml-test-suite VERSION=2.3
-    - TEST_SUITE=sbml-test-suite VERSION=2.2
-    - TEST_SUITE=sbml-test-suite VERSION=2.1
-    - TEST_SUITE=sbml-test-suite VERSION=1.2
-    - TEST_SUITE=others
-    - TEST_SUITE=docker VERSION=$PASSWORD
+  - TEST_SUITE=sbml-test-suite VERSION=3.1
+  - TEST_SUITE=sbml-test-suite VERSION=2.5
+  - TEST_SUITE=sbml-test-suite VERSION=2.4
+  - TEST_SUITE=sbml-test-suite VERSION=2.3
+  - TEST_SUITE=sbml-test-suite VERSION=2.2
+  - TEST_SUITE=sbml-test-suite VERSION=2.1
+  - TEST_SUITE=sbml-test-suite VERSION=1.2
+  - TEST_SUITE=others
+  - TEST_SUITE=docker VERSION=$PASSWORD
 
 before_install:
 - /bin/bash travis_run.sh before_install $TESTSUITE $VERSION
