@@ -22,12 +22,12 @@ before_install:
 
 install:
 - docker run -di --name test_env -v $(pwd):/home/travis/build/vincent-noel/libSigNetSim signetsim/travis_testenv:stretch bash
-- docker exec test_env chown -R www-data:www-data /home/travis/build/vincent-noel/libSigNetSim
+- docker exec test_env chown -R www-data:www-data /home/travis/
 - docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; bash scripts/install_dep.sh"
 - docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; scripts/install.sh"
 
 script:
-- docker exec -u www-data test_env /bin/bash -c "cd; bash /home/travis/build/vincent-noel/libSigNetSim/scripts/run_tests.sh $TEST_SUITE $VERSION"
+- docker exec -u www-data test_env /bin/bash -c "cd /home/travis/; bash /home/travis/build/vincent-noel/libSigNetSim/scripts/run_tests.sh $TEST_SUITE $VERSION"
 
 after_script:
 - coveralls
