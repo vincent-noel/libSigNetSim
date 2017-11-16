@@ -8,7 +8,7 @@ if [ $2 = "docker" ]; then
     elif [ $1 = "script" ]; then
         docker-compose build || exit 1;
 
-    elif [ $1 == "after_script"]; then
+    elif [ $1 == "after_script" ]; then
         docker push signetsim/notebook:develop || exit 1;
 
     else
