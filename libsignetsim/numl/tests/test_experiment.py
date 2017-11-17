@@ -36,9 +36,6 @@ class TestExperiment(TestCase):
 
 	def testExperiment(self):
 
-		if not isdir(join(dirname(__file__), "files")):
-			mkdir(join(dirname(__file__), "files"))
-
 		numl_doc = NuMLDocument()
 		numl_doc.readNuMLFromFile(join(join(dirname(__file__), "files"), "experiment_0.xml"))
 		numl_doc.writeNuMLToFile(join(Settings.tempDirectory, "experiment_0_copy.xml"))

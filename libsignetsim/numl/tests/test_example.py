@@ -37,9 +37,6 @@ class TestExample(TestCase):
 
 	def testExample(self):
 
-		if not isdir(join(dirname(__file__), "files")):
-			mkdir(join(dirname(__file__), "files"))
-
 		numl_doc = NuMLDocument()
 		numl_doc.readNuMLFromFile(join(join(dirname(__file__), "files"), "example.xml"))
 
