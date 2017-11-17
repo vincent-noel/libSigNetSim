@@ -51,7 +51,7 @@ class TestMath(TestCase):
 		s = m.listOfSpecies.new("S", value=12)
 		p = m.listOfSpecies.new("P", value=0)
 
-		sbml_filename = join(testfiles_path, "testMath.sbml")
+		sbml_filename = join(Settings.tempDirectory, "testMath.sbml")
 		sbml_doc.writeSbmlToFile(sbml_filename)
 
 		sedml_doc = SedmlDocument()
