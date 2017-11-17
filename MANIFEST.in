@@ -1,1 +1,1 @@
-recursive-include libsignetsim *.xml *.sedml *.sbml *.omex *.sdex *.c *.h *.so Makefile
+recursive-include libsignetsim *.xml *.sedml *.sbml *.omex *.sedx *.c *.h *.so Makefile
