@@ -1,12 +1,18 @@
 #!/bin/bash
 
 if [ $2 = "docker" ]; then
-    if [ $1 = "install" ]; then
+    if [ $1 = "before_install" ]; then
         pip install docker-compose || exit 1;
         docker login -u signetsim -p $3 || exit 1;
 
-    elif [ $1 = "script" ]; then
+    elif [ $1 = "install" ]; then
         docker-compose build || exit 1;
+
+    elif [ $1 = "script" ]; then
+        docker run --name notebook -p 8888:8888 -d signetsim/notebook:develop || exit 1;
+        WEB_RETURN=`wget -q -O - localhost:8888 | grep \<title\> | cut -d">" -f2 | cut -d"<" -f1 | cut -d" " -f1"`
+        exit `expr ${WEB_RETURN} != Jupyter`;
+
 
     elif [ $1 == "after_script" ]; then
         docker push signetsim/notebook:develop || exit 1;
