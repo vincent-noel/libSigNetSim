@@ -24,8 +24,7 @@
 
 """
 
-from libsignetsim.data.Experiment import Experiment
-from libsignetsim import Settings
+from libsignetsim import Settings, Experiment
 
 from unittest import TestCase
 from os.path import join, dirname, isdir

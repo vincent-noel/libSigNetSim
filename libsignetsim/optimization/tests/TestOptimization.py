@@ -26,7 +26,7 @@
 
 from libsignetsim.model.Model import Model
 from libsignetsim.data.Experiment import Experiment
-from libsignetsim.optimization.ModelVsTimeseriesOptimization import ModelVsTimeseriesOptimization
+from libsignetsim import ModelVsTimeseriesOptimization
 
 from unittest import TestCase
 

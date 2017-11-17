@@ -3,7 +3,6 @@
 if [ $2 = "docker" ]; then
     if [ $1 = "before_install" ]; then
         pip install docker-compose || exit 1;
-        apt-get -qq update; apt install wget
         docker login -u signetsim -p $3 || exit 1;
 
     elif [ $1 = "install" ]; then

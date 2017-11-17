@@ -24,7 +24,7 @@
 
 """
 import libnuml
-from libnuml import readNUMLFromFile, writeNUML, writeNUMLToString, XMLNode, NUMLDocument, readNUMLFromString
+from libnuml import readNUMLFromFile, writeNUML, writeNUMLToString, XMLNode, NUMLDocument
 from libsignetsim import Settings
 from unittest import TestCase
 from os.path import join, dirname
@@ -45,13 +45,9 @@ class TestExampleNotes(TestCase):
 		time_term.setOntologyURI("http://www.ebi.ac.uk/sbo/")
 		notes = "<notes><body xmlns=\"http://www.w3.org/1999/xhtml\"><p>This needs to be noted</p></body></notes>"
 		xml_notes = XMLNode.convertStringToXMLNode(notes)
-		# print XMLNode.convertXMLNodeToString(xml_notes)
 		numl_doc.setNotes(xml_notes)
 
 		numl_doc_string = writeNUMLToString(numl_doc)
-		#
-		numl_doc_copy = readNUMLFromString(numl_doc_string)
-
 		numl_doc_filename = join(Settings.tempDirectory, "example_notes.xml")
 		writeNUML(numl_doc, numl_doc_filename)
 

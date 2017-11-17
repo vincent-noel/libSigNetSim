@@ -25,11 +25,7 @@
 """
 
 from libsignetsim.simulation.Simulation import Simulation
-
-from libsignetsim.data.ExperimentalCondition import ExperimentalCondition
-from libsignetsim.data.ExperimentalData import ExperimentalData
-from libsignetsim.data.ListOfExperimentalData import ListOfExperimentalData
-from libsignetsim.data.Experiment import Experiment as Experiment
+from libsignetsim.data.Experiment import Experiment
 
 from libsignetsim.settings.Settings import Settings
 
@@ -69,22 +65,11 @@ class SteadyStatesSimulation(Simulation):
             self.experiment.name = "SteadyState"
             for initial_value in list_of_initial_values:
 
-                t_condition = ExperimentalCondition()
-                list_of_experimental_data = ListOfExperimentalData()
-                list_of_input_data = ListOfExperimentalData()
-
-                t_experimental_data = ExperimentalData()
-
-                t_experimental_data.name = species_input.getSbmlId()
-                t_experimental_data.name_attribute = "id"
-                t_experimental_data.t = 0
-                t_experimental_data.value = initial_value
-
-                list_of_input_data.add(t_experimental_data)
-
-                t_condition.read(list_of_input_data, list_of_experimental_data)
-
-                self.experiment.addCondition(t_condition)
+                t_condition = self.experiment.createCondition()
+                t_condition.addInitialCondition(
+                    t=0, name=species_input.getSbmlId(),
+                    value=initial_value, name_attribute="id"
+                )
 
     def run(self):
 

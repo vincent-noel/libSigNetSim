@@ -27,5 +27,21 @@
 import matplotlib
 matplotlib.use("agg", warn=False)
 
-from combine import CombineArchive
+from combine import (
+	CombineArchive, CombineException, FileNotFoundException, NotAZipFileException, NoManifestFoundException,
+	NoMasterSedmlFoundException, NoMasterSbmlFoundException, NoMasterNumlFoundException, NoSedmlFoundException
+)
 from settings import Settings
+from data import Experiment
+from numl import NuMLDocument, NuMLException, NuMLFileNotFound
+from sedml import (
+	SedmlDocument, SedmlException, SedmlMathException, SedmlFileNotFound, SedmlMixedSubtasks,
+	SedmlModelLanguageNotSupported, SedmlModelNotFound, SedmlModelObjectNotFound, SedmlMultipleModels,
+	SedmlNotImplemented, SedmlOneStepTaskException, SedmlUnknownURI, SedmlUnknownXPATH
+)
+from simulation import (
+	TimeseriesSimulation, SteadyStatesSimulation, SimulationCompilationException, SimulationExecutionException,
+	SimulationNoDataException, SimulationException
+)
+
+from optimization import ModelVsTimeseriesOptimization, OptimizationException

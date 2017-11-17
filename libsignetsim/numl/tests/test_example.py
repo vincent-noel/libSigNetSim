@@ -24,12 +24,10 @@
 
 """
 
-from libsignetsim.numl.NuMLDocument import NuMLDocument
-from libsignetsim import Settings
+from libsignetsim import NuMLDocument, Settings
 
 from unittest import TestCase
-from os.path import join, dirname, isdir
-from os import mkdir
+from os.path import join, dirname
 
 
 class TestExample(TestCase):

@@ -24,3 +24,9 @@
 
 """
 
+from SedmlDocument import SedmlDocument
+from SedmlException import (
+	SedmlException, SedmlMathException, SedmlFileNotFound, SedmlMixedSubtasks, SedmlModelLanguageNotSupported,
+	SedmlModelNotFound, SedmlModelObjectNotFound, SedmlMultipleModels, SedmlNotImplemented, SedmlOneStepTaskException,
+	SedmlUnknownURI, SedmlUnknownXPATH
+)

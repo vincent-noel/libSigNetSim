@@ -24,7 +24,7 @@
 
 """
 
-from libsignetsim.sedml.SedmlDocument import SedmlDocument
+from libsignetsim import SedmlDocument
 
 from unittest import TestCase
 from os.path import join, dirname, isdir
