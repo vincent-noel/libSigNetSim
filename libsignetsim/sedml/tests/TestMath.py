@@ -24,8 +24,7 @@
 
 """
 
-from libsignetsim.model.SbmlDocument import SbmlDocument
-from libsignetsim import SedmlDocument, Settings
+from libsignetsim import SbmlDocument, SedmlDocument, Settings
 from unittest import TestCase
 from os.path import join, dirname, isdir
 from os import mkdir, getcwd

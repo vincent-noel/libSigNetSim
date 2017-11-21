@@ -24,8 +24,7 @@
 
 """
 
-from libsignetsim.model.SbmlDocument import SbmlDocument
-from libsignetsim import Experiment, ModelVsTimeseriesOptimization
+from libsignetsim import SbmlDocument, Experiment, ModelVsTimeseriesOptimization
 
 from unittest import TestCase
 from os.path import join, dirname

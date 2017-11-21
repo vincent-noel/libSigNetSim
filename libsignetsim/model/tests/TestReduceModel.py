@@ -24,7 +24,7 @@
 
 """
 
-from libsignetsim.model.SbmlDocument import SbmlDocument
+from libsignetsim import SbmlDocument
 
 from unittest import TestCase
 from os.path import join, dirname

@@ -45,3 +45,15 @@ from simulation import (
 )
 
 from optimization import ModelVsTimeseriesOptimization, OptimizationException
+
+from model import (
+	Model, SbmlDocument, MathFormula, KineticLaw,
+	ModelException, SbmlException, FileException,
+	MissingModelException, MissingSubmodelException,
+	PackageNotImplementedModelException, TagNotImplementedModelException,
+	UnknownSIdRefException, InvalidXPath,
+	CannotCreateException, CannotDeleteException,
+
+)
+
+from LibSigNetSimException import LibSigNetSimException

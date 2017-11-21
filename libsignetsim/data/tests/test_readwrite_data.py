@@ -27,8 +27,7 @@
 from libsignetsim import Settings, Experiment
 
 from unittest import TestCase
-from os.path import join, dirname, isdir
-from os import mkdir
+from os.path import join
 
 
 class TestReadWriteData(TestCase):

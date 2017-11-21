@@ -24,9 +24,7 @@
 
 """
 
-from libsignetsim.model.Model import Model
-from libsignetsim.model.SbmlDocument import SbmlDocument
-from libsignetsim import TimeseriesSimulation, Settings
+from libsignetsim import Model, SbmlDocument, TimeseriesSimulation, Settings
 from unittest import TestCase
 from os.path import exists, join, dirname
 

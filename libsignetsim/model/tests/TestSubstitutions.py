@@ -24,7 +24,7 @@
 
 """
 
-from libsignetsim.model.SbmlDocument import SbmlDocument
+from libsignetsim import SbmlDocument
 from libsignetsim.model.sbml.ReplacedElement import ReplacedElement
 from libsignetsim.model.sbml.ReplacedBy import ReplacedBy
 

@@ -24,3 +24,17 @@
 
 """
 
+from Model import Model
+
+from ModelException import (
+	ModelException, SbmlException, FileException,
+	MissingModelException, MissingSubmodelException,
+	PackageNotImplementedModelException, TagNotImplementedModelException,
+	UnknownSIdRefException, InvalidXPath,
+	CannotCreateException, CannotDeleteException
+)
+
+from SbmlDocument import SbmlDocument
+
+from math import MathFormula
+from sbml import KineticLaw

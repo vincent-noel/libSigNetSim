@@ -24,7 +24,7 @@
 
 """
 
-from libsignetsim.model.Model import Model
+from libsignetsim import Model
 from libsignetsim.model.sbml.UnitDefinition import UnitDefinition, Unit
 
 from unittest import TestCase

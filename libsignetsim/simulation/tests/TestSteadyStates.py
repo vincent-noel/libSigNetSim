@@ -24,8 +24,7 @@
 
 """
 
-from libsignetsim.model.Model import Model
-from libsignetsim import SteadyStatesSimulation
+from libsignetsim import Model, SteadyStatesSimulation
 
 from unittest import TestCase
 

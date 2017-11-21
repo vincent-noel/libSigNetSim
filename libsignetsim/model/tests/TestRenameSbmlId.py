@@ -24,9 +24,7 @@
 
 """
 
-from libsignetsim.model.Model import Model
-from libsignetsim.model.sbml.KineticLaw import KineticLaw
-from libsignetsim.model.math.MathFormula import MathFormula
+from libsignetsim import Model, KineticLaw, MathFormula
 
 from unittest import TestCase
 from sympy import simplify
