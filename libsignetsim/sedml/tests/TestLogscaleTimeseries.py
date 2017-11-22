@@ -37,8 +37,6 @@ class TestSteadyStatesScan(TestCase):
 	def testFig4BPubli(self):
 
 		testfiles_path = join(dirname(__file__), "files")
-		if not isdir(testfiles_path):
-			mkdir(testfiles_path)
 
 		sedml_doc = SedmlDocument()
 

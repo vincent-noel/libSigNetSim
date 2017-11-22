@@ -111,18 +111,19 @@ class ListOfParameters(ListOf, HasIds, SbmlObject, HasParentObj):
 					ListOf.add(self, t_parameter)
 
 
-	def remove(self, parameter):
+	def remove(self, parameter, full_remove=True):
 		""" Remove an object from the list """
 
-		if parameter.isInRules():
-			raise CannotDeleteException("Parameter in used in rules")
+		if full_remove:
+			if parameter.isInRules():
+				raise CannotDeleteException("Parameter in used in rules")
 
-		if parameter.isInReactionsRates():
-			raise CannotDeleteException("Parameter in used in reactions")
+			if parameter.isInReactionsRates():
+				raise CannotDeleteException("Parameter in used in reactions")
 
-		self.__model.listOfVariables.removeVariable(parameter)
-		# self.model.listOfSbmlIds.removeSbmlId(parameter)
-		ListOf.remove(self, parameter)
+			self.__model.listOfVariables.removeVariable(parameter)
+
+		ListOf.remove(self, parameter, full_remove=full_remove)
 
 
 	def removeById(self, parameter_obj_id):

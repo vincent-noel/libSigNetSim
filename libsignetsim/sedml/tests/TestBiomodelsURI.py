@@ -36,9 +36,6 @@ class TestBiomodelsURI(TestCase):
 
 	def testBiomodelsURI(self):
 
-		if not isdir(join(dirname(__file__), "files")):
-			mkdir(join(dirname(__file__), "files"))
-
 		sedml_doc = SedmlDocument()
 
 		model = sedml_doc.listOfModels.createModel()
