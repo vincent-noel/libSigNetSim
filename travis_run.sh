@@ -9,13 +9,13 @@ if [ $2 = "docker" ]; then
         docker-compose build || exit 1;
 
     elif [ $1 = "script" ]; then
-        docker run --name notebook -p 8888:8888 -d signetsim/notebook:develop || exit 1;
+        docker run --name notebook -p 8888:8888 -d signetsim/notebook:master || exit 1;
         WEB_RETURN=`wget -q -O - localhost:8888 | grep \<title\> | cut -d">" -f2 | cut -d"<" -f1 | cut -d" " -f1`
         exit `expr ${WEB_RETURN} != Jupyter`;
 
 
     elif [ $1 == "after_script" ]; then
-        docker push signetsim/notebook:develop || exit 1;
+        docker push signetsim/notebook:master || exit 1;
 
     else
         exit 0;

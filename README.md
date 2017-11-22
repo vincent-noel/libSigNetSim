@@ -31,7 +31,8 @@ You can run a Jupyter notebook, in a virtual environment, using
 
 You can also run a notebook in a docker, using
 
-	scripts/run_docker_notebook.sh
+	docker pull signetsim/notebook
+	docker run --name notebook -p 8888:8888 -d signetsim/notebook 
 
 Both will start the notebook on localhost:8888
 For the docker, password is the name of this repository
