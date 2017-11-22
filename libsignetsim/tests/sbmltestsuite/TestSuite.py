@@ -26,7 +26,7 @@
 """
 
 from libsignetsim.tests.sbmltestsuite.TestSuiteCase import TestSuiteCase
-from libsignetsim.settings.Settings import Settings
+from libsignetsim import Settings
 
 from os.path import join, expanduser, exists
 from os import getcwd, mkdir, system

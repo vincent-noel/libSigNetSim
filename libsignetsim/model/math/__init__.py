@@ -24,3 +24,4 @@
 
 """
 
+from MathFormula import MathFormula

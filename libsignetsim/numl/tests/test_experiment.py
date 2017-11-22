@@ -24,11 +24,9 @@
 
 """
 
-from libsignetsim.numl.NuMLDocument import NuMLDocument
-
+from libsignetsim import NuMLDocument, Settings
 from unittest import TestCase
-from os.path import join, dirname, isdir
-from os import mkdir
+from os.path import join, dirname
 
 
 class TestExperiment(TestCase):
@@ -36,15 +34,12 @@ class TestExperiment(TestCase):
 
 	def testExperiment(self):
 
-		if not isdir(join(dirname(__file__), "files")):
-			mkdir(join(dirname(__file__), "files"))
-
 		numl_doc = NuMLDocument()
 		numl_doc.readNuMLFromFile(join(join(dirname(__file__), "files"), "experiment_0.xml"))
-		numl_doc.writeNuMLToFile(join(join(dirname(__file__), "files"), "experiment_0_copy.xml"))
+		numl_doc.writeNuMLToFile(join(Settings.tempDirectory, "experiment_0_copy.xml"))
 		numl_doc = NuMLDocument()
-		numl_doc.readNuMLFromFile(join(join(dirname(__file__), "files"), "experiment_0_copy.xml"))
-		numl_doc.writeNuMLToFile(join(join(dirname(__file__), "files"), "experiment_0_copy_copy.xml"))
+		numl_doc.readNuMLFromFile(join(Settings.tempDirectory, "experiment_0_copy.xml"))
+		numl_doc.writeNuMLToFile(join(Settings.tempDirectory, "experiment_0_copy_copy.xml"))
 
 
 

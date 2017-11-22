@@ -284,8 +284,8 @@ class KineticLaw(KineticLawIdentifier):
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 
-		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
 		self.__definition.renameSbmlId(
 			"_local_%d_%s" % (self.reaction.objId, old_sbml_id),
 			"_local_%d_%s" % (self.reaction.objId, new_sbml_id)
 		)
+		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)

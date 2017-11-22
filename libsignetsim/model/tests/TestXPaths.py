@@ -24,8 +24,7 @@
 
 """
 
-from libsignetsim.model.SbmlDocument import SbmlDocument
-from libsignetsim.model.sbml.KineticLaw import KineticLaw
+from libsignetsim import SbmlDocument, KineticLaw
 
 from unittest import TestCase
 from os.path import join, dirname

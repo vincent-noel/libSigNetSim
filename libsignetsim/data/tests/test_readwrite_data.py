@@ -24,20 +24,16 @@
 
 """
 
-from libsignetsim.data.Experiment import Experiment
+from libsignetsim import Settings, Experiment
 
 from unittest import TestCase
-from os.path import join, dirname, isdir
-from os import mkdir
+from os.path import join
 
 
 class TestReadWriteData(TestCase):
 	""" Tests high level functions """
 
 	def testReadWriteData(self):
-
-		if not isdir(join(dirname(__file__), "files")):
-			mkdir(join(dirname(__file__), "files"))
 
 		# Initializing data structure
 		experiment = Experiment("Ras-GTP, ERK1-2 quantifications")
@@ -66,21 +62,18 @@ class TestReadWriteData(TestCase):
 		condition_1.addObservation(1800, "Total Ras-GTP", 68)
 		condition_1.addObservation(3600, "Total Ras-GTP", 60)
 
-		experiment.writeNuMLToFile(join(join(dirname(__file__), "files"), "data.xml"))
+		experiment.writeNuMLToFile(join(Settings.tempDirectory, "data.xml"))
 
 		experiment_imported = Experiment()
-		experiment_imported.readNuMLFromFile(join(join(dirname(__file__), "files"), "data.xml"))
+		experiment_imported.readNuMLFromFile(join(Settings.tempDirectory, "data.xml"))
 
 		self.assertEqual(experiment_imported.getMaxTime(), 3600.0)
 		self.assertEqual(experiment_imported.getTimes(), [0.0, 900.0, 1800.0, 300.0, 3600.0, 180.0, 60.0])
 		self.assertEqual(experiment_imported.getTreatedVariables(), ['FGF2'])
 
-		experiment_imported.writeNuMLToFile(join(join(dirname(__file__), "files"), "data_copy.xml"))
+		experiment_imported.writeNuMLToFile(join(Settings.tempDirectory, "data_copy.xml"))
 
 	def testAttribute(self):
-
-		if not isdir(join(dirname(__file__), "files")):
-			mkdir(join(dirname(__file__), "files"))
 
 		experiment = Experiment("Ras-GTP, ERK1-2 quantifications")
 		experiment.notes = "Elisa quantifications for RAS-GTP, Western blot quanfitication for ERK1-2"
@@ -108,13 +101,13 @@ class TestReadWriteData(TestCase):
 		condition_1.addObservation(1800, "total_ras_gtp", 68, name_attribute="id")
 		condition_1.addObservation(3600, "total_ras_gtp", 60, name_attribute="id")
 
-		experiment.writeNuMLToFile(join(join(dirname(__file__), "files"), "data_with_ids.xml"))
+		experiment.writeNuMLToFile(join(Settings.tempDirectory, "data_with_ids.xml"))
 
 		experiment_imported = Experiment()
-		experiment_imported.readNuMLFromFile(join(join(dirname(__file__), "files"), "data_with_ids.xml"))
+		experiment_imported.readNuMLFromFile(join(Settings.tempDirectory, "data_with_ids.xml"))
 
 		self.assertEqual(experiment_imported.getMaxTime(), 3600.0)
 		self.assertEqual(experiment_imported.getTimes(), [0.0, 900.0, 1800.0, 300.0, 3600.0, 180.0, 60.0])
 		self.assertEqual(experiment_imported.getTreatedVariables(), ['fgf2'])
 
-		experiment_imported.writeNuMLToFile(join(join(dirname(__file__), "files"), "data_with_ids_copy.xml"))
+		experiment_imported.writeNuMLToFile(join(Settings.tempDirectory, "data_with_ids_copy.xml"))

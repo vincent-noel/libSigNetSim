@@ -62,9 +62,9 @@ class TestShowCase(TestCase):
 
 		ca = CombineArchive()
 		ca.readArchive(join(join(dirname(__file__), "files"), "CombineArchiveShowCase.omex"))
-		ca.writeArchive(join(join(dirname(__file__), "files"), "CombineArchiveShowCase(2).omex"))
+		ca.writeArchive(join(Settings.tempDirectory, "CombineArchiveShowCase(2).omex"))
 		ca = CombineArchive()
-		ca.readArchive(join(join(dirname(__file__), "files"), "CombineArchiveShowCase(2).omex"))
+		ca.readArchive(join(Settings.tempDirectory, "CombineArchiveShowCase(2).omex"))
 		sedmls = ca.getAllSedmls()
 
 		for sedml in sedmls:

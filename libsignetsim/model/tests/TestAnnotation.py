@@ -24,13 +24,13 @@
 
 """
 
-from libsignetsim.model.SbmlDocument import SbmlDocument
+from libsignetsim import SbmlDocument, Settings
 from libsignetsim.uris.URI import URI
+
 from unittest import TestCase
 from os.path import join, dirname, isdir
 from os import mkdir, getcwd
 
-from libsignetsim import Settings
 
 class TestAnnotation(TestCase):
 	""" Tests high level functions """

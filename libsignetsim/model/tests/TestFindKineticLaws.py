@@ -24,8 +24,7 @@
 
 """
 
-from libsignetsim.model.SbmlDocument import SbmlDocument
-from libsignetsim.model.sbml.KineticLawIdentifier import KineticLawIdentifier as kli
+from libsignetsim import SbmlDocument, KineticLaw
 from unittest import TestCase
 from os.path import join, dirname
 from os import getcwd
@@ -46,10 +45,12 @@ class TestFindKineticLaws(TestCase):
 
 
 		results_kinetic_law = [
-			kli.MASS_ACTION, kli.MASS_ACTION, kli.MICHAELIS, kli.MICHAELIS, kli.MICHAELIS, kli.MICHAELIS,
-			kli.MASS_ACTION, kli.MICHAELIS, kli.MASS_ACTION, kli.MICHAELIS, kli.MICHAELIS, kli.MICHAELIS,
-			kli.MICHAELIS, kli.MICHAELIS, kli.MICHAELIS, kli.MICHAELIS, kli.MICHAELIS, kli.MICHAELIS,
-			kli.MICHAELIS, kli.MICHAELIS, kli.MICHAELIS, kli.MASS_ACTION,
+			KineticLaw.MASS_ACTION, KineticLaw.MASS_ACTION, KineticLaw.MICHAELIS, KineticLaw.MICHAELIS,
+			KineticLaw.MICHAELIS, KineticLaw.MICHAELIS, KineticLaw.MASS_ACTION, KineticLaw.MICHAELIS,
+			KineticLaw.MASS_ACTION, KineticLaw.MICHAELIS, KineticLaw.MICHAELIS, KineticLaw.MICHAELIS,
+			KineticLaw.MICHAELIS, KineticLaw.MICHAELIS, KineticLaw.MICHAELIS, KineticLaw.MICHAELIS,
+			KineticLaw.MICHAELIS, KineticLaw.MICHAELIS, KineticLaw.MICHAELIS, KineticLaw.MICHAELIS,
+			KineticLaw.MICHAELIS, KineticLaw.MASS_ACTION,
 		]
 
 

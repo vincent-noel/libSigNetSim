@@ -31,9 +31,11 @@ from libsignetsim.model.Variable import Variable
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.sbml.HasUnits import HasUnits
 from libsignetsim.model.sbml.HasParentObj import HasParentObj
-from libsignetsim.model.ModelException import InvalidXPath
+from libsignetsim.model.ModelException import InvalidXPath, SbmlException
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger
+from re import match
+
 
 class Parameter(Variable, SbmlObject, InitiallyAssignedVariable,
 						RuledVariable, EventAssignedVariable,
@@ -155,6 +157,38 @@ class Parameter(Variable, SbmlObject, InitiallyAssignedVariable,
 	def isLocalParameter(self):
 		""" Tests the local property of the parameter """
 		return self.localParameter
+
+	def toGlobal(self):
+
+		symbol = str(self.symbol.getInternalMathFormula())
+		pattern = "_local_%d_(.*)" % self.reaction.objId
+		res_match = match(pattern, symbol)
+
+		if res_match is None:
+			raise SbmlException("Is the parameter really global ?")
+
+		new_symbol = res_match.groups()[0]
+		self.symbol.renameSbmlId(symbol, new_symbol)
+		self.__model.renameSbmlId(symbol, new_symbol)
+
+		self.reaction.listOfLocalParameters.remove(self, full_remove=False)
+		self.__model.listOfParameters.append(self)
+		self.localParameter = False
+		self.reaction = None
+
+	def toLocal(self, reaction):
+
+		symbol = str(self.symbol.getInternalMathFormula())
+		new_symbol = "_local_%d_%s" % (reaction.objId, symbol)
+		self.symbol.renameSbmlId(symbol, new_symbol)
+
+		self.__model.listOfParameters.remove(self, full_remove=False)
+		reaction.listOfLocalParameters.add(self)
+
+		self.__model.renameSbmlId(symbol, new_symbol)
+
+		self.localParameter = True
+		self.reaction = reaction
 
 	def getByXPath(self, xpath):
 

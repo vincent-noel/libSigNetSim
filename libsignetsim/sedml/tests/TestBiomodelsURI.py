@@ -24,7 +24,7 @@
 
 """
 
-from libsignetsim.sedml.SedmlDocument import SedmlDocument
+from libsignetsim import SedmlDocument
 
 from unittest import TestCase
 from os.path import join, dirname, isdir
@@ -35,9 +35,6 @@ class TestBiomodelsURI(TestCase):
 	""" Tests high level functions """
 
 	def testBiomodelsURI(self):
-
-		if not isdir(join(dirname(__file__), "files")):
-			mkdir(join(dirname(__file__), "files"))
 
 		sedml_doc = SedmlDocument()
 

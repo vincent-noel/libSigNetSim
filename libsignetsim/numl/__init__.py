@@ -24,3 +24,5 @@
 
 """
 
+from NuMLDocument import NuMLDocument
+from NuMLException import NuMLException, NuMLFileNotFound

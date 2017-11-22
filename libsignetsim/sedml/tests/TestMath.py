@@ -24,9 +24,7 @@
 
 """
 
-from libsignetsim.model.SbmlDocument import SbmlDocument
-from libsignetsim.sedml.SedmlDocument import SedmlDocument
-
+from libsignetsim import SbmlDocument, SedmlDocument, Settings
 from unittest import TestCase
 from os.path import join, dirname, isdir
 from os import mkdir, getcwd
@@ -51,7 +49,7 @@ class TestMath(TestCase):
 		s = m.listOfSpecies.new("S", value=12)
 		p = m.listOfSpecies.new("P", value=0)
 
-		sbml_filename = join(testfiles_path, "testMath.sbml")
+		sbml_filename = join(Settings.tempDirectory, "testMath.sbml")
 		sbml_doc.writeSbmlToFile(sbml_filename)
 
 		sedml_doc = SedmlDocument()
@@ -705,7 +703,7 @@ class TestMath(TestCase):
 
 
 		sedml_doc.run()
-		sedml_filename = join(testfiles_path, "testMath.sedml")
+		sedml_filename = join(Settings.tempDirectory, "testMath.sedml")
 		sedml_doc.writeSedmlToFile(sedml_filename)
 
 		sedml_doc_2 = SedmlDocument()

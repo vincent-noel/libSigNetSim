@@ -24,8 +24,7 @@
 
 """
 
-from libsignetsim.sedml.SedmlDocument import SedmlDocument
-
+from libsignetsim import SedmlDocument, Settings
 from unittest import TestCase
 from os.path import join, dirname, isdir
 from os import mkdir
@@ -38,8 +37,6 @@ class TestSteadyStatesScan(TestCase):
 	def testFig4BPubli(self):
 
 		testfiles_path = join(dirname(__file__), "files")
-		if not isdir(testfiles_path):
-			mkdir(testfiles_path)
 
 		sedml_doc = SedmlDocument()
 
@@ -353,9 +350,9 @@ class TestSteadyStatesScan(TestCase):
 		# 		for i, value in enumerate(values):
 		# 			self.assertAlmostEqual(value, simulated_data[var][i])
 
-		sedml_doc.writeSedmlToFile(join(testfiles_path, "BIOMD0000000001_fig4b.xml"))
+		sedml_doc.writeSedmlToFile(join(Settings.tempDirectory, "BIOMD0000000001_fig4b.xml"))
 		sedml_doc = SedmlDocument()
-		sedml_doc.readSedmlFromFile(join(testfiles_path, "BIOMD0000000001_fig4b.xml"))
+		sedml_doc.readSedmlFromFile(join(Settings.tempDirectory, "BIOMD0000000001_fig4b.xml"))
 		sedml_doc.run()
 	#
 	# def testFig4CPubli(self):

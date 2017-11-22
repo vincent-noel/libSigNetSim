@@ -24,7 +24,8 @@
 
 """
 
-from libsignetsim import CombineArchive
+from libsignetsim import CombineArchive, Settings
+
 from unittest import TestCase
 from os.path import join, dirname
 
@@ -35,10 +36,10 @@ class TestNoManifest(TestCase):
 
 		ca = CombineArchive()
 		ca.readArchive(join(join(dirname(__file__), "files"), "BIOMD0000000003.sedx"))
-		ca.writeArchive(join(join(dirname(__file__), "files"), "BIOMD0000000003_fixed.sedx"))
+		ca.writeArchive(join(Settings.tempDirectory, "BIOMD0000000003_fixed.sedx"))
 
 		ca_fixed = CombineArchive()
-		ca_fixed.readArchive(join(join(dirname(__file__), "files"), "BIOMD0000000003_fixed.sedx"))
+		ca_fixed.readArchive(join(Settings.tempDirectory, "BIOMD0000000003_fixed.sedx"))
 
 		expected_results = {
 			"BIOMD0000000003.sedx.xml": ("http://identifiers.org/combine.specifications/sed-ml.level-1.version-1", True),

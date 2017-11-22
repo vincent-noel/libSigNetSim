@@ -24,8 +24,7 @@
 
 """
 
-from libsignetsim.sedml.SedmlDocument import SedmlDocument
-from libsignetsim.settings.Settings import Settings
+from libsignetsim import SedmlDocument, Settings
 
 from os.path import join, exists, isdir
 from os import mkdir

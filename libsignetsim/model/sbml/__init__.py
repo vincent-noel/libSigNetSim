@@ -24,3 +24,4 @@
 
 """
 
+from KineticLaw import KineticLaw

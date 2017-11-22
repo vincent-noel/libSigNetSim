@@ -72,10 +72,10 @@ class ListOf(list):
 	def getPosById(self, id):
 		return self.index(self.getById(id))
 
-	def remove(self, sbml_obj):
+	def remove(self, sbml_obj, full_remove=True):
 		""" Remove an object from the list """
 
-		if not self.isListOfSbmlObjects:
+		if not self.isListOfSbmlObjects and full_remove:
 			self.__model.listOfSbmlObjects.remove(sbml_obj)
 		list.remove(self, sbml_obj)
 

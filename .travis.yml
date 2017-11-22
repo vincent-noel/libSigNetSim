@@ -7,27 +7,24 @@ language: python
 python: 2.7
 
 env:
-  - TEST_SUITE=sbml-test-suite VERSION=3.1
-  - TEST_SUITE=sbml-test-suite VERSION=2.5
-  - TEST_SUITE=sbml-test-suite VERSION=2.4
-  - TEST_SUITE=sbml-test-suite VERSION=2.3
-  - TEST_SUITE=sbml-test-suite VERSION=2.2
-  - TEST_SUITE=sbml-test-suite VERSION=2.1
-  - TEST_SUITE=sbml-test-suite VERSION=1.2
-  - TEST_SUITE=others
+  - JOB=sbml-test-suite ARG=3.1
+  - JOB=sbml-test-suite ARG=2.5
+  - JOB=sbml-test-suite ARG=2.4
+  - JOB=sbml-test-suite ARG=2.3
+  - JOB=sbml-test-suite ARG=2.2
+  - JOB=sbml-test-suite ARG=2.1
+  - JOB=sbml-test-suite ARG=1.2
+  - JOB=others
+  - secure: "FPYoBFdmbc5kPuE16lqGRnlm/qwZ6eONcm33auAWIkp7JiSiLD4bZKYx+mBBiOy8bFI58pnXijQ0ruUDtHagFU9t7ozMXgaQAJjvxKqyJSwJpojTnveOKwUIaakbymAQa6+2cBC+IJ/yTlpqnxhWUolDc+9iTi0ZP91dVttxATJIguYtngVkcJsnMYWadThhjvfERkdHswDyGzB8Io725peA1xJwY5fDqmPTULsVMJs/XYBhGQEowURR3guxCsp5ghqXmxeqzlpMTGbgMZTQ++FGzfIC5ZVNqLFEXD/RrU5qxb9NHzff8WjGQo7mU1vALKkbFCHrCIJX/TTbLYIZg8r5hzbetFUh9YHtRCJIBfs+je1QdYO2GEHxgx2aHpnRwqH6EjefWglDWo9dBkdkkHg4R0p5CY2037vTmkWFcgtdZ7SR+AzV3dA37ETGFZSwIq/9OUqbKJ+5jofvGPQo+9Ol0fhQhNNueHKl+yfQ2rHbLwTUOZUjHiLTGdNO0WL7dSewh2KwACMKX+AiTQzCM/xgDZjdzVdquXb/H7lQcFWRJ0+4OqmjqIuQR9MKArxnoe5rHFzo+Yz8gYPSulI+qOQeSC7uboypNiFOzLcI89h7astges6cKe71yaxfIWoQ3cwvPHM4Q5Ej2zYWo9Sa7AsVTG6eAEGalRIV49A0UWY="
 
 before_install:
-- pip install coveralls
-- docker pull signetsim/signetsim:xenial
+- /bin/bash travis_run.sh before_install $JOB $ARG
 
 install:
-- docker run -di --name test_env -v $(pwd):/home/travis/build/vincent-noel/libSigNetSim signetsim/signetsim:xenial bash
-- docker exec test_env chown -R www-data:www-data /home/travis/build/vincent-noel/libSigNetSim
-- docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; bash scripts/install_dep.sh"
-- docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; scripts/install.sh"
+- /bin/bash travis_run.sh install $JOB $ARG
 
 script:
-- docker exec -u www-data test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; bash scripts/run_tests.sh $TEST_SUITE $VERSION"
+- /bin/bash travis_run.sh script $JOB $ARG
 
 after_script:
-- coveralls
+- /bin/bash travis_run.sh after_script $JOB $ARG
