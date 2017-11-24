@@ -147,4 +147,11 @@ class SedmlDocument(SedBase):
 		self.listOfOutputs.showFigures()
 
 
+	def getSbmlDependencies(self):
 
+		deps = []
+		for model in self.listOfModels:
+			if model.getSource().isLocal():
+				deps.append(model.getSource().getFilename())
+
+		return deps
