@@ -46,6 +46,7 @@ ModelDefinition * sf_model;
 Experiment * sf_experiments;
 int nb_sf_experiments;
 ScoreSettings * score_settings;
+PArrPtr * sf_plist;
 
 IntegrationResult *** sf_all_results;
 
@@ -93,7 +94,8 @@ void terminateIntegrationResults(IntegrationResult *** all_results, Experiment *
 void InitializeModelVsDataScoreFunction(ModelDefinition * model,
 										Experiment * experiments,
 										int nb_experiments,
-										ScoreSettings * settings)
+										ScoreSettings * settings,
+										PArrPtr * plist)
 {
 	score_type = MODEL_VS_DATA;
 	sf_model = model;
@@ -101,6 +103,7 @@ void InitializeModelVsDataScoreFunction(ModelDefinition * model,
 	nb_sf_experiments = nb_experiments;
 	sf_all_results = initializeIntegrationResults(model, experiments, nb_experiments);
     score_settings = settings;
+    sf_plist = plist;
 }
 
 void FinalizeScoreFunction()
@@ -383,7 +386,23 @@ void PrintReferenceData(char * path)
 
 
 
-void saveBestResult(char * path, int proc)
+void saveBestParams(char * path, int proc)
+{
+    char parameters_output[MAX_RECORD];
+	sprintf(parameters_output, "%s/parameters_%d", path, proc);
+
+	FILE * parameters = fopen(parameters_output,"w");
+
+	int ii;
+	for (ii=0; ii < sf_plist->size; ii++)
+		fprintf(parameters, "%s : %.16g\n",
+					sf_plist->array[ii].name,
+					*(sf_plist->array[ii].param));
+
+	fclose(parameters);
+}
+
+void saveBestTimecourse(char * path, int proc)
 {
 	int i_exp;
 	for (i_exp = 0; i_exp < nb_sf_experiments; i_exp++)
@@ -397,32 +416,7 @@ void saveBestResult(char * path, int proc)
 			ExperimentalCondition * t_cond = &(t_exp->conditions[i_cond]);
 			if (t_cond->nb_observed_values > 0)
 			{
-				// Writing all trajectories from the condition
-				// char t_filename[MAX_RECORD];
-				// sprintf(t_filename,"%s/exp_%d_cond_%d_proc_%d", path, i_exp, i_cond, proc);
-				// FILE * f_res = fopen(t_filename,"w");
-				//
 				IntegrationResult * t_res = sf_all_results[i_exp][i_cond];
-				// int i_time;
-				// for (i_time = 0; i_time < t_res->nb_samples; i_time++)
-				// {
-				//
-				// 	fprintf(f_res, "%g", t_res->t[i_time]);
-				//
-				//
-				// 	int i_var;
-				// 	for (i_var = 0; i_var < t_res->nb_dimensions; i_var++)
-				// 	{
-				// 		fprintf(f_res, "\t%g",t_res->y[i_var][i_time]);
-				//
-				//
-				// 	}
-				// 	fprintf(f_res, "\n");
-				//
-				//
-				// }
-				// fclose(f_res);
-
 
 				int i_obs;
 				for (i_obs = 0; i_obs < t_cond->nb_observed_values; i_obs++)
@@ -453,4 +447,11 @@ void saveBestResult(char * path, int proc)
 			}
 		}
 	}
+}
+
+
+void saveBestResult(char * path, int proc)
+{
+	saveBestTimecourse(path, proc);
+	saveBestParams(path, proc);
 }

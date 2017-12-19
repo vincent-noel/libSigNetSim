@@ -71,8 +71,12 @@ int main(int argc, char **argv )
 	int nb_experiments = getNbExperiments();
 
     ScoreSettings * score_settings = init_score_settings();
+
+    // define the optimization parameters
+	init_params(working_model);
+
 	// Finally, we initialize the data and print the reference
-	InitializeModelVsDataScoreFunction(working_model, experiments, nb_experiments, score_settings);
+	InitializeModelVsDataScoreFunction(working_model, experiments, nb_experiments, score_settings, getOptimParameters());
 
 #ifdef MPI
 	SAType * settings = InitPLSA(nnodes, myid);
@@ -81,8 +85,7 @@ int main(int argc, char **argv )
 	SAType * settings = InitPLSA();
 
 #endif
-	// define the optimization parameters
-	init_params(working_model);
+
 
 	// define the optimization settings
     init_settings(settings);
