@@ -307,7 +307,7 @@ class SbmlDocument(HasParentObj):
 						self.documentDependenciesPaths.append(external_doc.getSource())
 
 			self.documentDependenciesPaths = list(set(self.documentDependenciesPaths))
-
+			return self.documentDependenciesPaths
 
 	def loadExternalDocumentDependencies(self, sbml_doc=None):
 
@@ -321,6 +321,12 @@ class SbmlDocument(HasParentObj):
 				t_document = SbmlDocument()
 				t_document.readSbmlFromFile(join(self.documentPath, path))
 				self.documentDependencies.append(t_document)
+
+
+	def renameExternalDocumentDependencies(self, names):
+
+		for external_doc in self.listOfExternalModelDefinitions.values():
+			external_doc.setSource(names[external_doc.getSource()])
 
 
 	def saveExternalDocumentDependencies(self, path=None):

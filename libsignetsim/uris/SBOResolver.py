@@ -53,7 +53,7 @@ class SBOResolver(object):
 
 		if self.__json is not None:
 			self.__name = self.__json[u'_embedded'][u'terms'][0][u'label']
-			self.__definition = self.__json[u'_embedded'][u'terms'][0][u'annotation'][u'comment'][0]
+			self.__definition = self.__json[u'_embedded'][u'terms'][0][u'description'][0]
 
 	def getName(self):
 		return self.__name

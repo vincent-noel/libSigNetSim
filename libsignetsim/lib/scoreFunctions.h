@@ -35,7 +35,7 @@
  #include <float.h>
 #include "integrate/datas.h"
 #include "integrate/models.h"
-// #include "optims.h"
+#include "plsa/types.h"
 
 #include "integrate/integrate.h"
 
@@ -49,12 +49,14 @@ typedef struct
 {
 	double negative_penalty;               /* Penalty for negative numbers */
 
+
 } ScoreSettings;
 
 void      InitializeModelVsDataScoreFunction    (ModelDefinition * model,
                                                   Experiment * experiments,
                                                   int nb_experiments,
-                                                  ScoreSettings * settings);
+                                                  ScoreSettings * settings,
+                                                  PArrPtr * my_plist);
 
 void      FinalizeScoreFunction                 ();
 
