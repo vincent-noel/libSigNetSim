@@ -37,6 +37,90 @@ class CWriterData(object):
 		self.listOfExperiments = listOfExperiments
 		self.workingModel = workingModel
 		self.subdir = subdir
+		self.checkListOfExperiments()
+
+	def checkListOfExperiments(self):
+
+		if self.listOfExperiments is not None and len(self.listOfExperiments) > 0:
+			for i, experiment in enumerate(self.listOfExperiments):
+				for j, condition in enumerate(experiment.listOfConditions.values()):
+
+					# Here we need to find all the timings of the treatments. That will be the set of initial values.
+					# Then, each set of initial values can have multiple assignments
+					t_times = []
+					for initial_value in condition.listOfInitialConditions.values():
+						t_times.append(initial_value.t)
+
+					# Removing doublons
+					t_times = list(set(t_times))
+
+					for k, t_time in enumerate(t_times):
+
+						treatments = []
+						for initial_value in condition.listOfInitialConditions.values():
+							if initial_value.t == t_time:
+								treatments.append(initial_value)
+
+						for l, treatment in enumerate(treatments):
+
+							t_variable = None
+
+							if self.mapping is not None:
+								if i < len(self.mapping) and treatment.name in self.mapping[i].keys():
+									t_variable = self.workingModel.parentDoc.getByXPath(
+										self.mapping[i][treatment.name],
+										instance=self.workingModel.parentDoc.useCompPackage
+									)
+
+							elif treatment.name_attribute == "name":
+								if self.workingModel.listOfVariables.containsName(treatment.name):
+									t_variable = self.workingModel.listOfVariables.getByName(treatment.name)
+								else:
+									raise UnknownTreatmentException("Cannot find a variable called %s" % treatment.name)
+
+							elif treatment.name_attribute == "id":
+								if self.workingModel.listOfVariables.containsSbmlId(treatment.name):
+									t_variable = self.workingModel.listOfVariables.getBySbmlId(treatment.name)
+								else:
+									raise UnknownTreatmentException("Cannot find a variable called %s" % treatment.name)
+
+							else:
+								raise UnknownTreatmentException(
+									"Unknown attribute for variable : %s" % treatment.name_attribute)
+
+						# Observed_values
+					vars_observed = {}
+
+					for k, observed_value in enumerate(condition.listOfExperimentalData.values()):
+
+						t_variable = None
+						if self.mapping is not None:
+							if i < len(self.mapping) and observed_value.name in self.mapping[i].keys():
+								t_variable = self.workingModel.parentDoc.getByXPath(
+									self.mapping[i][observed_value.name],
+									instance=self.workingModel.parentDoc.useCompPackage
+								)
+
+						elif observed_value.name_attribute == "name":
+							if self.workingModel.listOfVariables.containsName(observed_value.name):
+								t_variable = self.workingModel.listOfVariables.getByName(observed_value.name)
+							else:
+								raise UnknownTreatmentException(
+									"Cannot find a variable called %s" % observed_value.name)
+
+						elif observed_value.name_attribute == "id":
+							if self.workingModel.listOfVariables.containsSbmlId(observed_value.name):
+								t_variable = self.workingModel.listOfVariables.getBySbmlId(observed_value.name)
+							else:
+								raise UnknownTreatmentException(
+									"Cannot find a variable called %s" % observed_value.name)
+
+						else:
+							raise UnknownTreatmentException(
+								"Unknown attribute for variable : %s" % observed_value.name_attribute)
+
+						if t_variable is not None and t_variable not in vars_observed.keys():
+							vars_observed.update({t_variable: len(vars_observed.keys())})
 
 
 	def writeDataFiles(self):
@@ -122,7 +206,6 @@ class CWriterData(object):
 		f_c.write("void init_data()\n")
 		f_c.write("{\n")
 
-
 		if self.listOfExperiments is not None and len(self.listOfExperiments) > 0:
 			f_c.write("    nb_experiments = %d;\n" % len(self.listOfExperiments))
 			f_c.write("    experiments = malloc(sizeof(Experiment)*nb_experiments);\n")
@@ -166,8 +249,15 @@ class CWriterData(object):
 						for l, treatment in enumerate(treatments):
 
 							t_variable = None
+							if self.mapping is not None:
+								if i < len(self.mapping) and treatment.name in self.mapping[i].keys():
+									print "> MApping: %s : %s" % (treatment.name, self.mapping[i][treatment.name])
+									t_variable = self.workingModel.parentDoc.getByXPath(
+										self.mapping[i][treatment.name],
+										instance=self.workingModel.parentDoc.useCompPackage
+									)
 
-							if treatment.name_attribute == "name":
+							elif treatment.name_attribute == "name":
 								if self.workingModel.listOfVariables.containsName(treatment.name):
 									t_variable = self.workingModel.listOfVariables.getByName(treatment.name)
 								else:
@@ -182,25 +272,9 @@ class CWriterData(object):
 							else:
 								raise UnknownTreatmentException("Unknown attribute for variable : %s" % treatment.name_attribute)
 
-							#
-							#
-							# if self.workingModel.listOfSpecies.containsName(treatment.name):
-							# 	treatment_name = self.workingModel.listOfSpecies.getByName(treatment.name).getSbmlId()
-							# elif self.workingModel.listOfParameters.containsName(treatment.name):
-							# 	treatment_name = self.workingModel.listOfParameters.getByName(treatment.name).getSbmlId()
-							# elif self.workingModel.listOfCompartments.containsName(treatment.name):
-							# 	treatment_name = self.workingModel.listOfCompartments.getByName(treatment.name).getSbmlId()
-							# else:
-							# 	raise UnknownTreatmentException("Cannot find a variable called %s" % treatment.name)
-							# 	# print "Cannot find treatment with a name : %s" % treatment.name
-							#
-							#
-							# if self.workingModel.getMathModel().listOfVariables.containsSymbol(SympySymbol(treatment_name)):
-							# 	t_variable = self.workingModel.getMathModel().listOfVariables.getBySymbol(SympySymbol(treatment_name))
 
-							# if t_variable is not None:
-
-							f_c.write("  experiments[%d].conditions[%d].timed_treatments[%d].treatments[%d] = (Treatment) {%g, %d, %d};\n" % (
+							if t_variable is not None:
+								f_c.write("  experiments[%d].conditions[%d].timed_treatments[%d].treatments[%d] = (Treatment) {%g, %d, %d};\n" % (
 											i, j, k, l, treatment.value, t_variable.type, t_variable.ind))
 							# else:
 							# 	print "> ERROR: Couldn't find variable %s" % observed_value.name
@@ -213,26 +287,13 @@ class CWriterData(object):
 
 					for k, observed_value in enumerate(condition.listOfExperimentalData.values()):
 
+						t_variable = None
+						if self.mapping is not None:
+							if i < len(self.mapping) and observed_value.name in self.mapping[i].keys():
+								print "> MApping: %s : %s" % (observed_value.name, self.mapping[i][observed_value.name])
+								t_variable = self.workingModel.parentDoc.getByXPath(self.mapping[i][observed_value.name], instance=self.workingModel.parentDoc.useCompPackage)
 
-						# print "Observed values %d" % k
-						observed_name = None
-
-						#
-						# if self.workingModel.listOfSpecies.containsName(observed_value.name):
-						# 	observed_name = self.workingModel.listOfSpecies.getByName(observed_value.name).getSbmlId()
-						# elif self.workingModel.listOfParameters.containsName(observed_value.name):
-						# 	observed_name = self.workingModel.listOfParameters.getByName(observed_value.name).getSbmlId()
-						# elif self.workingModel.listOfCompartments.containsName(observed_value.name):
-						# 	observed_name = self.workingModel.listOfCompartments.getByName(observed_value.name).getSbmlId()
-						# else:
-						# 	raise UnknownObservationException("Cannot find a variable called %s" % observed_value.name)
-						#
-						#
-						# t_variable = None
-						# if self.workingModel.getMathModel().listOfVariables.containsSymbol(SympySymbol(observed_name)):
-						# 	t_variable = self.workingModel.getMathModel().listOfVariables.getBySymbol(SympySymbol(observed_name))
-
-						if observed_value.name_attribute == "name":
+						elif observed_value.name_attribute == "name":
 							if self.workingModel.listOfVariables.containsName(observed_value.name):
 								t_variable = self.workingModel.listOfVariables.getByName(observed_value.name)
 							else:
@@ -249,20 +310,20 @@ class CWriterData(object):
 								"Unknown attribute for variable : %s" % observed_value.name_attribute)
 
 
+						if t_variable is not None:
+							if t_variable not in vars_observed.keys():
+								vars_observed.update({t_variable: len(vars_observed.keys()) })
 
-						if t_variable not in vars_observed.keys():
-							vars_observed.update({t_variable: len(vars_observed.keys()) })
+							# if t_variable is not None:
+							t_variable_id = t_variable.getPos()
 
-						# if t_variable is not None:
-						t_variable_id = t_variable.getPos()
-
-						f_c.write("    experiments[%d].conditions[%d].observed_values[%d] = (ExperimentalObservation) {%g, %g, %g, %d, %g, %g, %d, %d, %d, %d};\n" % (
-										i,j,k,
-										observed_value.t, observed_value.value, observed_value.value_dev,
-										int(observed_value.steady_state), float(observed_value.min_steady_state), float(observed_value.max_steady_state),
-										t_variable.type, t_variable.ind, t_variable_id, vars_observed[t_variable]))
-						# else:
-						# 	print "> ERROR: Couldn't find variable %s" % observed_value.name
+							f_c.write("    experiments[%d].conditions[%d].observed_values[%d] = (ExperimentalObservation) {%g, %g, %g, %d, %g, %g, %d, %d, %d, %d};\n" % (
+											i,j,k,
+											observed_value.t, observed_value.value, observed_value.value_dev,
+											int(observed_value.steady_state), float(observed_value.min_steady_state), float(observed_value.max_steady_state),
+											t_variable.type, t_variable.ind, t_variable_id, vars_observed[t_variable]))
+							# else:
+							# 	print "> ERROR: Couldn't find variable %s" % observed_value.name
 		else:
 			f_c.write("    nb_experiments = 0;\n")
 			f_c.write("\n")
