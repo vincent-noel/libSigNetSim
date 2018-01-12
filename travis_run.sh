@@ -33,8 +33,7 @@ else
         docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; scripts/install.sh" || exit 1;
 
     elif [ $1 = "script" ]; then
-        echo docker exec -u www-data test_env /bin/bash -c "cd /home/travis/; bash /home/travis/build/vincent-noel/libSigNetSim/scripts/run_tests.sh $2 $3"
-        docker exec -u www-data test_env /bin/bash -c "cd /home/travis/; bash /home/travis/build/vincent-noel/libSigNetSim/scripts/run_tests.sh $2 $3"
+        docker exec -u www-data test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim/; bash ./scripts/run_tests.sh $2 $3"
 
     elif [ $1 = "after_script" ]; then
         coveralls
