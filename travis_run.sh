@@ -31,7 +31,7 @@ else
         docker exec test_env chown -R www-data:www-data /home/travis/ || exit 1;
         docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; bash scripts/install_dep.sh" || exit 1;
         docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; scripts/install.sh" || exit 1;
-        docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; rm -fr libsignetsim"
+        docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim/libsignetsim/lib/integrate/; make"
     elif [ $1 = "script" ]; then
         docker exec -u www-data test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim/; bash ./scripts/run_tests.sh $2 $3"
 
