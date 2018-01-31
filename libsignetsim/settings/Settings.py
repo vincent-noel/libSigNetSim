@@ -132,7 +132,7 @@ class Settings(object):
 	defaultPlsaFreezeCount = 100
 	defaultPlsaUpdateSSkip = 1
 	defaultPlsaCriterion = 0.001
-	defaultPlsaPrecision = 3
+	defaultPlsaPrecision = 7
 	defaultPlsaMixInterval = 10
 	defaultPlsaDistribution = 1
 	defaultPlsaQ = 1.0
