@@ -35,6 +35,7 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 	def __init__(self, workingModel, listOfExperiments=None, mapping=None, parameters_to_fit=None,
 				p_lambda=Settings.defaultPlsaLambda,
 				p_criterion=Settings.defaultPlsaCriterion,
+				p_precision=Settings.defaultPlsaPrecision,
 				p_initial_temperature=Settings.defaultPlsaInitialTemperature,
 				p_gain=Settings.defaultPlsaGainForJumpSizeControl,
 				p_interval=Settings.defaultPlsaInterval,
@@ -58,7 +59,7 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 		CWriterData.__init__(self, listOfExperiments, mapping, workingModel, subdir="src")
 		CWriterOptimization.__init__(
 			self, workingModel, parameters_to_fit,
-			p_lambda=p_lambda, p_criterion=p_criterion,
+			p_lambda=p_lambda, p_criterion=p_criterion, p_precision=p_precision,
 			p_initial_temperature=p_initial_temperature,
 			p_gain=p_gain, p_interval=p_interval, p_tau=p_tau,
 			p_mix=p_mix, p_initial_moves=p_initial_moves,
