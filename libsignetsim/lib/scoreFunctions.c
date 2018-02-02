@@ -337,6 +337,11 @@ void PrintReferenceData(char * path)
 
 	int i, j, k;
 
+    char t_variables_filename[MAX_RECORD];
+	sprintf(t_variables_filename,"%s/variables", path);
+	remove(t_variables_filename);
+	FILE * t_variables_file = fopen(t_variables_filename, "a");
+
 	for (i=0; i < nb_sf_experiments; i++)
 	{
 		char t_summary_filename[MAX_RECORD];
@@ -374,6 +379,8 @@ void PrintReferenceData(char * path)
 				if (t_observation->isSteadyState == 1)
 				  fprintf(t_summary_file, "%d\t%d\t%d\t%s\n", j, k, t_observation->variable_pos, t_condition->name);
 
+				fprintf(t_variables_file, "%d\t%d\t%d\t%s\n", i, j, k, t_observation->variable_name);
+
 			}
 
 
@@ -381,6 +388,7 @@ void PrintReferenceData(char * path)
 		}
 		fclose(t_summary_file);
 	}
+    fclose(t_variables_file);
 
 }
 

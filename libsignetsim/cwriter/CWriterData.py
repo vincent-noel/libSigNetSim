@@ -317,11 +317,11 @@ class CWriterData(object):
 							# if t_variable is not None:
 							t_variable_id = t_variable.getPos()
 
-							f_c.write("    experiments[%d].conditions[%d].observed_values[%d] = (ExperimentalObservation) {%g, %g, %g, %d, %g, %g, %d, %d, %d, %d};\n" % (
+							f_c.write("    experiments[%d].conditions[%d].observed_values[%d] = (ExperimentalObservation) {%g, %g, %g, %d, %g, %g, %d, %d, %d, %d, \"%s\"};\n" % (
 											i,j,k,
 											observed_value.t, observed_value.value, observed_value.value_dev,
 											int(observed_value.steady_state), float(observed_value.min_steady_state), float(observed_value.max_steady_state),
-											t_variable.type, t_variable.ind, t_variable_id, vars_observed[t_variable]))
+											t_variable.type, t_variable.ind, t_variable_id, vars_observed[t_variable], t_variable.getXPath()))
 							# else:
 							# 	print "> ERROR: Couldn't find variable %s" % observed_value.name
 		else:
