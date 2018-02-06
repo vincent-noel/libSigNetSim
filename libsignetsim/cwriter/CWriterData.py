@@ -65,12 +65,15 @@ class CWriterData(object):
 
 							t_variable = None
 
-							if self.mapping is not None:
+							if self.mapping is not None and len(self.mapping) > 0:
 								if i < len(self.mapping) and treatment.name in self.mapping[i].keys():
 									t_variable = self.workingModel.parentDoc.getByXPath(
 										self.mapping[i][treatment.name],
 										instance=self.workingModel.parentDoc.useCompPackage
 									)
+								else:
+									raise UnknownTreatmentException(
+										"Variable %s not found in mapping" % treatment.name)
 
 							elif treatment.name_attribute == "name":
 								if self.workingModel.listOfVariables.containsName(treatment.name):
@@ -94,12 +97,14 @@ class CWriterData(object):
 					for k, observed_value in enumerate(condition.listOfExperimentalData.values()):
 
 						t_variable = None
-						if self.mapping is not None:
+						if self.mapping is not None and len(self.mapping) > 0:
 							if i < len(self.mapping) and observed_value.name in self.mapping[i].keys():
 								t_variable = self.workingModel.parentDoc.getByXPath(
 									self.mapping[i][observed_value.name],
 									instance=self.workingModel.parentDoc.useCompPackage
 								)
+							else:
+								raise UnknownObservationException("Variable %s not found in mapping" % observed_value.name)
 
 						elif observed_value.name_attribute == "name":
 							if self.workingModel.listOfVariables.containsName(observed_value.name):
@@ -249,13 +254,16 @@ class CWriterData(object):
 						for l, treatment in enumerate(treatments):
 
 							t_variable = None
-							if self.mapping is not None:
+							if self.mapping is not None and len(self.mapping) > 0:
 								if i < len(self.mapping) and treatment.name in self.mapping[i].keys():
-									print "> MApping: %s : %s" % (treatment.name, self.mapping[i][treatment.name])
+									# print "> MApping: %s : %s" % (treatment.name, self.mapping[i][treatment.name])
 									t_variable = self.workingModel.parentDoc.getByXPath(
 										self.mapping[i][treatment.name],
 										instance=self.workingModel.parentDoc.useCompPackage
 									)
+								else:
+									raise UnknownTreatmentException(
+										"Variable %s not found in mapping" % treatment.name)
 
 							elif treatment.name_attribute == "name":
 								if self.workingModel.listOfVariables.containsName(treatment.name):
@@ -288,25 +296,27 @@ class CWriterData(object):
 					for k, observed_value in enumerate(condition.listOfExperimentalData.values()):
 
 						t_variable = None
-						if self.mapping is not None:
+						if self.mapping is not None and len(self.mapping) > 0:
 							if i < len(self.mapping) and observed_value.name in self.mapping[i].keys():
 								print "> MApping: %s : %s" % (observed_value.name, self.mapping[i][observed_value.name])
 								t_variable = self.workingModel.parentDoc.getByXPath(self.mapping[i][observed_value.name], instance=self.workingModel.parentDoc.useCompPackage)
+							else:
+								raise UnknownObservationException("Variable %s not found in mapping" % observed_value.name)
 
 						elif observed_value.name_attribute == "name":
 							if self.workingModel.listOfVariables.containsName(observed_value.name):
 								t_variable = self.workingModel.listOfVariables.getByName(observed_value.name)
 							else:
-								raise UnknownTreatmentException("Cannot find a variable called %s" % observed_value.name)
+								raise UnknownObservationException("Cannot find a variable called %s" % observed_value.name)
 
 						elif observed_value.name_attribute == "id":
 							if self.workingModel.listOfVariables.containsSbmlId(observed_value.name):
 								t_variable = self.workingModel.listOfVariables.getBySbmlId(observed_value.name)
 							else:
-								raise UnknownTreatmentException("Cannot find a variable called %s" % observed_value.name)
+								raise UnknownObservationException("Cannot find a variable called %s" % observed_value.name)
 
 						else:
-							raise UnknownTreatmentException(
+							raise UnknownObservationException(
 								"Unknown attribute for variable : %s" % observed_value.name_attribute)
 
 
