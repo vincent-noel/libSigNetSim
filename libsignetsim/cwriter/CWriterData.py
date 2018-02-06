@@ -25,18 +25,20 @@
 """
 
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.math.sympy_shortcuts import SympySymbol
+from libsignetsim.LibSigNetSimException import UnknownObservationException, UnknownTreatmentException, NoTreatmentException, NoObservationException
 
-from libsignetsim.LibSigNetSimException import UnknownObservationException, UnknownTreatmentException
 
 class CWriterData(object):
 
-	def __init__ (self, listOfExperiments=None, mapping=None, workingModel=None, interpolate=False, subdir=None):
+	def __init__(self, listOfExperiments=None, mapping=None, workingModel=None, interpolate=False, subdir=None, hasTreatments=False, hasObservations=False):
 
 		self.mapping = mapping
 		self.listOfExperiments = listOfExperiments
 		self.workingModel = workingModel
 		self.subdir = subdir
+		self.hasTreatments = hasTreatments
+		self.hasObservations = hasObservations
+
 		self.checkListOfExperiments()
 
 	def checkListOfExperiments(self):
@@ -53,6 +55,10 @@ class CWriterData(object):
 
 					# Removing doublons
 					t_times = list(set(t_times))
+
+
+					nb_treatments = 0
+					nb_observable = 0
 
 					for k, t_time in enumerate(t_times):
 
@@ -71,9 +77,9 @@ class CWriterData(object):
 										self.mapping[i][treatment.name],
 										instance=self.workingModel.parentDoc.useCompPackage
 									)
-								else:
-									raise UnknownTreatmentException(
-										"Variable %s not found in mapping" % treatment.name)
+								# else:
+								# 	raise UnknownTreatmentException(
+								# 		"Variable %s not found in mapping" % treatment.name)
 
 							elif treatment.name_attribute == "name":
 								if self.workingModel.listOfVariables.containsName(treatment.name):
@@ -91,6 +97,9 @@ class CWriterData(object):
 								raise UnknownTreatmentException(
 									"Unknown attribute for variable : %s" % treatment.name_attribute)
 
+							if t_variable is not None:
+								nb_treatments += 1
+
 						# Observed_values
 					vars_observed = {}
 
@@ -103,8 +112,8 @@ class CWriterData(object):
 									self.mapping[i][observed_value.name],
 									instance=self.workingModel.parentDoc.useCompPackage
 								)
-							else:
-								raise UnknownObservationException("Variable %s not found in mapping" % observed_value.name)
+							# else:
+							# 	raise UnknownObservationException("Variable %s not found in mapping" % observed_value.name)
 
 						elif observed_value.name_attribute == "name":
 							if self.workingModel.listOfVariables.containsName(observed_value.name):
@@ -127,12 +136,18 @@ class CWriterData(object):
 						if t_variable is not None and t_variable not in vars_observed.keys():
 							vars_observed.update({t_variable: len(vars_observed.keys())})
 
+							nb_observable += 1
+
+					if nb_observable == 0 and self.hasObservations:
+						raise NoObservationException("No observation !")
+
+					if nb_treatments == 0 and self.hasTreatments:
+						raise NoTreatmentException("No treatments !")
 
 	def writeDataFiles(self):
 
 		f_c = open(self.getTempDirectory() + Settings.C_generatedDirectory_v2 + "data.c", 'w')
 		f_h = open(self.getTempDirectory() + Settings.C_generatedDirectory_v2 + "data.h", 'w')
-
 
 		self.writeDataHeaders(f_c, f_h)
 		self.writeDataInitialization(f_c, f_h)
@@ -261,9 +276,9 @@ class CWriterData(object):
 										self.mapping[i][treatment.name],
 										instance=self.workingModel.parentDoc.useCompPackage
 									)
-								else:
-									raise UnknownTreatmentException(
-										"Variable %s not found in mapping" % treatment.name)
+								# else:
+								# 	raise UnknownTreatmentException(
+								# 		"Variable %s not found in mapping" % treatment.name)
 
 							elif treatment.name_attribute == "name":
 								if self.workingModel.listOfVariables.containsName(treatment.name):
@@ -298,10 +313,10 @@ class CWriterData(object):
 						t_variable = None
 						if self.mapping is not None and len(self.mapping) > 0:
 							if i < len(self.mapping) and observed_value.name in self.mapping[i].keys():
-								print "> MApping: %s : %s" % (observed_value.name, self.mapping[i][observed_value.name])
+								# print "> MApping: %s : %s" % (observed_value.name, self.mapping[i][observed_value.name])
 								t_variable = self.workingModel.parentDoc.getByXPath(self.mapping[i][observed_value.name], instance=self.workingModel.parentDoc.useCompPackage)
-							else:
-								raise UnknownObservationException("Variable %s not found in mapping" % observed_value.name)
+							# else:
+							# 	raise UnknownObservationException("Variable %s not found in mapping" % observed_value.name)
 
 						elif observed_value.name_attribute == "name":
 							if self.workingModel.listOfVariables.containsName(observed_value.name):

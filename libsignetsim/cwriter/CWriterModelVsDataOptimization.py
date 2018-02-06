@@ -56,7 +56,7 @@ class CWriterModelVsDataOptimization(CWriterOptimization, CWriterModels, CWriter
 		self.findSimulationSettings()
 
 		CWriterModels.__init__(self, [workingModel], [Settings.simulationTimeMin], [self.listOfSamples], [Settings.defaultAbsTol], [Settings.defaultRelTol])
-		CWriterData.__init__(self, listOfExperiments, mapping, workingModel, subdir="src")
+		CWriterData.__init__(self, listOfExperiments, mapping, workingModel, subdir="src", hasObservations=True)
 		CWriterOptimization.__init__(
 			self, workingModel, parameters_to_fit,
 			p_lambda=p_lambda, p_criterion=p_criterion, p_precision=p_precision,

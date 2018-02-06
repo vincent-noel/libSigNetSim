@@ -37,3 +37,9 @@ class UnknownTreatmentException(LibSigNetSimException):
 
 class UnknownObservationException(LibSigNetSimException):
 	pass
+
+class NoTreatmentException(LibSigNetSimException):
+	pass
+
+class NoObservationException(LibSigNetSimException):
+	pass
