@@ -56,18 +56,18 @@ class ModelVsTimeseriesOptimization(Optimization, CWriterModelVsDataOptimization
 			self.compModelDefinition = workingModel
 			self.workingModel = workingModel.parentDoc.getModelInstance()
 			self.parameters = []
-			for parameter, init_val, lower_bound, upper_bound in parameters_to_fit:
+			for parameter, init_val, lower_bound, upper_bound, precision in parameters_to_fit:
 				self.parameters.append((
-					self.workingModel.getInstanceVariableByXPath(parameter.getXPath()), init_val, lower_bound, upper_bound
+					self.workingModel.getInstanceVariableByXPath(parameter.getXPath()), init_val, lower_bound, upper_bound, precision
 				))
 
 		else:
 
 			self.workingModel = workingModel
 			self.parameters = []
-			for parameter, init_val, lower_bound, upper_bound in parameters_to_fit:
+			for parameter, init_val, lower_bound, upper_bound, precision in parameters_to_fit:
 				self.parameters.append((
-					workingModel.parentDoc.getByXPath(parameter.getXPath()), init_val, lower_bound, upper_bound
+					workingModel.parentDoc.getByXPath(parameter.getXPath()), init_val, lower_bound, upper_bound, precision
 				))
 
 			self.workingModel = workingModel

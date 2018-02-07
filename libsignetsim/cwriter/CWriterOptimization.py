@@ -116,8 +116,8 @@ class CWriterOptimization(object):
 
 		f_c.write("\tmy_plist = InitPLSAParameters(%d);\n" % len(self.parameters))
 
-		for (i_param, (param, value, lb, ub)) in enumerate(self.parameters):
-			f_c.write("\tmy_plist->array[%d] = (ParamList) {&(model->constant_variables[%d].value), %g, (Range) {%g, %g}, %g, \"%s\"};\n" % (i_param, param.ind, value, lb, ub, self.pPrecision, param.getXPath()))
+		for (i_param, (param, value, lb, ub, precision)) in enumerate(self.parameters):
+			f_c.write("\tmy_plist->array[%d] = (ParamList) {&(model->constant_variables[%d].value), %g, (Range) {%g, %g}, %g, \"%s\"};\n" % (i_param, param.ind, value, lb, ub, precision, param.getXPath()))
 
 		f_c.write("}")
 
