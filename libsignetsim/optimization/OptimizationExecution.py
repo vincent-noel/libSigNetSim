@@ -25,9 +25,8 @@
 """
 
 from libsignetsim.settings.Settings import Settings
-# from OptimizationMonitor import OptimizationMonitor
 
-from time import time
+from time import time, sleep
 from os.path import join, getsize, isfile
 from os import getcwd, setpgrp, mkdir
 from subprocess import call
@@ -80,11 +79,17 @@ class OptimizationExecution(object):
 								target)
 
 		res_comp = call(cmd_comp,
-								stdout=open("%sout_optim_comp" % self.getTempDirectory(),"w"),
-								stderr=open("%serr_optim_comp" % self.getTempDirectory(),"w"),
+								stdout=open(join(self.getTempDirectory(), "sout_optim_comp"), "w"),
+								stderr=open(join(self.getTempDirectory(), "err_optim_comp"), "w"),
 								shell=True, preexec_fn=setpgrp, close_fds=True)
 
-		if res_comp != 0 or getsize(self.getTempDirectory() + "err_optim_comp") > 0:
+		timeout = 3
+		i = 0
+		while not isfile(join(self.getTempDirectory(), "err_optim_comp")) or i == timeout:
+			sleep(1)
+			i += 1
+
+		if res_comp != 0 or getsize(join(self.getTempDirectory(), "err_optim_comp")) > 0:
 			return self.OPTIM_FAILURE
 		else:
 			return self.OPTIM_SUCCESS
@@ -100,9 +105,9 @@ class OptimizationExecution(object):
 		if maxiter is not None and maxiter > 0:
 			s_maxiter = "-m %d " % maxiter
 
-		mkdir(self.getTempDirectory() + "logs")
-		mkdir(self.getTempDirectory() + "logs/score")
-		mkdir(self.getTempDirectory() + "logs/res")
+		mkdir(join(self.getTempDirectory(), "logs"))
+		mkdir(join(self.getTempDirectory(), "logs", "score"))
+		mkdir(join(self.getTempDirectory(), "logs", "res"))
 
 		present_dir = getcwd()
 
@@ -115,22 +120,25 @@ class OptimizationExecution(object):
 		t_command_line = "%s" % target
 
 		res_optim = call(t_command_line,
-				stdout=open("%sout_optim" % self.getTempDirectory(),"w"),
-				stderr=open("%serr_optim" % self.getTempDirectory(),"w"),
+				stdout=open(join(self.getTempDirectory(), "out_optim"), "w"),
+				stderr=open(join(self.getTempDirectory(), "err_optim"), "w"),
 				shell=True, preexec_fn=setpgrp, close_fds=True)
-
-
 
 		if res_optim != 0 and res_optim != 124:
 			self.stopTime = int(time())
 			self.elapsedTime = self.stopTime - self.startTime
 			return self.OPTIM_FAILURE
 
+		timeout = 3
+		i = 0
+		while not isfile(join(self.getTempDirectory(), "err_optim")) or i == timeout:
+			sleep(1)
+			i += 1
 
-		if (getsize(self.getTempDirectory() + "err_optim") > 0 or
-			not isfile(self.getTempDirectory() + "logs/score/score")):
+		if (getsize(join(self.getTempDirectory(), "err_optim")) > 0 or
+			not isfile(join(self.getTempDirectory(), "logs", "score", "score"))):
 
-			err = open(self.getTempDirectory() + "err_optim")
+			err = open(join(self.getTempDirectory(), "err_optim"))
 
 			if err.readline() != "mpirun: killing job...\n":
 				err.close()
@@ -145,7 +153,7 @@ class OptimizationExecution(object):
 
 	def readFinalScore(self):
 
-		file_final_score = open(self.getTempDirectory() + "logs/score/score")
+		file_final_score = open(join(self.getTempDirectory(), "logs", "score", "score"))
 		final_score = float(file_final_score.readline())
 
 		final_score = max(round(final_score, int(-log10(Settings.defaultPlsaCriterion))),
