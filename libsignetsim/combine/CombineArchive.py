@@ -62,7 +62,6 @@ class CombineArchive(object):
 		"sbox": __SBOX
 	}
 
-	SEDML = "sed-ml"
 
 	def __init__(self):
 
