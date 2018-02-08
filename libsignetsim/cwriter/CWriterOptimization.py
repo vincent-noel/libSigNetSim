@@ -37,6 +37,7 @@ class CWriterOptimization(object):
 	def __init__(self, workingModel, parameters,
 				p_lambda=Settings.defaultPlsaLambda,
 				p_criterion=Settings.defaultPlsaCriterion,
+				p_precision=Settings.defaultPlsaPrecision,
 				p_initial_temperature=Settings.defaultPlsaInitialTemperature,
 				p_gain=Settings.defaultPlsaGainForJumpSizeControl,
 				p_interval=Settings.defaultPlsaInterval,
@@ -50,6 +51,7 @@ class CWriterOptimization(object):
 		self.parameters = parameters
 		self.pLambda = p_lambda
 		self.pCriterion = p_criterion
+		self.pPrecision = p_precision
 		self.pInitialTemp = p_initial_temperature
 		self.pGain = p_gain
 		self.pInterval = p_interval
@@ -114,8 +116,8 @@ class CWriterOptimization(object):
 
 		f_c.write("\tmy_plist = InitPLSAParameters(%d);\n" % len(self.parameters))
 
-		for (i_param, (param, value, lb, ub)) in enumerate(self.parameters):
-			f_c.write("\tmy_plist->array[%d] = (ParamList) {&(model->constant_variables[%d].value), %g, (Range) {%g, %g}, \"%s\"};\n" % (i_param, param.ind, value, lb, ub, param.getXPath()))
+		for (i_param, (param, value, lb, ub, precision)) in enumerate(self.parameters):
+			f_c.write("\tmy_plist->array[%d] = (ParamList) {&(model->constant_variables[%d].value), %g, (Range) {%g, %g}, %g, \"%s\"};\n" % (i_param, param.ind, value, lb, ub, precision, param.getXPath()))
 
 		f_c.write("}")
 
@@ -135,6 +137,7 @@ class CWriterOptimization(object):
 		f_c.write("#endif\n")
 		f_c.write("\tsettings->lambda = %g;\n" % self.pLambda)
 		f_c.write("\tsettings->criterion = %g;\n" % self.pCriterion)
+		f_c.write("\tsettings->param_precision = %g;\n" % self.pPrecision)
 		f_c.write("\tsettings->freeze_count = %d;\n" % self.pFreezeCount)
 		f_c.write("}")
 

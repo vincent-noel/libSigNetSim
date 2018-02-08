@@ -70,7 +70,7 @@ class TestOptimization(TestCase):
 
 		selected_parameters = []
 		for parameter in m.listOfParameters.values():
-			selected_parameters.append((parameter, 1, 1e-6, 1e+6))
+			selected_parameters.append((parameter, 1, 1e-6, 1e+6, 4))
 
 		fit = ModelVsTimeseriesOptimization(
 			workingModel=m,
@@ -127,7 +127,7 @@ class TestOptimization(TestCase):
 
 		selected_parameters = []
 		for parameter in r.listOfLocalParameters.values():
-			selected_parameters.append((parameter, 1, 1e-6, 1e+6))
+			selected_parameters.append((parameter, 1, 1e-6, 1e+6, 4))
 
 		fit = ModelVsTimeseriesOptimization(
 			workingModel=m,

@@ -85,3 +85,6 @@ class ExperimentalCondition(object):
 
 	def getTreatedVariables(self):
 		return self.listOfInitialConditions.getVariables()
+
+	def getVariables(self):
+		return self.listOfInitialConditions.getVariables() + self.listOfExperimentalData.getVariables()

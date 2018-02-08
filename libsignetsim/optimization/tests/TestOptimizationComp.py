@@ -45,7 +45,7 @@ class TestOptimizationComp(TestCase):
 		sos_submodel = doc.model.listOfSubmodels.getBySbmlId("sos_mod").getModelObject()
 		param_def = sos_submodel.listOfParameters.getByName("SOS inactivation by Mapk catalytic constant")
 
-		selected_parameters = [(param_def, 1, 1e-6, 1e+6)]
+		selected_parameters = [(param_def, 1, 1e-6, 1e+6, 8)]
 
 		fit = ModelVsTimeseriesOptimization(
 			workingModel=doc.model,

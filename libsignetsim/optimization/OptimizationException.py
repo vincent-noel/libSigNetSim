@@ -31,8 +31,9 @@ class OptimizationException(Exception):
 
 	def __init__(self, value, message):
 
+		Exception.__init__(self)
 		self.value = value
 		self.message = message
 
-		def __str__(self):
-			return "%d : %s" % (self.value, self.message)
+	def __str__(self):
+		return "%d : %s" % (self.value, self.message)

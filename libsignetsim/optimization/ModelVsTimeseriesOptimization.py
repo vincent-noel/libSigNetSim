@@ -39,6 +39,7 @@ class ModelVsTimeseriesOptimization(Optimization, CWriterModelVsDataOptimization
 			mapping=None, noise=0, sampling=None, nb_procs=1,
 			p_lambda=Settings.defaultPlsaLambda,
 			p_criterion=Settings.defaultPlsaCriterion,
+			p_precision=Settings.defaultPlsaPrecision,
 			p_initial_temperature=Settings.defaultPlsaInitialTemperature,
 			p_gain=Settings.defaultPlsaGainForJumpSizeControl,
 			p_interval=Settings.defaultPlsaInterval,
@@ -55,18 +56,18 @@ class ModelVsTimeseriesOptimization(Optimization, CWriterModelVsDataOptimization
 			self.compModelDefinition = workingModel
 			self.workingModel = workingModel.parentDoc.getModelInstance()
 			self.parameters = []
-			for parameter, init_val, lower_bound, upper_bound in parameters_to_fit:
+			for parameter, init_val, lower_bound, upper_bound, precision in parameters_to_fit:
 				self.parameters.append((
-					self.workingModel.getInstanceVariableByXPath(parameter.getXPath()), init_val, lower_bound, upper_bound
+					self.workingModel.getInstanceVariableByXPath(parameter.getXPath()), init_val, lower_bound, upper_bound, precision
 				))
 
 		else:
 
 			self.workingModel = workingModel
 			self.parameters = []
-			for parameter, init_val, lower_bound, upper_bound in parameters_to_fit:
+			for parameter, init_val, lower_bound, upper_bound, precision in parameters_to_fit:
 				self.parameters.append((
-					workingModel.parentDoc.getByXPath(parameter.getXPath()), init_val, lower_bound, upper_bound
+					workingModel.parentDoc.getByXPath(parameter.getXPath()), init_val, lower_bound, upper_bound, precision
 				))
 
 			self.workingModel = workingModel
@@ -84,9 +85,9 @@ class ModelVsTimeseriesOptimization(Optimization, CWriterModelVsDataOptimization
 
 		CWriterModelVsDataOptimization.__init__(
 			self, self.workingModel, self.listOfExperiments, mapping, self.parameters,
-			p_lambda=p_lambda, p_criterion=p_criterion, p_initial_temperature=p_initial_temperature,
-			p_gain=p_gain, p_interval=p_interval, p_mix=p_mix, p_initial_moves=p_initial_moves, p_tau=p_tau,
-			p_freeze_count=p_freeze_count, s_neg_penalty=s_neg_penalty
+			p_lambda=p_lambda, p_criterion=p_criterion, p_precision=p_precision,
+			p_initial_temperature=p_initial_temperature, p_gain=p_gain, p_interval=p_interval, p_mix=p_mix,
+			p_initial_moves=p_initial_moves, p_tau=p_tau, p_freeze_count=p_freeze_count, s_neg_penalty=s_neg_penalty
 		)
 		NoiseGenerator.__init__(self, self.listOfExperiments, noise, sampling)
 

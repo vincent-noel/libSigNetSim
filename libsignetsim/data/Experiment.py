@@ -119,3 +119,13 @@ class Experiment(object):
 			return list(set(species))
 		else:
 			return species
+
+	def getVariables(self):
+		species = []
+		for condition in self.listOfConditions.values():
+			species += condition.getVariables()
+
+		if len(species) > 1:
+			return list(set(species))
+		else:
+			return species

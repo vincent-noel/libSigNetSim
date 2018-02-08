@@ -49,7 +49,7 @@ typedef struct ExperimentalObservation
     int       variable_id;    /* Position of the variable in the complete array */
     int       variable_pos; /* Index of the variable in the list of observables */
 
-    //char  *   variable_name;
+    char  *   variable_name;
 
 } ExperimentalObservation;
 
