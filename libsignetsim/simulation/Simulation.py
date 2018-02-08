@@ -223,16 +223,26 @@ class Simulation(CWriterSimulation):
 
 		if res_sim != 0 or getsize(join(self.getTempDirectory(), "err_sim")) > 0:
 
-			if Settings.verbose >= 1:
-				print "-" * 40 + "\n"
-				print "> Error during simulation execution :"
-				f_err_sim = open(self.getTempDirectory() + "err_sim", 'r')
-				for line in f_err_sim:
-					print line
-				print "-" * 40 + "\n"
-				f_err_sim.close()
+			# There is some weird error here, apparently caused by docker filesystem.
+			# ** apparently ** we can ignore it
+			non_docker_err = False
+			f_err_sim = open(self.getTempDirectory() + "err_sim", 'r')
+			for line in f_err_sim:
+				if not line.startswith("Unexpected end of /proc/mounts"):
+					non_docker_err = True
 
-			raise SimulationExecutionException("Error during simulation execution (%d)" % res_sim)
+			if non_docker_err:
+				if Settings.verbose >= 1:
+					print "-" * 40 + "\n"
+					print "> Error during simulation execution :"
+					f_err_sim = open(self.getTempDirectory() + "err_sim", 'r')
+					for line in f_err_sim:
+						if not line.startswith("Unexpected end of /proc/mounts"):
+							print line
+					print "-" * 40 + "\n"
+					f_err_sim.close()
+
+				raise SimulationExecutionException("Error during simulation execution (%d)" % res_sim)
 
 		else:
 			if Settings.verbose >= 2:
