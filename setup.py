@@ -5,9 +5,9 @@ from os.path import dirname, join
 
 setup(name='libsignetsim',
 	version=open(join(dirname(__file__), 'VERSION')).read(),
-	description='An e-Science framework for mathematical modeling and computational simulation of molecular signaling networks',
+	description='Python library designed for building, adjusting and analyzing quantitative biological models.',
 	author='Vincent Noel',
-	author_email='vincent-noel@butantan.gov.br',
+	author_email='contact@vincent-noel.fr',
 	url='',
 	packages=find_packages(),
 	include_package_data=True,
