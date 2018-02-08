@@ -9,8 +9,6 @@ Submodules
    libsignetsim.combine.CombineArchive
    libsignetsim.combine.CombineException
    libsignetsim.combine.File
-   libsignetsim.combine.ListOfFiles
-   libsignetsim.combine.Manifest
 
 Module contents
 ---------------

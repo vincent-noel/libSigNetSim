@@ -44,22 +44,22 @@ class CombineArchive(object):
 	""" Combine archive main object. """
 
 
-	OMEX = "Default combine archive"
-	SEDX = "SED-ML archive"
-	SBEX = "SBML archive"
-	CMEX = "CellML archive"
-	NEUX = "NeuroML archive"
-	PHEX = "PharmaML archive"
-	SBOX = "SBOL archive"
+	__OMEX = "Default combine archive"
+	__SEDX = "SED-ML archive"
+	__SBEX = "SBML archive"
+	__CMEX = "CellML archive"
+	__NEUX = "NeuroML archive"
+	__PHEX = "PharmaML archive"
+	__SBOX = "SBOL archive"
 
-	ARCHIVE_EXTENSIONS = {
-		"omex": OMEX,
-		"sedx": SEDX,
-		"sbex": SBEX,
-		"cmex": CMEX,
-		"neux": NEUX,
-		"phex": PHEX,
-		"sbox": SBOX
+	__ARCHIVE_EXTENSIONS = {
+		"omex": __OMEX,
+		"sedx": __SEDX,
+		"sbex": __SBEX,
+		"cmex": __CMEX,
+		"neux": __NEUX,
+		"phex": __PHEX,
+		"sbox": __SBOX
 	}
 
 	SEDML = "sed-ml"
@@ -75,6 +75,7 @@ class CombineArchive(object):
 
 	def readArchive(self, file):
 		""" Reads a combine archive file """
+
 		if not exists(file):
 			raise FileNotFoundException("File %s not found" % file)
 
@@ -191,26 +192,34 @@ class CombineArchive(object):
 			raise NoMasterNumlFoundException("No master NuML found")
 
 	def isDefaultCombineArchive(self):
-		return self.__extension in self.ARCHIVE_EXTENSIONS and self.ARCHIVE_EXTENSIONS[self.__extension] == self.OMEX
+		""" Tests if the archive is a default combine archive (.omex) """
+		return self.__extension in self.__ARCHIVE_EXTENSIONS and self.__ARCHIVE_EXTENSIONS[self.__extension] == self.__OMEX
 
 	def isSEDMLArchive(self):
-		return self.__extension in self.ARCHIVE_EXTENSIONS and self.ARCHIVE_EXTENSIONS[self.__extension] == self.SEDX
+		""" Tests if the archive is a simulation archive (.sedx) """
+		return self.__extension in self.__ARCHIVE_EXTENSIONS and self.__ARCHIVE_EXTENSIONS[self.__extension] == self.__SEDX
 
 	def isSBMLArchive(self):
-		return self.__extension in self.ARCHIVE_EXTENSIONS and self.ARCHIVE_EXTENSIONS[self.__extension] == self.SBEX
+		""" Tests if the archive is a SBML model archive (.sbex) """
+		return self.__extension in self.__ARCHIVE_EXTENSIONS and self.__ARCHIVE_EXTENSIONS[self.__extension] == self.__SBEX
 
 	def isCellMLArchive(self):
-		return self.__extension in self.ARCHIVE_EXTENSIONS and self.ARCHIVE_EXTENSIONS[self.__extension] == self.CMEX
+		""" Tests if the archive is a CellML model archive (.cmex) """
+		return self.__extension in self.__ARCHIVE_EXTENSIONS and self.__ARCHIVE_EXTENSIONS[self.__extension] == self.__CMEX
 
 	def isNeuroMLArchive(self):
-		return self.__extension in self.ARCHIVE_EXTENSIONS and self.ARCHIVE_EXTENSIONS[self.__extension] == self.NEUX
+		""" Tests if the archive is a NeuroML archive (.neux) """
+		return self.__extension in self.__ARCHIVE_EXTENSIONS and self.__ARCHIVE_EXTENSIONS[self.__extension] == self.__NEUX
 
 	def isPharmaMLArchive(self):
-		return self.__extension in self.ARCHIVE_EXTENSIONS and self.ARCHIVE_EXTENSIONS[self.__extension] == self.PHEX
+		""" Tests if the archive is a PharmaML archive (.phex) """
+		return self.__extension in self.__ARCHIVE_EXTENSIONS and self.__ARCHIVE_EXTENSIONS[self.__extension] == self.__PHEX
 
 	def isSBOLArchive(self):
-		return self.__extension in self.ARCHIVE_EXTENSIONS and self.ARCHIVE_EXTENSIONS[self.__extension] == self.SBOX
+		""" Tests if the archive is a SBOL archive (.sbox) """
+		return self.__extension in self.__ARCHIVE_EXTENSIONS and self.__ARCHIVE_EXTENSIONS[self.__extension] == self.__SBOX
 
 	def addFile(self, filename):
+		""" Adds a file to the archive """
 		copy(filename, join(self.__path, basename(filename)))
 		return self.__listOfFiles.addFile(filename)

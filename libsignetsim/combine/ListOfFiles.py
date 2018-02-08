@@ -26,8 +26,7 @@
 
 from .Manifest import Manifest
 from .File import File
-from libsignetsim.settings.Settings import Settings
-from .CombineException import NoManifestFoundException
+
 
 class ListOfFiles(list):
 
@@ -39,15 +38,12 @@ class ListOfFiles(list):
 		self.__archive = archive
 		self.__manifest = Manifest(self.__archive)
 
-
 	def readListOfFiles(self, archive_file):
 
 		if not self.MANIFEST in archive_file.namelist():
-			# raise NoManifestFoundException("No manifest found")
 			pass
 		else:
 			self.__manifest.readManifest(archive_file.read(self.MANIFEST))
-			# self.__manifest.writeManifest()
 
 		for t_file in archive_file.namelist():
 			if not t_file.endswith("/") and t_file != self.MANIFEST:
@@ -72,9 +68,6 @@ class ListOfFiles(list):
 
 	def writeListOfFiles(self):
 		return [file.getFilename() for file in self]
-
-	# def getManifest(self):
-	# 	return self.__manifest
 
 	def getMasterSedml(self):
 		for file in self:

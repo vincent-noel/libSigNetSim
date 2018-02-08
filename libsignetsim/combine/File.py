@@ -38,25 +38,24 @@ from shutil import copy
 
 class File(object):
 
-	XML = "http://purl.org/NET/mediatypes/application/xml"
-	SBML = "http://identifiers.org/combine.specifications/sbml"
-	SEDML = "http://identifiers.org/combine.specifications/sed-ml"
-	NUML = "http://identifiers.org/combine.specifications/numl"
-	CELLML = "http://identifiers.org/combine.specifications/cellml"
-	MANIFEST = "http://identifiers.org/combine.specifications/omex-manifest"
-	PDF = "http://purl.org/NET/mediatypes/application/pdf"
-	MARKDOWN = "http://purl.org/NET/mediatypes/text/markdown"
-	UNKNOWN = "http://purl.org/NET/mediatypes/application/octet-stream"
+	__XML = "http://purl.org/NET/mediatypes/application/xml"
+	__SBML = "http://identifiers.org/combine.specifications/sbml"
+	__SEDML = "http://identifiers.org/combine.specifications/sed-ml"
+	__NUML = "http://identifiers.org/combine.specifications/numl"
+	__CELLML = "http://identifiers.org/combine.specifications/cellml"
+	__MANIFEST = "http://identifiers.org/combine.specifications/omex-manifest"
+	__PDF = "http://purl.org/NET/mediatypes/application/pdf"
+	__MARKDOWN = "http://purl.org/NET/mediatypes/text/markdown"
+	__UNKNOWN = "http://purl.org/NET/mediatypes/application/octet-stream"
 
-
-	KNOWN_FORMATS = {
-		"xml" : XML,
-		"sbml" : SBML,
-		"sedml" : SEDML,
-		"numl" : NUML,
-		"cellml" : CELLML,
-		"pdf" : PDF,
-		"md" : MARKDOWN,
+	__KNOWN_FORMATS = {
+		"xml" : __XML,
+		"sbml" : __SBML,
+		"sedml" : __SEDML,
+		"numl" : __NUML,
+		"cellml" : __CELLML,
+		"pdf" : __PDF,
+		"md" : __MARKDOWN,
 	}
 
 	def __init__(self, archive, manifest):
@@ -80,18 +79,18 @@ class File(object):
 		if self.__manifest.isInManifest(self.getFilename()) and self.__manifest.getFormat(self.getFilename()) is not None:
 			self.__format = self.__manifest.getFormat(self.getFilename())
 
-		elif self.__extension in self.KNOWN_FORMATS:
+		elif self.__extension in self.__KNOWN_FORMATS:
 
-			self.__format = self.KNOWN_FORMATS[self.__extension]
+			self.__format = self.__KNOWN_FORMATS[self.__extension]
 
-			if self.__format == self.XML:
-				self.__format = self.guessXML(archive_file.read(filename))
+			if self.__format == self.__XML:
+				self.__format = self.__guessXML(archive_file.read(filename))
 
 		else:
 			self.__format = "http://purl.org/NET/mediatypes/%s" % guess_type(filename)[0]
 
 		if self.__format is None:
-			self.__format = self.UNKNOWN
+			self.__format = self.__UNKNOWN
 
 
 		if not self.__manifest.isInManifest(self.getFilename()):
@@ -105,53 +104,60 @@ class File(object):
 		self.__filename = basename(filename)
 		self.__extension = self.__filename.split('.')[-1]
 
-		if self.__extension in self.KNOWN_FORMATS:
-			self.__format = self.KNOWN_FORMATS[self.__extension]
-			if self.__format == self.XML:
-				self.__format = self.guessXML(open(filename, 'r').read())
+		if self.__extension in self.__KNOWN_FORMATS:
+			self.__format = self.__KNOWN_FORMATS[self.__extension]
+			if self.__format == self.__XML:
+				self.__format = self.__guessXML(open(filename, 'r').read())
 
 		else:
 			self.__format = "http://purl.org/NET/mediatypes/%s" % guess_type(filename)[0]
 
 		if self.__format is None:
-			self.__format = self.UNKNOWN
+			self.__format = self.__UNKNOWN
 
 		self.__manifest.addInManifest(self.__filename, self.__format)
 
 
 	def isMaster(self):
+		""" Tests if the file is set as a master file of the archive """
 		return self.__manifest.isInManifest(self.getFilename()) and self.__manifest.isMaster(self.getFilename())
 
 	def setMaster(self):
+		""" Sets the file as a master file of the archive """
 		if self.__manifest.isInManifest(self.getFilename()):
 			self.__manifest.setMaster(self.getFilename())
 
 	def isSedml(self):
+		""" Tests if the file is a SEDML"""
 		return (self.__manifest.isInManifest(self.getFilename())
-				and self.__manifest.getFormat(self.getFilename()).startswith(self.SEDML)
+				and self.__manifest.getFormat(self.getFilename()).startswith(self.__SEDML)
 		)
 
 	def isSbml(self):
+		""" Tests if the file is a SBML"""
 		return (self.__manifest.isInManifest(self.getFilename())
-				and self.__manifest.getFormat(self.getFilename()).startswith(self.SBML)
+				and self.__manifest.getFormat(self.getFilename()).startswith(self.__SBML)
 		)
 
 	def isNuml(self):
+		""" Tests if the file is a NUML"""
 		return (
 			self.__manifest.isInManifest(self.getFilename())
-			and self.__manifest.getFormat(self.getFilename()).startswith(self.NUML)
+			and self.__manifest.getFormat(self.getFilename()).startswith(self.__NUML)
 		)
 
 	def getFilename(self):
+		""" Returns the filename """
 		if self.__path is not None:
 			return join(self.__path, self.__filename)
 		else:
 			return self.__filename
 
 	def getFormat(self):
+		""" Returns the file's format """
 		return self.__format
 
-	def guessXML(self, xml_content):
+	def __guessXML(self, xml_content):
 		root = etree.fromstring(xml_content)
 		tag = root.tag.split("}")[1]
 
@@ -159,22 +165,22 @@ class File(object):
 			sbmlReader = SBMLReader()
 			if sbmlReader is not None:
 				sbmlDoc = sbmlReader.readSBMLFromString(xml_content)
-				return self.SBML + ".level-%d.version-%d" % (sbmlDoc.getLevel(), sbmlDoc.getVersion())
+				return self.__SBML + ".level-%d.version-%d" % (sbmlDoc.getLevel(), sbmlDoc.getVersion())
 			else:
-				return self.SBML
+				return self.__SBML
 
 		elif tag == "sedML":
 			sedmlDoc = readSedMLFromString(xml_content)
-			return self.SEDML + ".level-%d.version-%d" % (sedmlDoc.getLevel(), sedmlDoc.getVersion())
+			return self.__SEDML + ".level-%d.version-%d" % (sedmlDoc.getLevel(), sedmlDoc.getVersion())
 
 		elif tag == "numl":
 			numlDoc = readNUMLFromString(xml_content)
-			return self.NUML + ".level-%d.version-%d" % (numlDoc.getLevel(), numlDoc.getVersion())
+			return self.__NUML + ".level-%d.version-%d" % (numlDoc.getLevel(), numlDoc.getVersion())
 
 		elif tag == "omexManifest":
-			return self.MANIFEST
+			return self.__MANIFEST
 
 		else:
-			return self.XML
+			return self.__XML
 
 
