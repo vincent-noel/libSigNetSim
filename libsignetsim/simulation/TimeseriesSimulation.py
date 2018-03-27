@@ -120,6 +120,7 @@ class TimeseriesSimulation(Simulation):
 		# The simulations only deals with amounts, but some species are
 		# Concentrations. So we need to transform them back
 		for variable in self.listOfModels[0].listOfVariables:
+			# print "%s : %s" % (variable.getSbmlId(), variable.symbol.getSymbol())
 			if variable.isConcentration():
 				t_traj = trajs[variable.getSbmlId()]
 
@@ -138,12 +139,12 @@ class TimeseriesSimulation(Simulation):
 			else:
 				res_traj = []
 
-				for i, point in enumerate(trajs[variable.getSbmlId()]):
+				for i, point in enumerate(trajs[str(variable.symbol.getSymbol())]):
 
 					if i == 0 or (i > 0 and t[i] > t[i - 1]):
 						res_traj.append(point)
 
-				trajs.update({variable.getSbmlId(): res_traj})
+				trajs.update({str(variable.symbol.getSymbol()): res_traj})
 
 		t_t = []
 		for i, point in enumerate(t):
