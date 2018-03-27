@@ -127,8 +127,31 @@ class TimeseriesSimulation(Simulation):
 				res_traj = []
 
 				for i, point in enumerate(t_traj):
-					res_traj.append(point/t_comp_traj[i])
+
+					if i == 0 or (i > 0 and  t[i] > t[i-1]):
+						if abs(t_comp_traj[i]) < self.absTol[0]:
+							res_traj.append(0.0)
+						else:
+							res_traj.append(point/t_comp_traj[i])
+
 				trajs.update({variable.getSbmlId(): res_traj})
+			else:
+				res_traj = []
+
+				for i, point in enumerate(trajs[variable.getSbmlId()]):
+
+					if i == 0 or (i > 0 and t[i] > t[i - 1]):
+						res_traj.append(point)
+
+				trajs.update({variable.getSbmlId(): res_traj})
+
+		t_t = []
+		for i, point in enumerate(t):
+
+			if i == 0 or (i > 0 and t[i] > t[i - 1]):
+				t_t.append(point)
+
+		t = t_t
 
 		return (t, trajs)
 
