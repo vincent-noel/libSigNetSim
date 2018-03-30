@@ -47,14 +47,14 @@ class EquilibriumPointCurve(object):
 
 	def setParameter(self, parameter):
 
-		if parameter.localParameter:
-			self.parameter = "local_%d_%s" % (parameter.reaction.objId, parameter.getSbmlId())
-		else:
-			self.parameter = parameter.getSbmlId()
+		# if parameter.isParameter() and parameter.localParameter:
+		# 	self.parameter = "local_%d_%s" % (parameter.reaction.objId, parameter.getSbmlId())
+		# else:
+		# 	self.parameter = parameter.getSbmlId()
+		self.parameter = parameter.getSymbolStr()
 
-
-	def setVariable(self, sbml_id):
-		self.variable = sbml_id
+	def setVariable(self, variable):
+		self.variable = variable.getSymbolStr()
 
 	def setRange(self, from_value, to_value):
 		self.fromValue = from_value
@@ -112,7 +112,6 @@ class EquilibriumPointCurve(object):
 			callback_function_error()
 
 	def executeContThread(self, callback_function_success, callback_function_error):
-
 
 		t = threading.Thread(group=None, target=self.executeCont, args=(callback_function_success, callback_function_error))
 		t.setDaemon(True)
