@@ -261,3 +261,11 @@ class MathVariable(object):
 		return (self.isSpecies()
 				and (self.getCompartment() is not None and not self.getCompartment().spatialDimensions == 0)
 				and not self.hasOnlySubstanceUnits)
+
+	def getSymbol(self):
+
+		return self.symbol
+
+	def getSymbolStr(self):
+
+		return str(self.symbol.getSymbol())
