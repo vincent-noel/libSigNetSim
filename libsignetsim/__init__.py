@@ -32,6 +32,7 @@ from combine import (
 	NoMasterSedmlFoundException, NoMasterSbmlFoundException, NoMasterNumlFoundException, NoSedmlFoundException
 )
 from settings import Settings
+from continuation import EquilibriumPointCurve
 from data import Experiment
 from numl import NuMLDocument, NuMLException, NuMLFileNotFound
 from sedml import (

@@ -24,3 +24,4 @@
 
 """
 
+from EquilibriumPointCurve import EquilibriumPointCurve
