@@ -32,6 +32,11 @@ from PyDSToolModel import PyDSToolModel
 
 class EquilibriumPointCurve(object):
 
+	NOT_STARTED = 10
+	STARTED 	= 11
+	SUCCESS		= 12
+	FAILED		= 13
+
 	def __init__ (self, model):
 
 		self.model = model
@@ -44,17 +49,13 @@ class EquilibriumPointCurve(object):
 		self.toValue = None
 		self.ds = 0.1
 		self.maxSteps = 1000
+		self.status = self.NOT_STARTED
 
 	def setParameter(self, parameter):
-
-		# if parameter.isParameter() and parameter.localParameter:
-		# 	self.parameter = "local_%d_%s" % (parameter.reaction.objId, parameter.getSbmlId())
-		# else:
-		# 	self.parameter = parameter.getSbmlId()
-		self.parameter = parameter.getSymbolStr()
+		self.parameter = parameter
 
 	def setVariable(self, variable):
-		self.variable = variable.getSymbolStr()
+		self.variable = variable
 
 	def setRange(self, from_value, to_value):
 		self.fromValue = from_value
@@ -68,51 +69,111 @@ class EquilibriumPointCurve(object):
 
 	def build(self):
 
-		self.system.build(self.parameter, self.fromValue, vars_to_keep=[self.parameter, self.variable])
+		self.system.build(
+			self.parameter.getSymbolStr(),
+			self.fromValue, vars_to_keep=[self.parameter.getSymbolStr(), self.variable.getSymbolStr()]
+		)
 		self.buildCont()
 
-	def run(self, callback_function_success, callback_function_error):
+	def run_async(self, callback_function_success, callback_function_error):
 		self.executeContThread(callback_function_success, callback_function_error)
 
+	def run(self):
+		self.executeCont()
 
 	def buildCont(self):
 
 		self.continuation = ContClass(self.system.getSystem())
 
 		self.continuationParameters = args(name='EQ1', type='EP-C')
-		self.continuationParameters.freepars = [self.parameter]
+		self.continuationParameters.freepars = [self.parameter.getSymbolStr()]
 		self.continuationParameters.StepSize = self.ds
 		self.continuationParameters.MaxNumPoints = self.maxSteps
 		self.continuationParameters.MaxStepSize = self.ds*100
 		self.continuationParameters.MinStepSize = self.ds/100
 		self.continuationParameters.LocBifPoints = 'All'
-		self.continuationParameters.verbosity = 2
-		self.continuationParameters.SaveEigen = False
+		self.continuationParameters.verbosity = 0
+		self.continuationParameters.SaveEigen = True
 
 		self.continuation.newCurve(self.continuationParameters)
 
+	def executeCont(self, callback_function_success=None, callback_function_error=None):
 
+		if callback_function_success is not None:
+			print("> Starting thread")
 
-	def executeCont(self, callback_function_success, callback_function_error):
-
+		self.status = self.STARTED
 		try:
-			print "> Starting thread"
 			t0 = time()
 			if self.ds > 0:
 				self.continuation['EQ1'].forward()
 			else:
 				self.continuation['EQ1'].backward()
 
-			callback_function_success(self)
+			self.status = self.SUCCESS
 
-			print "> Exiting thread (executed in %.3gs)" % (time()-t0)
+			if callback_function_success is not None:
+				print("> Exiting thread (executed in %.3gs)" % (time() - t0))
+				callback_function_success(self)
+
+
 		except RuntimeError:
-			callback_function_error()
+			self.status = self.FAILED
+			if callback_function_error is not None:
+				callback_function_error()
+
 		except PyDSTool_ExistError:
-			callback_function_error()
+			self.status = self.FAILED
+			if callback_function_error is not None:
+				callback_function_error()
 
 	def executeContThread(self, callback_function_success, callback_function_error):
 
 		t = threading.Thread(group=None, target=self.executeCont, args=(callback_function_success, callback_function_error))
 		t.setDaemon(True)
 		t.start()
+
+	def getCurves(self):
+
+		curves = []
+
+		if self.status == self.SUCCESS:
+
+			for curve_id in self.continuation.curves.keys():
+				t_curves = {}
+
+				len_curve = len(self.continuation[curve_id].curve[:, 1]) - 1
+				parameter_indice = len(self.continuation[curve_id].varslist)
+
+				for i, var in enumerate(self.continuation[curve_id].varslist):
+
+					x = self.continuation[curve_id].curve[0:len_curve - 1, parameter_indice]
+					y = self.continuation[curve_id].curve[0:len_curve - 1, i]
+					xy = [(x_i, y_i) for i, (x_i, y_i) in enumerate(zip(x, y)) if x_i < 500]
+					t_curves.update({var: xy})
+
+				curves.append(t_curves)
+
+		return curves
+
+	def getPoints(self):
+
+		res_points = []
+
+		if self.status == self.SUCCESS:
+
+			for curve_id in self.continuation.curves.keys():
+				t_points = {}
+				for var in self.continuation[curve_id].varslist:
+					t_points.update({var: []})
+
+
+				for points_type, points in self.continuation[curve_id].BifPoints.items():
+
+					for point in points.found:
+						points_x = point.X[self.parameter.getSymbolStr()]
+						for var in self.continuation[curve_id].varslist:
+							t_points[var].append((points_type, points_x, point.X[var]))
+
+				res_points.append(t_points)
+		return res_points
