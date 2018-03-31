@@ -75,6 +75,9 @@ elif [ $1 = "data" ]; then
 elif [ $1 = "uris" ]; then
     coverage run -a -m unittest libsignetsim.uris.tests.TestGOResolver || exit 1;
 
+elif [ $1 = "continuation" ]; then
+    coverage run -a -m unittest libsignetsim.continuation.tests.TestContinuation || exit 1;
+
 elif [ $1 = "others" ]; then
     $0 models || exit 1;
     $0 simulation || exit 1;
@@ -84,6 +87,7 @@ elif [ $1 = "others" ]; then
     $0 uris || exit 1;
     $0 data || exit 1;
     $0 numl || exit 1;
+    $0 continuation || exit 1;
 
 else
     exit 1;
