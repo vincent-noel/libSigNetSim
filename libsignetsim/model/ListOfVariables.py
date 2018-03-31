@@ -70,6 +70,12 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, list):
 			if var.symbol.getSymbol() == symbol:
 				return var
 
+	def getBySymbolStr(self, symbol_str):
+		""" Get a sbml variable by his symbol string"""
+		for var in self:
+			if var.getSymbolStr() == symbol_str:
+				return var
+
 	# Renaming variable
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		old_symbol = SympySymbol(old_sbml_id)
