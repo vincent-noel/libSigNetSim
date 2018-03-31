@@ -60,11 +60,10 @@ class PyDSToolModel(object):
 			subs_cfes.update({cfe.getVariable().symbol.getInternalMathFormula(): cfe.getDefinition().getDeveloppedInternalMathFormula()})
 		for variable in self.model.getMathModel().listOfVariables.values():
 			if variable.isConstant():
-				t_symbol = variable.symbol.getInternalMathFormula()#.subs(local_params_subs))
+				t_symbol = variable.symbol.getInternalMathFormula()
 				t_value = self.model.solvedInitialConditions[t_symbol].getInternalMathFormula()
 				if str(variable.symbol.getInternalMathFormula()) == parameter:
 					t_value = from_value
-					print("Found parameter initial value !")
 				parameters.update({str(t_symbol): float(t_value)})
 
 			if variable.isDerivative():
@@ -74,10 +73,6 @@ class PyDSToolModel(object):
 
 		for ode in self.model.getMathModel().listOfODEs:
 			odes.update({str(ode.getVariable().symbol.getInternalMathFormula()): str(ode.getDefinition().getDeveloppedInternalMathFormula().subs(subs_cfes).subs(comp_subs))})
-
-		print odes
-		print variables
-		print parameters
 
 		self.systemParameters = args(name=self.model.getSbmlId())
 		self.systemParameters.pars = parameters
