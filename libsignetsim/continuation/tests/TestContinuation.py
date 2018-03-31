@@ -88,5 +88,5 @@ class TestContinuation(TestCase):
 		for var, points in curve_points[0].items():
 			for i, (point_type, x, y) in enumerate(points):
 				self.assertEqual(point_type, RESULT_POINTS[var][i][0])
-				self.assertAlmostEqual(x, RESULT_POINTS[var][i][1])
-				self.assertAlmostEqual(y, RESULT_POINTS[var][i][2])
+				self.assertAlmostEqual(x, RESULT_POINTS[var][i][1], delta=1e-6*x)
+				self.assertAlmostEqual(y, RESULT_POINTS[var][i][2], delta=1e-6*y)
