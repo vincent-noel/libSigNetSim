@@ -115,7 +115,7 @@ class ListOfInitialAssignments(ListOf, SbmlObject, HasParentObj):
 	def remove(self, init_assignment):
 		""" Remove an initial assignment from the list """
 
-		init_assignment.variable.unsetRuledBy()
+		init_assignment.getVariable().unsetRuledBy()
 		ListOf.remove(self, init_assignment)
 
 
