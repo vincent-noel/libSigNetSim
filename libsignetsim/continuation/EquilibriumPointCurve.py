@@ -77,7 +77,6 @@ class EquilibriumPointCurve(object):
 			self.fromValue, vars_to_keep=[self.parameter.getSymbolStr(), self.variable.getSymbolStr()]
 		)
 
-		# print(self.system)
 		self.buildCont()
 
 	def run_async(self, callback_function_success, callback_function_error):
@@ -181,7 +180,6 @@ class EquilibriumPointCurve(object):
 			x, ys = self.getCurves()
 			stability = self.getStability(x)
 
-			# print stability
 			split = []
 			t_res = []
 			for i, x_i in enumerate(stability):
@@ -210,27 +208,30 @@ class EquilibriumPointCurve(object):
 			return split_x, split_ys, split_stability
 
 
-	def getLimitCycleCurve(self):
+	def getLimitCycleCurves(self):
+
+		x = []
+		curves = {}
 
 		if self.status == self.SUCCESS and self.LIMIT_CYCLE_CURVE in self.continuation.curves.keys():
 
-			curves = {}
 			len_curve = len(self.continuation[self.LIMIT_CYCLE_CURVE].curve[:, 1]) - 1
 			nb_variables = len(self.continuation[self.LIMIT_CYCLE_CURVE].varslist)
 			x = self.continuation[self.LIMIT_CYCLE_CURVE].curve[0:len_curve - 1, nb_variables * 2]
+			x = [x_i for x_i in x if self.fromValue <= x_i <= self.toValue]
 
 			for i, var in enumerate(self.continuation[self.LIMIT_CYCLE_CURVE].varslist):
-				xys = {}
+				t_ys = {}
 				y_min = self.continuation[self.LIMIT_CYCLE_CURVE].curve[0:len_curve - 1, i]
 				y_max = self.continuation[self.LIMIT_CYCLE_CURVE].curve[0:len_curve - 1, i + nb_variables]
-				xy_min = [(x_i, y_i) for i, (x_i, y_i) in enumerate(zip(x, y_min)) if self.fromValue <= x_i <= self.toValue]
-				xys.update({'min': xy_min})
-				xy_max = [(x_i, y_i) for i, (x_i, y_i) in enumerate(zip(x, y_max)) if self.fromValue <= x_i <= self.toValue]
-				xys.update({'max': xy_max})
+				y_min = [y_i for x_i, y_i in zip(x, y_min) if self.fromValue <= x_i <= self.toValue]
+				y_max = [y_i for x_i, y_i in zip(x, y_max) if self.fromValue <= x_i <= self.toValue]
+				t_ys.update({'min': y_min})
+				t_ys.update({'max': y_max})
 
-				curves.update({var: xys})
+				curves.update({var: t_ys})
 
-			return curves
+		return x, curves
 
 	def getPoints(self):
 
@@ -252,7 +253,7 @@ class EquilibriumPointCurve(object):
 	def hasHopfBifurcations(self):
 		return len(self.continuation[self.MAIN_CURVE].BifPoints['H'].found) > 0
 
-	def findLimitCycleCurve(self, point='H1'):
+	def findLimitCycleCurves(self, point='H1'):
 
 		if self.hasHopfBifurcations():
 
@@ -260,6 +261,7 @@ class EquilibriumPointCurve(object):
 			limit_cycle_args.initpoint = self.MAIN_CURVE + ':' + point
 			limit_cycle_args.freepars = [self.parameter.getSymbolStr()]
 			limit_cycle_args.MaxNumPoints = self.maxSteps
+			limit_cycle_args.setSize = self.ds
 			limit_cycle_args.MinStepSize = self.ds/100
 			limit_cycle_args.MaxStepSize = self.ds*100
 			limit_cycle_args.LocBifPoints = 'all'
@@ -280,6 +282,8 @@ class EquilibriumPointCurve(object):
 				color = "b-"
 			elif stab[i] == 'N':
 				color = 'r--'
+			elif stab[i] == 'U':
+				color = 'b--'
 			else:
 				color = 'r-'
 
@@ -290,3 +294,11 @@ class EquilibriumPointCurve(object):
 		y = [y_i for _, _, y_i in points_var]
 		plot.plot(x, y, 'ro')
 		plot.set_xlim(self.fromValue, self.toValue)
+
+	def plotLimitCycles(self, plot):
+
+		if self.hasHopfBifurcations():
+			self.findLimitCycleCurves()
+			x, ys = self.getLimitCycleCurves()
+			plot.plot(x, ys[self.variable.getSymbolStr()]['min'], 'b-')
+			plot.plot(x, ys[self.variable.getSymbolStr()]['max'], 'b-')
