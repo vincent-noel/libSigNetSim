@@ -25,6 +25,10 @@
 """
 
 from PyDSTool import args, Generator
+from PyDSTool.Toolbox import phaseplane as pp
+
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol
+from pprint import pformat
 
 
 class PyDSToolModel(object):
@@ -40,12 +44,13 @@ class PyDSToolModel(object):
 		return self.system
 
 	def build(self, parameter, from_value, vars_to_keep=[]):
+		parameter.setValue(0)
 		self.model.build(vars_to_keep=vars_to_keep)
 
 		self.model.buildReducedModel(vars_to_keep=vars_to_keep)
-		self.buildDS(parameter, from_value)
+		self.buildDS()
 
-	def buildDS(self, parameter, from_value):
+	def buildDS(self):
 
 		comp_subs = {}
 		for comp in self.model.listOfCompartments.values():
@@ -57,25 +62,36 @@ class PyDSToolModel(object):
 
 		subs_cfes = {}
 		for cfe in self.model.getMathModel().listOfCFEs:
-			subs_cfes.update({cfe.getVariable().symbol.getInternalMathFormula(): cfe.getDefinition().getDeveloppedInternalMathFormula()})
+			t_definition = cfe.getDefinition().getDeveloppedInternalMathFormula()
+			subs_cfes.update({cfe.getVariable().symbol.getInternalMathFormula(): t_definition})
+
 		for variable in self.model.getMathModel().listOfVariables.values():
+
 			if variable.isConstant():
 				t_symbol = variable.symbol.getInternalMathFormula()
 				t_value = self.model.solvedInitialConditions[t_symbol].getInternalMathFormula()
-				if str(variable.symbol.getInternalMathFormula()) == parameter:
-					t_value = from_value
-				parameters.update({str(t_symbol): float(t_value)})
+				parameters.update({str(t_symbol): str(t_value)})
 
-			if variable.isDerivative():
+			elif variable.isDerivative():
 				t_symbol = variable.symbol.getInternalMathFormula()
 				t_value = self.model.solvedInitialConditions[t_symbol].getInternalMathFormula()
-				variables.update({str(t_symbol): float(t_value)})
+				variables.update({str(t_symbol): str(t_value)})
 
 		for ode in self.model.getMathModel().listOfODEs:
-			odes.update({str(ode.getVariable().symbol.getInternalMathFormula()): str(ode.getDefinition().getDeveloppedInternalMathFormula().subs(subs_cfes).subs(comp_subs))})
+			t_ode = ode.getDefinition().getDeveloppedInternalMathFormula().subs(subs_cfes).subs(comp_subs)
+			odes.update({str(ode.getVariable().symbol.getInternalMathFormula()): str(t_ode)})
 
 		self.systemParameters = args(name=self.model.getSbmlId())
 		self.systemParameters.pars = parameters
 		self.systemParameters.varspecs = odes
 		self.systemParameters.ics = variables
 		self.system = Generator.Vode_ODEsystem(self.systemParameters)
+
+	def __str__(self):
+
+		res = "\n" + pformat(self.systemParameters.pars)
+		res += "\n" + pformat(self.systemParameters.ics)
+		res += "\n" + pformat(self.systemParameters.varspecs)
+		res += "\n"
+
+		return res

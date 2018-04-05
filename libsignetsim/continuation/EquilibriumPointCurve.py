@@ -37,6 +37,9 @@ class EquilibriumPointCurve(object):
 	SUCCESS		= 12
 	FAILED		= 13
 
+	MAIN_CURVE = 'EQ1'
+	LIMIT_CYCLE_CURVE = 'LC1'
+
 	def __init__ (self, model):
 
 		self.model = model
@@ -70,9 +73,11 @@ class EquilibriumPointCurve(object):
 	def build(self):
 
 		self.system.build(
-			self.parameter.getSymbolStr(),
+			self.parameter,
 			self.fromValue, vars_to_keep=[self.parameter.getSymbolStr(), self.variable.getSymbolStr()]
 		)
+
+		# print(self.system)
 		self.buildCont()
 
 	def run_async(self, callback_function_success, callback_function_error):
@@ -85,7 +90,7 @@ class EquilibriumPointCurve(object):
 
 		self.continuation = ContClass(self.system.getSystem())
 
-		self.continuationParameters = args(name='EQ1', type='EP-C')
+		self.continuationParameters = args(name=self.MAIN_CURVE, type='EP-C')
 		self.continuationParameters.freepars = [self.parameter.getSymbolStr()]
 		self.continuationParameters.StepSize = self.ds
 		self.continuationParameters.MaxNumPoints = self.maxSteps
@@ -106,9 +111,9 @@ class EquilibriumPointCurve(object):
 		try:
 			t0 = time()
 			if self.ds > 0:
-				self.continuation['EQ1'].forward()
+				self.continuation[self.MAIN_CURVE].forward()
 			else:
-				self.continuation['EQ1'].backward()
+				self.continuation[self.MAIN_CURVE].backward()
 
 			self.status = self.SUCCESS
 
@@ -133,47 +138,155 @@ class EquilibriumPointCurve(object):
 		t.setDaemon(True)
 		t.start()
 
-	def getCurves(self):
+	def getCurve(self):
 
-		curves = []
+		if self.status == self.SUCCESS:
+			x, ys = self.getCurves()
+			return x, ys[self.variable.getSymbolStr()]
+
+	def getCurves(self):
 
 		if self.status == self.SUCCESS:
 
-			for curve_id in self.continuation.curves.keys():
-				t_curves = {}
+			len_curve = len(self.continuation[self.MAIN_CURVE].curve[:, 1]) - 1
+			nb_variables = len(self.continuation[self.MAIN_CURVE].varslist)
+			x = self.continuation[self.MAIN_CURVE].curve[0:len_curve, nb_variables]
+			x = [x_i for x_i in x if self.fromValue <= x_i <= self.toValue]
+			ys = {}
+			for i, var in enumerate(self.continuation[self.MAIN_CURVE].varslist):
 
-				len_curve = len(self.continuation[curve_id].curve[:, 1]) - 1
-				parameter_indice = len(self.continuation[curve_id].varslist)
+				y = self.continuation[self.MAIN_CURVE].curve[0:len_curve, i]
+				y = [y_i for x_i, y_i in zip(x, y) if self.fromValue <= x_i <= self.toValue]
+				ys.update({var: y})
 
-				for i, var in enumerate(self.continuation[curve_id].varslist):
+			return x, ys
 
-					x = self.continuation[curve_id].curve[0:len_curve - 1, parameter_indice]
-					y = self.continuation[curve_id].curve[0:len_curve - 1, i]
-					xy = [(x_i, y_i) for i, (x_i, y_i) in enumerate(zip(x, y)) if x_i < 500]
-					t_curves.update({var: xy})
+	def getStability(self, x):
 
-				curves.append(t_curves)
+		if self.status == self.SUCCESS:
 
-		return curves
+			stability = []
+			for i in range(len(self.continuation[self.MAIN_CURVE].sol.labels)):
+				label = self.continuation[self.MAIN_CURVE].sol.labels[i]
+				if 'EP' in label.keys() and i < len(x) and self.fromValue <= x[i] <= self.toValue:
+						stability.append(label['EP']['stab'])
+
+			return stability
+
+
+	def getStabilitySlicedCurves(self):
+
+		if self.status == self.SUCCESS:
+
+			x, ys = self.getCurves()
+			stability = self.getStability(x)
+
+			# print stability
+			split = []
+			t_res = []
+			for i, x_i in enumerate(stability):
+				if i == 0:
+					t_res.append(i)
+				else:
+					if x_i == stability[i - 1]:
+						t_res.append(i)
+					else:
+						split.append(t_res)
+						t_res = [i]
+
+			split.append(t_res)
+
+			split_stability = []
+			split_x = []
+			split_ys = {var: [] for var in ys.keys()}
+
+			for inds in split:
+				split_stability.append(stability[inds[0]])
+				split_x.append([x[i] for i in inds])
+
+				for var, y in ys.items():
+					split_ys[var].append([y[i] for i in inds])
+
+			return split_x, split_ys, split_stability
+
+
+	def getLimitCycleCurve(self):
+
+		if self.status == self.SUCCESS and self.LIMIT_CYCLE_CURVE in self.continuation.curves.keys():
+
+			curves = {}
+			len_curve = len(self.continuation[self.LIMIT_CYCLE_CURVE].curve[:, 1]) - 1
+			nb_variables = len(self.continuation[self.LIMIT_CYCLE_CURVE].varslist)
+			x = self.continuation[self.LIMIT_CYCLE_CURVE].curve[0:len_curve - 1, nb_variables * 2]
+
+			for i, var in enumerate(self.continuation[self.LIMIT_CYCLE_CURVE].varslist):
+				xys = {}
+				y_min = self.continuation[self.LIMIT_CYCLE_CURVE].curve[0:len_curve - 1, i]
+				y_max = self.continuation[self.LIMIT_CYCLE_CURVE].curve[0:len_curve - 1, i + nb_variables]
+				xy_min = [(x_i, y_i) for i, (x_i, y_i) in enumerate(zip(x, y_min)) if self.fromValue <= x_i <= self.toValue]
+				xys.update({'min': xy_min})
+				xy_max = [(x_i, y_i) for i, (x_i, y_i) in enumerate(zip(x, y_max)) if self.fromValue <= x_i <= self.toValue]
+				xys.update({'max': xy_max})
+
+				curves.update({var: xys})
+
+			return curves
 
 	def getPoints(self):
 
-		res_points = []
-
 		if self.status == self.SUCCESS:
 
-			for curve_id in self.continuation.curves.keys():
-				t_points = {}
-				for var in self.continuation[curve_id].varslist:
-					t_points.update({var: []})
+			t_points = {}
+			for var in self.continuation[self.MAIN_CURVE].varslist:
+				t_points.update({var: []})
 
-
-				for points_type, points in self.continuation[curve_id].BifPoints.items():
-
-					for point in points.found:
+			for points_type, points in self.continuation[self.MAIN_CURVE].BifPoints.items():
+				for point in points.found:
+					if self.fromValue <= point.X[self.parameter.getSymbolStr()] <= self.toValue:
 						points_x = point.X[self.parameter.getSymbolStr()]
-						for var in self.continuation[curve_id].varslist:
+						for var in self.continuation[self.MAIN_CURVE].varslist:
 							t_points[var].append((points_type, points_x, point.X[var]))
 
-				res_points.append(t_points)
-		return res_points
+			return t_points
+
+	def hasHopfBifurcations(self):
+		return len(self.continuation[self.MAIN_CURVE].BifPoints['H'].found) > 0
+
+	def findLimitCycleCurve(self, point='H1'):
+
+		if self.hasHopfBifurcations():
+
+			limit_cycle_args = args(name=self.LIMIT_CYCLE_CURVE, type='LC-C')
+			limit_cycle_args.initpoint = self.MAIN_CURVE + ':' + point
+			limit_cycle_args.freepars = [self.parameter.getSymbolStr()]
+			limit_cycle_args.MaxNumPoints = self.maxSteps
+			limit_cycle_args.MinStepSize = self.ds/100
+			limit_cycle_args.MaxStepSize = self.ds*100
+			limit_cycle_args.LocBifPoints = 'all'
+			limit_cycle_args.SaveEigen = True
+			limit_cycle_args.verbosity = 0
+			self.continuation.newCurve(limit_cycle_args)
+
+			self.continuation[self.LIMIT_CYCLE_CURVE].forward()
+
+	def plotCurve(self, plot):
+
+		x, ys, stab = self.getStabilitySlicedCurves()
+		points = self.getPoints()
+
+		for i, (slice_x, slice_y) in enumerate(zip(x, ys[self.variable.getSymbolStr()])):
+
+			if stab[i] == 'S':
+				color = "b-"
+			elif stab[i] == 'N':
+				color = 'r--'
+			else:
+				color = 'r-'
+
+			plot.plot(slice_x, slice_y, color)
+
+		points_var = points[self.variable.getSymbolStr()]
+		x = [x_i for _, x_i, _ in points_var]
+		y = [y_i for _, _, y_i in points_var]
+		plot.plot(x, y, 'ro')
+		plot.set_xlim(self.fromValue, self.toValue)

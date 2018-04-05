@@ -138,6 +138,12 @@
           <dcterms:modified rdf:parseType="Resource">
             <dcterms:W3CDTF>2018-03-27T22:10:57Z</dcterms:W3CDTF>
           </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2018-04-02T15:50:37Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2018-04-02T16:08:06Z</dcterms:W3CDTF>
+          </dcterms:modified>
         </rdf:Description>
       </rdf:RDF>
     </annotation>
@@ -240,6 +246,18 @@
       <initialAssignment metaid="_meta_id_148_" symbol="sos">
         <math xmlns="http://www.w3.org/1998/Math/MathML">
           <ci> total_sos </ci>
+        </math>
+      </initialAssignment>
+      <initialAssignment metaid="_meta_id_77_" symbol="ras_gdp">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <plus/>
+            <ci> total_ras </ci>
+            <apply>
+              <minus/>
+              <ci> ras_gtp </ci>
+            </apply>
+          </apply>
         </math>
       </initialAssignment>
     </listOfInitialAssignments>
