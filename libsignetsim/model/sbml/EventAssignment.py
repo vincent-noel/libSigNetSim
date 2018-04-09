@@ -54,7 +54,7 @@ class EventAssignment(SbmlObject):
 		""" Reads event assignment from a sbml file """
 
 		SbmlObject.readSbml(self, sbml_event_assignment, sbml_level, sbml_version)
-		self.__var = sbml_event_assignment.getVariable()
+		self.__var = self.__model.listOfVariables.getBySbmlId(sbml_event_assignment.getVariable())
 		self.getVariable().addEventAssignmentBy(self.event)
 
 		if sbml_event_assignment.getMath() is not None:
@@ -89,7 +89,7 @@ class EventAssignment(SbmlObject):
 								SympyInteger(-1))))
 
 
-		sbml_event_assignment.setVariable(self.__var)
+		sbml_event_assignment.setVariable(self.__var.getSbmlId())
 		sbml_event_assignment.setMath(t_definition.getSbmlMathFormula())
 
 
@@ -99,9 +99,9 @@ class EventAssignment(SbmlObject):
 			SbmlObject.copy(self, obj)
 
 		if obj.getVariable().getSbmlId() in sids_subs.keys():
-			self.__var = sids_subs[obj.getVariable().getSbmlId()]
+			self.__var = self.__model.listOfVariables.getBySbmlId(sids_subs[obj.getVariable().getSbmlId()])
 		else:
-			self.__var = obj.getVariable().getSbmlId()
+			self.__var = self.__model.listOfVariables.getBySbmlId(obj.getVariable().getSbmlId())
 
 		self.getVariable().addEventAssignmentBy(self.event)
 
@@ -124,8 +124,8 @@ class EventAssignment(SbmlObject):
 		self.__definition.setInternalMathFormula(obj.getDefinition().getDeveloppedInternalMathFormula())
 
 	def getVariable(self):
-		return self.__model.listOfVariables.getBySbmlId(self.__var)
-
+		# return self.__model.listOfVariables.getBySbmlId(self.__var)
+		return self.__var
 	def getVariableMath(self):
 		return self.getVariable().symbol
 
@@ -135,7 +135,7 @@ class EventAssignment(SbmlObject):
 		if self.__var is not None:
 			self.getVariable().removeEventAssignmentBy(self.event)
 
-		self.__var = variable.getSbmlId()
+		self.__var = variable
 		self.getVariable().addEventAssignmentBy(self.event)
 
 
@@ -157,5 +157,5 @@ class EventAssignment(SbmlObject):
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
-		if self.__var == old_sbml_id:
-			self.__var = new_sbml_id
+		# if self.__var.getSbmlId() == old_sbml_id:
+		# 	self.__var = new_sbml_id

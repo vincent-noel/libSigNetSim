@@ -51,7 +51,7 @@ class RateRule(Rule):
 		Rule.readSbml(self, rate_rule, sbml_level, sbml_version)
 
 		if self.__model.listOfVariables.containsSbmlId(rate_rule.getVariable()):
-			self.__var = rate_rule.getVariable()
+			self.__var = self.__model.listOfVariables.getBySbmlId(rate_rule.getVariable())
 			self.getVariable().setRuledBy(self)
 
 		self.__definition.readSbml(rate_rule.getMath())
@@ -84,7 +84,7 @@ class RateRule(Rule):
 					SympyPow(self.getVariable().getCompartment().symbol.getInternalMathFormula(),
 					SympyInteger(-1))))
 
-		rate_rule.setVariable(self.__var)
+		rate_rule.setVariable(self.__var.getSbmlId())
 		rate_rule.setMath(t_definition.getSbmlMathFormula(sbml_level, sbml_version))
 
 	def copy(self, obj, sids_subs={}, symbols_subs={}, conversion_factors={}, time_conversion=None):
@@ -92,9 +92,9 @@ class RateRule(Rule):
 		Rule.copy(self, obj)
 
 		if obj.getVariable().getSbmlId() in sids_subs.keys():
-			self.__var = sids_subs[obj.getVariable().getSbmlId()]
+			self.__var = self.__model.listOfVariables.getBySbmlId(sids_subs[obj.getVariable().getSbmlId()])
 		else:
-			self.__var = obj.getVariable().getSbmlId()
+			self.__var = self.__model.listOfVariables.getBySbmlId(obj.getVariable().getSbmlId())
 
 		self.getVariable().setRuledBy(self)
 
@@ -116,15 +116,15 @@ class RateRule(Rule):
 		self.__definition.setInternalMathFormula(t_definition)
 
 	def getVariable(self):
-		return self.__model.listOfVariables.getBySbmlId(self.__var)
-
+		# return self.__model.listOfVariables.getBySbmlId(self.__var)
+		return self.__var
 
 	def setVariable(self, variable):
 
 		if self.__var is not None:
 			self.getVariable().unsetRuledBy()
 
-		self.__var = variable.getSbmlId()
+		self.__var = variable
 		self.getVariable().setRuledBy(self)
 
 
@@ -181,8 +181,8 @@ class RateRule(Rule):
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
-		if self.__var == old_sbml_id:
-			self.__var = new_sbml_id
+		# if self.__var == old_sbml_id:
+		# 	self.__var = new_sbml_id
 
 	def containsVariable(self, variable):
 		return (variable.symbol.getInternalMathFormula() in self.__definition.getInternalMathFormula().atoms()

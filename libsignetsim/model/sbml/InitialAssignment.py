@@ -53,7 +53,7 @@ class InitialAssignment(SbmlObject, HasParentObj):
 		SbmlObject.readSbml(self, initial_assignment, sbml_level, sbml_version)
 
 		if self.__model.listOfVariables.containsSbmlId(initial_assignment.getSymbol()):
-			self.__var = initial_assignment.getSymbol()
+			self.__var = self.__model.listOfVariables.getBySbmlId(initial_assignment.getSymbol())
 			self.getVariable().setInitialAssignmentBy(self)
 
 		self.__definition.readSbml(initial_assignment.getMath(), sbml_level, sbml_version)
@@ -80,7 +80,7 @@ class InitialAssignment(SbmlObject, HasParentObj):
 						SympyPow(self.getVariable().getCompartment().symbol.getInternalMathFormula(),
 									SympyInteger(-1))))
 
-		sbml_initial_assignment.setSymbol(self.__var)
+		sbml_initial_assignment.setSymbol(self.__var.getSbmlId())
 		sbml_initial_assignment.setMath(t_definition.getSbmlMathFormula(sbml_level, sbml_version))
 
 
@@ -88,9 +88,9 @@ class InitialAssignment(SbmlObject, HasParentObj):
 		SbmlObject.copy(self, obj)
 
 		if obj.getVariable().getSbmlId() in sids_subs.keys():
-			self.__var = sids_subs[obj.getVariable().getSbmlId()]
+			self.__var = self.__model.listOfVariables.getBySbmlId(sids_subs[obj.getVariable().getSbmlId()])
 		else:
-			self.__var = obj.getVariable().getSbmlId()
+			self.__var = self.__model.listOfVariables.getBySbmlId(obj.getVariable().getSbmlId())
 
 		self.getVariable().setInitialAssignmentBy(self)
 
@@ -109,14 +109,14 @@ class InitialAssignment(SbmlObject, HasParentObj):
 		self.__definition.setInternalMathFormula(t_definition)
 
 	def getVariable(self):
-		return self.__model.listOfVariables.getBySbmlId(self.__var)
-
+		# return self.__model.listOfVariables.getBySbmlId(self.__var)
+		return self.__var
 	def setVariable(self, variable):
 
 		if self.__var is not None:
 			self.getVariable().unsetInitialAssignmentBy()
 
-		self.__var = variable.getSbmlId()
+		self.__var = variable
 		self.getVariable().setInitialAssignmentBy(self)
 
 	def getRawDefinition(self, rawFormula=False):
@@ -171,8 +171,8 @@ class InitialAssignment(SbmlObject, HasParentObj):
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
-		if self.__var == old_sbml_id:
-			self.__var = new_sbml_id
+		# if self.__var == old_sbml_id:
+		# 	self.__var = new_sbml_id
 
 	def containsVariable(self, variable):
 		return (variable.symbol.getInternalMathFormula() in self.__definition.getInternalMathFormula().atoms()
