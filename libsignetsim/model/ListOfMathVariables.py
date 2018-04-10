@@ -96,7 +96,7 @@ class ListOfMathVariables(object):
 
 			elif (variable.constant
 					or (variable.isSpecies() and not variable.isRuled() and not variable.isInAlgebraicRules() and not variable.isInReactions(including_fast_reactions=True))
-					or ((variable.isParameter() or variable.isCompartment() or variable.isStoichiometry()) and not variable.isRuled() and not variable.isInAlgebraicRules())
+					or ((variable.isParameter() or variable.isCompartment() or variable.isStoichiometry() or variable.isConservedMoiety()) and not variable.isRuled() and not variable.isInAlgebraicRules())
 					or (self.__model.sbmlLevel == 1 and variable.isCompartment() and not variable.isRuled() and not variable.isInAlgebraicRules())
 					or (self.__model.sbmlLevel == 1 and variable.isParameter() and not variable.isRuled() and not variable.isInAlgebraicRules())
 				):
@@ -179,7 +179,7 @@ class ListOfMathVariables(object):
 		for i, var in enumerate(self.__model.variablesAlgebraic):
 			var.ind = i
 
-	def copySubmodel(self, model):
+	def copyVariables(self, model):
 		# First we copy the variables list
 		self.clear()
 
@@ -187,6 +187,11 @@ class ListOfMathVariables(object):
 			new_var = MathVariable(self.__model)
 			new_var.copy(variable)
 			self.append(new_var)
+
+
+	def copySubmodel(self, model):
+		# # First we copy the variables list
+		self.copyVariables(model)
 
 		self.__model.nbOdes = model.nbOdes
 		self.__model.nbAssignments = model.nbAssignments
