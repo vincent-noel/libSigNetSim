@@ -39,13 +39,7 @@ class TestSuite(object):
 	TODO_VERSIONS = []
 	TODO_TAGS = []
 
-	INCOMPATIBLE_CASES = [1575, 1589, 1590]#1504, 1505, 1506, 1507, 1508, 1511, 1512, 1575, 1589, 1590]
-
-	# Cases incompatible with model reduction
-	# INCOMPATIBLE_CASES += [
-	# 	1500, 1501, 1517, 1634, 1642, 1643, 1645, 1646, 1648, 1649, 1651, 1652,
-	# 	1724, 1725, 1730, 1731, 1733, 1734, 1739, 1740, 1775, 1776
-	# ]
+	INCOMPATIBLE_CASES = [1517, 1575, 1589, 1590, 1634]
 
 	# Cases incompatible with fast reactions
 	# INCOMPATIBLE_CASES += [
