@@ -36,16 +36,20 @@ from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 class InitialAssignment(SbmlObject, HasParentObj):
 	""" Initial assignment definition """
 
-	def __init__(self, model, parent_obj, obj_id):
+	def __init__(self, model, parent_obj, obj_id, math_only=False):
 
 		self.__model = model
 		self.objId = obj_id
 
-		SbmlObject.__init__(self, model)
 		HasParentObj.__init__(self, parent_obj)
-		self.__definition = MathFormula(model, MathFormula.MATH_ASSIGNMENTRULE)
-		self.__var = None
 
+		# For math submodels, where objects are not sbml objects
+		self.mathOnly = math_only
+		if not self.mathOnly:
+			SbmlObject.__init__(self, model)
+
+		self.__definition = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
+		self.__var = None
 
 	def readSbml(self, initial_assignment, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Reads an initial assignment from a sbml file """
@@ -62,7 +66,6 @@ class InitialAssignment(SbmlObject, HasParentObj):
 			self.__definition.setInternalMathFormula(
 				SympyMul(self.__definition.getInternalMathFormula(),
 						self.getVariable().getCompartment().symbol.getInternalMathFormula()))
-
 
 	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Writes an initial assignment to a sbml file """
@@ -82,7 +85,6 @@ class InitialAssignment(SbmlObject, HasParentObj):
 
 		sbml_initial_assignment.setSymbol(self.__var.getSbmlId())
 		sbml_initial_assignment.setMath(t_definition.getSbmlMathFormula(sbml_level, sbml_version))
-
 
 	def copy(self, obj, sids_subs={}, symbols_subs={}, conversion_factors={}):
 		SbmlObject.copy(self, obj)
@@ -108,9 +110,13 @@ class InitialAssignment(SbmlObject, HasParentObj):
 
 		self.__definition.setInternalMathFormula(t_definition)
 
+	def copySubmodel(self, obj):
+		self.__definition.setInternalMathFormula(obj.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula())
+		self.__var = self.__model.listOfVariables.getBySymbol(obj.getVariable().symbol.getSymbol())
+
 	def getVariable(self):
-		# return self.__model.listOfVariables.getBySbmlId(self.__var)
 		return self.__var
+
 	def setVariable(self, variable):
 
 		if self.__var is not None:
@@ -123,7 +129,7 @@ class InitialAssignment(SbmlObject, HasParentObj):
 
 		formula = self.__definition.getInternalMathFormula()
 
-		if self.getVariable().isConcentration() and not rawFormula:
+		if not rawFormula and self.getVariable().isConcentration():
 			formula /= self.getVariable().getCompartment().symbol.getInternalMathFormula()
 
 		if not rawFormula:
@@ -171,8 +177,7 @@ class InitialAssignment(SbmlObject, HasParentObj):
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
-		# if self.__var == old_sbml_id:
-		# 	self.__var = new_sbml_id
+
 
 	def containsVariable(self, variable):
 		return (variable.symbol.getInternalMathFormula() in self.__definition.getInternalMathFormula().atoms()

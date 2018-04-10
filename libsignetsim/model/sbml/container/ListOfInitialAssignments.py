@@ -36,12 +36,16 @@ from re import match
 class ListOfInitialAssignments(ListOf, SbmlObject, HasParentObj):
 	""" Class for the listOfInitialAssignments in a sbml model """
 
-	def __init__ (self, model, parent_obj):
+	def __init__(self, model, parent_obj, math_only=False):
 
 		self.__model = model
 		ListOf.__init__(self, model)
-		SbmlObject.__init__(self, model)
 		HasParentObj.__init__(self, parent_obj)
+
+		# For math submodels, where objects are not sbml objects
+		self.mathOnly = math_only
+		if not math_only:
+			SbmlObject.__init__(self, model)
 
 	def readSbml(self, sbml_list_of_ia,
 					sbml_level=Settings.defaultSbmlLevel,
@@ -55,7 +59,6 @@ class ListOfInitialAssignments(ListOf, SbmlObject, HasParentObj):
 
 		SbmlObject.readSbml(self, sbml_list_of_ia, sbml_level, sbml_version)
 
-
 	def writeSbml(self, sbml_model,
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
@@ -67,7 +70,6 @@ class ListOfInitialAssignments(ListOf, SbmlObject, HasParentObj):
 		if len(ListOf.values(self)):
 			SbmlObject.writeSbml(self, sbml_model.getListOfInitialAssignments(), sbml_level, sbml_version)
 
-
 	def new(self, variable=None, expression=None, rawFormula=False):
 
 		if (variable is not None and expression is not None):
@@ -76,7 +78,6 @@ class ListOfInitialAssignments(ListOf, SbmlObject, HasParentObj):
 			t_initial_assignment.setPrettyPrintDefinition(expression, rawFormula=rawFormula)
 			ListOf.add(self, t_initial_assignment)
 			return t_initial_assignment
-
 
 	def copy(self, obj, deletions=[], sids_subs={}, symbols_subs={}, conversion_factors={}):
 
@@ -91,6 +92,13 @@ class ListOfInitialAssignments(ListOf, SbmlObject, HasParentObj):
 					t_init_ass.copy(init_ass, sids_subs=sids_subs, symbols_subs=symbols_subs, conversion_factors=conversion_factors)
 					ListOf.add(self, t_init_ass)
 
+	def copySubmodel(self, obj):
+
+		for init_ass in obj.values():
+			t_init_ass = InitialAssignment(self.__model, self, init_ass.objId, math_only=self.mathOnly)
+			t_init_ass.copySubmodel(init_ass)
+			ListOf.add(self, t_init_ass)
+
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 
 		for obj in ListOf.values(self):
@@ -103,7 +111,6 @@ class ListOfInitialAssignments(ListOf, SbmlObject, HasParentObj):
 			if obj.getVariable().getSbmlId() == variable.getSbmlId():
 				return True
 
-
 	def containsVariable(self, variable):
 
 		for init_ass in ListOf.values(self):
@@ -111,13 +118,11 @@ class ListOfInitialAssignments(ListOf, SbmlObject, HasParentObj):
 				return True
 		return False
 
-
 	def remove(self, init_assignment):
 		""" Remove an initial assignment from the list """
 
 		init_assignment.getVariable().unsetRuledBy()
 		ListOf.remove(self, init_assignment)
-
 
 	def removeById(self, obj_id):
 		""" Remove an initial assignment from the list """
