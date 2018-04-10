@@ -39,6 +39,7 @@ from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 from libsbml import parseL3Formula
 from sympy import srepr, simplify
 
+
 class EventTrigger(MathFormula, SbmlObject):
 	""" Events definition """
 
@@ -63,7 +64,6 @@ class EventTrigger(MathFormula, SbmlObject):
 			self.isPersistent = sbml_trigger.getPersistent()
 			self.initialValue = sbml_trigger.getInitialValue()
 
-
 	def writeSbml(self, sbml_event, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Writes an event definition to a sbml file """
 
@@ -77,7 +77,6 @@ class EventTrigger(MathFormula, SbmlObject):
 			sbml_trigger.setInitialValue(self.initialValue)
 
 		sbml_event.setTrigger(sbml_trigger)
-
 
 	def copy(self, obj, symbols_subs={}, conversion_factors={}):
 
@@ -113,35 +112,40 @@ class EventTrigger(MathFormula, SbmlObject):
 			t_subs_mask = {}
 			for t_var in self.__model.listOfSpecies.values():
 				if t_var.isConcentration():
-					t_subs_mask.update({t_var.symbol.getInternalMathFormula():SympySymbol("_speciesForcedConcentration_%s_" % str(t_var.symbol.getInternalMathFormula()))})
+					t_symbol = SympySymbol("_speciesForcedConcentration_%s_" % str(t_var.symbol.getInternalMathFormula()))
+					t_subs_mask.update({t_var.symbol.getInternalMathFormula(): t_symbol})
 
 			MathFormula.setInternalMathFormula(self, MathFormula.getInternalMathFormula(self).subs(t_subs_mask))
 
 	def getRootsFunctions(self):
 		return self.generateRootsFunctions(simplify(MathFormula.getDeveloppedInternalMathFormula(self)))
 
-
 	def generateRootsFunctions(self, tree):
 
 		if tree.func in [SympyAnd, SympyOr, SympyXor]:
-			return (self.generateRootsFunctions(tree.args[0])
-					+ self.generateRootsFunctions(tree.args[1]))
+			return (
+				self.generateRootsFunctions(tree.args[0])
+				+ self.generateRootsFunctions(tree.args[1])
+			)
 
 		else:
 			if tree.func in [SympyLessThan, SympyStrictLessThan]:
-				return ["(%s - %s)" % (MathFormula.writeCCode(self, tree.args[1]),
-										MathFormula.writeCCode(self, tree.args[0]))]
+				return ["(%s - %s)" % (
+					MathFormula.writeCCode(self, tree.args[1]),
+					MathFormula.writeCCode(self, tree.args[0])
+				)]
 			else:
-				return ["(%s - %s)" % (MathFormula.writeCCode(self, tree.args[0]),
-										MathFormula.writeCCode(self, tree.args[1]))]
 
+				return ["(%s - %s)" % (
+					MathFormula.writeCCode(self, tree.args[0]),
+					MathFormula.writeCCode(self, tree.args[1])
+				)]
 
 	def getDeactivationCondition(self, shift=0):
 
 			i_event = shift
 			(res, i_event) = self.generateDeactivationCondition(MathFormula.getDeveloppedInternalMathFormula(self), i_event)
 			return res, i_event
-
 
 	def generateDeactivationCondition(self, tree, i_event):
 
@@ -165,7 +169,6 @@ class EventTrigger(MathFormula, SbmlObject):
 		else:
 			return ("(data->roots_triggers[%d] == -1)" % res_i_event, res_i_event+1)
 
-
 	def getActivationCondition(self, shift=0):
 
 			i_event = shift
@@ -173,7 +176,6 @@ class EventTrigger(MathFormula, SbmlObject):
 								simplify(MathFormula.getDeveloppedInternalMathFormula(self)),
 								i_event)
 			return res, i_event
-
 
 	def generateActivationCondition(self, tree, i_event):
 
@@ -197,10 +199,8 @@ class EventTrigger(MathFormula, SbmlObject):
 		else:
 			return ("(data->roots_triggers[%d] == 1)" % res_i_event, res_i_event+1)
 
-
 	def nbRoots(self):
 		return self.countRoots(simplify(MathFormula.getDeveloppedInternalMathFormula(self)), 0)
-
 
 	def countRoots(self, tree, counter):
 
@@ -214,10 +214,8 @@ class EventTrigger(MathFormula, SbmlObject):
 		else:
 			return res_counter + 1
 
-
 	def getRootsOperator(self):
 		return self.generateRootsOperator(simplify(MathFormula.getDeveloppedInternalMathFormula(self)), [])
-
 
 	def generateRootsOperator(self, tree, t_list):
 

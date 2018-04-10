@@ -68,7 +68,6 @@ class EventAssignment(SbmlObject):
 					SympyMul(self.__definition.getInternalMathFormula(),
 								t_comp.symbol.getInternalMathFormula()))
 
-
 	def writeSbml(self, sbml_event, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Writes event assignemnt to a sbml file """
 
@@ -79,8 +78,6 @@ class EventAssignment(SbmlObject):
 			t_definition = MathFormula(self.__model, MathFormula.MATH_EVENTASSIGNMENT)
 			t_definition.setInternalMathFormula(self.__definition.getInternalMathFormula())
 
-		# t_variable = self.__var.symbol.getSbmlMathFormula(sbml_level, sbml_version).getName()
-
 		if self.getVariable().isConcentration():
 			t_comp = self.getVariable().getCompartment()
 			t_definition.setInternalMathFormula(
@@ -88,10 +85,8 @@ class EventAssignment(SbmlObject):
 							SympyPow(t_comp.symbol.getInternalMathFormula(),
 								SympyInteger(-1))))
 
-
 		sbml_event_assignment.setVariable(self.__var.getSbmlId())
 		sbml_event_assignment.setMath(t_definition.getSbmlMathFormula())
-
 
 	def copy(self, obj, sids_subs={}, symbols_subs={}, conversion_factors={}, time_conversion=None):
 
@@ -124,8 +119,8 @@ class EventAssignment(SbmlObject):
 		self.__definition.setInternalMathFormula(obj.getDefinition().getDeveloppedInternalMathFormula())
 
 	def getVariable(self):
-		# return self.__model.listOfVariables.getBySbmlId(self.__var)
 		return self.__var
+
 	def getVariableMath(self):
 		return self.getVariable().symbol
 
@@ -157,5 +152,3 @@ class EventAssignment(SbmlObject):
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
-		# if self.__var.getSbmlId() == old_sbml_id:
-		# 	self.__var = new_sbml_id
