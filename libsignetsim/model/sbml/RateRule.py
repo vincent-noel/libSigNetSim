@@ -31,7 +31,7 @@ from libsbml import SBML_SPECIES_CONCENTRATION_RULE,\
 					SBML_PARAMETER_RULE,\
 					SBML_COMPARTMENT_VOLUME_RULE
 
-from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyMul, SympyPow, SympyUndefinedFunction
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyMul, SympyPow
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 
 
@@ -116,7 +116,6 @@ class RateRule(Rule):
 		self.__definition.setInternalMathFormula(t_definition)
 
 	def getVariable(self):
-		# return self.__model.listOfVariables.getBySbmlId(self.__var)
 		return self.__var
 
 	def setVariable(self, variable):
@@ -126,7 +125,6 @@ class RateRule(Rule):
 
 		self.__var = variable
 		self.getVariable().setRuledBy(self)
-
 
 	def setPrettyPrintDefinition(self, definition, rawFormula=False):
 
@@ -143,7 +141,6 @@ class RateRule(Rule):
 
 	def getPrettyPrintDefinition(self):
 
-
 		if self.getVariable().isConcentration():
 			t_comp = self.getVariable().getCompartment()
 			t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
@@ -152,7 +149,6 @@ class RateRule(Rule):
 
 		else:
 			return self.__definition.getPrettyPrintMathFormula()
-
 
 	def getRawDefinition(self, rawFormula=False):
 
@@ -178,11 +174,8 @@ class RateRule(Rule):
 	def setDefinition(self, definition):
 		self.__definition = definition
 
-
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
-		# if self.__var == old_sbml_id:
-		# 	self.__var = new_sbml_id
 
 	def containsVariable(self, variable):
 		return (variable.symbol.getInternalMathFormula() in self.__definition.getInternalMathFormula().atoms()

@@ -25,7 +25,6 @@
 """
 
 from libsignetsim.model.sbml.Rule import Rule
-from libsignetsim.model.math.MathSymbol import MathSymbol
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyMul, SympyPow
@@ -114,8 +113,8 @@ class AssignmentRule(Rule):
 		self.__definition.setInternalMathFormula(t_definition)
 
 	def getVariable(self):
-		# return self.__model.listOfVariables.getBySbmlId(self.__var)
 		return self.__var
+
 	def setVariable(self, variable):
 
 		if self.__var is not None:
