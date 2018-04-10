@@ -29,6 +29,7 @@ from libsignetsim.model.math.container.ListOfCFEs import ListOfCFEs
 from libsignetsim.model.math.container.ListOfDAEs import ListOfDAEs
 from libsignetsim.model.ListOfVariables import ListOfVariables
 from libsignetsim.model.sbml.container.ListOfEvents import ListOfEvents
+from libsignetsim.model.sbml.container.ListOfInitialAssignments import ListOfInitialAssignments
 from libsignetsim.model.math.MathFormula import MathFormula
 
 
@@ -47,8 +48,10 @@ class MathSubmodel(object):
 		self.listOfDAEs = ListOfDAEs(self)
 		self.listOfVariables = ListOfVariables(self)
 		self.listOfEvents = ListOfEvents(self, self, math_only=True)
-		self.solvedInitialConditions = {}
+		self.listOfInitialAssignments = ListOfInitialAssignments(self, self, math_only=True)
 
+		self.solvedInitialConditions = {}
+		self.listOfFunctionDefinitions = self.parentModel.listOfFunctionDefinitions
 		self.nbOdes = None
 		self.nbAssignments = None
 		self.nbConstants = None
@@ -78,6 +81,12 @@ class MathSubmodel(object):
 			t_value.setInternalMathFormula(value.getInternalMathFormula())
 			self.solvedInitialConditions.update({variable: t_value})
 
+	def copyEvents(self):
+		self.listOfEvents.copySubmodel(self.parentModel.listOfEvents)
+
+	def copyInitialAssignments(self):
+		self.listOfInitialAssignments.copySubmodel(self.parentModel.listOfInitialAssignments)
+
 	def prettyPrint(self):
 
 		print "\n> Full system : "
@@ -85,3 +94,8 @@ class MathSubmodel(object):
 		print self.listOfDAEs
 		print self.listOfODEs
 		print "-----------------------------"
+
+	def pprint(self):
+		self.listOfCFEs.pprint()
+		self.listOfDAEs.pprint()
+		self.listOfODEs.pprint()
