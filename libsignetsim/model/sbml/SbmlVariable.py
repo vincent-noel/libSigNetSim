@@ -36,7 +36,7 @@ class SbmlVariable(HasId):
 	STOICHIOMERY        = 3
 	REACTION            = 4
 	EVENT				= 5
-
+	CONSERVED_MOIETY    = 6
 	def __init__(self, model, sbml_type, is_from_reaction=None):
 
 		self.__model = model
@@ -101,6 +101,9 @@ class SbmlVariable(HasId):
 
 	def isEvent(self):
 		return self.sbmlType == self.EVENT
+
+	def isConservedMoiety(self):
+		return self.sbmlType == self.CONSERVED_MOIETY
 
 	def isGlobal(self):
 		return self.reaction is None
