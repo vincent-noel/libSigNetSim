@@ -227,3 +227,10 @@ class ListOfDAEs(list):
 			res += str(dae) + "\n"
 
 		return res
+
+
+	def pprint(self):
+
+		for dae in self:
+			dae.pprint()
+			print("\n")

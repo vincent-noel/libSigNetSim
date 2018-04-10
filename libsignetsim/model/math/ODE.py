@@ -26,7 +26,7 @@
 
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.sympy_shortcuts import SympyEqual
-from sympy import srepr
+from sympy import srepr, pretty
 
 class ODE(object):
 	""" ODE class """
@@ -78,4 +78,15 @@ class ODE(object):
 		return "%s = %s" % (
 			str(self.__variable.symbol.getDerivative().getDeveloppedInternalMathFormula()),
 			str(self.__definition.getDeveloppedInternalMathFormula())
+		)
+
+	def pprint(self):
+		print(
+			pretty(
+				SympyEqual(
+					self.__variable.symbol.getDerivative().getDeveloppedInternalMathFormula(),
+					self.__definition.getDeveloppedInternalMathFormula()
+				)
+			)
+
 		)

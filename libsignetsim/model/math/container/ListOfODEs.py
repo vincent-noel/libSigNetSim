@@ -56,3 +56,10 @@ class ListOfODEs(list):
 		for ode in self:
 			res += str(ode) + "\n"
 		return res
+
+	def pprint(self):
+
+		for ode in self:
+			ode.pprint()
+			print("\n")
+

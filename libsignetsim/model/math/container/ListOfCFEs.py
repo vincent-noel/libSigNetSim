@@ -132,6 +132,11 @@ class ListOfCFEs(list):
 
 		return res
 
+	def pprint(self):
+
+		for cfe in self:
+			cfe.pprint()
+			print("\n")
 
 	def getByVariable(self, variable):
 
