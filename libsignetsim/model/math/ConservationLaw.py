@@ -26,24 +26,8 @@
 
 from libsignetsim.model.math.sympy_shortcuts import SympyEqual, SympyInteger
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
-# from libsignetsim.model.math.sympy_shortcuts import  (
-# 	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
-# 	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
-# 	SympyInf, SympyNan, SympyAdd, SympyMul, SympyPow,
-# 	SympyFunction, SympyUndefinedFunction, SympyLambda, SympyDerivative,
-# 	SympyCeiling, SympyFloor, SympyAbs, SympyLog, SympyExp, SympyPiecewise,
-# 	SympyFactorial, SympyRoot, SympyAcos, SympyAsin, SympyAtan, SympyAcosh,
-# 	SympyAsinh, SympyAtanh, SympyCos, SympySin, SympyTan, SympyAcot,
-# 	SympyAcoth, SympyCosh, SympySinh, SympyTanh, SympySec, SympyCsc,
-# 	SympyCot, SympyCoth, SympyAcsc, SympyAsec,
-# 	SympyEqual, SympyUnequal, SympyGreaterThan, SympyLessThan,
-# 	SympyStrictGreaterThan, SympyStrictLessThan,
-# 	SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
-# 	SympyMax, SympyMin)
-# from libsignetsim.settings.Settings import Settings
-# from sympy import simplify, diff, solve, srepr, linsolve
-# from time import time
-# from sympy.solvers.solveset import nonlinsolve
+
+
 class ConservationLaw(object):
 	""" Sbml model class """
 
