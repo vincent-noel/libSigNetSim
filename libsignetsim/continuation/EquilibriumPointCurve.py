@@ -52,6 +52,7 @@ class EquilibriumPointCurve(object):
 		self.toValue = None
 		self.ds = 0.1
 		self.maxSteps = 1000
+		self.verbosity = 0
 		self.status = self.NOT_STARTED
 
 	def setParameter(self, parameter):
@@ -69,6 +70,9 @@ class EquilibriumPointCurve(object):
 
 	def setMaxSteps(self, max_steps):
 		self.maxSteps = max_steps
+
+	def setVerbosity(self, verbosity):
+		self.verbosity = verbosity
 
 	def build(self):
 
@@ -91,12 +95,12 @@ class EquilibriumPointCurve(object):
 
 		self.continuationParameters = args(name=self.MAIN_CURVE, type='EP-C')
 		self.continuationParameters.freepars = [self.parameter.getSymbolStr()]
-		self.continuationParameters.StepSize = self.ds
+		self.continuationParameters.StepSize = abs(self.ds)
 		self.continuationParameters.MaxNumPoints = self.maxSteps
 		self.continuationParameters.MaxStepSize = self.ds*100
 		self.continuationParameters.MinStepSize = self.ds/100
 		self.continuationParameters.LocBifPoints = 'All'
-		self.continuationParameters.verbosity = 0
+		self.continuationParameters.verbosity = self.verbosity
 		self.continuationParameters.SaveEigen = True
 
 		self.continuation.newCurve(self.continuationParameters)
