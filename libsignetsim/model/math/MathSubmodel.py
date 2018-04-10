@@ -43,6 +43,10 @@ class MathSubmodel(object):
 		self.sbmlLevel = self.parentModel.sbmlLevel
 		self.sbmlVersion = self.parentModel.sbmlVersion
 
+		self.clear()
+
+	def clear(self):
+
 		self.listOfODEs = ListOfODEs(self)
 		self.listOfCFEs = ListOfCFEs(self)
 		self.listOfDAEs = ListOfDAEs(self)
@@ -63,7 +67,6 @@ class MathSubmodel(object):
 		self.variablesAlgebraic = None
 
 		self.__upToDate = False
-
 
 	def isUpToDate(self):
 		return self.__upToDate
