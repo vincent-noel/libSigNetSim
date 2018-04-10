@@ -26,6 +26,8 @@
 
 from libsignetsim.settings.Settings import Settings
 from time import time
+from sympy import Symbol
+from libsignetsim.model.math.MathFormula import MathFormula
 
 
 class CModelWriter(object):
@@ -152,7 +154,7 @@ class CModelWriter(object):
 
 		list_samples_str = "%.16g" % list_samples[0]
 
-		for i in range(1,len(list_samples)):
+		for i in range(1, len(list_samples)):
 			list_samples_str += ", %.16g" % list_samples[i]
 
 		f_c.write("  %s.integration_settings = malloc(sizeof(IntegrationSettings));\n" % variable_name)
@@ -241,15 +243,12 @@ class CModelWriter(object):
 		f_c.write("  N_Vector ass = data->assignment_variables;\n")
 		f_c.write("  compute_rules_%d(t, y, user_data);\n" % model_id)
 
-		for variable in self.listOfVariables.values():
-			if not variable.isReaction() and not variable.isEvent() and variable.hasInitialAssignment():
-				t_init_assignment = variable.hasInitialAssignmentBy()
-				f_c.write("  %s = %s;\n\n" % (
-					t_init_assignment.getVariable().symbol.getCMathFormula(),
-					t_init_assignment.getDefinition(rawFormula=True).getCMathFormula()
-				))
+		for t_init_assignment in self.getMathModel().listOfInitialAssignments:
 
-
+			f_c.write("  %s = %s;\n\n" % (
+				t_init_assignment.getVariable().symbol.getCMathFormula(),
+				t_init_assignment.getDefinition(rawFormula=True).getCMathFormula()
+			))
 
 		f_c.write("  return 0;\n")
 		f_c.write("}\n\n")
@@ -316,8 +315,6 @@ class CModelWriter(object):
 	def writeSimulationJacobianMatrixFunction(self, f_h, f_c, model_id):
 		""" Writes the jacobian matrix definition in C files """
 
-		variable_name="model_%d" % model_id
-
 		f_h.write(("int jac_cvode_%d(long int N, realtype t, N_Vector y, N_Vector fy, "
 				   "DlsMat J, void *user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);\n") % model_id)
 
@@ -373,15 +370,13 @@ class CModelWriter(object):
 	def writeEventsTriggersFunction(self, f_h, f_c, model_id):
 		""" Writes the events conditions function in C files """
 
-		variable_name="model_%d" % model_id
-
 		if len(self.getMathModel().listOfDAEs) > 0:
 			f_h.write("int roots_events_%d(realtype t, N_Vector y, N_Vector yp, realtype *gout,void *user_data);\n" % model_id)
 			f_c.write("int roots_events_%d(realtype t, N_Vector y, N_Vector yp, realtype *gout,void *user_data)\n{\n" % model_id)
 		else:
 			f_h.write("int roots_events_%d(realtype t, N_Vector y, realtype *gout,void *user_data);\n" % model_id)
 			f_c.write("int roots_events_%d(realtype t, N_Vector y, realtype *gout,void *user_data)\n{\n" % model_id)
-		if self.listOfEvents.validEvents() > 0:
+		if self.getMathModel().listOfEvents.validEvents() > 0:
 
 			f_c.write("  IntegrationData * data = (IntegrationData *) user_data;\n")
 			f_c.write("  N_Vector cst = data->constant_variables;\n")
@@ -389,7 +384,7 @@ class CModelWriter(object):
 			f_c.write("  compute_rules_%d(t,y, user_data);\n" % model_id)
 
 			i_event = 0
-			for event in self.listOfEvents.validEvents():
+			for event in self.getMathModel().listOfEvents.validEvents():
 				t_distances = event.trigger.getRootsFunctions()
 				for t_distance in t_distances:
 					f_c.write("  gout[%d] = %s;\n" % (i_event, t_distance))
@@ -402,9 +397,6 @@ class CModelWriter(object):
 	def writeEventsActivationFunction(self, f_h, f_c, model_id):
 		""" Writes the events conditions function in C files """
 
-		variable_name="model_%d" % model_id
-
-
 		f_h.write("int activate_events_%d(realtype t, N_Vector y, void * user_data);\n" % model_id)
 		f_c.write("int activate_events_%d(realtype t, N_Vector y, void * user_data)\n{\n" % model_id)
 		f_c.write("  IntegrationData * data = (IntegrationData *) user_data;\n")
@@ -414,14 +406,16 @@ class CModelWriter(object):
 		i_roots = 0
 		i_roots2 = 0
 
-		for i_event, event in enumerate(self.listOfEvents.validEvents()):
+		for i_event, event in enumerate(self.getMathModel().listOfEvents.validEvents()):
 
 			# Events deactivation
 			(t_deactivation_condition, i_roots) = event.trigger.getDeactivationCondition(i_roots)
 
-			f_c.write(("  if ((data->events_ready[%d] == 0) && %s)\n  {\n"
-					+ "    data->events_ready[%d] = 1;\n")
-					% (i_event, t_deactivation_condition, i_event))
+			f_c.write((
+				"  if ((data->events_ready[%d] == 0) && %s)\n  {\n"
+				+ "    data->events_ready[%d] = 1;\n") % (
+					i_event, t_deactivation_condition, i_event
+			))
 
 			if not event.trigger.isPersistent:
 				f_c.write("    data->events_triggers[%d]--;\n" % i_event)
@@ -429,21 +423,23 @@ class CModelWriter(object):
 
 			f_c.write("  }\n\n")
 
-
 			# Events activation
 			# Condition
 			(t_activation_condition, i_roots2) = event.trigger.getActivationCondition(i_roots2)
 
-			f_c.write(("  else if ((data->events_ready[%d] == 1) && %s)\n  {\n"
-						+ "    data->events_ready[%d] = 0;\n")
-						% (i_event, t_activation_condition, i_event))
+			f_c.write((
+				"  else if ((data->events_ready[%d] == 1) && %s)\n  {\n"
+				+ "    data->events_ready[%d] = 0;\n") % (
+					i_event, t_activation_condition, i_event
+			))
 
 			if event.delay is not None:
 				if not event.trigger.isPersistent:
 					f_c.write("    retriggerChildren(data, %d);\n" % i_event)
 
-				f_c.write("    realtype * memory = addTimedEvent(t+%s, %d, %d, user_data);\n"
-							% (event.delay.getCMathFormula(), i_event, event.memorySize()))
+				f_c.write("    realtype * memory = addTimedEvent(t+%s, %d, %d, user_data);\n" % (
+					event.delay.getCMathFormula(), i_event, event.memorySize()
+				))
 
 			else:
 				f_c.write("    data->events_triggers[%d]++;\n" % i_event)
@@ -451,15 +447,16 @@ class CModelWriter(object):
 			for i_assignment, event_assignment in enumerate(event.listOfEventAssignments):
 				if event.useValuesFromTriggerTime:
 					if event.delay is not None:
-						f_c.write("    memory[%d] = %s;\n"
-								% (i_assignment,
-								event_assignment.getDefinition().getCMathFormula()))
+						f_c.write("    memory[%d] = %s;\n" % (
+							i_assignment,
+							event_assignment.getDefinition().getCMathFormula()
+						))
 
 					else:
-						# print "event assignment = %s" % event_assignment.definition.getCMathFormula()
-						f_c.write("    data->events_memory[%d][%d] = %s;\n"
-								% (i_event, i_assignment,
-								event_assignment.getDefinition().getCMathFormula()))
+						f_c.write("    data->events_memory[%d][%d] = %s;\n"	% (
+							i_event, i_assignment,
+							event_assignment.getDefinition().getCMathFormula()
+						))
 
 
 			f_c.write("  }\n\n")
@@ -470,11 +467,9 @@ class CModelWriter(object):
 	def writeEventsAssignmentFunction(self, f_h, f_c, model_id):
 		""" Writes the events assignments function in C files """
 
-		variable_name="model_%d" % model_id
-
 		f_h.write("int assign_events_%d(realtype t, N_Vector y, void *user_data, int assignment_id, realtype * memory);\n" % model_id)
 		f_c.write("int assign_events_%d(realtype t, N_Vector y, void *user_data, int assignment_id, realtype * memory)\n{\n" % model_id)
-		if self.listOfEvents.nbValidEvents() > 0:
+		if self.getMathModel().listOfEvents.nbValidEvents() > 0:
 
 			f_c.write("  IntegrationData * data = (IntegrationData *) user_data;\n")
 			f_c.write("  N_Vector cst = data->constant_variables;\n")
@@ -483,36 +478,39 @@ class CModelWriter(object):
 			f_c.write("  switch(assignment_id) {\n")
 
 			i_event = 0
-			i_roots2 = 0
-			for event in self.listOfEvents.validEvents():
+			for event in self.getMathModel().listOfEvents.validEvents():
 
 				f_c.write("    case %d :\n" % i_event)
 
 				for i_assignment, event_assignment in enumerate(event.listOfEventAssignments):
 					if event.useValuesFromTriggerTime:
 						if event.delay is not None:
-							f_c.write("      %s = memory[%d];\n"
-								% (event_assignment.getVariable().symbol.getCMathFormula(),
-									i_assignment))
+							f_c.write("      %s = memory[%d];\n" % (
+								event_assignment.getVariable().symbol.getCMathFormula(),
+								i_assignment
+							))
 
 						else:
-							f_c.write("      %s = data->events_memory[%d][%d];\n"
-								% (event_assignment.getVariable().symbol.getCMathFormula(),
-									i_event, i_assignment))
+							f_c.write("      %s = data->events_memory[%d][%d];\n" % (
+								event_assignment.getVariable().symbol.getCMathFormula(),
+								i_event, i_assignment
+							))
 
 					else:
 						# We need to put an empty statement for some weird rule
 						# about a declaration not being allowed as first instruction
 						f_c.write("      ;\n")
-						f_c.write("      realtype t_var_%d_%d = %s;\n"
-								% (i_event, i_assignment,
-									event_assignment.getDefinition().getCMathFormula()))
+						f_c.write("      realtype t_var_%d_%d = %s;\n" % (
+							i_event, i_assignment,
+							event_assignment.getDefinition().getCMathFormula()
+						))
+
 				for i_assignment, event_assignment in enumerate(event.listOfEventAssignments):
 					if not event.useValuesFromTriggerTime:
-
-						f_c.write("      %s = t_var_%d_%d;\n"
-								% (event_assignment.getVariable().symbol.getCMathFormula(),
-									i_event, i_assignment))
+						f_c.write("      %s = t_var_%d_%d;\n" % (
+							event_assignment.getVariable().symbol.getCMathFormula(),
+							i_event, i_assignment
+						))
 
 				f_c.write("      break;\n")
 				i_event += 1
@@ -524,18 +522,15 @@ class CModelWriter(object):
 
 	def writeEventsPriorityFunction(self, f_h, f_c, model_id):
 
-		variable_name="model_%d" % model_id
-
 		f_h.write("int priority_events_%d(realtype t, N_Vector y, void *user_data);\n" % model_id)
 		f_c.write("int priority_events_%d(realtype t, N_Vector y, void *user_data)\n{\n" % model_id)
-		if self.listOfEvents.nbValidEvents() > 0:
+		if self.getMathModel().listOfEvents.nbValidEvents() > 0:
 
 			f_c.write("  IntegrationData * data = (IntegrationData *) user_data;\n")
 			f_c.write("  N_Vector cst = data->constant_variables;\n")
 			f_c.write("  N_Vector ass = data->assignment_variables;\n")
-			# f_c.write("  N_Vector alg = data->algebraic_variables;\n")
 
-			for i, event in enumerate(self.listOfEvents.validEvents()):
+			for i, event in enumerate(self.getMathModel().listOfEvents.validEvents()):
 
 				if event.priority is not None:
 					f_c.write("  *(data->events_priorities[%d]) = %s;\n" % (i, event.priority.getCMathFormula()))

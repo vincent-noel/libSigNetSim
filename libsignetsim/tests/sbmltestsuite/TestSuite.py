@@ -39,7 +39,7 @@ class TestSuite(object):
 	TODO_VERSIONS = []
 	TODO_TAGS = []
 
-	INCOMPATIBLE_CASES = [1504, 1505, 1506, 1507, 1508, 1511, 1512, 1575, 1589, 1590]
+	INCOMPATIBLE_CASES = [1575, 1589, 1590]#1504, 1505, 1506, 1507, 1508, 1511, 1512, 1575, 1589, 1590]
 
 	# Cases incompatible with model reduction
 	# INCOMPATIBLE_CASES += [
@@ -48,16 +48,16 @@ class TestSuite(object):
 	# ]
 
 	# Cases incompatible with fast reactions
-	INCOMPATIBLE_CASES += [
-		874, 986, 987, 988, 1396, 1397, 1398, 1399, 1544, 1545, 1546, 1547, 1548, 1549, 1550, 1551,
-		1558, 1559, 1560, 1565, 1567, 1568, 1569, 1570, 1571, 1572
-	]
+	# INCOMPATIBLE_CASES += [
+	# 	874, 986, 987, 988, 1396, 1397, 1398, 1399, 1544, 1545, 1546, 1547, 1548, 1549, 1550, 1551,
+	# 	1558, 1559, 1560, 1565, 1567, 1568, 1569, 1570, 1571, 1572
+	# ]
 
 	# Cases incompatible with the reintroduction of initial assignments into C code
 	INCOMPATIBLE_CASES += [1698, 1699]
 
 	INCOMPATIBLE_TAGS = [
-		'CSymbolDelay',
+		'CSymbolDelay', 'FastReaction', 'ConversionFactors', 'VolumeConcentrationRates'
 	]
 
 	COMPATIBLE_PACKAGES = ['comp']

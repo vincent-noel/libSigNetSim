@@ -25,7 +25,6 @@
 """
 
 from libsignetsim.cwriter.CModelWriter import CModelWriter
-
 from libsignetsim.model.math.container.ListOfConservationLaws import ListOfConservationLaws
 from libsignetsim.model.math.container.ListOfODEs import ListOfODEs
 from libsignetsim.model.math.container.ListOfCFEs import ListOfCFEs
@@ -82,7 +81,6 @@ class MathModel(CModelWriter):
 	def setUpToDate(self, value=True):
 		self.__upToDate = value
 
-
 	def getMathModel(self):
 
 		if self.slowModel.isUpToDate():
@@ -92,8 +90,6 @@ class MathModel(CModelWriter):
 			return self.asymetricModel
 		else:
 			return self
-
-
 
 	def buildModel(self, vars_to_keep=[], dont_reduce=(not Settings.reduceByDefault), tmin=0):
 
@@ -130,22 +126,15 @@ class MathModel(CModelWriter):
 		if Settings.verboseTiming >= 2:
 			print "> conservation laws built in %.2gs" % (time() - t0)
 
-
 	def buildReducedModel(self, vars_to_keep=[]):
 
-		# There is still something very wrong about the reductions for systems with events.
-		# For choices of variable to reduce which shouldn't matter, it does.
-		# Like for test cases 348, we *should* be able to remove S1 or S3. But only removing S3 works
-		if len(self.listOfEvents) == 0:
-			self.stoichiometryMatrix.build()
-			self.listOfConservationLaws.build()
-			self.asymetricModel = MathAsymmetricModel(self)
-			self.asymetricModel.build(treated_variables=vars_to_keep)
+		self.stoichiometryMatrix.build()
+		self.listOfConservationLaws.build()
+		self.asymetricModel.build(treated_variables=vars_to_keep)
 
 	def buildSlowModel(self):
 
 		self.buildReducedModel()
-		self.slowModel = MathSlowModel(self, self.asymetricModel)
 		self.slowModel.build()
 
 	def prettyPrint(self):
@@ -159,6 +148,10 @@ class MathModel(CModelWriter):
 
 		print "-----------------------------"
 
+	def pprint(self):
+		self.listOfCFEs.pprint()
+		self.listOfDAEs.pprint()
+		self.listOfODEs.pprint()
 
 	def solveSimpleInitialConditions(self, tmin):
 		""" Initial conditions are a mess between values, initial assignments,

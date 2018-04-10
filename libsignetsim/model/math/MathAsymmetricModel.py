@@ -31,8 +31,9 @@ from libsignetsim.model.math.MathSubmodel import MathSubmodel
 from libsignetsim.model.math.MathVariable import MathVariable
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol
-from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
-from sympy import solve, simplify
+from sympy import solve, simplify, ones, Lambda, Min, Symbol, pretty
+from random import choice
+from itertools import groupby
 
 
 class MathAsymmetricModel(MathSubmodel):
@@ -59,50 +60,115 @@ class MathAsymmetricModel(MathSubmodel):
 			t_dae.new(t_dae_formula)
 			self.listOfDAEs.append(t_dae)
 
-		self.listOfEvents.copySubmodel(self.parentModel.listOfEvents)
+		self.copyEvents()
+		self.copyInitialAssignments()
 
 	def build(self, treated_variables=[]):
 
-		forbidden_variables = []
-		for species in self.parentModel.variablesOdes:
-			if (str(species.symbol.getSymbol()) in treated_variables) or (species.hasEventAssignment()):
-				forbidden_variables.append(species.symbol.getSymbol())
+		DEBUG = False
 
 		if len(self.parentModel.listOfConservationLaws) > 0:
+			all_variables = range(len(self.parentModel.variablesOdes))
 
-			nullspace = self.parentModel.stoichiometryMatrix.getSimpleNullspace()
+			forbidden_variables = []
+			for i_species, species in enumerate(self.parentModel.variablesOdes):
+				if (species.getSymbolStr() in treated_variables or species.hasEventAssignment() or species.hasInitialAssignment()):
+					forbidden_variables.append(i_species)
+
+			allowed_variables = list(set(all_variables).difference(set(forbidden_variables)))
+
+			forbidden_laws = []
+			for i, law in enumerate(self.parentModel.listOfConservationLaws):
+				for var in law.vars:
+					variable = self.parentModel.listOfVariables.getBySymbol(var)
+					if variable.hasEventAssignment() or variable.hasInitialAssignment():
+						forbidden_laws.append(i)
+
+			if DEBUG:
+				print("%d laws forbidden (%s)" % (len(forbidden_laws), str(forbidden_laws)))
+			allowed_laws = list(set(range(len(self.parentModel.listOfConservationLaws))).difference(set(forbidden_laws)))
+
+			cons_matrix = self.parentModel.listOfConservationLaws.getConservationMatrix()
+			cons_matrix = cons_matrix[allowed_laws, :]
+			cons_matrix_allowed = cons_matrix[:, allowed_variables]
+
+			# Here we are trying to find groups of symmetrical variables.
+			# The idea is that we first look at the number of time a species is in a conservation law.
+			# Then, we group withing each law by the number of time it is in a conservation law modelwide
+			# Each group is added to a list of global groups
+			times_in_cons = ones(1, cons_matrix_allowed.shape[0]) * cons_matrix_allowed
+
+			groups = []
+			for i_cons in range(cons_matrix.shape[0]):
+
+				i_matrix = cons_matrix[i_cons, allowed_variables]
+				i_time_in_cons = i_matrix.multiply_elementwise(times_in_cons)
+
+				t_dict = {int(val): [] for val in set(list(i_time_in_cons)) if val > 0}
+				for i, val in enumerate(i_time_in_cons):
+					if val > 0:
+						t_dict[int(val)].append(i)
+
+				for nb, species in t_dict.items():
+					if species not in groups:
+						groups.append(species)
+
+			# Once we have these groups, we take one if each of them
+			dependent_vars = []
+			for group in groups:
+				dependent_vars.append(allowed_variables[choice(group)])
+
+			independent_species = list(set(all_variables).difference(set(dependent_vars)))
+			if DEBUG:
+				print("> Dependent : %s" % dependent_vars)
+				print("> Independent : %s" % independent_species)
+
+			## Here we want to solve them all at once, with all the conservation laws.
+			## Otherwise we might not know which one toc hoose for which variable
+			system = []
+			vars = []
+
+			i_var = 0
+
+			for i_law, cons_law in enumerate(self.parentModel.listOfConservationLaws):
+				if i_law not in forbidden_laws and i_var < len(dependent_vars):
+
+					# cons_law = self.parentModel.listOfConservationLaws[i]
+					system.append(cons_law.getFormula())
+
+					dependent_species = self.parentModel.variablesOdes[dependent_vars[i_var]]
+					vars.append(dependent_species.symbol.getSymbol())
+					i_var += 1
+
+
+			# for i, dependent_var in enumerate(dependent_vars):
+			# 	if i < len(self.parentModel.listOfConservationLaws):
+			# 		cons_law = self.parentModel.listOfConservationLaws[i]
+			# 		system.append(cons_law.getFormula())
+			#
+			# 		dependent_species = self.parentModel.variablesOdes[dependent_var]
+			# 		vars.append(dependent_species.symbol.getSymbol())
+
+			if DEBUG:
+				print(system)
+				print(vars)
+
+			# this might not work for some selection of vars... to investigate
+			result_system = solve(system, vars)
+
+			if DEBUG:
+				print result_system
+
 			independent_species = []
 			independent_species_formula = []
-			solutions_subs = {}
 
-			for i_cons, cons_law in enumerate(self.parentModel.listOfConservationLaws):
-
-				can_reduce = True
-				for var in forbidden_variables:
-					if var in cons_law.getFormula().atoms(SympySymbol):
-						can_reduce = False
-						# print "Refused conservation law : %s" % cons_law
-
-				if can_reduce:
-
-					for i_ode, species in enumerate(self.parentModel.variablesOdes):
-
-						if (
-							nullspace[i_cons][i_ode] == 1
-							and species.symbol.getSymbol() not in independent_species
-							and cons_law.getNbVars() > 1
-							and not species.hasEventAssignment()
-						):
-							solution = solve(
-									unevaluatedSubs(cons_law.getFormula(), solutions_subs),
-									species.symbol.getSymbol()
-								)
-							if len(solution) > 0:
-								independent_species.append(species.symbol.getSymbol())
-								independent_species_formula.append(solution[0])
-								solutions_subs.update({species.symbol.getSymbol(): solution[0]})
-								break
-
+			if len(result_system) > 0:
+				if isinstance(result_system, dict):
+					for var, value in result_system.items():
+						independent_species.append(var)
+						independent_species_formula.append(value)
+				else:
+					print result_system
 
 			if len(independent_species) > 0:
 
@@ -137,3 +203,7 @@ class MathAsymmetricModel(MathSubmodel):
 
 				self.setUpToDate(True)
 				self.listOfCFEs.developCFEs()
+				# print("> %d variables reduced from the model" % len(dependent_vars))
+
+				# if DEBUG:
+				# 	self.listOfODEs.pprint()

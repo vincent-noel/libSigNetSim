@@ -124,8 +124,8 @@ class MathSlowModel(MathSubmodel):
 		self.slowStoichiometryMatrix.build(including_fast_reactions=False)
 		self.findFastReactions()
 
-		fast_matrix = self.fastStoichiometryMatrix.rawStoichiometryMatrix.transpose()
-		slow_matrix = self.slowStoichiometryMatrix.rawStoichiometryMatrix.transpose()
+		fast_matrix = self.fastStoichiometryMatrix.stoichiometryMatrix.transpose()
+		slow_matrix = self.slowStoichiometryMatrix.stoichiometryMatrix.transpose()
 		fast_velocities = self.findVelocities(include_slow_reaction=False)
 		slow_velocities = self.findVelocities(include_fast_reaction=False)
 		subs = self.reducedModel.listOfCFEs.getSubs()
