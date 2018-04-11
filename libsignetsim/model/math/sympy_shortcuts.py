@@ -89,7 +89,6 @@ from sympy.functions import asec as SympyAsec
 # from sympy.mpmath import acsch as SympyAcsch
 # from sympy.mpmath import asech as SympyAsech
 
-
 #comparaison
 from sympy.core import Equality as SympyEqual
 from sympy.core import Unequality as SympyUnequal
@@ -111,6 +110,7 @@ from sympy.logic.boolalg import ITE as SympyITE
 from sympy.functions.elementary.miscellaneous import Max as SympyMax
 from sympy.functions.elementary.miscellaneous import Min as SympyMin
 
+SympyRateOf = SympyFunction("rateOf")
 SympyQuotient = SympyFunction("quotient")
 SympyRem = SympyFunction("rem")
 SympyUnevaluatedMin = SympyFunction("min")

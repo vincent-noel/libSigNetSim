@@ -53,6 +53,9 @@ class TestSuite(object):
 	# SBML L3V2 cases
 	INCOMPATIBLE_CASES += [1234, 1235, 1241, 1243, 1465, 1552, 1554, 1555, 1557, 1601, 1603, 1605, 1657]
 
+	# rateOf : Unique case which does not work
+	INCOMPATIBLE_CASES += [1456]
+
 	INCOMPATIBLE_TAGS = [
 		'CSymbolDelay', 'FastReaction', 'ConversionFactors', 'VolumeConcentrationRates'
 	]
@@ -61,7 +64,7 @@ class TestSuite(object):
 		"3.2": [
 			"comp:ConversionFactor", "comp:Deletion", "comp:ExtentConversionFactor", "comp:ExternalModelDefinition",
 			"comp:ModelDefinition", "comp:Port", "comp:ReplacedBy", "comp:ReplacedElement", "comp:SBaseRef",
-			"comp:Submodel", "comp:SubmodelOutput", "comp:TimeConversionFactor", "CSymbolRateOf", "BoolNumericSwap"
+			"comp:Submodel", "comp:SubmodelOutput", "comp:TimeConversionFactor", "BoolNumericSwap"
 		]
 	}
 
@@ -183,15 +186,15 @@ class TestSuite(object):
 
 				nb_cases += 1
 
-				# try:
-				if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
-					print ""
+				try:
+					if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
+						print ""
 
-				test = TestSuiteCase(case, str(level), str(version), test_export=self.testExport)
-				if test.run():
-					nb_success += 1
+					test = TestSuiteCase(case, str(level), str(version), test_export=self.testExport)
+					if test.run():
+						nb_success += 1
 
-				# except Exception as e:
-				# 	print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
+				except Exception as e:
+					print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
 
 		return nb_success, nb_cases

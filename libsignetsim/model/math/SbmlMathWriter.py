@@ -304,10 +304,9 @@ class SbmlMathWriter(object):
 			return t_ast
 
 		# rateOf
-		elif tree.func == SympyDerivative:
+		elif tree.func == SympyRateOf:
 			t_ast = libsbml.ASTNode()
 			t_ast.setType(libsbml.AST_FUNCTION_RATE_OF)
-			# t_ast.setName("rateOf")
 			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
 			return t_ast
 

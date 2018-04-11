@@ -477,8 +477,7 @@ class SbmlMathReader(object):
 				return SympyTanh(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop), evaluate=False)
 
 			elif tree.getType() == libsbml.AST_FUNCTION_RATE_OF:
-				variable = self.model.listOfVariables.getBySbmlId(tree.getChild(0).getName())
-				return variable.symbol.getDerivative().getInternalMathFormula()
+				return SympyRateOf(self.translateForInternal(tree.getChild(0), simplified, develop))
 
 			elif tree.getType() == libsbml.AST_FUNCTION_QUOTIENT:
 				return SympyQuotient(
@@ -497,14 +496,10 @@ class SbmlMathReader(object):
 
 				for param in range(0, tree.getNumChildren()):
 					t_arg = self.translateForInternal(tree.getChild(param), sbml_level, sbml_version, simplified, develop)
-					# print(srepr(t_arg))
 					t_args.append(
 						t_arg
 					)
 
-				# print(str(arg) for arg in t_args)
-				# print(srepr(SympyMin(*t_args, evaluate=False)))
-				# print("\n")
 				return SympyUnevaluatedMin(*t_args)
 
 			elif tree.getType() == libsbml.AST_FUNCTION_MAX:
