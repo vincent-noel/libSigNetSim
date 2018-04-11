@@ -25,7 +25,7 @@
 """
 
 from libsignetsim.simulation.Simulation import Simulation
-from libsignetsim.simulation.SigNetSimFigure import SigNetSimFigure
+from libsignetsim.figure.SigNetSimFigure import SigNetSimFigure
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol
 from libsignetsim.settings.Settings import Settings
 from matplotlib.pyplot import show
@@ -181,12 +181,8 @@ class TimeseriesSimulation(Simulation):
 
 			t_var = self.listOfModels[0].listOfVariables.getBySymbol(SympySymbol(name))
 			if not t_var.isConstant():
-				ax.plot(t, t_trajs[i_species], '-',
-					color=SigNetSimFigure.color_scheme[i_species % len(SigNetSimFigure.color_scheme)],
-					linewidth=int(5 * figure.w),
-					label=str(t_var.getNameOrSbmlId()))
-
-				ax.legend(loc='upper right', fontsize=int(15 * figure.w))
+				figure.plot(ax, i_species, t, t_trajs[i_species], y_name=t_var.getNameOrSbmlId())
+				ax.legend(loc='upper right')
 
 		ax.set_xlim([x_min, x_max])
 		ax.set_ylim([y_min, y_max*1.1])
