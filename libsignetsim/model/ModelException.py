@@ -80,6 +80,9 @@ class MissingSubmodelException(ModelException):
 	def __str__(self):
 		return self.filename
 
+class UnknownSubmodelRefException(ModelException):
+	pass
+
 class UnknownSIdRefException(ModelException):
 	pass
 
