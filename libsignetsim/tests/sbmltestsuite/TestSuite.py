@@ -50,9 +50,20 @@ class TestSuite(object):
 	# Cases incompatible with the reintroduction of initial assignments into C code
 	INCOMPATIBLE_CASES += [1698, 1699]
 
+	# SBML L3V2 cases
+	INCOMPATIBLE_CASES += [1234, 1235, 1241, 1243, 1465, 1552, 1554, 1555, 1557, 1601, 1603, 1605, 1657]
+
 	INCOMPATIBLE_TAGS = [
 		'CSymbolDelay', 'FastReaction', 'ConversionFactors', 'VolumeConcentrationRates'
 	]
+
+	VERSION_INCOMPATIBLE_TAGS = {
+		"3.2": [
+			"comp:ConversionFactor", "comp:Deletion", "comp:ExtentConversionFactor", "comp:ExternalModelDefinition",
+			"comp:ModelDefinition", "comp:Port", "comp:ReplacedBy", "comp:ReplacedElement", "comp:SBaseRef",
+			"comp:Submodel", "comp:SubmodelOutput", "comp:TimeConversionFactor", "CSymbolRateOf", "BoolNumericSwap"
+		]
+	}
 
 	COMPATIBLE_PACKAGES = ['comp']
 
@@ -136,6 +147,11 @@ class TestSuite(object):
 				elif (':' in tag.strip()
 					  and tag.strip().split(':')[0] not in self.COMPATIBLE_PACKAGES):
 					compatible = False
+
+				for todo_version in self.TODO_VERSIONS:
+					if todo_version in self.VERSION_INCOMPATIBLE_TAGS.keys() and tag.strip() in self.VERSION_INCOMPATIBLE_TAGS[todo_version]:
+						compatible = False
+
 
 			if (compatible
 				and case_id not in self.INCOMPATIBLE_CASES
