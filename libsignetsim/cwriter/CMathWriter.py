@@ -25,20 +25,7 @@
 """
 
 from sympy import simplify, srepr
-from libsignetsim.model.math.sympy_shortcuts import (
-	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
-	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
-	SympyInf, SympyNan, SympyAdd, SympyMul, SympyPow,
-	SympyFunction, SympyUndefinedFunction, SympyLambda, SympyDerivative,
-	SympyCeiling, SympyFloor, SympyAbs, SympyLog, SympyExp, SympyPiecewise,
-	SympyFactorial, SympyRoot, SympyAcos, SympyAsin, SympyAtan, SympyAcosh,
-	SympyAsinh, SympyAtanh, SympyCos, SympySin, SympyTan, SympyAcot,
-	SympyAcoth, SympyCosh, SympySinh, SympyTanh, SympySec, SympyCsc,
-	SympyCot, SympyCoth, SympyAcsc, SympyAsec,
-	SympyEqual, SympyUnequal, SympyGreaterThan, SympyLessThan,
-	SympyStrictGreaterThan, SympyStrictLessThan,
-	SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
-	SympyMax, SympyMin, SympyITE)
+from libsignetsim.model.math.sympy_shortcuts import *
 
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.MathException import MathException, DelayNotImplemented
@@ -150,7 +137,7 @@ class CMathWriter(object):
 			return self.translateVariableForC(tree)
 
 		elif tree.func == SympyDerivative:
-			return self.translateVariableForC(tree.args[0],derivative=True)
+			return self.translateVariableForC(tree.args[0], derivative=True)
 
 		elif tree.func == SympyInteger:
 			return "RCONST(%d.0)" % int(tree)
@@ -254,6 +241,15 @@ class CMathWriter(object):
 		# AST_FUNCTION_ABS
 		elif tree.func == SympyAbs:
 			return "rt_abs(%s)" % self.translateForC(tree.args[0])
+
+		# AST_FUNCTION_QUOTIENT
+		elif tree.func == SympyQuotient:
+			return "((int) rt_floor(%s/%s))" % (self.translateForC(tree.args[0]), self.translateForC(tree.args[1]))
+
+		# AST_FUNCTION_REM
+		elif tree.func == SympyRem:
+			return "((int) fmod(%s, %s))" % (self.translateForC(tree.args[0]), self.translateForC(tree.args[1]))
+
 
 		# AST_FUNCTION_ARCCOS
 		elif tree.func == SympyAcos:
@@ -434,6 +430,37 @@ class CMathWriter(object):
 
 		elif tree.func == SympyNot:
 			return "(!%s)" % self.translateForC(tree.args[0])
+
+		elif tree.func == SympyImplies:
+			# p -> q == !p || q
+			# print srepr(tree)
+			# print tree.evalf()
+			return "(!" + self.translateForC(tree.args[0]) + " || " + self.translateForC(tree.args[1]) + ")"
+
+		elif tree.func == SympyUnevaluatedMin:
+			if len(tree.args) == 1:
+				return self.translateForC(tree.args[0])
+
+			elif len(tree.args) > 1:
+				str = "min(" + self.translateForC(tree.args[0]) + ", " + self.translateForC(tree.args[1]) + ")"
+
+				for i, arg in enumerate(tree.args):
+					if i > 1:
+						str = "min(" + str + ", " + self.translateForC(tree.args[i]) + ")"
+			return str
+
+		elif tree.func == SympyUnevaluatedMax:
+			if len(tree.args) == 1:
+				return self.translateForC(tree.args[0])
+
+			elif len(tree.args) > 1:
+				str = "max(" + self.translateForC(tree.args[0]) + ", " + self.translateForC(tree.args[1]) + ")"
+
+				for i, arg in enumerate(tree.args):
+					if i > 1:
+						str = "max(" + str + ", " + self.translateForC(tree.args[i]) + ")"
+			return str
+
 
 		elif tree.func == SympyFunction:
 			raise DelayNotImplemented()

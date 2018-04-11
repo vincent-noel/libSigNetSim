@@ -303,6 +303,59 @@ class SbmlMathWriter(object):
 
 			return t_ast
 
+		# rateOf
+		elif tree.func == SympyDerivative:
+			t_ast = libsbml.ASTNode()
+			t_ast.setType(libsbml.AST_FUNCTION_RATE_OF)
+			# t_ast.setName("rateOf")
+			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			return t_ast
+
+		# quotient
+		elif tree.func == SympyQuotient:
+			t_ast = libsbml.ASTNode()
+			t_ast.setType(libsbml.AST_FUNCTION_QUOTIENT)
+			# t_ast.setName("quotient")
+			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast.addChild(self.translateForSbml(tree.args[1], sbml_level, sbml_version))
+			return t_ast
+
+		# quotient
+		elif tree.func == SympyRem:
+			t_ast = libsbml.ASTNode()
+			t_ast.setType(libsbml.AST_FUNCTION_REM)
+			# t_ast.setName("rem")
+			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast.addChild(self.translateForSbml(tree.args[1], sbml_level, sbml_version))
+			return t_ast
+
+		# implies
+		elif tree.func == SympyImplies:
+			t_ast = libsbml.ASTNode()
+			t_ast.setType(libsbml.AST_LOGICAL_IMPLIES)
+			# t_ast.setName("implies")
+			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast.addChild(self.translateForSbml(tree.args[1], sbml_level, sbml_version))
+			return t_ast
+
+		# min
+		elif tree.func == SympyUnevaluatedMin:
+			t_ast = libsbml.ASTNode()
+			t_ast.setType(libsbml.AST_FUNCTION_MIN)
+			for i_arg, arg in enumerate(tree.args):
+				t_ast.addChild(self.translateForSbml(arg, sbml_level, sbml_version))
+
+			return t_ast
+
+		# max
+		elif tree.func == SympyUnevaluatedMax:
+			t_ast = libsbml.ASTNode()
+			t_ast.setType(libsbml.AST_FUNCTION_MAX)
+			for i_arg, arg in enumerate(tree.args):
+				t_ast.addChild(self.translateForSbml(arg, sbml_level, sbml_version))
+
+			return t_ast
+
 		# AST_FUNCTION_ABS
 		elif tree.func == SympyAbs:
 			t_ast = libsbml.ASTNode()
