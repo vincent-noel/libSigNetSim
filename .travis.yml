@@ -7,6 +7,7 @@ language: python
 python: 2.7
 
 env:
+  - JOB=sbml-test-suite ARG=3.2
   - JOB=sbml-test-suite ARG=3.1
   - JOB=sbml-test-suite ARG=2.5
   - JOB=sbml-test-suite ARG=2.4
