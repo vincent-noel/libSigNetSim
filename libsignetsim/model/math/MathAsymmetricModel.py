@@ -67,56 +67,24 @@ class MathAsymmetricModel(MathSubmodel):
 
 		if len(self.parentModel.listOfConservationLaws) > 0:
 
-			allowed_variables, forbidden_variables = self.findAllowedVariables(treated_variables)
-			allowed_laws, forbidden_laws = self.findAllowedLaws()
-			dependent_vars, independent_species = self.findReducibleVariables(allowed_laws, allowed_variables)
+			allowed_variables, forbidden_variables = self.__findAllowedVariables(treated_variables)
+			allowed_laws, forbidden_laws = self.__findAllowedLaws()
+			dependent_vars, independent_species = self.__findReducibleVariables(allowed_laws, allowed_variables)
 
 			if self.DEBUG:
 				print("> Dependent : %s" % dependent_vars)
 				print("> Independent : %s" % independent_species)
 
-			independent_species, independent_species_formula = self.solveDependentVariables(forbidden_laws, dependent_vars)
+			independent_species, independent_species_formula = self.__solveDependentVariables(forbidden_laws, dependent_vars)
 
-			if len(independent_species) > 0:
+			self.__buildModel(independent_species, independent_species_formula)
 
-				self.clear()
-				self.copyVariables()
-				self.copyEquations()
 
-				for var in self.parentModel.variablesOdes:
-					new_var = self.listOfVariables.getBySymbol(var.symbol.getSymbol())
-					if var.symbol.getSymbol() in independent_species:
+			if self.DEBUG:
+				print("> %d variables reduced from the model" % len(dependent_vars))
 
-						t_formula = MathFormula(self)
 
-						t_formula.setInternalMathFormula(
-							independent_species_formula[independent_species.index(var.symbol.getSymbol())]
-						)
-
-						t_cfe = CFE(self)
-						t_cfe.new(new_var, t_formula)
-						self.listOfCFEs.append(t_cfe)
-						self.listOfVariables.changeVariableType(new_var, MathVariable.VAR_ASS)
-
-					else:
-
-						t_formula = MathFormula(self)
-						t_formula.setInternalMathFormula(
-							self.parentModel.listOfODEs.getByVariable(var).getDefinition().getDeveloppedInternalMathFormula()
-						)
-
-						t_ode = ODE(self)
-						t_ode.new(new_var, t_formula)
-						self.listOfODEs.append(t_ode)
-
-				self.listOfCFEs.developCFEs()
-				self.setUpToDate(True)
-
-				# if DEBUG:
-				# print("> %d variables reduced from the model" % len(dependent_vars))
-				# 	self.listOfODEs.pprint()
-
-	def findAllowedVariables(self, treated_variables):
+	def __findAllowedVariables(self, treated_variables):
 
 		all_variables = range(len(self.parentModel.variablesOdes))
 
@@ -129,7 +97,7 @@ class MathAsymmetricModel(MathSubmodel):
 		allowed_variables = list(set(all_variables).difference(set(forbidden_variables)))
 		return allowed_variables, forbidden_variables
 
-	def findAllowedLaws(self):
+	def __findAllowedLaws(self):
 
 		forbidden_laws = []
 		for i, law in enumerate(self.parentModel.listOfConservationLaws):
@@ -144,7 +112,7 @@ class MathAsymmetricModel(MathSubmodel):
 		allowed_laws = list(set(range(len(self.parentModel.listOfConservationLaws))).difference(set(forbidden_laws)))
 		return allowed_laws, forbidden_laws
 
-	def findReducibleVariables(self, allowed_laws, allowed_variables):
+	def __findReducibleVariables(self, allowed_laws, allowed_variables):
 
 		cons_matrix = self.parentModel.listOfConservationLaws.getConservationMatrix()
 		cons_matrix_allowed = cons_matrix[allowed_laws, allowed_variables]
@@ -181,7 +149,7 @@ class MathAsymmetricModel(MathSubmodel):
 
 		return dependent_vars, independent_vars
 
-	def solveDependentVariables(self, forbidden_laws, dependent_vars):
+	def __solveDependentVariables(self, forbidden_laws, dependent_vars):
 
 		system = []
 		vars = []
@@ -217,3 +185,41 @@ class MathAsymmetricModel(MathSubmodel):
 				print result_system
 
 		return independent_species, independent_species_formula
+
+	def __buildModel(self, independent_species, independent_species_formula):
+
+		if len(independent_species) > 0:
+
+			self.clear()
+			self.copyVariables()
+			self.copyEquations()
+
+			for var in self.parentModel.variablesOdes:
+				new_var = self.listOfVariables.getBySymbol(var.symbol.getSymbol())
+				if var.symbol.getSymbol() in independent_species:
+
+					t_formula = MathFormula(self)
+
+					t_formula.setInternalMathFormula(
+						independent_species_formula[independent_species.index(var.symbol.getSymbol())]
+					)
+
+					t_cfe = CFE(self)
+					t_cfe.new(new_var, t_formula)
+					self.listOfCFEs.append(t_cfe)
+					self.listOfVariables.changeVariableType(new_var, MathVariable.VAR_ASS)
+
+				else:
+
+					t_formula = MathFormula(self)
+					t_formula.setInternalMathFormula(
+						self.parentModel.listOfODEs.getByVariable(
+							var).getDefinition().getDeveloppedInternalMathFormula()
+					)
+
+					t_ode = ODE(self)
+					t_ode.new(new_var, t_formula)
+					self.listOfODEs.append(t_ode)
+
+			self.listOfCFEs.developCFEs()
+			self.setUpToDate(True)
