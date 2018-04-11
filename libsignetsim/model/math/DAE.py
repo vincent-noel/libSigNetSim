@@ -80,4 +80,6 @@ class DAE(object):
 
 		return (to_solve[0], solve(self.__definition.getDeveloppedInternalMathFormula(), to_solve))
 
+	def isValid(self):
 
+		return self.__definition.getInternalMathFormula() != MathFormula.ZERO

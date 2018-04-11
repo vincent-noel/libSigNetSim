@@ -201,22 +201,23 @@ class ListOfDAEs(list):
 	def solveDAEs(self):
 
 		for i, dae in enumerate(self):
-			var, res = dae.solve()
+			if dae.isValid():
+				var, res = dae.solve()
 
-			if len(res) > 0:
-				t_var = self.__model.listOfVariables.getBySymbol(var)
-				t_formula = MathFormula(self.__model)
+				if len(res) > 0:
+					t_var = self.__model.listOfVariables.getBySymbol(var)
+					t_formula = MathFormula(self.__model)
 
-				if isinstance(res[0], dict):
-					t_formula.setInternalMathFormula(res[0].values()[0])
-				else:
-					t_formula.setInternalMathFormula(res[0])
+					if isinstance(res[0], dict):
+						t_formula.setInternalMathFormula(res[0].values()[0])
+					else:
+						t_formula.setInternalMathFormula(res[0])
 
-				cfe = CFE(self.__model)
-				cfe.new(t_var, t_formula)
-				self.__model.listOfCFEs.append(cfe)
-				self.__model.listOfVariables.changeVariableType(t_var, MathVariable.VAR_ASS)
-				list.__delitem__(self, i)
+					cfe = CFE(self.__model)
+					cfe.new(t_var, t_formula)
+					self.__model.listOfCFEs.append(cfe)
+					self.__model.listOfVariables.changeVariableType(t_var, MathVariable.VAR_ASS)
+					list.__delitem__(self, i)
 
 		self.__model.listOfCFEs.developCFEs()
 
