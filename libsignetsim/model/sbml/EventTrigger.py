@@ -238,3 +238,6 @@ class EventTrigger(MathFormula, SbmlObject):
 
 	def getOperator(self):
 		return MathFormula.getInternalMathFormula(self).func
+
+	def isValid(self):
+		return MathFormula.getInternalMathFormula(self) != MathFormula.ZERO

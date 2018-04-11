@@ -74,19 +74,21 @@ class EventAssignment(SbmlObject):
 		sbml_event_assignment = sbml_event.createEventAssignment()
 		SbmlObject.writeSbml(self, sbml_event_assignment, sbml_level, sbml_version)
 
+		sbml_event_assignment.setVariable(self.__var.getSbmlId())
+
 		if self.__definition is not None:
 			t_definition = MathFormula(self.__model, MathFormula.MATH_EVENTASSIGNMENT)
 			t_definition.setInternalMathFormula(self.__definition.getInternalMathFormula())
 
-		if self.getVariable().isConcentration():
-			t_comp = self.getVariable().getCompartment()
-			t_definition.setInternalMathFormula(
-				SympyMul(t_definition.getInternalMathFormula(),
-							SympyPow(t_comp.symbol.getInternalMathFormula(),
-								SympyInteger(-1))))
+			if self.getVariable().isConcentration():
+				t_comp = self.getVariable().getCompartment()
+				t_definition.setInternalMathFormula(
+					SympyMul(t_definition.getInternalMathFormula(),
+								SympyPow(t_comp.symbol.getInternalMathFormula(),
+									SympyInteger(-1))))
 
-		sbml_event_assignment.setVariable(self.__var.getSbmlId())
-		sbml_event_assignment.setMath(t_definition.getSbmlMathFormula())
+			sbml_event_assignment.setMath(t_definition.getSbmlMathFormula())
+
 
 	def copy(self, obj, sids_subs={}, symbols_subs={}, conversion_factors={}, time_conversion=None):
 
