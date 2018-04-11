@@ -188,38 +188,36 @@ class MathAsymmetricModel(MathSubmodel):
 
 	def __buildModel(self, independent_species, independent_species_formula):
 
-		if len(independent_species) > 0:
+		self.clear()
+		self.copyVariables()
+		self.copyEquations()
 
-			self.clear()
-			self.copyVariables()
-			self.copyEquations()
+		for var in self.parentModel.variablesOdes:
+			new_var = self.listOfVariables.getBySymbol(var.symbol.getSymbol())
+			if var.symbol.getSymbol() in independent_species:
 
-			for var in self.parentModel.variablesOdes:
-				new_var = self.listOfVariables.getBySymbol(var.symbol.getSymbol())
-				if var.symbol.getSymbol() in independent_species:
+				t_formula = MathFormula(self)
 
-					t_formula = MathFormula(self)
+				t_formula.setInternalMathFormula(
+					independent_species_formula[independent_species.index(var.symbol.getSymbol())]
+				)
 
-					t_formula.setInternalMathFormula(
-						independent_species_formula[independent_species.index(var.symbol.getSymbol())]
-					)
+				t_cfe = CFE(self)
+				t_cfe.new(new_var, t_formula)
+				self.listOfCFEs.append(t_cfe)
+				self.listOfVariables.changeVariableType(new_var, MathVariable.VAR_ASS)
 
-					t_cfe = CFE(self)
-					t_cfe.new(new_var, t_formula)
-					self.listOfCFEs.append(t_cfe)
-					self.listOfVariables.changeVariableType(new_var, MathVariable.VAR_ASS)
+			else:
 
-				else:
+				t_formula = MathFormula(self)
+				t_formula.setInternalMathFormula(
+					self.parentModel.listOfODEs.getByVariable(
+						var).getDefinition().getDeveloppedInternalMathFormula()
+				)
 
-					t_formula = MathFormula(self)
-					t_formula.setInternalMathFormula(
-						self.parentModel.listOfODEs.getByVariable(
-							var).getDefinition().getDeveloppedInternalMathFormula()
-					)
+				t_ode = ODE(self)
+				t_ode.new(new_var, t_formula)
+				self.listOfODEs.append(t_ode)
 
-					t_ode = ODE(self)
-					t_ode.new(new_var, t_formula)
-					self.listOfODEs.append(t_ode)
-
-			self.listOfCFEs.developCFEs()
-			self.setUpToDate(True)
+		self.listOfCFEs.developCFEs()
+		self.setUpToDate(True)
