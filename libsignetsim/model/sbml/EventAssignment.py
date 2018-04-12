@@ -120,7 +120,7 @@ class EventAssignment(SbmlObject):
 
 	def copySubmodel(self, obj):
 		self.__var = self.__model.listOfVariables.getBySymbol(obj.getVariable().symbol.getSymbol())
-		if self.__definition.getInternalMathFormula() is not None:
+		if obj.getDefinition().getInternalMathFormula() is not None:
 			self.__definition.setInternalMathFormula(obj.getDefinition().getDeveloppedInternalMathFormula())
 
 	def getVariable(self):
@@ -156,4 +156,8 @@ class EventAssignment(SbmlObject):
 		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
 
 	def isValid(self):
-		return self.__definition is not None and self.__definition.getInternalMathFormula() is not None
+		return (
+			self.__definition is not None
+			and self.__definition.getInternalMathFormula() is not None
+			and self.__definition.getDeveloppedInternalMathFormula() is not None
+		)
