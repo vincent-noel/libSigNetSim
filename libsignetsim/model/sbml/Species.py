@@ -279,9 +279,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			ode = MathFormula.ZERO
 
 			if not self.boundaryCondition:
-					for reaction in self.__model.listOfReactions.values():
-						if not reaction.fast or including_fast_reactions:
-							ode += reaction.getODE(self, symbols=symbols, rawFormula=rawFormula).getInternalMathFormula()
+				for reaction in self.__model.listOfReactions.values():
+					if not reaction.fast or including_fast_reactions:
+						ode += reaction.getODE(self, symbols=symbols, rawFormula=rawFormula).getInternalMathFormula()
 
 			if self.isSetConversionFactor():
 				ode *= self.getSymbolConversionFactor()
