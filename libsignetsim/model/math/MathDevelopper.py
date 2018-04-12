@@ -109,13 +109,18 @@ class MathDevelopper(object):
 
 				if t_variable.isSpecies() and not t_variable.hasOnlySubstanceUnits and not t_variable.isRateRuled():
 					t_ode = t_variable.getODE().getDeveloppedInternalMathFormula()
-					t_ode /= t_variable.getCompartment().symbol.getDeveloppedInternalMathFormula()
+					if t_ode is not None:
+						t_ode /= t_variable.getCompartment().symbol.getDeveloppedInternalMathFormula()
 
 				else:
 					t_ode = t_variable.getODE().getDeveloppedInternalMathFormula()
 			else:
 				t_variable = self.__model.listOfVariables.getBySymbol(tree.args[0])
 				t_ode = t_variable.getODE().getDeveloppedInternalMathFormula()
+
+			if t_ode is None:
+				return SympyInteger(0)
+
 			return t_ode
 
 		if isinstance(tree.func, SympyUndefinedFunction) and "_functionDefinition_" in str(tree.func):
