@@ -163,3 +163,9 @@ class ListOfInitialAssignments(ListOf, SbmlObject, HasParentObj):
 
 	def getXPath(self):
 		return "/".join([self.getParentObj().getXPath(), "sbml:listOfInitialAssignments"])
+
+	def pprint(self):
+
+		for ode in self:
+			ode.pprint()
+			print("\n")

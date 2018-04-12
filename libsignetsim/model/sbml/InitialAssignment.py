@@ -31,6 +31,7 @@ from libsignetsim.model.ModelException import InvalidXPath
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyMul, SympyPow
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
+from sympy import pretty, Equality, Symbol
 
 
 class InitialAssignment(SbmlObject, HasParentObj):
@@ -212,3 +213,14 @@ class InitialAssignment(SbmlObject, HasParentObj):
 			xpath += "/@%s" % attribute
 
 		return "/".join([self.getParentObj().getXPath(), xpath])
+
+	def pprint(self):
+		print(
+			pretty(
+				Equality(
+					Symbol(str(self.getVariable().symbol.getDeveloppedInternalMathFormula()) + "_0"),
+					self.getDefinition().getDeveloppedInternalMathFormula()
+				)
+			)
+
+		)
