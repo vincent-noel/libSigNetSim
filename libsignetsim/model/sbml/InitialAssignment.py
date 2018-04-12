@@ -241,4 +241,8 @@ class InitialAssignment(SbmlObject, HasParentObj):
 
 	def isValid(self):
 
-		return self.getVariable() is not None and self.__definition.getInternalMathFormula() is not None
+		return (
+			self.getVariable() is not None
+			and self.__definition.getInternalMathFormula() is not None
+			and self.__definition.getDeveloppedInternalMathFormula() is not None
+		)

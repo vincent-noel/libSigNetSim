@@ -248,4 +248,4 @@ class EventTrigger(MathFormula, SbmlObject):
 		return MathFormula.getInternalMathFormula(self).func
 
 	def isValid(self):
-		return MathFormula.getInternalMathFormula(self) != MathFormula.ZERO
+		return MathFormula.getInternalMathFormula(self) is not None

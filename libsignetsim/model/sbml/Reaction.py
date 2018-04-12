@@ -540,3 +540,6 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 			xpath += "/@%s" % attribute
 
 		return "/".join([self.getParentObj().getXPath(), xpath])
+
+	def isValid(self):
+		return self.kineticLaw.getDefinition() is not None

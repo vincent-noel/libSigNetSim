@@ -53,9 +53,10 @@ class ListOfCFEs(list):
 				list.append(self, t_cfe)
 
 		for reaction in self.__model.listOfReactions.values():
-			t_cfe = CFE(self.__model, CFE.REACTION)
-			t_cfe.new(reaction, reaction.value)
-			list.append(self, t_cfe)
+			if reaction.isValid():
+				t_cfe = CFE(self.__model, CFE.REACTION)
+				t_cfe.new(reaction, reaction.value)
+				list.append(self, t_cfe)
 
 		self.developCFEs()
 

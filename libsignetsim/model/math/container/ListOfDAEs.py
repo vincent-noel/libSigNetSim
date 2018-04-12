@@ -46,7 +46,7 @@ class ListOfDAEs(list):
 	def build(self):
 
 		for rule in self.__model.listOfRules.values():
-			if rule.isAlgebraic():
+			if rule.isAlgebraic() and rule.isValid():
 				# self.__model.hasDAEs = True
 				t_dae = DAE(self.__model)
 				t_dae.new(rule.getDefinition(rawFormula=True))
