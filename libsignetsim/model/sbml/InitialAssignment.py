@@ -63,10 +63,12 @@ class InitialAssignment(SbmlObject, HasParentObj):
 
 		self.__definition.readSbml(initial_assignment.getMath(), sbml_level, sbml_version)
 
-		if self.getVariable().isConcentration():
-			self.__definition.setInternalMathFormula(
-				SympyMul(self.__definition.getInternalMathFormula(),
-						self.getVariable().getCompartment().symbol.getInternalMathFormula()))
+		if self.__definition.getInternalMathFormula() is not None:
+
+			if self.getVariable().isConcentration():
+				self.__definition.setInternalMathFormula(
+					SympyMul(self.__definition.getInternalMathFormula(),
+							self.getVariable().getCompartment().symbol.getInternalMathFormula()))
 
 	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Writes an initial assignment to a sbml file """
@@ -195,7 +197,8 @@ class InitialAssignment(SbmlObject, HasParentObj):
 			return (variable.symbol.getInternalMathFormula() in self.__definition.getInternalMathFormula().atoms()
 					or (variable.isSpecies() and SympySymbol("_speciesForcedConcentration_%s_" % str(variable.symbol.getInternalMathFormula())) in self.__definition.getInternalMathFormula().atoms())
 					or variable.symbol.getInternalMathFormula() == self.getVariable().symbol.getInternalMathFormula())
-
+		else:
+			return False
 
 	def getByXPath(self, xpath):
 
