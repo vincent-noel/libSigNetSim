@@ -175,9 +175,10 @@ class MathModel(CModelWriter):
 			init_cond = {SympySymbol("_time_"): SympyFloat(tmin)}
 
 		for init_ass in self.listOfInitialAssignments.values():
-			t_var = init_ass.getVariable().symbol.getSymbol()
-			t_value = init_ass.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula()
-			init_cond.update({t_var:t_value})
+			if init_ass.isValid():
+				t_var = init_ass.getVariable().symbol.getSymbol()
+				t_value = init_ass.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula()
+				init_cond.update({t_var:t_value})
 
 		if DEBUG:
 			print init_cond

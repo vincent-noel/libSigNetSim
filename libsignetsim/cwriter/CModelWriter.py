@@ -244,11 +244,11 @@ class CModelWriter(object):
 		f_c.write("  compute_rules_%d(t, y, user_data);\n" % model_id)
 
 		for t_init_assignment in self.getMathModel().listOfInitialAssignments:
-
-			f_c.write("  %s = %s;\n\n" % (
-				t_init_assignment.getVariable().symbol.getCMathFormula(),
-				t_init_assignment.getDefinition(rawFormula=True).getCMathFormula()
-			))
+			if t_init_assignment.isValid():
+				f_c.write("  %s = %s;\n\n" % (
+					t_init_assignment.getVariable().symbol.getCMathFormula(),
+					t_init_assignment.getDefinition(rawFormula=True).getCMathFormula()
+				))
 
 		f_c.write("  return 0;\n")
 		f_c.write("}\n\n")
