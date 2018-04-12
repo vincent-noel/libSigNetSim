@@ -61,12 +61,7 @@ class InitialAssignment(SbmlObject, HasParentObj):
 			self.__var = self.__model.listOfVariables.getBySbmlId(initial_assignment.getSymbol())
 			self.getVariable().setInitialAssignmentBy(self)
 
-		if initial_assignment.getMath() is not None:
-			self.__definition.readSbml(initial_assignment.getMath(), sbml_level, sbml_version)
-		else:
-			self.__definition = None
-		# print self.__definition
-		# print self.__definition.getInternalMathFormula()
+		self.__definition.readSbml(initial_assignment.getMath(), sbml_level, sbml_version)
 
 		if self.getVariable().isConcentration():
 			self.__definition.setInternalMathFormula(
@@ -82,7 +77,7 @@ class InitialAssignment(SbmlObject, HasParentObj):
 
 		sbml_initial_assignment.setSymbol(self.__var.getSbmlId())
 
-		if self.__definition is not None:
+		if self.__definition.getInternalMathFormula() is not None:
 
 			t_definition = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
 			t_definition.setInternalMathFormula(self.__definition.getInternalMathFormula())
@@ -138,9 +133,9 @@ class InitialAssignment(SbmlObject, HasParentObj):
 
 	def getRawDefinition(self, rawFormula=False):
 
-		if self.__definition is not None:
-			formula = self.__definition.getInternalMathFormula()
-
+		# if self.__definition.getInternalMathFormula() is not None:
+		formula = self.__definition.getInternalMathFormula()
+		if formula is not None:
 			if not rawFormula and self.getVariable().isConcentration():
 				formula /= self.getVariable().getCompartment().symbol.getInternalMathFormula()
 
@@ -151,15 +146,15 @@ class InitialAssignment(SbmlObject, HasParentObj):
 						subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
 				formula = unevaluatedSubs(formula, subs)
 
-			return formula
+		return formula
 
 	def getDefinition(self, rawFormula=False):
 
-		if self.__definition is not None:
-			math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
-			math_formula.setInternalMathFormula(self.getRawDefinition(rawFormula=rawFormula))
+		# if self.__definition is not None:
+		math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
+		math_formula.setInternalMathFormula(self.getRawDefinition(rawFormula=rawFormula))
 
-			return math_formula
+		return math_formula
 
 	def getRuleTypeDescription(self):
 		return "Initial assignment"
@@ -178,7 +173,7 @@ class InitialAssignment(SbmlObject, HasParentObj):
 
 	def getPrettyPrintDefinition(self):
 
-		if self.__definition is not None:
+		if self.__definition.getInternalMathFormula() is not None:
 			if self.getVariable().isSpecies() and not self.getVariable().hasOnlySubstanceUnits:
 				t_comp = self.getVariable().getCompartment()
 				t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
@@ -190,13 +185,13 @@ class InitialAssignment(SbmlObject, HasParentObj):
 
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
-		if self.__definition is not None:
+		if self.__definition.getInternalMathFormula() is not None:
 			self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
 
 
 	def containsVariable(self, variable):
 
-		if self.__definition is not None:
+		if self.__definition.getInternalMathFormula() is not None:
 			return (variable.symbol.getInternalMathFormula() in self.__definition.getInternalMathFormula().atoms()
 					or (variable.isSpecies() and SympySymbol("_speciesForcedConcentration_%s_" % str(variable.symbol.getInternalMathFormula())) in self.__definition.getInternalMathFormula().atoms())
 					or variable.symbol.getInternalMathFormula() == self.getVariable().symbol.getInternalMathFormula())
@@ -243,4 +238,4 @@ class InitialAssignment(SbmlObject, HasParentObj):
 
 	def isValid(self):
 
-		return self.getVariable() is not None and self.__definition is not None
+		return self.getVariable() is not None and self.__definition.getInternalMathFormula() is not None
