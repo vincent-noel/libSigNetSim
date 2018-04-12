@@ -47,7 +47,7 @@ class ListOfCFEs(list):
 		self[:] = []
 
 		for rule in self.__model.listOfRules.values():
-			if rule.isAssignment():
+			if rule.isAssignment() and rule.isValid():
 				t_cfe = CFE(self.__model, CFE.ASSIGNMENT)
 				t_cfe.new(rule.getVariable(), rule.getDefinition(rawFormula=True))
 				list.append(self, t_cfe)

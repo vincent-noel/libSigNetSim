@@ -126,7 +126,7 @@ class ListOfDAEs(list):
 				print init_cond
 
 			for rule in self.__model.listOfRules.values():
-				if rule.isAssignment():
+				if rule.isAssignment() and rule.isValid():
 					t_var = rule.getVariable().symbol.getSymbol()
 
 					if t_var not in init_cond.keys():

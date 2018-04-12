@@ -184,7 +184,7 @@ class MathModel(CModelWriter):
 			print init_cond
 
 		for rule in self.listOfRules.values():
-			if rule.isAssignment():
+			if rule.isAssignment() and rule.isValid():
 				t_var = rule.getVariable().symbol.getSymbol()
 				# print "Assignment : %s" % str(t_var)
 				if t_var not in init_cond.keys():
