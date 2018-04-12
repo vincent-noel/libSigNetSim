@@ -107,14 +107,15 @@ class MathDevelopper(object):
 				t_sbml_id = str(res_match.groups()[0])
 				t_variable = self.__model.listOfVariables.getBySymbol(SympySymbol(t_sbml_id))
 
-				if t_variable.isSpecies() and not t_variable.hasOnlySubstanceUnits:
-					t_ode = t_variable.getODE(rawFormula=False).getDeveloppedInternalMathFormula()
+				if t_variable.isSpecies() and not t_variable.hasOnlySubstanceUnits and not t_variable.isRateRuled():
+					t_ode = t_variable.getODE().getDeveloppedInternalMathFormula()
+					t_ode /= t_variable.getCompartment().symbol.getDeveloppedInternalMathFormula()
 
 				else:
-					t_ode = t_variable.getODE(rawFormula=True).getDeveloppedInternalMathFormula()
+					t_ode = t_variable.getODE().getDeveloppedInternalMathFormula()
 			else:
 				t_variable = self.__model.listOfVariables.getBySymbol(tree.args[0])
-				t_ode = t_variable.getODE(rawFormula=True).getDeveloppedInternalMathFormula()
+				t_ode = t_variable.getODE().getDeveloppedInternalMathFormula()
 			return t_ode
 
 		if isinstance(tree.func, SympyUndefinedFunction) and "_functionDefinition_" in str(tree.func):
