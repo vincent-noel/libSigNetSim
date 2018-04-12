@@ -376,7 +376,6 @@ class CModelWriter(object):
 		else:
 			f_h.write("int roots_events_%d(realtype t, N_Vector y, realtype *gout,void *user_data);\n" % model_id)
 			f_c.write("int roots_events_%d(realtype t, N_Vector y, realtype *gout,void *user_data)\n{\n" % model_id)
-		print len(self.getMathModel().listOfEvents.validEvents())
 
 		if self.getMathModel().listOfEvents.validEvents() > 0:
 
