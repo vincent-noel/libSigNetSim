@@ -736,30 +736,34 @@ class SbmlMathReader(object):
 
 	def ensureBool(self, tree):
 
-		if tree.func == SympyInteger:
-			tree = SympyFalse if tree == SympyInteger(0) else SympyTrue
+		if tree is not None:
 
-		elif tree.func == SympyFloat:
-			tree = SympyFalse if tree == SympyFloat(0.0) else SympyTrue
+			if tree.func == SympyInteger:
+				tree = SympyFalse if tree == SympyInteger(0) else SympyTrue
 
-		return tree
+			elif tree.func == SympyFloat:
+				tree = SympyFalse if tree == SympyFloat(0.0) else SympyTrue
+
+			return tree
 
 	def ensureInteger(self, tree):
 
-		if tree == SympyTrue:
-			return SympyInteger(1)
+		if tree is not None:
+			if tree == SympyTrue:
+				return SympyInteger(1)
 
-		elif tree == SympyFalse:
-			return SympyInteger(0)
+			elif tree == SympyFalse:
+				return SympyInteger(0)
 
-		return tree
+			return tree
 
 	def ensureFloat(self, tree):
 
-		if tree == SympyTrue:
-			return SympyFloat(1)
+		if tree is not None:
+			if tree == SympyTrue:
+				return SympyFloat(1)
 
-		elif tree == SympyFalse:
-			return SympyFloat(0)
+			elif tree == SympyFalse:
+				return SympyFloat(0)
 
-		return tree
+			return tree
