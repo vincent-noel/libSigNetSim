@@ -433,7 +433,7 @@ class CModelWriter(object):
 					i_event, t_activation_condition, i_event
 			))
 
-			if event.delay is not None:
+			if event.delay is not None and event.delay.notZero():
 				if not event.trigger.isPersistent:
 					f_c.write("    retriggerChildren(data, %d);\n" % i_event)
 
@@ -446,7 +446,7 @@ class CModelWriter(object):
 
 			for i_assignment, event_assignment in enumerate(event.listOfEventAssignments):
 				if event.useValuesFromTriggerTime:
-					if event.delay is not None:
+					if event.delay is not None and event.delay.notZero():
 						f_c.write("    memory[%d] = %s;\n" % (
 							i_assignment,
 							event_assignment.getDefinition().getCMathFormula()
@@ -484,7 +484,7 @@ class CModelWriter(object):
 
 				for i_assignment, event_assignment in enumerate(event.listOfEventAssignments):
 					if event.useValuesFromTriggerTime:
-						if event.delay is not None:
+						if event.delay is not None and event.delay.notZero():
 							f_c.write("      %s = memory[%d];\n" % (
 								event_assignment.getVariable().symbol.getCMathFormula(),
 								i_assignment

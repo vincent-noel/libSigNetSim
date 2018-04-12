@@ -28,7 +28,7 @@ from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
-from libsignetsim.model.math.sympy_shortcuts import SympySymbol
+from libsignetsim.model.math.sympy_shortcuts import SympyFloat, SympyInteger
 
 
 class EventDelay(SbmlObject, MathFormula):
@@ -51,7 +51,7 @@ class EventDelay(SbmlObject, MathFormula):
 
 		SbmlObject.readSbml(self, sbml_delay, sbml_level, sbml_version)
 		MathFormula.readSbml(self, sbml_delay.getMath(), sbml_level, sbml_version)
-
+		MathFormula.setInternalMathFormula(self, MathFormula.ensureFloat(self, MathFormula.getInternalMathFormula(self)))
 
 	def writeSbml(self, sbml_event,
 					sbml_level=Settings.defaultSbmlLevel,
@@ -83,3 +83,5 @@ class EventDelay(SbmlObject, MathFormula):
 		MathFormula.setInternalMathFormula(self, obj.getDeveloppedInternalMathFormula())
 
 
+	def notZero(self):
+		return self.getInternalMathFormula() != SympyInteger(0) and self.getInternalMathFormula() != SympyFloat(0.0)
