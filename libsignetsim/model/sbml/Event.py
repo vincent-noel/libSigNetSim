@@ -311,7 +311,7 @@ class Event(Variable, SbmlObject, HasParentObj):
 
 		return (
 			self.trigger is not None and self.trigger.isValid()
-			and len([ass for ass in self.listOfEventAssignments if ass.getDefinition() is None]) == 0
+			and len([ass for ass in self.listOfEventAssignments if ass.isValid()]) > 0
 		)
 
 	def getByXPath(self, xpath):

@@ -84,4 +84,8 @@ class EventDelay(SbmlObject, MathFormula):
 
 
 	def notZero(self):
-		return self.getInternalMathFormula() != SympyInteger(0) and self.getInternalMathFormula() != SympyFloat(0.0)
+		return (
+			self.getInternalMathFormula() is not None
+			and self.getInternalMathFormula() != SympyInteger(0)
+			and self.getInternalMathFormula() != SympyFloat(0.0)
+		)

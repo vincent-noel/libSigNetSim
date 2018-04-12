@@ -376,6 +376,8 @@ class CModelWriter(object):
 		else:
 			f_h.write("int roots_events_%d(realtype t, N_Vector y, realtype *gout,void *user_data);\n" % model_id)
 			f_c.write("int roots_events_%d(realtype t, N_Vector y, realtype *gout,void *user_data)\n{\n" % model_id)
+		print len(self.getMathModel().listOfEvents.validEvents())
+
 		if self.getMathModel().listOfEvents.validEvents() > 0:
 
 			f_c.write("  IntegrationData * data = (IntegrationData *) user_data;\n")
@@ -384,6 +386,8 @@ class CModelWriter(object):
 			f_c.write("  compute_rules_%d(t,y, user_data);\n" % model_id)
 
 			i_event = 0
+
+
 			for event in self.getMathModel().listOfEvents.validEvents():
 				t_distances = event.trigger.getRootsFunctions()
 				for t_distance in t_distances:
@@ -445,7 +449,7 @@ class CModelWriter(object):
 				f_c.write("    data->events_triggers[%d]++;\n" % i_event)
 
 			for i_assignment, event_assignment in enumerate(event.listOfEventAssignments):
-				if event.useValuesFromTriggerTime:
+				if event_assignment.isValid() and event.useValuesFromTriggerTime:
 					if event.delay is not None and event.delay.notZero():
 						f_c.write("    memory[%d] = %s;\n" % (
 							i_assignment,
@@ -458,6 +462,8 @@ class CModelWriter(object):
 							event_assignment.getDefinition().getCMathFormula()
 						))
 
+				else:
+					f_c.write("    ;\n")
 
 			f_c.write("  }\n\n")
 
@@ -483,30 +489,31 @@ class CModelWriter(object):
 				f_c.write("    case %d :\n" % i_event)
 
 				for i_assignment, event_assignment in enumerate(event.listOfEventAssignments):
-					if event.useValuesFromTriggerTime:
-						if event.delay is not None and event.delay.notZero():
-							f_c.write("      %s = memory[%d];\n" % (
-								event_assignment.getVariable().symbol.getCMathFormula(),
-								i_assignment
-							))
+					if event_assignment.isValid():
+						if event.useValuesFromTriggerTime:
+							if event.delay is not None and event.delay.notZero():
+								f_c.write("      %s = memory[%d];\n" % (
+									event_assignment.getVariable().symbol.getCMathFormula(),
+									i_assignment
+								))
+
+							else:
+								f_c.write("      %s = data->events_memory[%d][%d];\n" % (
+									event_assignment.getVariable().symbol.getCMathFormula(),
+									i_event, i_assignment
+								))
 
 						else:
-							f_c.write("      %s = data->events_memory[%d][%d];\n" % (
-								event_assignment.getVariable().symbol.getCMathFormula(),
-								i_event, i_assignment
+							# We need to put an empty statement for some weird rule
+							# about a declaration not being allowed as first instruction
+							f_c.write("      ;\n")
+							f_c.write("      realtype t_var_%d_%d = %s;\n" % (
+								i_event, i_assignment,
+								event_assignment.getDefinition().getCMathFormula()
 							))
 
-					else:
-						# We need to put an empty statement for some weird rule
-						# about a declaration not being allowed as first instruction
-						f_c.write("      ;\n")
-						f_c.write("      realtype t_var_%d_%d = %s;\n" % (
-							i_event, i_assignment,
-							event_assignment.getDefinition().getCMathFormula()
-						))
-
 				for i_assignment, event_assignment in enumerate(event.listOfEventAssignments):
-					if not event.useValuesFromTriggerTime:
+					if event_assignment.isValid() and not event.useValuesFromTriggerTime:
 						f_c.write("      %s = t_var_%d_%d;\n" % (
 							event_assignment.getVariable().symbol.getCMathFormula(),
 							i_event, i_assignment

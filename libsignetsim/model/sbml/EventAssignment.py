@@ -59,14 +59,14 @@ class EventAssignment(SbmlObject):
 
 		if sbml_event_assignment.getMath() is not None:
 			self.__definition.readSbml(sbml_event_assignment.getMath())
-		else:
-			self.__definition = None
+		# else:
+		# 	self.__definition = None
 
-		if self.getVariable().isConcentration():
-			t_comp = self.getVariable().getCompartment()
-			self.__definition.setInternalMathFormula(
-					SympyMul(self.__definition.getInternalMathFormula(),
-								t_comp.symbol.getInternalMathFormula()))
+			if self.getVariable().isConcentration():
+				t_comp = self.getVariable().getCompartment()
+				self.__definition.setInternalMathFormula(
+						SympyMul(self.__definition.getInternalMathFormula(),
+									t_comp.symbol.getInternalMathFormula()))
 
 	def writeSbml(self, sbml_event, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Writes event assignemnt to a sbml file """
@@ -76,7 +76,7 @@ class EventAssignment(SbmlObject):
 
 		sbml_event_assignment.setVariable(self.__var.getSbmlId())
 
-		if self.__definition is not None:
+		if self.__definition.getInternalMathFormula() is not None:
 			t_definition = MathFormula(self.__model, MathFormula.MATH_EVENTASSIGNMENT)
 			t_definition.setInternalMathFormula(self.__definition.getInternalMathFormula())
 
@@ -102,23 +102,26 @@ class EventAssignment(SbmlObject):
 
 		self.getVariable().addEventAssignmentBy(self.event)
 
-		t_convs = {}
-		for var, conversion in conversion_factors.items():
-			t_convs.update({var: var/conversion})
+		if obj.getDefinition().getInternalMathFormula() is not None:
 
-		t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(rawFormula=False), symbols_subs)
-		t_definition = unevaluatedSubs(t_definition, t_convs)
+			t_convs = {}
+			for var, conversion in conversion_factors.items():
+				t_convs.update({var: var/conversion})
 
-		t_var_symbol = unevaluatedSubs(obj.getVariable().symbol.getInternalMathFormula(), symbols_subs)
+			t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(rawFormula=False), symbols_subs)
+			t_definition = unevaluatedSubs(t_definition, t_convs)
 
-		if t_var_symbol in conversion_factors:
-			t_definition *= conversion_factors[t_var_symbol]
+			t_var_symbol = unevaluatedSubs(obj.getVariable().symbol.getInternalMathFormula(), symbols_subs)
 
-		self.__definition.setInternalMathFormula(t_definition)
+			if t_var_symbol in conversion_factors:
+				t_definition *= conversion_factors[t_var_symbol]
+
+			self.__definition.setInternalMathFormula(t_definition)
 
 	def copySubmodel(self, obj):
 		self.__var = self.__model.listOfVariables.getBySymbol(obj.getVariable().symbol.getSymbol())
-		self.__definition.setInternalMathFormula(obj.getDefinition().getDeveloppedInternalMathFormula())
+		if self.__definition.getInternalMathFormula() is not None:
+			self.__definition.setInternalMathFormula(obj.getDefinition().getDeveloppedInternalMathFormula())
 
 	def getVariable(self):
 		return self.__var
@@ -137,20 +140,20 @@ class EventAssignment(SbmlObject):
 
 
 	def getPrettyPrintAssignment(self):
-
-		return self.__definition.getPrettyPrintMathFormula()
+		if self.__definition.getInternalMathFormula() is not None:
+			return self.__definition.getPrettyPrintMathFormula()
 
 	def getAssignmentMath(self):
-
 		return self.__definition
 
 	def setPrettyPrintAssignment(self, value, rawFormula=False):
-
 		self.__definition.setPrettyPrintMathFormula(str(value), rawFormula)
 
 	def getDefinition(self):
-
 		return self.__definition
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
+
+	def isValid(self):
+		return self.__definition is not None and self.__definition.getInternalMathFormula() is not None
