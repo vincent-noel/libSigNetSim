@@ -41,15 +41,12 @@ class TestSuite(object):
 
 	INCOMPATIBLE_CASES = [1517, 1575, 1589, 1590, 1634]
 
-	# Cases incompatible with fast reactions
-	# INCOMPATIBLE_CASES += [
-	# 	874, 986, 987, 988, 1396, 1397, 1398, 1399, 1544, 1545, 1546, 1547, 1548, 1549, 1550, 1551,
-	# 	1558, 1559, 1560, 1565, 1567, 1568, 1569, 1570, 1571, 1572
-	# ]
-
 	# SBML L3V2 cases
 	INCOMPATIBLE_CASES += [1234, 1235, 1241, 1243, 1465, 1552, 1554, 1555, 1557, 1601, 1603, 1605, 1657]
 
+	# BoolNumericSwap cases
+	INCOMPATIBLE_CASES += [1287, 1288, 1292]
+	
 	INCOMPATIBLE_TAGS = [
 		'CSymbolDelay', 'FastReaction', 'ConversionFactors', 'VolumeConcentrationRates'
 	]
@@ -58,11 +55,13 @@ class TestSuite(object):
 		"3.2": [
 			"comp:ConversionFactor", "comp:Deletion", "comp:ExtentConversionFactor", "comp:ExternalModelDefinition",
 			"comp:ModelDefinition", "comp:Port", "comp:ReplacedBy", "comp:ReplacedElement", "comp:SBaseRef",
-			"comp:Submodel", "comp:SubmodelOutput", "comp:TimeConversionFactor", "BoolNumericSwap"
+			"comp:Submodel", "comp:SubmodelOutput", "comp:TimeConversionFactor"
 		]
 	}
 
 	COMPATIBLE_PACKAGES = ['comp']
+
+	FAIL_ON_EXCEPTION = False
 
 	def __init__(self, version):
 
@@ -179,8 +178,7 @@ class TestSuite(object):
 				version = int(level_version[1])
 
 				nb_cases += 1
-
-				try:
+				if self.FAIL_ON_EXCEPTION:
 					if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
 						print ""
 
@@ -188,7 +186,15 @@ class TestSuite(object):
 					if test.run():
 						nb_success += 1
 
-				except Exception as e:
-					print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
+				else:
+					try:
+						if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
+							print ""
+
+						test = TestSuiteCase(case, str(level), str(version), test_export=self.testExport)
+						if test.run():
+							nb_success += 1
+					except Exception as e:
+						print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
 
 		return nb_success, nb_cases

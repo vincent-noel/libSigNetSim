@@ -31,7 +31,7 @@ from libsignetsim.model.math.MathException import MathException
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.sympy_shortcuts import (
 	SympySymbol, SympyEqual, SympyUnequal, SympyGreaterThan, SympyLessThan,
-	SympyStrictGreaterThan, SympyStrictLessThan, SympyAnd, SympyOr, SympyXor
+	SympyStrictGreaterThan, SympyStrictLessThan, SympyAnd, SympyOr, SympyXor, SympyTrue, SympyFalse
 )
 
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
@@ -59,7 +59,7 @@ class EventTrigger(MathFormula, SbmlObject):
 
 		SbmlObject.readSbml(self, sbml_trigger, sbml_level, sbml_version)
 		MathFormula.readSbml(self, sbml_trigger.getMath(), sbml_level, sbml_version)
-
+		MathFormula.setInternalMathFormula(self, MathFormula.ensureBool(self, MathFormula.getInternalMathFormula(self)))
 		if sbml_level >= 3:
 			self.isPersistent = sbml_trigger.getPersistent()
 			self.initialValue = sbml_trigger.getInitialValue()
@@ -127,6 +127,12 @@ class EventTrigger(MathFormula, SbmlObject):
 				self.generateRootsFunctions(tree.args[0])
 				+ self.generateRootsFunctions(tree.args[1])
 			)
+
+		elif tree == SympyTrue:
+			return ["(1)"]
+
+		elif tree == SympyFalse:
+			return ["(0)"]
 
 		else:
 			if tree.func in [SympyLessThan, SympyStrictLessThan]:
@@ -232,6 +238,8 @@ class EventTrigger(MathFormula, SbmlObject):
 			elif tree.func == SympyEqual:
 				return [2]
 			elif tree.func == SympyUnequal:
+				return [3]
+			elif tree == SympyTrue or tree == SympyFalse:
 				return [3]
 			else:
 				raise MathException("Event Trigger : Unknown logical operator %s" % srepr(tree.func))

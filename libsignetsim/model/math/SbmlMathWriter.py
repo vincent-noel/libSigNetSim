@@ -145,7 +145,17 @@ class SbmlMathWriter(object):
 		# elif isinstance(tree, str):
 		# 	return self.translateVariableForSbml(tree, sbml_level, sbml_version)
 
-		if tree.func == SympySymbol or tree.func == SympyDummy:
+		if tree.func == SympyTrue:
+			t_ast = libsbml.ASTNode()
+			t_ast.setType(libsbml.AST_CONSTANT_TRUE)
+			return t_ast
+
+		elif tree.func == SympyFalse:
+			t_ast = libsbml.ASTNode()
+			t_ast.setType(libsbml.AST_CONSTANT_FALSE)
+			return t_ast
+
+		elif tree.func == SympySymbol or tree.func == SympyDummy:
 			return self.translateVariableForSbml(str(tree), sbml_level, sbml_version)
 
 		# elif isinstance(tree.func, SympyUndefinedFunction) and tree.args == (SympySymbol("t"),) and str(tree.func) in self.model.listOfVariables.keys():
