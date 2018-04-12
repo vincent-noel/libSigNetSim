@@ -84,18 +84,19 @@ class KineticLaw(KineticLawIdentifier):
 
 		formula = self.__definition.getInternalMathFormula()
 
-		if (not rawFormula and len(self.reaction.listOfReactants) > 0
-			and self.reaction.listOfReactants[0].getSpecies().isConcentration()):
-			comp = self.reaction.listOfReactants[0].getSpecies().getCompartment()
+		if formula is not None:
+			if (not rawFormula and len(self.reaction.listOfReactants) > 0
+				and self.reaction.listOfReactants[0].getSpecies().isConcentration()):
+				comp = self.reaction.listOfReactants[0].getSpecies().getCompartment()
 
-			formula /= comp.symbol.getInternalMathFormula()
+				formula /= comp.symbol.getInternalMathFormula()
 
-		if not rawFormula:
-			subs = {}
-			for species in self.__model.listOfSpecies.values():
-				if species.isConcentration():
-					subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
-			formula = unevaluatedSubs(formula, subs)
+			if not rawFormula:
+				subs = {}
+				for species in self.__model.listOfSpecies.values():
+					if species.isConcentration():
+						subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
+				formula = unevaluatedSubs(formula, subs)
 		return formula
 
 
