@@ -226,7 +226,7 @@ class MathVariable(object):
 
 	def getODE(self, including_fast_reactions=True, rawFormula=False):
 
-		if self.isRateRuled():
+		if self.isRateRuled() and self.isRuledBy.isValid():
 			return self.isRuledBy().getDefinition(rawFormula=rawFormula)
 
 		else:

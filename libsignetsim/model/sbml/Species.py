@@ -258,6 +258,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 		elif self.isRateRuled():
 			t_rule = self.isRuledBy().getDefinition(rawFormula=rawFormula).getInternalMathFormula()
 
+			if t_rule is None:
+				t_rule = MathFormula.ZERO
+
 			if self.hasOnlySubstanceUnits:
 				t_formula.setInternalMathFormula(t_rule)
 
