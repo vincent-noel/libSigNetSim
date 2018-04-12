@@ -75,6 +75,7 @@ class KineticLaw(KineticLawIdentifier):
 					sbml_version=Settings.defaultSbmlVersion):
 
 		self.__definition.readSbml(sbml_math, sbml_level, sbml_version)
+		self.__definition.setInternalMathFormula(self.__definition.ensureFloat(self.__definition.getInternalMathFormula()))
 		# And the we should look for the Kinetic law Here
 		# But since it may take time, we will do it on demand
 		# KineticLawIdentifier.findKineticLaw(self)

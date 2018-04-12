@@ -249,21 +249,46 @@ class SbmlMathReader(object):
 			elif tree.getType() == libsbml.AST_MINUS:
 
 				if tree.getNumChildren() == 2:
-					return SympyAdd(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
-									SympyMul(SympyInteger(-1),self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False), evaluate=False)
+					return SympyAdd(
+						self.ensureFloat(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop)),
+						SympyMul(
+							SympyInteger(-1),
+							self.ensureFloat(self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop)),
+							evaluate=False
+						),
+						evaluate=False
+					)
 
 				elif tree.getNumChildren() == 1:
-					return SympyMul(SympyInteger(-1),
-									self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop), evaluate=False)
+					return SympyMul(
+						SympyInteger(-1),
+						self.ensureFloat(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop)),
+						evaluate=False
+					)
 
 				elif tree.getNumChildren() == 0:
 					return SympyInteger(0)
 
 				else:
-					t_tree = SympyAdd(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
-										SympyMul(SympyInteger(-1), self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False), evaluate=False)
-					for i_arg in range(2,tree.getNumChildren()):
-						t_tree = SympyAdd(t_tree, SympyMul(SympyInteger(-1), self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop), evaluate=False), evaluate=False)
+					t_tree = SympyAdd(
+						self.ensureFloat(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop)),
+						SympyMul(
+							SympyInteger(-1),
+							self.ensureFloat(self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop)),
+							evaluate=False
+						),
+						evaluate=False
+					)
+					for i_arg in range(2, tree.getNumChildren()):
+						t_tree = SympyAdd(
+							t_tree,
+							SympyMul(
+								SympyInteger(-1),
+								self.ensureFloat(self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop)),
+								evaluate=False
+							),
+							evaluate=False
+						)
 
 					return t_tree
 

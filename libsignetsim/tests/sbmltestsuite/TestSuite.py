@@ -44,9 +44,6 @@ class TestSuite(object):
 	# SBML L3V2 cases
 	INCOMPATIBLE_CASES += [1234, 1235, 1241, 1243, 1465, 1552, 1554, 1555, 1557, 1601, 1603, 1605, 1657]
 
-	# BoolNumericSwap cases
-	INCOMPATIBLE_CASES += [1288, 1292]
-
 	INCOMPATIBLE_TAGS = [
 		'CSymbolDelay', 'FastReaction', 'ConversionFactors', 'VolumeConcentrationRates'
 	]
