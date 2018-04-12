@@ -152,6 +152,7 @@ class MathModel(CModelWriter):
 		self.listOfCFEs.pprint()
 		self.listOfDAEs.pprint()
 		self.listOfODEs.pprint()
+		self.listOfInitialAssignments.pprint()
 
 	def solveSimpleInitialConditions(self, tmin):
 		""" Initial conditions are a mess between values, initial assignments,
