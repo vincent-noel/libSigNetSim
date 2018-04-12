@@ -412,7 +412,6 @@ class SbmlMathReader(object):
 				# AST_FUNCTION_PIECEWISE
 			elif tree.getType() == libsbml.AST_FUNCTION_PIECEWISE:
 
-				# print libsbml.formulaToL3String(tree)
 				i_arg = 0
 				i_cond = 0
 				t_pieces = []
@@ -424,7 +423,7 @@ class SbmlMathReader(object):
 						t_value = self.ensureFloat(self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop))
 						t_condition = self.ensureBool(self.translateForInternal(tree.getChild(i_arg+1), sbml_level, sbml_version, simplified, develop))
 
-						if isinstance(t_value, bool) or (not isinstance(t_condition, bool) and isinstance(t_condition.func, SympyUndefinedFunction)):
+						if isinstance(t_value, bool) or (not isinstance(t_condition, bool) and (isinstance(t_condition.func, SympyUndefinedFunction) or t_condition.func == SympyPiecewise)):
 							value_piecewise = True
 
 						t_pieces.append((t_value, t_condition))
