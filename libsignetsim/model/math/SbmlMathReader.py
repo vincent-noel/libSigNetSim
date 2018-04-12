@@ -161,8 +161,10 @@ class SbmlMathReader(object):
 
 		""" Translate an SBML Tree in a Sympy Tree """
 
+		if tree is None:
+			return None
 
-		if tree is None or tree == 0:
+		elif tree == 0:
 			return SympyInteger(0)
 
 		elif isinstance(tree,int):
