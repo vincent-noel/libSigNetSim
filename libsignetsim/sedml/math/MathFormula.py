@@ -27,7 +27,7 @@
 from libsignetsim.sedml.math.SedmlMathReader import SedmlMathReader
 from libsignetsim.sedml.math.SedmlMathWriter import SedmlMathWriter
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.math.sympy_shortcuts import (SympySymbol, SympyInteger, SympyFloat, SympyTrue, SympyFalse, SympyLambda)
+from sympy_shortcuts import (SympySymbol, SympyInteger, SympyFloat, SympyTrue, SympyFalse, SympyLambda)
 
 import libsbml
 from libsedml import formulaToString, ASTNode, parseFormula, parseL3Formula
