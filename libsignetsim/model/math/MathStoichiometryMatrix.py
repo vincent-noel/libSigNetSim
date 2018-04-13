@@ -25,11 +25,9 @@
 """
 
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.math.sympy_shortcuts import (
-	SympySymbol, SympyInteger, SympyInf, SympyNan, SympyAdd, SympyEqual, SympyUnequal, SympyStrictLessThan
-)
-from sympy import simplify, diff, solve, zeros, Lambda, flatten, pprint, pretty
+from sympy import pretty
 from time import time
+
 
 class MathStoichiometryMatrix(object):
 	""" Sbml model class """
@@ -44,8 +42,8 @@ class MathStoichiometryMatrix(object):
 	def __str__(self):
 		return pretty(self.stoichiometryMatrix)
 
-	def prettyPrint(self):
-		pprint(self.stoichiometryMatrix)
+	def pprint(self):
+		print(pretty(self.stoichiometryMatrix))
 
 	def build(self, including_fast_reactions=True, including_slow_reactions=True, include_variable_stoichiometry=False):
 
