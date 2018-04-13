@@ -58,7 +58,7 @@ class MathVariable(object):
 		self.is_in_dae = None
 		self.isFromReaction = is_from_reaction
 
-		# self.mathVariable = False
+		self.mathVariable = False
 		# self.mathIsConcentration = None
 		# self.mathCompartment = None
 
@@ -106,8 +106,8 @@ class MathVariable(object):
 		self.ind = obj.ind
 		self.type = obj.type
 
-		# if pure_math_variable:
-		# 	self.mathVariable = True
+		if pure_math_variable:
+			self.mathVariable = True
 		# 	if not obj.mathVariable:
 		# 		if obj.isSpecies() and obj.isConcentration():
 		# 			self.mathIsConcentration = True
@@ -258,7 +258,7 @@ class MathVariable(object):
 			so we actually need to check before looking at the spatialDimensions
 		"""
 
-		return (self.isSpecies()
+		return (not self.mathVariable and self.isSpecies()
 				and (self.getCompartment() is not None and not self.getCompartment().spatialDimensions == 0)
 				and not self.hasOnlySubstanceUnits)
 

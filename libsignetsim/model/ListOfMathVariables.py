@@ -185,7 +185,7 @@ class ListOfMathVariables(object):
 
 		for variable in model.listOfVariables.values():
 			new_var = MathVariable(self.__model)
-			new_var.copy(variable)
+			new_var.copy(variable, pure_math_variable=True)
 			self.append(new_var)
 
 
