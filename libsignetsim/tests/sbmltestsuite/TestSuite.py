@@ -45,9 +45,6 @@ class TestSuite(object):
 		'CSymbolDelay', 'FastReaction',
 	]
 
-	# ConversionFactors cases. Avogadro constant in formula
-	INCOMPATIBLE_CASES += [1775, 1776]
-
 	# VolumeConcentrationRates cases, something to do with event delay...
 	INCOMPATIBLE_CASES += [1507, 1508, 1511]
 

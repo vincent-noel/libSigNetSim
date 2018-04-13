@@ -160,8 +160,9 @@ class ListOfConservationLaws(list):
 					t_solved_value = new_var.value.getInternalMathFormula()
 
 					for var in t_solved_value.atoms(SympySymbol):
-						t_solved_value = t_solved_value.subs(
-							{var: self.__model.solvedInitialConditions[var].getInternalMathFormula()})
+						if var not in [SympySymbol("_avogadro_")]:
+							t_solved_value = t_solved_value.subs(
+								{var: self.__model.solvedInitialConditions[var].getInternalMathFormula()})
 
 					solved_value.setInternalMathFormula(t_solved_value)
 					self.__model.solvedInitialConditions.update({new_var.symbol.getSymbol(): solved_value})
