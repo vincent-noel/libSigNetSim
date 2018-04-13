@@ -86,13 +86,34 @@ class ListOfConservationLaws(list):
 						if t_species.isSpecies():
 							if not t_species.hasOnlySubstanceUnits:
 								tt_symbol_formula /= t_species.getCompartment().symbol.getSymbol()
-							# if t_species.isSetConversionFactor():
-							# 	tt_symbol_formula *= t_species.getSymbolConversionFactor()
+
+							if t_species.isSetConversionFactor():
+								tt_symbol_formula /= t_species.getSymbolConversionFactor()
+
+							elif self.__model.isSetConversionFactor():
+								tt_symbol_formula /= self.__model.getSymbolConversionFactor()
+
+						elif self.__model.isSetConversionFactor():
+							tt_symbol_formula /= self.__model.getSymbolConversionFactor()
+
 
 						if tt_symbol in self.__model.solvedInitialConditions.keys():
 							tt_value = self.__model.solvedInitialConditions[tt_symbol].getDeveloppedInternalMathFormula()
-							if t_species.isSpecies() and not t_species.hasOnlySubstanceUnits:
-								tt_value /= t_species.getCompartment().symbol.getSymbol()
+							if t_species.isSpecies():
+								if not t_species.hasOnlySubstanceUnits:
+									tt_value /= t_species.getCompartment().symbol.getSymbol()
+
+								if t_species.isSetConversionFactor():
+									conv_factor = t_species.getSymbolConversionFactor()
+									tt_value /= self.__model.solvedInitialConditions[conv_factor].getDeveloppedInternalMathFormula()
+
+								elif self.__model.isSetConversionFactor():
+									conv_factor = self.__model.getSymbolConversionFactor()
+									tt_value /= self.__model.solvedInitialConditions[conv_factor].getDeveloppedInternalMathFormula()
+							elif self.__model.isSetConversionFactor():
+									conv_factor = self.__model.getSymbolConversionFactor()
+									tt_value /= self.__model.solvedInitialConditions[conv_factor].getDeveloppedInternalMathFormula()
+
 
 						else:
 							t_unknown = SympySymbol("_%s_0_" % str(tt_symbol))
