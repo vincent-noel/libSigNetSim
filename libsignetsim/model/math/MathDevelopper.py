@@ -107,13 +107,20 @@ class MathDevelopper(object):
 				t_sbml_id = str(res_match.groups()[0])
 				t_variable = self.__model.listOfVariables.getBySymbol(SympySymbol(t_sbml_id))
 
-				if t_variable.isSpecies() and not t_variable.hasOnlySubstanceUnits and not t_variable.isRateRuled():
+				if t_variable.isSpecies() and not t_variable.hasOnlySubstanceUnits:# and not t_variable.isRateRuled():
 					t_ode = t_variable.getODE().getDeveloppedInternalMathFormula()
 					if t_ode is not None:
-						t_ode /= t_variable.getCompartment().symbol.getDeveloppedInternalMathFormula()
+						if not t_variable.isRateRuled():
+							t_ode /= t_variable.getCompartment().symbol.getDeveloppedInternalMathFormula()
+						elif t_variable.getCompartment().isRateRuled():
+							t_amount_species = t_variable.symbol.getInternalMathFormula()
+							t_comp_rate = t_variable.getCompartment().isRuledBy().getDefinition().getInternalMathFormula()
+							t_comp = t_variable.getCompartment().symbol.getInternalMathFormula()
+							t_ode = t_ode - t_amount_species * t_comp_rate / t_comp
 
 				else:
 					t_ode = t_variable.getODE().getDeveloppedInternalMathFormula()
+
 			else:
 				t_variable = self.__model.listOfVariables.getBySymbol(tree.args[0])
 				t_ode = t_variable.getODE().getDeveloppedInternalMathFormula()

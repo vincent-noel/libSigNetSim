@@ -41,12 +41,12 @@ class TestSuite(object):
 
 	INCOMPATIBLE_CASES = [1517, 1575, 1589, 1590, 1634]
 
-	# SBML L3V2 cases
-	INCOMPATIBLE_CASES += [1465, 1552, 1554, 1555, 1557, 1601, 1603, 1605, 1657]
-
 	INCOMPATIBLE_TAGS = [
-		'CSymbolDelay', 'FastReaction', 'ConversionFactors', 'VolumeConcentrationRates'
+		'CSymbolDelay', 'FastReaction', 'ConversionFactors'
 	]
+
+	# VolumeConcentrationRates
+	INCOMPATIBLE_CASES += [1507, 1508, 1511, 1512]
 
 	VERSION_INCOMPATIBLE_TAGS = {
 		"3.2": [
