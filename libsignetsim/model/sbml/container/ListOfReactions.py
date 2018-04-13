@@ -147,6 +147,13 @@ class ListOfReactions(ListOf, HasIds, SbmlObject, HasParentObj):
 				return True
 		return False
 
+	def hasVariableStoichiometry(self):
+
+		for reaction in ListOf.values(self):
+			if reaction.hasVariableStoichiometry():
+				return True
+		return False
+
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 
 		for obj in ListOf.values(self):

@@ -55,129 +55,139 @@ class ListOfConservationLaws(list):
 
 		for variable in to_remove:
 			self.__model.listOfVariables.remove(variable)
-	
+
+
+	def __getVariableFormula(self, variable):
+
+		# variable = self.__model.listOfVariables.getBySymbol(symbol)
+		formula = variable.symbol.getSymbol()
+
+		if variable.isSpecies():
+			if not variable.hasOnlySubstanceUnits:
+				formula /= variable.getCompartment().symbol.getSymbol()
+
+			if variable.isSetConversionFactor():
+				formula /= variable.getSymbolConversionFactor()
+
+			elif self.__model.isSetConversionFactor():
+				formula /= self.__model.getSymbolConversionFactor()
+
+		elif self.__model.isSetConversionFactor():
+			formula /= self.__model.getSymbolConversionFactor()
+
+		return formula
+
+	def __getVariableValue(self, variable):
+
+		symbol = variable.symbol.getSymbol()
+
+		if symbol in self.__model.solvedInitialConditions.keys():
+
+			value = self.__model.solvedInitialConditions[symbol].getDeveloppedInternalMathFormula()
+			if variable.isSpecies():
+				if not variable.hasOnlySubstanceUnits:
+					value /= variable.getCompartment().symbol.getSymbol()
+
+				if variable.isSetConversionFactor():
+					conv_factor = variable.getSymbolConversionFactor()
+					value /= self.__model.solvedInitialConditions[conv_factor].getDeveloppedInternalMathFormula()
+
+				elif self.__model.isSetConversionFactor():
+					conv_factor = self.__model.getSymbolConversionFactor()
+					value /= self.__model.solvedInitialConditions[conv_factor].getDeveloppedInternalMathFormula()
+			elif self.__model.isSetConversionFactor():
+				conv_factor = self.__model.getSymbolConversionFactor()
+				value /= self.__model.solvedInitialConditions[conv_factor].getDeveloppedInternalMathFormula()
+
+		else:
+			value = SympySymbol("_%s_0_" % str(symbol))
+
+		return value
+
+	def __buildConservationLaw(self, t_law, t_value):
+
+		t_vars = []
+		for t_atom in t_law.atoms(SympySymbol):
+
+			if not self.__model.listOfVariables.getBySymbol(t_atom).isCompartment():
+				t_vars.append(t_atom)
+
+		t_lhs = MathFormula(self.__model)
+		t_lhs.setInternalMathFormula(t_law)
+
+		new_var = ConservedMoiety(self.__model)
+		new_var.setSbmlId("total_%d" % len(self))
+		new_var.value.setInternalMathFormula(t_value)
+
+		self.__model.listOfVariables.addVariable(new_var)
+		self.__model.listOfVariables.changeVariableType(new_var, ConservedMoiety.VAR_CST)
+
+		solved_value = MathFormula(self.__model)
+		t_solved_value = new_var.value.getInternalMathFormula()
+
+		for var in t_solved_value.atoms(SympySymbol):
+			if var not in [SympySymbol("_avogadro_")]:
+				t_solved_value = t_solved_value.subs(
+					{var: self.__model.solvedInitialConditions[var].getInternalMathFormula()})
+
+		solved_value.setInternalMathFormula(t_solved_value)
+		self.__model.solvedInitialConditions.update({new_var.symbol.getSymbol(): solved_value})
+
+		t_rhs = MathFormula(self.__model)
+		t_rhs.setInternalMathFormula(t_value)  # new_var.symbol.getInternalMathFormula())
+
+		t_conservation_law = ConservationLaw(self.__model)
+		t_conservation_law.new(t_lhs, t_rhs, t_vars)
+		list.append(self, t_conservation_law)
+
+
 	def build(self):
 
 		DEBUG = False
 
 		self.clear()
 
-		stoichiometry_matrix = self.__model.stoichiometryMatrix
-		conservation_matrix = self.getConservationMatrix()
-		if conservation_matrix is not None:
-			for i in range(conservation_matrix.shape[0]):
-				t_res = conservation_matrix[i, :]
-				t_law = MathFormula.ZERO
-				t_value = MathFormula.ZERO
-
-				unknowns = []
-				t_vars = []
-				nb_vars = 0
-				nb_vars_found = t_res*ones(conservation_matrix.shape[1], 1)
-
-				if int(nb_vars_found[0, 0]) > 1:
-
-					for ii, tt_res in enumerate(t_res):
-
-						tt_symbol = stoichiometry_matrix.listOfSpecies[ii]
-						t_species = self.__model.listOfVariables.getBySymbol(tt_symbol)
-						tt_symbol_formula = tt_symbol
-
-						if t_species.isSpecies():
-							if not t_species.hasOnlySubstanceUnits:
-								tt_symbol_formula /= t_species.getCompartment().symbol.getSymbol()
-
-							if t_species.isSetConversionFactor():
-								tt_symbol_formula /= t_species.getSymbolConversionFactor()
-
-							elif self.__model.isSetConversionFactor():
-								tt_symbol_formula /= self.__model.getSymbolConversionFactor()
-
-						elif self.__model.isSetConversionFactor():
-							tt_symbol_formula /= self.__model.getSymbolConversionFactor()
-
-
-						if tt_symbol in self.__model.solvedInitialConditions.keys():
-							tt_value = self.__model.solvedInitialConditions[tt_symbol].getDeveloppedInternalMathFormula()
-							if t_species.isSpecies():
-								if not t_species.hasOnlySubstanceUnits:
-									tt_value /= t_species.getCompartment().symbol.getSymbol()
-
-								if t_species.isSetConversionFactor():
-									conv_factor = t_species.getSymbolConversionFactor()
-									tt_value /= self.__model.solvedInitialConditions[conv_factor].getDeveloppedInternalMathFormula()
-
-								elif self.__model.isSetConversionFactor():
-									conv_factor = self.__model.getSymbolConversionFactor()
-									tt_value /= self.__model.solvedInitialConditions[conv_factor].getDeveloppedInternalMathFormula()
-							elif self.__model.isSetConversionFactor():
-									conv_factor = self.__model.getSymbolConversionFactor()
-									tt_value /= self.__model.solvedInitialConditions[conv_factor].getDeveloppedInternalMathFormula()
-
-
-						else:
-							t_unknown = SympySymbol("_%s_0_" % str(tt_symbol))
-							tt_value = t_unknown
-
-							tt_unknown = MathFormula(self.__model, MathFormula.MATH_VARIABLE)
-							tt_unknown.setInternalMathFormula(t_unknown)
-							unknowns.append(tt_unknown)
-
-						if tt_res == SympyInteger(1):
-							t_law += tt_symbol_formula
-							t_value += tt_value
-							nb_vars += 1
-
-						elif tt_res == SympyInteger(-1):
-							t_law -= tt_symbol_formula
-							t_value -= tt_value
-							nb_vars += 1
-
-						else:
-							t_law += tt_res * tt_symbol_formula
-							t_value += tt_res * tt_value
-							nb_vars += 1
-
-						t_vars.append(tt_symbol)
+		if not self.__model.listOfReactions.hasVariableStoichiometry():
+			stoichiometry_matrix = self.__model.stoichiometryMatrix
+			conservation_matrix = self.getConservationMatrix()
+			if conservation_matrix is not None:
+				for i in range(conservation_matrix.shape[0]):
+					t_res = conservation_matrix[i, :]
+					t_law = MathFormula.ZERO
+					t_value = MathFormula.ZERO
 
 					t_vars = []
-					for t_atom in t_law.atoms(SympySymbol):
+					nb_vars = 0
+					nb_vars_found = t_res*ones(conservation_matrix.shape[1], 1)
 
-						if not self.__model.listOfVariables.getBySymbol(t_atom).isCompartment():
-							t_vars.append(t_atom)
+					if int(nb_vars_found[0, 0]) > 1:
 
-					t_lhs = MathFormula(self.__model)
-					t_lhs.setInternalMathFormula(t_law)
+						for ii, tt_res in enumerate(t_res):
 
-					new_var = ConservedMoiety(self.__model)
-					new_var.setSbmlId("total_%d" % i)
-					new_var.value.setInternalMathFormula(t_value)
+							tt_symbol = stoichiometry_matrix.listOfSpecies[ii]
+							variable = self.__model.listOfVariables.getBySymbol(tt_symbol)
 
-					self.__model.listOfVariables.addVariable(new_var)
-					self.__model.listOfVariables.changeVariableType(new_var, ConservedMoiety.VAR_CST)
+							tt_symbol_formula = self.__getVariableFormula(variable)
+							tt_value = self.__getVariableValue(variable)
 
-					solved_value = MathFormula(self.__model)
-					t_solved_value = new_var.value.getInternalMathFormula()
+							if tt_res == SympyInteger(1):
+								t_law += tt_symbol_formula
+								t_value += tt_value
+								nb_vars += 1
 
-					for var in t_solved_value.atoms(SympySymbol):
-						if var not in [SympySymbol("_avogadro_")]:
-							t_solved_value = t_solved_value.subs(
-								{var: self.__model.solvedInitialConditions[var].getInternalMathFormula()})
+							elif tt_res == SympyInteger(-1):
+								t_law -= tt_symbol_formula
+								t_value -= tt_value
+								nb_vars += 1
 
-					solved_value.setInternalMathFormula(t_solved_value)
-					self.__model.solvedInitialConditions.update({new_var.symbol.getSymbol(): solved_value})
+							else:
+								t_law += tt_res * tt_symbol_formula
+								t_value += tt_res * tt_value
+								nb_vars += 1
 
-					t_rhs = MathFormula(self.__model)
-					t_rhs.setInternalMathFormula(t_value)#new_var.symbol.getInternalMathFormula())
+							t_vars.append(tt_symbol)
 
-					t_conservation_law = ConservationLaw(self.__model)
-					t_conservation_law.new(t_lhs, t_rhs, t_vars)
-					list.append(self, t_conservation_law)
-
-					if DEBUG:
-						print "New conservation law : "
-						print "%s = %s" % (str(t_law), str(t_value))
-
+						self.__buildConservationLaw(t_law, t_value)
 
 	def __buildS(self, T, n):
 		S = []
