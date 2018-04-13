@@ -107,7 +107,7 @@ class ListOfMathVariables(object):
 				i_variables_constant += 1
 
 
-			elif not (variable.isRuled() or (variable.isSpecies() and variable.isInReactions())) and variable.isInAlgebraicRules():
+			elif not (variable.isRuled() or (variable.isSpecies() and variable.isInReactions() or variable.hasEventAssignment())) and variable.isInAlgebraicRules():
 				# print "Algebraic variable detected : %s" % variable.getSbmlId()
 				variable.type = MathVariable.VAR_DAE
 				variable.ind = i_variables_algebraics
