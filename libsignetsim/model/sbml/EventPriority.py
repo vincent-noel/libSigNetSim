@@ -36,7 +36,7 @@ class EventPriority(SimpleSbmlObject, MathFormula):
 	def __init__(self, model, math_only=False):
 
 		self.__model = model
-		MathFormula.__init__(self, model)
+		MathFormula.__init__(self, model, MathFormula.MATH_PRIORITY)
 
 		self.mathOnly = math_only
 		if not self.mathOnly:

@@ -25,12 +25,10 @@
 """
 
 from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.math.MathSymbol import MathSymbol
-from libsignetsim.model.sbml.HasId import HasId
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyMul, SympyPow
+from libsignetsim.model.math.sympy_shortcuts import SympyInteger, SympyMul, SympyPow
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 
 
@@ -59,8 +57,6 @@ class EventAssignment(SbmlObject):
 
 		if sbml_event_assignment.getMath() is not None:
 			self.__definition.readSbml(sbml_event_assignment.getMath())
-		# else:
-		# 	self.__definition = None
 
 			if self.getVariable().isConcentration():
 				t_comp = self.getVariable().getCompartment()
@@ -129,15 +125,12 @@ class EventAssignment(SbmlObject):
 	def getVariableMath(self):
 		return self.getVariable().symbol
 
-
 	def setVariable(self, variable):
-
 		if self.__var is not None:
 			self.getVariable().removeEventAssignmentBy(self.event)
 
 		self.__var = variable
 		self.getVariable().addEventAssignmentBy(self.event)
-
 
 	def getPrettyPrintAssignment(self):
 		if self.__definition.getInternalMathFormula() is not None:

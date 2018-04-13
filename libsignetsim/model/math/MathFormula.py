@@ -74,6 +74,8 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 	MATH_VALUE          =  29
 	MATH_RATIONAL       =  30
 	MATH_ZERO           =  31
+	MATH_DELAY			=  32
+	MATH_PRIORITY		=  33
 
 	ZERO                = SympyInteger(0)
 	ONE                 = SympyInteger(1)
@@ -107,6 +109,8 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 		self.isEventAssignment = (typeOfFormula == self.MATH_EVENTASSIGNMENT)
 		self.isAssignmentRule = (typeOfFormula == self.MATH_ASSIGNMENTRULE)
 		self.isAlgebraicRule = (typeOfFormula == self.MATH_ALGEBRAICRULE)
+		self.isDelay = (typeOfFormula == self.MATH_DELAY)
+		self.isPriority = (typeOfFormula == self.MATH_PRIORITY)
 
 		if isFromReaction is not None:
 			self.isFromReaction = isFromReaction.objId

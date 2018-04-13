@@ -128,7 +128,10 @@ class SbmlMathReader(object):
 						or self.isEquation
 						or self.isEventAssignment
 						or self.isAssignmentRule
-						or self.isAlgebraicRule):
+						or self.isAlgebraicRule
+					  	or self.isDelay
+						or self.isPriority
+				):
 
 					# If the species represents a concentration
 					# We should make it corresponds to amount/size

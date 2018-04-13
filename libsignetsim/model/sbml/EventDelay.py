@@ -37,7 +37,7 @@ class EventDelay(SbmlObject, MathFormula):
 	def __init__(self, model, math_only=False):
 
 		self.__model = model
-		MathFormula.__init__(self, model)
+		MathFormula.__init__(self, model, MathFormula.MATH_DELAY)
 
 		# For math submodels, where objects are not sbml objects
 		self.mathOnly = math_only
@@ -79,9 +79,11 @@ class EventDelay(SbmlObject, MathFormula):
 
 		self.setInternalMathFormula(t_formula)
 
+	def getDefinition(self):
+		return self.__definition
+
 	def copySubmodel(self, obj):
 		MathFormula.setInternalMathFormula(self, obj.getDeveloppedInternalMathFormula())
-
 
 	def notZero(self):
 		return (
