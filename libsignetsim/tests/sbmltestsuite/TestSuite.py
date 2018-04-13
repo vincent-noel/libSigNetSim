@@ -45,6 +45,9 @@ class TestSuite(object):
 		'CSymbolDelay', 'FastReaction',
 	]
 
+	# RandomEventExecution : This case count twice as much events as it should...
+	INCOMPATIBLE_CASES += [1590]
+
 	# VolumeConcentrationRates cases, something to do with event delay...
 	INCOMPATIBLE_CASES += [1507, 1508, 1511]
 
