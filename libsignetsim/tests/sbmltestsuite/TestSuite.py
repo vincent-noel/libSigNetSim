@@ -48,13 +48,7 @@ class TestSuite(object):
 	# VolumeConcentrationRates cases, something to do with event delay...
 	INCOMPATIBLE_CASES += [1507, 1508, 1511]
 
-	VERSION_INCOMPATIBLE_TAGS = {
-		"3.2": [
-			"comp:ConversionFactor", "comp:Deletion", "comp:ExtentConversionFactor", "comp:ExternalModelDefinition",
-			"comp:ModelDefinition", "comp:Port", "comp:ReplacedBy", "comp:ReplacedElement", "comp:SBaseRef",
-			"comp:Submodel", "comp:SubmodelOutput", "comp:TimeConversionFactor"
-		]
-	}
+	VERSION_INCOMPATIBLE_TAGS = {}
 
 	COMPATIBLE_PACKAGES = ['comp']
 
