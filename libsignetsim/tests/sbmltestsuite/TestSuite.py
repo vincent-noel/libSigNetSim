@@ -39,7 +39,7 @@ class TestSuite(object):
 	TODO_VERSIONS = []
 	TODO_TAGS = []
 
-	INCOMPATIBLE_CASES = [1589, 1590, 1634]
+	INCOMPATIBLE_CASES = []
 
 	INCOMPATIBLE_TAGS = [
 		'CSymbolDelay', 'FastReaction',
