@@ -32,12 +32,11 @@ from time import time
 class MathStoichiometryMatrix(object):
 	""" Sbml model class """
 
-	def __init__ (self, model):
+	def __init__(self, model):
 		""" Constructor of model class """
 
 		self.__model = model
 		self.stoichiometryMatrix = None
-		self.listOfSpecies = []
 
 	def __str__(self):
 		return pretty(self.stoichiometryMatrix)
@@ -70,9 +69,6 @@ class MathStoichiometryMatrix(object):
 
 		if Settings.verboseTiming >= 2:
 			print "reaction matrix built in %.2gs" % (time()-t0)
-
-		for i, species in enumerate(self.__model.variablesOdes):
-			self.listOfSpecies.append(species.symbol.getSymbol())
 
 	def getStoichiometryMatrix(self, including_fast_reactions=True, including_slow_reactions=True, include_variable_stoichiometry=False):
 

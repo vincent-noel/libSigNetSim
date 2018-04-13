@@ -59,7 +59,6 @@ class ListOfConservationLaws(list):
 
 	def __getVariableFormula(self, variable):
 
-		# variable = self.__model.listOfVariables.getBySymbol(symbol)
 		formula = variable.symbol.getSymbol()
 
 		if variable.isSpecies():
@@ -134,7 +133,7 @@ class ListOfConservationLaws(list):
 		self.__model.solvedInitialConditions.update({new_var.symbol.getSymbol(): solved_value})
 
 		t_rhs = MathFormula(self.__model)
-		t_rhs.setInternalMathFormula(t_value)  # new_var.symbol.getInternalMathFormula())
+		t_rhs.setInternalMathFormula(t_value)
 
 		t_conservation_law = ConservationLaw(self.__model)
 		t_conservation_law.new(t_lhs, t_rhs, t_vars)
@@ -143,49 +142,40 @@ class ListOfConservationLaws(list):
 
 	def build(self):
 
-		DEBUG = False
-
 		self.clear()
 
 		if not self.__model.listOfReactions.hasVariableStoichiometry():
-			stoichiometry_matrix = self.__model.stoichiometryMatrix
+
 			conservation_matrix = self.getConservationMatrix()
 			if conservation_matrix is not None:
 				for i in range(conservation_matrix.shape[0]):
+
 					t_res = conservation_matrix[i, :]
+
 					t_law = MathFormula.ZERO
 					t_value = MathFormula.ZERO
 
-					t_vars = []
-					nb_vars = 0
 					nb_vars_found = t_res*ones(conservation_matrix.shape[1], 1)
 
 					if int(nb_vars_found[0, 0]) > 1:
 
 						for ii, tt_res in enumerate(t_res):
 
-							tt_symbol = stoichiometry_matrix.listOfSpecies[ii]
-							variable = self.__model.listOfVariables.getBySymbol(tt_symbol)
-
+							variable = self.__model.variablesOdes[ii]
 							tt_symbol_formula = self.__getVariableFormula(variable)
 							tt_value = self.__getVariableValue(variable)
 
 							if tt_res == SympyInteger(1):
 								t_law += tt_symbol_formula
 								t_value += tt_value
-								nb_vars += 1
 
 							elif tt_res == SympyInteger(-1):
 								t_law -= tt_symbol_formula
 								t_value -= tt_value
-								nb_vars += 1
 
 							else:
 								t_law += tt_res * tt_symbol_formula
 								t_value += tt_res * tt_value
-								nb_vars += 1
-
-							t_vars.append(tt_symbol)
 
 						self.__buildConservationLaw(t_law, t_value)
 
