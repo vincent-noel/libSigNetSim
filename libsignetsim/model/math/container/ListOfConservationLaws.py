@@ -252,7 +252,7 @@ class ListOfConservationLaws(list):
 
 		sm = self.__model.stoichiometryMatrix.getStoichiometryMatrix()
 		if sm is not None:
-			sm = sm.transpose()
+			sm = sm.transpose().evalf()
 			T0 = sm.row_join(eye(sm.shape[0]))
 			n = sm.shape[1]
 
