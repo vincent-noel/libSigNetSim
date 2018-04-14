@@ -103,7 +103,7 @@ class CModelWriter(object):
 			t_value = self.getMathModel().solvedInitialConditions[variable_ode.symbol.getSymbol()]
 
 			f_c.write("  %s.derivative_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_DERIVATIVE};\n" % (
-							variable_name, i_var, t_value.getCMathFormula(), variable_ode.symbol.getInternalMathFormula()))
+							variable_name, i_var, t_value.getCMathFormula(), variable_ode.getSymbolStr()))
 
 			if len(self.getMathModel().listOfDAEs) > 0:
 				f_c.write("  %s.der_der_variables[%d] = (ModelVariable) {RCONST(0.0), \"%s\", VAR_DER_DER};\n" % (
@@ -112,23 +112,23 @@ class CModelWriter(object):
 		for i_var, variable_ass in enumerate(self.getMathModel().variablesAssignment):
 			t_value = self.getMathModel().solvedInitialConditions[variable_ass.symbol.getSymbol()]
 			f_c.write("  %s.assignment_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_ASSIGNMENT};\n" % (
-								variable_name, i_var, t_value.getCMathFormula(), variable_ass.symbol.getPrettyPrintMathFormula()))
+								variable_name, i_var, t_value.getCMathFormula(), variable_ass.getSymbolStr()))
 
 		for i_var, variable_cst in enumerate(self.getMathModel().variablesConstant):
 			t_value = self.getMathModel().solvedInitialConditions[variable_cst.symbol.getSymbol()]
 			f_c.write("  %s.constant_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_CONSTANT};\n" % (
-								variable_name, i_var, t_value.getCMathFormula(), variable_cst.symbol.getPrettyPrintMathFormula()))
+								variable_name, i_var, t_value.getCMathFormula(), variable_cst.getSymbolStr()))
 
 
 		for i_var, variable_alg in enumerate(self.getMathModel().variablesAlgebraic):
 			t_value = self.getMathModel().solvedInitialConditions[variable_alg.symbol.getSymbol()]
 			f_c.write("  %s.algebraic_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_ALGEBRAIC};\n" % (
-								variable_name, i_var, t_value.getCMathFormula(), variable_alg.symbol.getPrettyPrintMathFormula()))
+								variable_name, i_var, t_value.getCMathFormula(), variable_alg.getSymbolStr()))
 
 
 			if len(self.getMathModel().listOfDAEs) > 0:
 				f_c.write("  %s.alg_der_variables[%d] = (ModelVariable) {RCONST(0.0), \"%s\", VAR_ALG_DER};\n" % (
-								variable_name, i_var, variable_alg.symbol.getPrettyPrintMathFormula()))
+								variable_name, i_var, variable_alg.getSymbolStr()))
 
 		f_c.write("  %s.nb_init_assignments = %d;\n" % (variable_name, len(self.listOfInitialAssignments)))
 		f_c.write("  %s.nb_events = %d;\n" % (variable_name, self.listOfEvents.nbValidEvents()))

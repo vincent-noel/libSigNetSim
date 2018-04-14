@@ -32,6 +32,7 @@ from matplotlib.pyplot import show
 from numpy import amin, amax, linspace, logspace
 from os.path import join, isfile
 
+
 class TimeseriesSimulation(Simulation):
 
 	DEFAULT_NB_SAMPLES = 500
@@ -88,7 +89,7 @@ class TimeseriesSimulation(Simulation):
 		ind = 0
 		while(isfile(t_filename + ("_%d" % ind))):
 			(t, y) = self.readResultFile(t_filename + ("_%d" % ind))
-			self.rawData.append((t,y))
+			self.rawData.append((t, y))
 			ind += 1
 
 
@@ -119,32 +120,32 @@ class TimeseriesSimulation(Simulation):
 
 		# The simulations only deals with amounts, but some species are
 		# Concentrations. So we need to transform them back
+
 		for variable in self.listOfModels[0].listOfVariables:
 			# print "%s : %s" % (variable.getSbmlId(), variable.symbol.getSymbol())
 			if variable.isConcentration():
-				t_traj = trajs[variable.getSbmlId()]
+				t_traj = trajs[variable.getSymbolStr()]
 
-				t_comp_traj = trajs[variable.getCompartment().getSbmlId()]
+				t_comp_traj = trajs[variable.getCompartment().getSymbolStr()]
 				res_traj = []
 
 				for i, point in enumerate(t_traj):
 
-					if i == 0 or (i > 0 and  t[i] > t[i-1]):
+					if i == 0 or (i > 0 and t[i] > t[i-1]):
 						if abs(t_comp_traj[i]) < self.absTol[0]:
 							res_traj.append(0.0)
 						else:
 							res_traj.append(point/t_comp_traj[i])
 
-				trajs.update({variable.getSbmlId(): res_traj})
+				trajs.update({variable.getSymbolStr(): res_traj})
 			else:
 				res_traj = []
 
-				for i, point in enumerate(trajs[str(variable.symbol.getSymbol())]):
-
+				for i, point in enumerate(trajs[variable.getSymbolStr()]):
 					if i == 0 or (i > 0 and t[i] > t[i - 1]):
 						res_traj.append(point)
 
-				trajs.update({str(variable.symbol.getSymbol()): res_traj})
+				trajs.update({variable.getSymbolStr(): res_traj})
 
 		t_t = []
 		for i, point in enumerate(t):
