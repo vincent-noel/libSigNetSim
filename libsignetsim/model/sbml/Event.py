@@ -74,8 +74,6 @@ class Event(Variable, SbmlObject, HasParentObj):
 
 		if sbml_event.getTrigger() is not None:
 			self.trigger.readSbml(sbml_event.getTrigger(), sbml_level, sbml_version)
-		else:
-			self.trigger = None
 
 		Variable.readSbml(self, sbml_event, sbml_level, sbml_version)
 
