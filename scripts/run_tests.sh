@@ -32,6 +32,7 @@ elif [ $1 = "biomodels" ]; then
 elif [ $1 = "models" ]; then
     coverage run -a -m unittest libsignetsim.model.tests.TestFindKineticLaws || exit 1;
     coverage run -a -m unittest libsignetsim.model.tests.TestReduceModel || exit 1;
+    coverage run -a -m unittest libsignetsim.model.tests.TestReduceModelMultiCompartment || exit 1;
     coverage run -a -m unittest libsignetsim.model.tests.TestModelDefinition || exit 1;
     coverage run -a -m unittest libsignetsim.model.tests.TestAnnotation || exit 1;
     coverage run -a -m unittest libsignetsim.model.tests.TestRenameSbmlId || exit 1;
