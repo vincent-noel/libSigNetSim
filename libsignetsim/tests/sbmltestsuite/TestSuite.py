@@ -42,7 +42,13 @@ class TestSuite(object):
 	INCOMPATIBLE_CASES = []
 
 	INCOMPATIBLE_TAGS = [
-		'CSymbolDelay', 'FastReaction',
+		'CSymbolDelay'
+	]
+
+	# FastReations cases
+	INCOMPATIBLE_CASES += [
+		872, 873, 874, 875, 986, 987, 988, 1053, 1397, 1399, 1547, 1548,
+		1549, 1550, 1551, 1565, 1567, 1568, 1569, 1570, 1572
 	]
 
 	# RandomEventExecution : This case count twice as much events as it should...
