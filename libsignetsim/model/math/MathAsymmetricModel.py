@@ -65,6 +65,9 @@ class MathAsymmetricModel(MathSubmodel):
 
 	def build(self, treated_variables=[]):
 
+		independent_species = []
+		independent_species_formula = {}
+
 		if len(self.parentModel.listOfConservationLaws) > 0:
 
 			allowed_variables, forbidden_variables = self.__findAllowedVariables(treated_variables)
@@ -77,12 +80,10 @@ class MathAsymmetricModel(MathSubmodel):
 
 			independent_species, independent_species_formula = self.__solveDependentVariables(forbidden_laws, dependent_vars)
 
-			self.__buildModel(independent_species, independent_species_formula)
-
-
 			if self.DEBUG:
 				print("> %d variables reduced from the model" % len(dependent_vars))
 
+		self.__buildModel(independent_species, independent_species_formula)
 
 	def __findAllowedVariables(self, treated_variables):
 
