@@ -26,6 +26,7 @@
 
 from libsignetsim.model.math.sympy_shortcuts import SympyEqual, SympyInteger
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
+from sympy import pretty
 
 
 class ConservationLaw(object):
@@ -45,12 +46,14 @@ class ConservationLaw(object):
 		self.RHS = rhs
 		self.vars = vars
 
-	def prettyPrint(self):
+	def pprint(self):
 
-		print ">> %s" % str(SympyEqual(
-								self.LHS.getDeveloppedInternalMathFormula(),
-								self.RHS.getDeveloppedInternalMathFormula())
-		)
+		print("%s" % pretty(
+			SympyEqual(
+				self.LHS.getDeveloppedInternalMathFormula(),
+				self.RHS.getDeveloppedInternalMathFormula()
+			)
+		))
 
 
 	def __str__(self):

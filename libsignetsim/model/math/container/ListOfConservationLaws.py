@@ -35,7 +35,7 @@ from sympy import eye, Matrix, ones
 class ListOfConservationLaws(list):
 	""" Sbml model class """
 
-	def __init__ (self, model):
+	def __init__(self, model):
 		""" Constructor of model class """
 
 		list.__init__(self)
@@ -52,6 +52,7 @@ class ListOfConservationLaws(list):
 		for variable in self.__model.listOfVariables:
 			if variable.isConservedMoiety():
 				to_remove.append(variable)
+				self.__model.variablesConstant.remove(variable)
 
 		for variable in to_remove:
 			self.__model.listOfVariables.remove(variable)
@@ -139,11 +140,9 @@ class ListOfConservationLaws(list):
 		t_conservation_law.new(t_lhs, t_rhs, t_vars)
 		list.append(self, t_conservation_law)
 
-
 	def build(self):
 
 		self.clear()
-
 		if not self.__model.listOfReactions.hasVariableStoichiometry():
 
 			conservation_matrix = self.getConservationMatrix()
@@ -276,3 +275,9 @@ class ListOfConservationLaws(list):
 		for law in self:
 			res += "%s\n" % law
 		return res
+
+	def pprint(self):
+
+		for cons in self:
+			cons.pprint()
+			print("\n")
