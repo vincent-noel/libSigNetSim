@@ -89,3 +89,12 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, list):
 
 	def clear(self):
 		list.__init__(self)
+
+	def getFastVariables(self):
+		return [species for species in self.__model.listOfSpecies if species.isOnlyInFastReactions()]
+
+	def getMixedVariables(self):
+		return [species for species in self.__model.listOfSpecies if species.isInFastReactions()]
+
+	def getSlowVariables(self):
+		return [species for species in self.__model.listOfSpecies if not species.isInFastReactions()]
