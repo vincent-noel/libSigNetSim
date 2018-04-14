@@ -99,8 +99,8 @@ class MathModel(CModelWriter):
 
 		t0 = time()
 		self.solveSimpleInitialConditions(tmin)
-		if Settings.verboseTiming >= 2:
-			print "Initial condition solved in %.2gs" % (time()-t0)
+		if Settings.verboseTiming >= 1:
+			print "> Initial condition solved in %.2gs" % (time()-t0)
 
 		if len(self.listOfDAEs) > 0:
 			self.listOfDAEs.solveInitialConditions(tmin)
@@ -128,13 +128,21 @@ class MathModel(CModelWriter):
 
 	def buildReducedModel(self, vars_to_keep=[]):
 
+		t0 = time()
 		self.stoichiometryMatrix.build()
 		self.listOfConservationLaws.build()
 		self.asymetricModel.build(treated_variables=vars_to_keep)
+		if Settings.verboseTiming >= 1:
+			print "> model reduced in %.2gs" % (time() - t0)
 
 	def buildSlowModel(self):
 
-		self.buildReducedModel()
+		vars_to_keep = (
+			[var.getSymbolStr() for var in self.listOfVariables.getFastVariables()]
+			+ [var.getSymbolStr() for var in self.listOfVariables.getSlowVariables()]
+		)
+
+		self.buildReducedModel(vars_to_keep=vars_to_keep)
 		self.slowModel.build()
 
 	def prettyPrint(self):
