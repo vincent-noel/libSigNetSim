@@ -246,6 +246,26 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 		return False
 
+	def isOnlyInFastReactions(self):
+		""" The purpose of this function is to test is the species's amount
+			is actually modified by a reaction. Thus not checking the Modifiers
+			makes sense.
+		"""
+
+		for reaction in self.__model.listOfReactions.values():
+				if reaction.listOfReactants:
+					for reactant in reaction.listOfReactants.values():
+						if reactant.getSpecies() == self:
+							if not reaction.fast:
+								return False
+
+				if reaction.listOfProducts:
+					for product in reaction.listOfProducts.values():
+						if product.getSpecies() == self:
+							if not reaction.fast:
+								return False
+
+		return True
 
 	def getODE(self, including_fast_reactions=True, rawFormula=False, symbols=False):
 
