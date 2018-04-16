@@ -63,7 +63,7 @@ class MathStoichiometryMatrix(object):
 			if matrix is None:
 				matrix = reaction_matrix
 			else:
-				matrix = matrix.col_join(reaction_matrix)
+				matrix = matrix.row_join(reaction_matrix)
 
 		self.stoichiometryMatrix = matrix
 

@@ -417,7 +417,7 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 
 	def getStoichiometryMatrix(self, subs={}, including_fast_reactions=True, including_slow_reactions=True, include_variable_stoichiometry=False):
 
-		front = zeros(1, self.__model.nbOdes)
+		front = zeros(self.__model.nbOdes, 1)
 
 		if (
 						not self.hasVariableStoichiometry() or include_variable_stoichiometry
@@ -451,7 +451,7 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 			return front
 
 		else:
-			back = zeros(1, self.__model.nbOdes)
+			back = zeros(self.__model.nbOdes, 1)
 			if (
 				not self.hasVariableStoichiometry() or include_variable_stoichiometry
 			) and (
@@ -479,7 +479,7 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 							)
 							back[index] = -stoichiometry + back[index]
 
-			return front.col_join(back)
+			return front.row_join(back)
 
 
 

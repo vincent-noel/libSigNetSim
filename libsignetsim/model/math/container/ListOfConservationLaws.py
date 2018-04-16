@@ -29,7 +29,7 @@ from libsignetsim.model.math.ConservationLaw import ConservationLaw
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger
 from libsignetsim.model.ListOfVariables import ListOfVariables
 from libsignetsim.model.sbml.ConservedMoiety import ConservedMoiety
-from sympy import eye, Matrix, ones
+from sympy import eye, Matrix, ones, pretty
 
 
 class ListOfConservationLaws(list):
@@ -251,7 +251,7 @@ class ListOfConservationLaws(list):
 
 		sm = self.__model.stoichiometryMatrix.getStoichiometryMatrix()
 		if sm is not None:
-			sm = sm.transpose().evalf()
+			sm = sm.evalf()
 			T0 = sm.row_join(eye(sm.shape[0]))
 			n = sm.shape[1]
 

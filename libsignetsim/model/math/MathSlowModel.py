@@ -55,23 +55,23 @@ class MathSlowModel(MathSubmodel):
 		self.fastStoichiometryMatrix = MathStoichiometryMatrix(sbml_model)
 		self.slowStoichiometryMatrix = MathStoichiometryMatrix(sbml_model)
 
-		# Function returning a boolean if the value is not zero
-		self.notZeroFilter = Lambda(
-			SympySymbol('x'),
-			SympyUnequal(
-				SympySymbol('x'),
-				SympyInteger(0)
-			)
-		)
-
-		# Function returning a boolean if the value is zero
-		self.ZeroFilter = Lambda(
-			SympySymbol('x'),
-			SympyEqual(
-				SympySymbol('x'),
-				SympyInteger(0)
-			)
-		)
+		# # Function returning a boolean if the value is not zero
+		# self.notZeroFilter = Lambda(
+		# 	SympySymbol('x'),
+		# 	SympyUnequal(
+		# 		SympySymbol('x'),
+		# 		SympyInteger(0)
+		# 	)
+		# )
+		#
+		# # Function returning a boolean if the value is zero
+		# self.ZeroFilter = Lambda(
+		# 	SympySymbol('x'),
+		# 	SympyEqual(
+		# 		SympySymbol('x'),
+		# 		SympyInteger(0)
+		# 	)
+		# )
 
 	def copyEquations(self):
 
@@ -117,15 +117,20 @@ class MathSlowModel(MathSubmodel):
 	def build(self):
 
 		DEBUG = False
+		if DEBUG:
+			print(">> Building slow model")
+
+
 
 		self.copyVariables()
 		self.copyEquations()
+
 		self.fastStoichiometryMatrix.build(including_slow_reactions=False)
 		self.slowStoichiometryMatrix.build(including_fast_reactions=False)
 		self.findFastReactions()
 
-		fast_matrix = self.fastStoichiometryMatrix.stoichiometryMatrix.transpose()
-		slow_matrix = self.slowStoichiometryMatrix.stoichiometryMatrix.transpose()
+		fast_matrix = self.fastStoichiometryMatrix.stoichiometryMatrix
+		slow_matrix = self.slowStoichiometryMatrix.stoichiometryMatrix
 		fast_velocities = self.findVelocities(include_slow_reaction=False)
 		slow_velocities = self.findVelocities(include_fast_reaction=False)
 		subs = self.reducedModel.listOfCFEs.getSubs()
@@ -142,17 +147,6 @@ class MathSlowModel(MathSubmodel):
 			print [var.symbol.getSymbol() for var in self.sbmlModel.variablesOdes]
 			print [var.symbol.getSymbol() for var in self.reducedModel.variablesOdes]
 			print kept_variables
-
-
-		# if DEBUG:
-		# 	print "> Fast stoichiometry matrix"
-		# 	pprint(fast_matrix)
-		# 	print "\n"
-		#
-		#
-		# 	print "> Slow stoichiometry matrix"
-		# 	pprint(slow_matrix)
-		# 	print "\n"
 
 		fast_matrix = fast_matrix[kept_variables,:]
 		slow_matrix = slow_matrix[kept_variables,:]
@@ -267,7 +261,6 @@ class MathSlowModel(MathSubmodel):
 		vars = self.fastLaws_vars
 
 		subs = {}
-
 		for var, math_formula in self.sbmlModel.solvedInitialConditions.items():
 			if var not in vars:
 				subs.update({var: math_formula.getDeveloppedInternalMathFormula()})
@@ -300,19 +293,8 @@ class MathSlowModel(MathSubmodel):
 			for var, value in res.items():
 				math_formula = MathFormula(self)
 				math_formula.setInternalMathFormula(value.subs(subs))
+
 				self.solvedInitialConditions.update({var: math_formula})
-
-
-
-
-
-
-
-
-
-
-
-
 
 		self.setUpToDate(True)
 
