@@ -37,7 +37,7 @@ class TestSuite(object):
 
 	TODO_CASES = []
 	TODO_VERSIONS = []
-	TODO_TAGS = []
+	TODO_TAGS = ['FastReaction']
 
 	INCOMPATIBLE_CASES = []
 
@@ -47,11 +47,11 @@ class TestSuite(object):
 
 	# FastReations cases
 	INCOMPATIBLE_CASES += [
-		873, 874,
 		986, 987, 988,
-		1053,
-		1396, 1398, 1399,
-		1558, 1559, 1560, 1565, 1568, 1569, 1570, 1571, 1572
+		1398, # Variable stoichiometry, assigned by an event
+		1399, # Two possible choices for initial values, not sure how to choose
+		1565,
+		1568, 1569, 1570, 1571, 1572
 	]
 
 	# RandomEventExecution : This case count twice as much events as it should...
