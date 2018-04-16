@@ -37,7 +37,7 @@ class TestSuite(object):
 
 	TODO_CASES = []
 	TODO_VERSIONS = []
-	TODO_TAGS = ['FastReaction']
+	TODO_TAGS = []
 
 	INCOMPATIBLE_CASES = []
 
