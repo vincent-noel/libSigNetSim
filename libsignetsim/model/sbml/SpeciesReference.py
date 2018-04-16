@@ -245,14 +245,14 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 
 	def isVariableStoichiometry(self):
 
-		return (
-			(self.__hasId and not self.constant)
-			or (
-				self.stoichiometry.getInternalMathFormula().func == SympySymbol
-				and not self.__model.listOfVariables.getBySymbol(self.stoichiometry.getInternalMathFormula()).isConstant()
-			)
-		)
-
+		if self.__hasId and not self.constant:
+			return True
+		elif self.stoichiometry.getInternalMathFormula().func == SympySymbol:
+			t_var = self.__model.listOfVariables.getBySymbol(self.stoichiometry.getInternalMathFormula())
+			return t_var is not None and not t_var.isConstant()
+		else:
+			return False
+		
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		if self.__species == old_sbml_id:
 			self.__species = new_sbml_id
