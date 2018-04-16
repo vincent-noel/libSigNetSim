@@ -24,17 +24,16 @@
 
 """
 
-from libsignetsim.model.math.DAE import DAE
 from libsignetsim.model.math.CFE import CFE
 from libsignetsim.model.math.ODE import ODE
 from libsignetsim.model.math.MathSubmodel import MathSubmodel
 from libsignetsim.model.math.MathVariable import MathVariable
 from libsignetsim.model.math.MathFormula import MathFormula
-from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyZero, SympyInteger, SympyEqual, SympyUnequal, SympyTrue, SympyDerivative
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyEqual
 from libsignetsim.model.math.MathStoichiometryMatrix import MathStoichiometryMatrix
 from libsignetsim.model.math.container.ListOfConservationLaws import ListOfConservationLaws
 
-from sympy import solve, eye, pprint, Lambda, flatten, expand
+from sympy import solve, pprint, pretty
 
 
 class MathSlowModel(MathSubmodel):
@@ -54,6 +53,8 @@ class MathSlowModel(MathSubmodel):
 
 		self.fastStoichiometryMatrix = MathStoichiometryMatrix(sbml_model)
 		self.slowStoichiometryMatrix = MathStoichiometryMatrix(sbml_model)
+		self.fastConservationLaws = ListOfConservationLaws(sbml_model)
+		self.DEBUG = True
 
 		# # Function returning a boolean if the value is not zero
 		# self.notZeroFilter = Lambda(
@@ -82,6 +83,16 @@ class MathSlowModel(MathSubmodel):
 			t_cfe = CFE(self)
 			t_cfe.new(t_var, t_cfe_formula)
 			self.listOfCFEs.append(t_cfe)
+
+		for ode in self.reducedModel.listOfODEs:
+			original_variable = self.sbmlModel.listOfVariables.getBySymbol(ode.getVariable().symbol.getSymbol())
+			if original_variable.isRateRuled():
+				t_var = self.listOfVariables.getBySymbol(ode.getVariable().symbol.getSymbol())
+				t_ode_formula = MathFormula(self)
+				t_ode_formula.setInternalMathFormula(ode.getDefinition().getDeveloppedInternalMathFormula())
+				t_ode = ODE(self)
+				t_ode.new(t_var, t_ode_formula)
+				self.listOfODEs.append(t_ode)
 
 	def findFastReactions(self):
 		""" Finds the fast reactions and build the fast stoichiometry matrix """
@@ -113,17 +124,17 @@ class MathSlowModel(MathSubmodel):
 
 		return matrix_velocities
 
+	def __findKeptVariables(self):
 
-	def build(self):
+		original_variables = [var.symbol.getSymbol() for var in self.reducedModel.variablesOdes]
+		kept_variables = []
+		for i, var in enumerate(self.sbmlModel.variablesOdes):
+			if var.symbol.getSymbol() in original_variables:
+				kept_variables.append(i)
 
-		DEBUG = False
-		if DEBUG:
-			print(">> Building slow model")
+		return kept_variables
 
-
-
-		self.copyVariables()
-		self.copyEquations()
+	def __buildStoichiometryMatrices(self, kept_variables):
 
 		self.fastStoichiometryMatrix.build(including_slow_reactions=False)
 		self.slowStoichiometryMatrix.build(including_fast_reactions=False)
@@ -131,40 +142,79 @@ class MathSlowModel(MathSubmodel):
 
 		fast_matrix = self.fastStoichiometryMatrix.stoichiometryMatrix
 		slow_matrix = self.slowStoichiometryMatrix.stoichiometryMatrix
+
+		return (fast_matrix[kept_variables, :], slow_matrix[kept_variables, :])
+
+	def __buildODEs(self, slow_system, slow_variables, subs):
+
+		for i, symbol in enumerate(slow_variables):
+			# symbol = variable.symbol.getSymbol()
+
+			variable = self.listOfVariables.getBySymbol(symbol)
+
+			t_definition = MathFormula(self)
+			t_definition.setInternalMathFormula(sum(slow_system[i, :]).subs(subs))
+
+			ode = ODE(self)
+			ode.new(variable, t_definition)
+			self.listOfODEs.append(ode)
+
+
+	def __buildCFEs(self, fast_laws, fast_vars, subs):
+
+		for law in fast_laws:
+
+			law = law.subs(subs)
+			intersect = set(fast_vars).intersection(set(law.atoms(SympySymbol)))
+			if len(intersect) > 0:
+				var = list(intersect)[0]
+				res = solve(law, var)
+
+				t_var = self.listOfVariables.getBySymbol(var)
+				t_cfe = MathFormula(self)
+				t_cfe.setInternalMathFormula(res[0])
+
+				cfe = CFE(self)
+				cfe.new(t_var, t_cfe)
+
+				self.listOfCFEs.append(cfe)
+				self.listOfVariables.changeVariableType(t_var, MathVariable.VAR_ASS)
+
+		self.listOfCFEs.developCFEs()
+
+	def __classifyVariables(self, kept_variables):
+
+		slow_variables = []
+		fast_variables = []
+		for var in kept_variables:
+			variable = self.sbmlModel.variablesOdes[var]
+			if variable.isSpecies() and not variable.isOnlyInFastReactions():
+				slow_variables.append(variable.symbol.getSymbol())
+			else:
+				fast_variables.append(variable.symbol.getSymbol())
+
+		return slow_variables, fast_variables
+
+	def build(self):
+
+		DEBUG = False
+		if DEBUG:
+			print(">> Building slow model")
+
+		self.copyVariables()
+		self.copyEquations()
+
+		kept_variables = self.__findKeptVariables()
+		if DEBUG:
+			print("> Variables kept in the reduced model : %s" % str(kept_variables))
+
+		fast_matrix, slow_matrix = self.__buildStoichiometryMatrices(kept_variables)
+
 		fast_velocities = self.findVelocities(include_slow_reaction=False)
 		slow_velocities = self.findVelocities(include_fast_reaction=False)
-		subs = self.reducedModel.listOfCFEs.getSubs()
-
-		kept_variables = []
-		for i, var in enumerate(self.sbmlModel.variablesOdes):
-			if (var.symbol.getSymbol() in [var2.symbol.getSymbol() for var2 in self.reducedModel.variablesOdes]):# and not var.boundaryCondition):
-
-				if DEBUG:
-					print "%s : %s" % (var.symbol.getSymbol(), str(var.boundaryCondition))
-				kept_variables.append(i)
-
-		if DEBUG:
-			print [var.symbol.getSymbol() for var in self.sbmlModel.variablesOdes]
-			print [var.symbol.getSymbol() for var in self.reducedModel.variablesOdes]
-			print kept_variables
-
-		fast_matrix = fast_matrix[kept_variables,:]
-		slow_matrix = slow_matrix[kept_variables,:]
-
-		if DEBUG:
-			print "> Fast stoichiometry matrix"
-			pprint(fast_matrix)
-			print "\n"
-
-
-			print "> Slow stoichiometry matrix"
-			pprint(slow_matrix)
-			print "\n"
 
 		fast_system = fast_matrix * fast_velocities
 		slow_system = slow_matrix * slow_velocities
-		full_system = fast_system + slow_system
-
 
 
 		if DEBUG:
@@ -176,366 +226,51 @@ class MathSlowModel(MathSubmodel):
 			pprint(slow_system)
 			print "\n"
 
-			print "> Full system matrix"
-			pprint(full_system)
-			print "\n"
+		subs = self.reducedModel.listOfCFEs.getSubs()
+		slow_variables, fast_variables = self.__classifyVariables(kept_variables)
 
-		nullspace = fast_matrix.transpose().nullspace()
-
-		matrix_nullspace = None
-		for sol in nullspace:
-			if matrix_nullspace is None:
-				matrix_nullspace = sol
-			else:
-				matrix_nullspace = matrix_nullspace.row_join(sol)
-
-		if DEBUG:
-			pprint(matrix_nullspace)
-
-		reduced_slow_system = matrix_nullspace.transpose() * slow_system
+		self.__buildODEs(slow_system, slow_variables, subs)
+		self.__buildCFEs(self.fastLaws, fast_variables, subs)
 
 
-
-
-		slow_variables = []
-		for i in range(reduced_slow_system.shape[0]):
-			t_symbol = self.sbmlModel.variablesOdes[kept_variables[i]].symbol.getSymbol()
-			slow_variables.append(t_symbol)
-
-			if DEBUG:
-				pprint(SympyEqual(
-					SympyDerivative(t_symbol,SympySymbol("t")),
-					sum(reduced_slow_system[i,:]).subs(subs)
-				))
-
-			t_var = self.listOfVariables.getBySymbol(t_symbol)
-
-			t_definition = MathFormula(self)
-			t_definition.setInternalMathFormula(sum(reduced_slow_system[i,:]).subs(subs))
-
-			ode = ODE(self)
-			ode.new(t_var, t_definition)
-			self.listOfODEs.append(ode)
-
-		# print "\n"
-		# print slow_variables
-		fast_vars = []
-		# for i in range(fast_matrix.shape[0]):
-		# 	if not all(fast_matrix[i,:].applyfunc(self.ZeroFilter)):
-		# 		fast_vars.append(self.parentModel.variablesOdes[kept_variables[i]].symbol.getSymbol())
-		for i, var in enumerate(self.sbmlModel.variablesOdes):
-			if var.symbol.getSymbol() not in slow_variables and i in kept_variables:
-				fast_vars.append(var.symbol.getSymbol())
-
-
-		# print fast_vars
-		# print subs
-		formulas = {}
-		for law in self.fastLaws:
-			# print law
-			# print fast_vars
-			law = law.subs(subs)
-			intersect = set(fast_vars).intersection(set(law.atoms(SympySymbol)))
-			if len(intersect) > 0:
-				var = list(intersect)[0]
-				res = solve(law, var)
-				formulas.update({var: res[0]})
-
-				if DEBUG:
-					pprint(SympyEqual(var, formulas[var]))
-
-				t_var = self.listOfVariables.getBySymbol(var)
-				t_cfe = MathFormula(self)
-				t_cfe.setInternalMathFormula(res[0])
-				cfe = CFE(self)
-				cfe.new(t_var, t_cfe)
-				self.listOfCFEs.append(cfe)
-				self.listOfVariables.changeVariableType(t_var, MathVariable.VAR_ASS)
-
-
-		# print self.listOfCFEs
-		self.listOfCFEs.developCFEs()
-
-
-
+		# Computing new initial values
 		vars = self.fastLaws_vars
 
 		subs = {}
 		for var, math_formula in self.sbmlModel.solvedInitialConditions.items():
-			if var not in vars:
+			variable = self.sbmlModel.listOfVariables.getBySymbol(var)
+			if var not in vars or variable.boundaryCondition:
 				subs.update({var: math_formula.getDeveloppedInternalMathFormula()})
 
+		if DEBUG:
+			print("> Known initial values : %s" % pretty(subs))
 
-		#
+
 		system = []
-		#
-		for cons_law in self.sbmlModel.listOfConservationLaws:
-			formula = cons_law.getFormula().subs(subs)
-			# formula = cons_law.getFormula()
+
+		# Solving the initial values using the fast conservation laws, and the fast laws.
+		for cons_law in self.fastConservationLaws.getRawFormulas(self.fastStoichiometryMatrix):
+			formula = cons_law.subs(subs)
 			if formula not in [True, False]:
 				system.append(formula)
-		#
-		for fast_law in self.fastLaws:
 
-			system.append(SympyEqual(fast_law, SympyInteger(0)))
-			# system.append(SympyEqual(expand(fast_law.subs(self.reducedModel.listOfCFEs.getSubs())), SympyInteger(0)))
+		for fast_law in self.fastLaws:
+			formula = SympyEqual(fast_law, SympyInteger(0)).subs(subs)
+			if formula not in [True, False]:
+				system.append(formula)
+
+		res = solve(system, vars)
 
 		if DEBUG:
 			print system
 			print vars
+			print res
 
-		if True not in system:
-			res = solve(system, vars)
+		for var, value in res.items():
+			math_formula = MathFormula(self)
+			math_formula.setInternalMathFormula(value.subs(subs))
 
-			if DEBUG:
-				print res
-
-			for var, value in res.items():
-				math_formula = MathFormula(self)
-				math_formula.setInternalMathFormula(value.subs(subs))
-
-				self.solvedInitialConditions.update({var: math_formula})
+			self.solvedInitialConditions.update({var: math_formula})
 
 		self.setUpToDate(True)
-
-	def prettyPrint(self):
-
-		print "\n> Full system : "
-		print self.listOfCFEs
-		print self.listOfDAEs
-		print self.listOfODEs
-		print "-----------------------------"
-
-	# 
-	# def build(self, treated_variables=[]):
-	# 
-	# 	self.fastStoichiometryMatrix.build(including_slow_reactions=False)
-	# 	self.slowStoichiometryMatrix.build(including_fast_reactions=False)
-	# 	self.findFastReactions()
-	# 	# print [var.getSbmlId() for var in self.parentModel.variablesOdes]
-	# 	fast_matrix = self.fastStoichiometryMatrix.rawStoichiometryMatrix.transpose()
-	# 	slow_matrix = self.slowStoichiometryMatrix.rawStoichiometryMatrix.transpose()
-	# 	fast_velocities = self.findVelocities(include_slow_reaction=False)
-	# 	slow_velocities = self.findVelocities(include_fast_reaction=False)
-	# 
-	# 	# print "> Fast stoichiometry matrix"
-	# 	# pprint(fast_matrix)
-	# 	# print "\n"
-	# 	#
-	# 	#
-	# 	# print "> Slow stoichiometry matrix"
-	# 	# pprint(slow_matrix)
-	# 	# print "\n"
-	# 	#
-	# 	# print "> Fast velocities"
-	# 	# pprint(fast_velocities.transpose())
-	# 	# print "\n"
-	# 	#
-	# 	# print "> Slow velocities"
-	# 	# pprint(slow_velocities.transpose())
-	# 	# print "\n"
-	# 
-	# 	fast_system = fast_matrix * fast_velocities
-	# 	slow_system = slow_matrix * slow_velocities
-	# 	full_system = fast_system + slow_system
-	# 
-	# 
-	# 	# print "> Fast system matrix"
-	# 	# pprint(fast_system)
-	# 	# print "\n"
-	# 	#
-	# 	# print "> Slow system matrix"
-	# 	# pprint(slow_system)
-	# 	# print "\n"
-	# 	#
-	# 	# print "> Full system matrix"
-	# 	# pprint(full_system)
-	# 	# print "\n"
-	# 
-	# 	# reduced_fast_stoichiometry = None
-	# 	# for i in range(fast_matrix.shape[1]):
-	# 	# 	reaction = fast_matrix[:,i]
-	# 	# 	if any(reaction.applyfunc(self.notZeroFilter)):
-	# 	# 		if reduced_fast_stoichiometry is None:
-	# 	# 			reduced_fast_stoichiometry = reaction
-	# 	# 		else:
-	# 	# 			reduced_fast_stoichiometry = reduced_fast_stoichiometry.row_join(reaction)
-	# 	#
-	# 	# pprint(reduced_fast_stoichiometry)
-	# 
-	# 
-	# 
-	# 	nullspace = fast_matrix.transpose().nullspace()
-	# 
-	# 	matrix_nullspace = None
-	# 	for sol in nullspace:
-	# 		# pprint(sol)
-	# 		# print sol.applyfunc(self.notZeroFilter)
-	# 		#
-	# 		# print flatten(sol.applyfunc(self.notZeroFilter))
-	# 		# if flatten(sol.applyfunc(self.notZeroFilter)).count(True) > 1:
-	# 		# if sum(sol.applyfunc(self.notZeroFilter)) > 1:
-	# 			if matrix_nullspace is None:
-	# 				matrix_nullspace = sol
-	# 			else:
-	# 				matrix_nullspace = matrix_nullspace.row_join(sol)
-	# 
-	# 	#
-	# 	# print "> Raw fast nullspace matrix"
-	# 	# pprint(nullspace)
-	# 	# print "\n"
-	# 	#
-	# 	# print "> Fast nullspace matrix"
-	# 	# pprint(matrix_nullspace)
-	# 	# print "\n"
-	# 
-	# 
-	# 	print "> Nullspace * fast system matrix"
-	# 	reduced_fast_system = matrix_nullspace.transpose() * fast_system
-	# 	# pprint(reduced_fast_system)
-	# 	for i in range(reduced_fast_system.shape[0]):
-	# 		# print "\n\n> Species %s" % self.parentModel.variablesOdes[i].getSbmlId()
-	# 		pprint(SympyEqual(self.parentModel.variablesOdes[i].symbol.getSymbol(), sum(reduced_fast_system[i, :])))
-	# 	# # print "\n"
-	# 
-	# 	print "> Nullspace * slow system matrix"
-	# 	reduced_slow_system = matrix_nullspace.transpose() * slow_system
-	# 	# pprint(reduced_slow_system)
-	# 	for i in range(reduced_slow_system.shape[0]):
-	# 		# print "\n\n> Species %s" % self.parentModel.variablesOdes[i].getSbmlId()
-	# 
-	# 		pprint(SympyEqual(self.parentModel.variablesOdes[i].symbol.getSymbol(), sum(reduced_slow_system[i,:])))
-	# 	print "\n"
-	# 
-	# 
-	# 
-	# 
-	# def buildFromReduced(self, treated_variables=[]):
-	# 
-	# 	self.fastStoichiometryMatrix.build(including_slow_reactions=False)
-	# 	self.slowStoichiometryMatrix.build(including_fast_reactions=False)
-	# 	self.findFastReactions()
-	# 	# print [var.getSbmlId() for var in self.parentModel.variablesOdes]
-	# 	fast_matrix = self.fastStoichiometryMatrix.rawStoichiometryMatrix.transpose()
-	# 	slow_matrix = self.slowStoichiometryMatrix.rawStoichiometryMatrix.transpose()
-	# 	subs = self.reducedModel.listOfCFEs.getSubs()
-	# 	fast_velocities = self.findVelocities(include_slow_reaction=False)
-	# 	slow_velocities = self.findVelocities(include_fast_reaction=False)
-	# 
-	# 	kept_variables = []
-	# 	for i, var in enumerate(self.parentModel.variablesOdes):
-	# 		if var.symbol.getSymbol() in [var.symbol.getSymbol() for var in self.reducedModel.variablesOdes]:
-	# 			kept_variables.append(i)
-	# 	# print kept_variables
-	# 
-	# 	# print "> Fast stoichiometry matrix"
-	# 	fast_matrix = fast_matrix[kept_variables,:]
-	# 	# pprint(fast_matrix)
-	# 	# print "\n"
-	# 	#
-	# 	#
-	# 	# print "> Slow stoichiometry matrix"
-	# 	slow_matrix = slow_matrix[kept_variables,:]
-	# 	# pprint(slow_matrix)
-	# 	# print "\n"
-	# 	#
-	# 	# print "> Fast velocities"
-	# 	# pprint(fast_velocities)
-	# 	# print "\n"
-	# 	#
-	# 	# print "> Slow velocities"
-	# 	# pprint(slow_velocities)
-	# 	# print "\n"
-	# 
-	# 	fast_system = fast_matrix * fast_velocities
-	# 	slow_system = slow_matrix * slow_velocities
-	# 	full_system = fast_system + slow_system
-	# 
-	# 
-	# 	# print "> Fast system matrix"
-	# 	# pprint(fast_system)
-	# 	# print "\n"
-	# 	#
-	# 	# print "> Slow system matrix"
-	# 	# pprint(slow_system)
-	# 	# print "\n"
-	# 	#
-	# 	# print "> Full system matrix"
-	# 	# pprint(full_system)
-	# 	# print "\n"
-	# 
-	# 	# reduced_fast_stoichiometry = None
-	# 	# for i in range(fast_matrix.shape[1]):
-	# 	# 	reaction = fast_matrix[:,i]
-	# 	# 	if any(reaction.applyfunc(self.notZeroFilter)):
-	# 	# 		if reduced_fast_stoichiometry is None:
-	# 	# 			reduced_fast_stoichiometry = reaction
-	# 	# 		else:
-	# 	# 			reduced_fast_stoichiometry = reduced_fast_stoichiometry.row_join(reaction)
-	# 	#
-	# 	# pprint(reduced_fast_stoichiometry)
-	# 
-	# 
-	# 
-	# 	nullspace = fast_matrix.transpose().nullspace()
-	# 	# pprint(nullspace)
-	# 	matrix_nullspace = None
-	# 	for sol in nullspace:
-	# 		if matrix_nullspace is None:
-	# 			matrix_nullspace = sol
-	# 		else:
-	# 			matrix_nullspace = matrix_nullspace.row_join(sol)
-	# 
-	# 	# print "> Fast nullspace matrix"
-	# 	# pprint(matrix_nullspace)
-	# 	# print "\n"
-	# 	#
-	# 	#
-	# 	# print "> Nullspace * fast system matrix"
-	# 	# reduced_fast_system = matrix_nullspace.transpose() * fast_system
-	# 	# # pprint(reduced_fast_system)
-	# 	# for i in range(reduced_fast_system.shape[0]):
-	# 	# 	# print "\n\n> Species %s" % self.parentModel.variablesOdes[i].getSbmlId()
-	# 	# 	pprint(SympyEqual(self.parentModel.variablesOdes[kept_variables[i]].symbol.getSymbol(), sum(reduced_fast_system[i, :])))
-	# 	# # # print "\n"
-	# 
-	# 	# print "> Nullspace * slow system matrix"
-	# 	reduced_slow_system = matrix_nullspace.transpose() * slow_system
-	# 	# pprint(reduced_slow_system)
-	# 	for i in range(reduced_slow_system.shape[0]):
-	# 		# print "\n\n> Species %s" % self.parentModel.variablesOdes[i].getSbmlId()
-	# 
-	# 		pprint(SympyEqual(
-	# 			SympyDerivative(self.parentModel.variablesOdes[kept_variables[i]].symbol.getSymbol(),SympySymbol("t")),
-	# 			sum(reduced_slow_system[i,:])
-	# 		))
-	# 	print "\n"
-	# 
-	# 	fast_vars = []
-	# 	# print fast_matrix.shape
-	# 	for i in range(fast_matrix.shape[0]):
-	# 	# for i, var in enumerate(fast_matrix):
-	# 		if not all(fast_matrix[i,:].applyfunc(self.ZeroFilter)):
-	# 		# if var == SympyInteger(0):
-	# 		# 	print i
-	# 			fast_vars.append(self.parentModel.variablesOdes[kept_variables[i]].symbol.getSymbol())
-	# 
-	# 
-	# 	# print fast_vars
-	# 	formulas = {}
-	# 	for law in self.fastLaws:
-	# 		law = law.subs(subs)
-	# 		intersect = set(fast_vars).intersection(set(law.atoms(SympySymbol)))
-	# 		if len(intersect) > 0:
-	# 			# print intersect
-	# 			# print law
-	# 			# print law.subs
-	# 			var = list(intersect)[0]
-	# 			res = solve(law, var)
-	# 			formulas.update({var: res[0]})
-	# 
-	# 		# pprint(SympyEqual(law, SympyInteger(0)))
-	# 		pprint(SympyEqual(var, formulas[var]))
-	# 
-	# 
-	# 
+		# self.pprint()
