@@ -26,7 +26,7 @@
 
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.ConservationLaw import ConservationLaw
-from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyEqual
 from libsignetsim.model.ListOfVariables import ListOfVariables
 from libsignetsim.model.sbml.ConservedMoiety import ConservedMoiety
 from sympy import eye, Matrix, ones, pretty
@@ -40,6 +40,7 @@ class ListOfConservationLaws(list):
 
 		list.__init__(self)
 		self.__model = model
+
 		self.extraVariables = ListOfVariables(self.__model)
 		self.conservationMatrix = None
 
@@ -49,6 +50,7 @@ class ListOfConservationLaws(list):
 	def clear(self):
 		del self[:]
 		to_remove = []
+
 		for variable in self.__model.listOfVariables:
 			if variable.isConservedMoiety():
 				to_remove.append(variable)
@@ -140,43 +142,55 @@ class ListOfConservationLaws(list):
 		t_conservation_law.new(t_lhs, t_rhs, t_vars)
 		list.append(self, t_conservation_law)
 
+	def __build(self, stoichiometry_matrix=None):
+
+		laws = []
+		conservation_matrix = self.getConservationMatrix(stoichiometry_matrix)
+		if conservation_matrix is not None:
+			for i in range(conservation_matrix.shape[0]):
+
+				t_res = conservation_matrix[i, :]
+
+				t_law = MathFormula.ZERO
+				t_value = MathFormula.ZERO
+
+				nb_vars_found = t_res * ones(conservation_matrix.shape[1], 1)
+
+				if int(nb_vars_found[0, 0]) > 1:
+
+					for ii, tt_res in enumerate(t_res):
+
+						variable = self.__model.variablesOdes[ii]
+						tt_symbol_formula = self.__getVariableFormula(variable)
+						tt_value = self.__getVariableValue(variable)
+
+						if tt_res == SympyInteger(1):
+							t_law += tt_symbol_formula
+							t_value += tt_value
+
+						elif tt_res == SympyInteger(-1):
+							t_law -= tt_symbol_formula
+							t_value -= tt_value
+
+						else:
+							t_law += tt_res * tt_symbol_formula
+							t_value += tt_res * tt_value
+
+					laws.append((t_law, t_value))
+
+		return laws
+
+	def getRawFormulas(self, stoichiometry_matrix):
+
+		return [SympyEqual(law, value) for law, value in self.__build(stoichiometry_matrix)]
+
 	def build(self):
 
 		self.clear()
 		if not self.__model.listOfReactions.hasVariableStoichiometry():
-
-			conservation_matrix = self.getConservationMatrix()
-			if conservation_matrix is not None:
-				for i in range(conservation_matrix.shape[0]):
-
-					t_res = conservation_matrix[i, :]
-
-					t_law = MathFormula.ZERO
-					t_value = MathFormula.ZERO
-
-					nb_vars_found = t_res*ones(conservation_matrix.shape[1], 1)
-
-					if int(nb_vars_found[0, 0]) > 1:
-
-						for ii, tt_res in enumerate(t_res):
-
-							variable = self.__model.variablesOdes[ii]
-							tt_symbol_formula = self.__getVariableFormula(variable)
-							tt_value = self.__getVariableValue(variable)
-
-							if tt_res == SympyInteger(1):
-								t_law += tt_symbol_formula
-								t_value += tt_value
-
-							elif tt_res == SympyInteger(-1):
-								t_law -= tt_symbol_formula
-								t_value -= tt_value
-
-							else:
-								t_law += tt_res * tt_symbol_formula
-								t_value += tt_res * tt_value
-
-						self.__buildConservationLaw(t_law, t_value)
+			laws = self.__build()
+			for law, value in laws:
+				self.__buildConservationLaw(law, value)
 
 	def __buildS(self, T, n):
 		S = []
@@ -240,16 +254,20 @@ class ListOfConservationLaws(list):
 
 		return T_ip1
 
-	def getConservationMatrix(self):
+	def getConservationMatrix(self, stoichiometry_matrix=None):
 
 		if self.conservationMatrix is None:
-			self.buildConservationMatrix()
+			self.buildConservationMatrix(stoichiometry_matrix)
 
 		return self.conservationMatrix
 
-	def buildConservationMatrix(self):
+	def buildConservationMatrix(self, stoichiometry_matrix=None):
 
-		sm = self.__model.stoichiometryMatrix.getStoichiometryMatrix()
+		if stoichiometry_matrix is None:
+			sm = self.__model.stoichiometryMatrix.getStoichiometryMatrix()
+		else:
+			sm = stoichiometry_matrix.getStoichiometryMatrix()
+
 		if sm is not None:
 			sm = sm.evalf()
 			T0 = sm.row_join(eye(sm.shape[0]))
@@ -268,7 +286,6 @@ class ListOfConservationLaws(list):
 
 			last_T = Ts[len(Ts) - 1]
 			self.conservationMatrix = last_T[:, n:n + sm.shape[0]]
-
 
 	def __str__(self):
 		res = ""
