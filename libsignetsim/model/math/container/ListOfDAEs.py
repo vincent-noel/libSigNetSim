@@ -30,18 +30,19 @@ from libsignetsim.model.math.DAE import DAE
 from libsignetsim.model.math.CFE import CFE
 from libsignetsim.model.math.sympy_shortcuts import SympyEqual, SympyInteger, SympySymbol, SympyFloat
 from libsignetsim.model.math.MathException import MathException
+from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
+
 from sympy import solve, srepr
 from time import time
 
 class ListOfDAEs(list):
 	""" Sbml model class """
 
-	def __init__ (self, model):
+	def __init__(self, model):
 		""" Constructor of model class """
 
 		self.__model = model
 		list.__init__(self)
-
 
 	def build(self):
 
@@ -52,21 +53,20 @@ class ListOfDAEs(list):
 				t_dae.new(rule.getDefinition(rawFormula=True))
 				list.append(self, t_dae)
 
-
 	def solveInitialConditions(self, tmin=0):
 
 		DEBUG = False
 		system = []
 
-		subs = {SympySymbol('time'):SympyFloat(tmin)}
+		subs = {SympySymbol('time'): SympyFloat(tmin)}
 		for var, val in self.__model.solvedInitialConditions.items():
 			if not self.__model.listOfVariables.getBySymbol(var).isAlgebraic():
-				subs.update({var:val.getInternalMathFormula()})
+				subs.update({var: val.getInternalMathFormula()})
 
 		for dae in self:
 			system.append(
 				SympyEqual(
-					dae.getDefinition().getDeveloppedInternalMathFormula().subs(subs),
+					unevaluatedSubs(dae.getDefinition().getDeveloppedInternalMathFormula(), subs),
 					SympyInteger(0)
 				)
 			)
@@ -168,7 +168,7 @@ class ListOfDAEs(list):
 							if DEBUG:
 								print ">> " + str(match) + " : " + str(init_cond[match])
 
-							t_def = t_def.subs({match: init_cond[match]})
+							t_def = unevaluatedSubs(t_def, {match: init_cond[match]})
 							init_cond.update({t_var: t_def})
 
 						if DEBUG:

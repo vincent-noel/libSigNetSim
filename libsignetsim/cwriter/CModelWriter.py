@@ -304,7 +304,7 @@ class CModelWriter(object):
 					print ">>> ODE #%s translated in %.2gs" % (i_ode, time() - t0)
 
 				f_c.write("  // ODE\n")
-				f_c.write("  Ith(ydot, %d) = %s;\n\n" % ( t_var.ind+1, t_c_ode))
+				f_c.write("  Ith(ydot, %d) = %s;\n\n" % (t_var.ind+1, t_c_ode))
 				i_var += 1
 
 		f_c.write("  return 0;\n")

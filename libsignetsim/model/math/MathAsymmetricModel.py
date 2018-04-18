@@ -92,7 +92,10 @@ class MathAsymmetricModel(MathSubmodel):
 		forbidden_variables = []
 		for i_species, species in enumerate(self.parentModel.variablesOdes):
 			if (
-						species.getSymbolStr() in treated_variables or species.hasEventAssignment() or species.hasInitialAssignment()):
+				species.getSymbolStr() in treated_variables
+				or species.hasEventAssignment()
+				or species.hasInitialAssignment()
+			):
 				forbidden_variables.append(i_species)
 
 		allowed_variables = list(set(all_variables).difference(set(forbidden_variables)))

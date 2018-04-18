@@ -32,6 +32,7 @@ from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyEqual
 from libsignetsim.model.math.MathStoichiometryMatrix import MathStoichiometryMatrix
 from libsignetsim.model.math.container.ListOfConservationLaws import ListOfConservationLaws
+from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 
 from sympy import solve, pprint, pretty
 
@@ -39,12 +40,11 @@ from sympy import solve, pprint, pretty
 class MathSlowModel(MathSubmodel):
 	""" Sbml model class """
 
-	def __init__ (self, sbml_model=None, reduced_model=None):
+	def __init__(self, sbml_model=None, reduced_model=None):
 		""" Constructor of model class """
 
 		MathSubmodel.__init__(self, parent_model=reduced_model)
 
-		# self.parentModel = parent_model
 		self.sbmlModel = sbml_model
 		self.reducedModel = reduced_model
 
@@ -55,24 +55,6 @@ class MathSlowModel(MathSubmodel):
 		self.slowStoichiometryMatrix = MathStoichiometryMatrix(sbml_model)
 		self.fastConservationLaws = ListOfConservationLaws(sbml_model)
 		self.DEBUG = True
-
-		# # Function returning a boolean if the value is not zero
-		# self.notZeroFilter = Lambda(
-		# 	SympySymbol('x'),
-		# 	SympyUnequal(
-		# 		SympySymbol('x'),
-		# 		SympyInteger(0)
-		# 	)
-		# )
-		#
-		# # Function returning a boolean if the value is zero
-		# self.ZeroFilter = Lambda(
-		# 	SympySymbol('x'),
-		# 	SympyEqual(
-		# 		SympySymbol('x'),
-		# 		SympyInteger(0)
-		# 	)
-		# )
 
 	def copyEquations(self):
 
@@ -148,26 +130,28 @@ class MathSlowModel(MathSubmodel):
 	def __buildODEs(self, slow_system, slow_variables, subs):
 
 		for i, symbol in enumerate(slow_variables):
-			# symbol = variable.symbol.getSymbol()
-
 			variable = self.listOfVariables.getBySymbol(symbol)
 
 			t_definition = MathFormula(self)
-			t_definition.setInternalMathFormula(sum(slow_system[i, :]).subs(subs))
+			t_definition.setInternalMathFormula(unevaluatedSubs(sum(slow_system[i, :]), subs))
 
 			ode = ODE(self)
 			ode.new(variable, t_definition)
 			self.listOfODEs.append(ode)
 
-
 	def __buildCFEs(self, fast_laws, fast_vars, subs):
 
 		for law in fast_laws:
 
-			law = law.subs(subs)
+			law = unevaluatedSubs(law, subs)
 			intersect = set(fast_vars).intersection(set(law.atoms(SympySymbol)))
 			if len(intersect) > 0:
 				var = list(intersect)[0]
+
+				if self.DEBUG:
+					print(pretty(law))
+					print(pretty(var))
+
 				res = solve(law, var)
 
 				t_var = self.listOfVariables.getBySymbol(var)
@@ -197,15 +181,14 @@ class MathSlowModel(MathSubmodel):
 
 	def build(self):
 
-		DEBUG = False
-		if DEBUG:
+		if self.DEBUG:
 			print(">> Building slow model")
 
 		self.copyVariables()
 		self.copyEquations()
 
 		kept_variables = self.__findKeptVariables()
-		if DEBUG:
+		if self.DEBUG:
 			print("> Variables kept in the reduced model : %s" % str(kept_variables))
 
 		fast_matrix, slow_matrix = self.__buildStoichiometryMatrices(kept_variables)
@@ -216,8 +199,7 @@ class MathSlowModel(MathSubmodel):
 		fast_system = fast_matrix * fast_velocities
 		slow_system = slow_matrix * slow_velocities
 
-
-		if DEBUG:
+		if self.DEBUG:
 			print "> Fast system matrix"
 			pprint(fast_system)
 			print "\n"
@@ -232,45 +214,44 @@ class MathSlowModel(MathSubmodel):
 		self.__buildODEs(slow_system, slow_variables, subs)
 		self.__buildCFEs(self.fastLaws, fast_variables, subs)
 
-
 		# Computing new initial values
-		vars = self.fastLaws_vars
+		system_vars = self.fastLaws_vars
 
 		subs = {}
 		for var, math_formula in self.sbmlModel.solvedInitialConditions.items():
 			variable = self.sbmlModel.listOfVariables.getBySymbol(var)
-			if var not in vars or variable.boundaryCondition:
+			if var not in system_vars or variable.boundaryCondition:
 				subs.update({var: math_formula.getDeveloppedInternalMathFormula()})
 
-		if DEBUG:
+		if self.DEBUG:
 			print("> Known initial values : %s" % pretty(subs))
-
 
 		system = []
 
 		# Solving the initial values using the fast conservation laws, and the fast laws.
 		for cons_law in self.fastConservationLaws.getRawFormulas(self.fastStoichiometryMatrix):
-			formula = cons_law.subs(subs)
+			formula = unevaluatedSubs(cons_law, subs)
 			if formula not in [True, False]:
 				system.append(formula)
 
 		for fast_law in self.fastLaws:
-			formula = SympyEqual(fast_law, SympyInteger(0)).subs(subs)
+			formula = SympyEqual(unevaluatedSubs(fast_law, subs), SympyInteger(0))
 			if formula not in [True, False]:
 				system.append(formula)
 
-		res = solve(system, vars)
-
-		if DEBUG:
+		if self.DEBUG:
 			print system
-			print vars
+			print system_vars
+
+		res = solve(system, system_vars)
+
+		if self.DEBUG:
 			print res
 
 		for var, value in res.items():
 			math_formula = MathFormula(self)
-			math_formula.setInternalMathFormula(value.subs(subs))
+			math_formula.setInternalMathFormula(unevaluatedSubs(value, subs))
 
 			self.solvedInitialConditions.update({var: math_formula})
 
 		self.setUpToDate(True)
-		# self.pprint()

@@ -29,6 +29,8 @@ from libsignetsim.model.math.ConservationLaw import ConservationLaw
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyEqual
 from libsignetsim.model.ListOfVariables import ListOfVariables
 from libsignetsim.model.sbml.ConservedMoiety import ConservedMoiety
+from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
+
 from sympy import eye, Matrix, ones, pretty
 
 
@@ -129,7 +131,8 @@ class ListOfConservationLaws(list):
 
 		for var in t_solved_value.atoms(SympySymbol):
 			if var not in [SympySymbol("_avogadro_")]:
-				t_solved_value = t_solved_value.subs(
+				t_solved_value = unevaluatedSubs(
+					t_solved_value,
 					{var: self.__model.solvedInitialConditions[var].getInternalMathFormula()})
 
 		solved_value.setInternalMathFormula(t_solved_value)
@@ -145,38 +148,41 @@ class ListOfConservationLaws(list):
 	def __build(self, stoichiometry_matrix=None):
 
 		laws = []
-		conservation_matrix = self.getConservationMatrix(stoichiometry_matrix)
-		if conservation_matrix is not None:
-			for i in range(conservation_matrix.shape[0]):
+		if not self.__model.listOfReactions.hasVariableStoichiometry():
 
-				t_res = conservation_matrix[i, :]
+			conservation_matrix = self.getConservationMatrix(stoichiometry_matrix)
+			if conservation_matrix is not None:
+				for i in range(conservation_matrix.shape[0]):
 
-				t_law = MathFormula.ZERO
-				t_value = MathFormula.ZERO
+					t_res = conservation_matrix[i, :]
 
-				nb_vars_found = t_res * ones(conservation_matrix.shape[1], 1)
+					t_law = MathFormula.ZERO
+					t_value = MathFormula.ZERO
 
-				if int(nb_vars_found[0, 0]) > 1:
+					nb_vars_found = t_res * ones(conservation_matrix.shape[1], 1)
 
-					for ii, tt_res in enumerate(t_res):
+					if int(nb_vars_found[0, 0]) > 1:
 
-						variable = self.__model.variablesOdes[ii]
-						tt_symbol_formula = self.__getVariableFormula(variable)
-						tt_value = self.__getVariableValue(variable)
+						for ii, tt_res in enumerate(t_res):
 
-						if tt_res == SympyInteger(1):
-							t_law += tt_symbol_formula
-							t_value += tt_value
+							variable = self.__model.variablesOdes[ii]
+							tt_symbol_formula = self.__getVariableFormula(variable)
+							tt_value = self.__getVariableValue(variable)
 
-						elif tt_res == SympyInteger(-1):
-							t_law -= tt_symbol_formula
-							t_value -= tt_value
+							if tt_res == SympyInteger(1):
+								t_law += tt_symbol_formula
+								t_value += tt_value
 
-						else:
-							t_law += tt_res * tt_symbol_formula
-							t_value += tt_res * tt_value
+							elif tt_res == SympyInteger(-1):
+								t_law -= tt_symbol_formula
+								t_value -= tt_value
 
-					laws.append((t_law, t_value))
+							else:
+								t_law += tt_res * tt_symbol_formula
+								t_value += tt_res * tt_value
+
+						laws.append((t_law, t_value))
+
 
 		return laws
 
@@ -187,10 +193,9 @@ class ListOfConservationLaws(list):
 	def build(self):
 
 		self.clear()
-		if not self.__model.listOfReactions.hasVariableStoichiometry():
-			laws = self.__build()
-			for law, value in laws:
-				self.__buildConservationLaw(law, value)
+		laws = self.__build()
+		for law, value in laws:
+			self.__buildConservationLaw(law, value)
 
 	def __buildS(self, T, n):
 		S = []

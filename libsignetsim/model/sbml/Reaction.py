@@ -420,12 +420,12 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 		front = zeros(self.__model.nbOdes, 1)
 
 		if (
-						not self.hasVariableStoichiometry() or include_variable_stoichiometry
-			) and (
-					(self.fast and including_fast_reactions)
-				or
-					((not self.fast) and including_slow_reactions)
-			):
+			(not self.hasVariableStoichiometry() or include_variable_stoichiometry) and
+			(
+				(self.fast and including_fast_reactions)
+				or (not self.fast and including_slow_reactions)
+			)
+		):
 			if self.listOfReactants:
 				for reactant in self.listOfReactants.values():
 					if not reactant.getSpecies().boundaryCondition:
@@ -453,11 +453,11 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 		else:
 			back = zeros(self.__model.nbOdes, 1)
 			if (
-				not self.hasVariableStoichiometry() or include_variable_stoichiometry
-			) and (
-				(self.fast and including_fast_reactions)
-				or
-				((not self.fast) and including_slow_reactions)
+				(not self.hasVariableStoichiometry() or include_variable_stoichiometry) and
+				(
+					(self.fast and including_fast_reactions)
+					or (not self.fast and including_slow_reactions)
+				)
 			):
 				if self.listOfReactants:
 					for reactant in self.listOfReactants.values():
@@ -480,8 +480,6 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 							back[index] = -stoichiometry + back[index]
 
 			return front.row_join(back)
-
-
 
 	def hasVariableStoichiometry(self):
 		return self.listOfReactants.hasVariableStoichiometry() or self.listOfProducts.hasVariableStoichiometry()

@@ -42,7 +42,7 @@ from libsignetsim.model.math.sympy_shortcuts import  (
 from libsignetsim.model.sbml.KineticLawIdentifier import KineticLawIdentifier
 from libsignetsim.settings.Settings import Settings
 
-from sympy import simplify, srepr, diff, zeros
+from sympy import simplify, srepr, diff, zeros, pretty
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 
 class KineticLaw(KineticLawIdentifier):
@@ -88,8 +88,16 @@ class KineticLaw(KineticLawIdentifier):
 			if (not rawFormula and len(self.reaction.listOfReactants) > 0
 				and self.reaction.listOfReactants[0].getSpecies().isConcentration()):
 				comp = self.reaction.listOfReactants[0].getSpecies().getCompartment()
-
-				formula /= comp.symbol.getInternalMathFormula()
+				# formula /= comp.symbol.getInternalMathFormula()
+				formula = SympyMul(
+					formula,
+					SympyPow(
+						comp.symbol.getInternalMathFormula(),
+						SympyInteger(-1),
+						evaluate=False
+					),
+					evaluate=False
+				)
 
 			if not rawFormula:
 				subs = {}
@@ -271,7 +279,7 @@ class KineticLaw(KineticLawIdentifier):
 		if not KineticLawIdentifier.isReversible(self, definition):
 			res = zeros(1)
 			if (self.reaction.fast and include_fast_reaction) or (not self.reaction.fast and include_slow_reaction):
-				res[0] += definition.subs(subs)
+				res[0] += unevaluatedSubs(definition, subs)
 			return res
 
 		else:
@@ -279,8 +287,8 @@ class KineticLaw(KineticLawIdentifier):
 			res_backward = zeros(1)
 			if (self.reaction.fast and include_fast_reaction) or (not self.reaction.fast and include_slow_reaction):
 				(definition_front, definition_back) = KineticLawIdentifier.getReversibleRates(self, definition)
-				res_front[0] += definition_front.subs(subs)
-				res_backward[0] += definition_back.subs(subs)
+				res_front[0] += unevaluatedSubs(definition_front, subs)
+				res_backward[0] += unevaluatedSubs(definition_back, subs)
 
 			return res_front.col_join(res_backward)
 

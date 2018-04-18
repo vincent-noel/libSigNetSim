@@ -176,7 +176,6 @@ class MathModel(CModelWriter):
 
 		t0 = time()
 
-		init_cond = {}
 		if tmin == 0:
 			init_cond = {SympySymbol("_time_"): SympyInteger(tmin)}
 		else:
@@ -186,7 +185,7 @@ class MathModel(CModelWriter):
 			if init_ass.isValid():
 				t_var = init_ass.getVariable().symbol.getSymbol()
 				t_value = init_ass.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula()
-				init_cond.update({t_var:t_value})
+				init_cond.update({t_var: t_value})
 
 		if DEBUG:
 			print init_cond
@@ -194,10 +193,9 @@ class MathModel(CModelWriter):
 		for rule in self.listOfRules.values():
 			if rule.isAssignment() and rule.isValid():
 				t_var = rule.getVariable().symbol.getSymbol()
-				# print "Assignment : %s" % str(t_var)
 				if t_var not in init_cond.keys():
 					t_value = rule.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula()
-					init_cond.update({t_var:t_value})
+					init_cond.update({t_var: t_value})
 
 		if DEBUG:
 			print init_cond
@@ -207,13 +205,12 @@ class MathModel(CModelWriter):
 			if t_var not in init_cond.keys():
 				t_value = var.value.getDeveloppedInternalMathFormula()
 				if t_value is not None:
-					init_cond.update({t_var:t_value})
+					init_cond.update({t_var: t_value})
 				elif not var.isAlgebraic():
-					init_cond.update({t_var:SympyFloat(0.0)})
+					init_cond.update({t_var: SympyFloat(0.0)})
 
 		if DEBUG:
 			print init_cond
-
 
 		crossDependencies = True
 		passes = 1
@@ -238,8 +235,8 @@ class MathModel(CModelWriter):
 						if DEBUG:
 							print ">> " + str(match) + " : " + str(init_cond[match])
 
-						t_def = unevaluatedSubs(t_def, {match:init_cond[match]})
-						init_cond.update({t_var:t_def})
+						t_def = unevaluatedSubs(t_def, {match: init_cond[match]})
+						init_cond.update({t_var: t_def})
 
 					if DEBUG:
 						if len(t_def.atoms(SympySymbol).intersection(set(init_cond.keys()))) == 0:
@@ -264,17 +261,15 @@ class MathModel(CModelWriter):
 				if t_var is not None:
 					t_value = MathFormula(self)
 					t_value.setInternalMathFormula(value.doit())
-					self.solvedInitialConditions.update({t_var.symbol.getSymbol():t_value})
+					self.solvedInitialConditions.update({t_var.symbol.getSymbol(): t_value})
 
 		if DEBUG:
 			print "> Final solvedInitialConditions"
 			print self.solvedInitialConditions.keys()
 
-
 		for var in self.listOfVariables.values():
 			if not var.symbol.getSymbol() in self.solvedInitialConditions.keys() and not var.isAlgebraic():
 				print "Lacks an initial condition : %s" % var.getSbmlId()
 
-		# print [(key, value.getInternalMathFormula()) for key, value in self.solvedInitialConditions.items()]
 		if Settings.verbose >= 1:
 			print "> Finished calculating initial conditions (%.2gs)" % (time()-t0)
