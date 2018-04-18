@@ -150,7 +150,7 @@ class ListOfConservationLaws(list):
 		laws = []
 		if not self.__model.listOfReactions.hasVariableStoichiometry():
 
-			conservation_matrix = self.getConservationMatrix(stoichiometry_matrix)
+			conservation_matrix = self.__model.conservationMatrix.getConservationMatrix(stoichiometry_matrix)
 			if conservation_matrix is not None:
 				for i in range(conservation_matrix.shape[0]):
 
@@ -187,7 +187,6 @@ class ListOfConservationLaws(list):
 		return laws
 
 	def getRawFormulas(self, stoichiometry_matrix):
-
 		return [SympyEqual(law, value) for law, value in self.__build(stoichiometry_matrix)]
 
 	def build(self):
@@ -196,101 +195,101 @@ class ListOfConservationLaws(list):
 		laws = self.__build()
 		for law, value in laws:
 			self.__buildConservationLaw(law, value)
-
-	def __buildS(self, T, n):
-		S = []
-		for i in range(T.shape[0]):
-			S.append(set([ii for ii, ii_val in enumerate(T[i, n:T.shape[1] + 1]) if ii_val == 0]))
-		return S
-
-	def __getCondition1(self, T, i, j, k):
-		return T[i, j] * T[k, j] < 0
-
-	def __getCondition2(self, T, S, i, k):
-
-		intersection = S[i].intersection(S[k])
-		result = True
-		for l in range(T.shape[0]):
-			if l != k and l != i:
-				if intersection.issubset(S[l]):
-					result = False
-
-		return result
-
-	def __buildIndices(self, T, S, j):
-
-		indices = []
-		for i in range(T.shape[0]):
-			for k in range(T.shape[0]):
-				if i != k and i < k:
-					if self.__getCondition1(T, i, j, k) and self.__getCondition2(T, S, i, k):
-						indices.append((i, k))
-
-		return indices
-
-	def __buildVectors(self, T, j, indices):
-
-		result = []
-		for i, k in indices:
-			vector = abs(T[i, j]) * T[k, :] + abs(T[k, j]) * T[i, :]
-			result.append(vector)
-
-		return result
-
-	def __buildTp1(self, T, j, vectors):
-
-		T_p1 = Matrix([[]])
-		if len(vectors) > 0:
-			for i in range(len(vectors)):
-				T_p1 = T_p1.col_join(vectors[i])
-
-		for i in range(T.shape[0]):
-			if T[i, j] == 0:
-				T_p1 = T_p1.col_join(T[i, :])
-
-		return T_p1
-
-	def __next_tableau(self, T_i, j, n):
-
-		S = self.__buildS(T_i, n)
-		indices = self.__buildIndices(T_i, S, j)
-		vectors = self.__buildVectors(T_i, j, indices)
-		T_ip1 = self.__buildTp1(T_i, j, vectors)
-
-		return T_ip1
-
-	def getConservationMatrix(self, stoichiometry_matrix=None):
-
-		if self.conservationMatrix is None:
-			self.buildConservationMatrix(stoichiometry_matrix)
-
-		return self.conservationMatrix
-
-	def buildConservationMatrix(self, stoichiometry_matrix=None):
-
-		if stoichiometry_matrix is None:
-			sm = self.__model.stoichiometryMatrix.getStoichiometryMatrix()
-		else:
-			sm = stoichiometry_matrix.getStoichiometryMatrix()
-
-		if sm is not None:
-			sm = sm.evalf()
-			T0 = sm.row_join(eye(sm.shape[0]))
-			n = sm.shape[1]
-
-			Ts = [T0]
-			j = 0
-
-			all_zero = False
-			while not all_zero:
-				Ts.append(self.__next_tableau(Ts[j], j, n))
-				j += 1
-				all_zero = True
-				for i in range(Ts[j].shape[0]):
-					all_zero &= all([j_i == 0 for j_i in Ts[j][i, 0:n]])
-
-			last_T = Ts[len(Ts) - 1]
-			self.conservationMatrix = last_T[:, n:n + sm.shape[0]]
+	#
+	# def __buildS(self, T, n):
+	# 	S = []
+	# 	for i in range(T.shape[0]):
+	# 		S.append(set([ii for ii, ii_val in enumerate(T[i, n:T.shape[1] + 1]) if ii_val == 0]))
+	# 	return S
+	#
+	# def __getCondition1(self, T, i, j, k):
+	# 	return T[i, j] * T[k, j] < 0
+	#
+	# def __getCondition2(self, T, S, i, k):
+	#
+	# 	intersection = S[i].intersection(S[k])
+	# 	result = True
+	# 	for l in range(T.shape[0]):
+	# 		if l != k and l != i:
+	# 			if intersection.issubset(S[l]):
+	# 				result = False
+	#
+	# 	return result
+	#
+	# def __buildIndices(self, T, S, j):
+	#
+	# 	indices = []
+	# 	for i in range(T.shape[0]):
+	# 		for k in range(T.shape[0]):
+	# 			if i != k and i < k:
+	# 				if self.__getCondition1(T, i, j, k) and self.__getCondition2(T, S, i, k):
+	# 					indices.append((i, k))
+	#
+	# 	return indices
+	#
+	# def __buildVectors(self, T, j, indices):
+	#
+	# 	result = []
+	# 	for i, k in indices:
+	# 		vector = abs(T[i, j]) * T[k, :] + abs(T[k, j]) * T[i, :]
+	# 		result.append(vector)
+	#
+	# 	return result
+	#
+	# def __buildTp1(self, T, j, vectors):
+	#
+	# 	T_p1 = Matrix([[]])
+	# 	if len(vectors) > 0:
+	# 		for i in range(len(vectors)):
+	# 			T_p1 = T_p1.col_join(vectors[i])
+	#
+	# 	for i in range(T.shape[0]):
+	# 		if T[i, j] == 0:
+	# 			T_p1 = T_p1.col_join(T[i, :])
+	#
+	# 	return T_p1
+	#
+	# def __next_tableau(self, T_i, j, n):
+	#
+	# 	S = self.__buildS(T_i, n)
+	# 	indices = self.__buildIndices(T_i, S, j)
+	# 	vectors = self.__buildVectors(T_i, j, indices)
+	# 	T_ip1 = self.__buildTp1(T_i, j, vectors)
+	#
+	# 	return T_ip1
+	#
+	# def getConservationMatrix(self, stoichiometry_matrix=None):
+	#
+	# 	if self.conservationMatrix is None:
+	# 		self.buildConservationMatrix(stoichiometry_matrix)
+	#
+	# 	return self.conservationMatrix
+	#
+	# def buildConservationMatrix(self, stoichiometry_matrix=None):
+	#
+	# 	if stoichiometry_matrix is None:
+	# 		sm = self.__model.stoichiometryMatrix.getStoichiometryMatrix()
+	# 	else:
+	# 		sm = stoichiometry_matrix.getStoichiometryMatrix()
+	#
+	# 	if sm is not None:
+	# 		sm = sm.evalf()
+	# 		T0 = sm.row_join(eye(sm.shape[0]))
+	# 		n = sm.shape[1]
+	#
+	# 		Ts = [T0]
+	# 		j = 0
+	#
+	# 		all_zero = False
+	# 		while not all_zero:
+	# 			Ts.append(self.__next_tableau(Ts[j], j, n))
+	# 			j += 1
+	# 			all_zero = True
+	# 			for i in range(Ts[j].shape[0]):
+	# 				all_zero &= all([j_i == 0 for j_i in Ts[j][i, 0:n]])
+	#
+	# 		last_T = Ts[len(Ts) - 1]
+	# 		self.conservationMatrix = last_T[:, n:n + sm.shape[0]]
 
 	def __str__(self):
 		res = ""

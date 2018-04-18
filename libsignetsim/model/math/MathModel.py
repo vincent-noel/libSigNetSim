@@ -29,8 +29,10 @@ from libsignetsim.model.math.container.ListOfConservationLaws import ListOfConse
 from libsignetsim.model.math.container.ListOfODEs import ListOfODEs
 from libsignetsim.model.math.container.ListOfCFEs import ListOfCFEs
 from libsignetsim.model.math.container.ListOfDAEs import ListOfDAEs
+from libsignetsim.model.math.container.ListOfInitialConditions import ListOfInitialConditions
 
 from libsignetsim.model.math.MathStoichiometryMatrix import MathStoichiometryMatrix
+from libsignetsim.model.math.MathConservationMatrix import MathConservationMatrix
 from libsignetsim.model.math.MathSlowModel import MathSlowModel
 from libsignetsim.model.math.MathAsymmetricModel import MathAsymmetricModel
 
@@ -55,11 +57,12 @@ class MathModel(CModelWriter):
 		self.listOfCFEs = ListOfCFEs(self)
 		self.listOfDAEs = ListOfDAEs(self)
 
-		self.solvedInitialConditions = None
-		# self.hasDAEs = False
+		self.solvedInitialConditions = ListOfInitialConditions(self)
+
 		self.slowModel = None
 		self.asymetricModel = MathAsymmetricModel(self)
 		self.stoichiometryMatrix = MathStoichiometryMatrix(self)
+		self.conservationMatrix = MathConservationMatrix(self)
 		self.listOfConservationLaws = ListOfConservationLaws(self)
 		self.slowModel = MathSlowModel(self, self.asymetricModel)
 

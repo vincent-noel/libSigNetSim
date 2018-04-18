@@ -27,6 +27,7 @@
 from libsignetsim.model.math.container.ListOfODEs import ListOfODEs
 from libsignetsim.model.math.container.ListOfCFEs import ListOfCFEs
 from libsignetsim.model.math.container.ListOfDAEs import ListOfDAEs
+from libsignetsim.model.math.container.ListOfInitialConditions import ListOfInitialConditions
 from libsignetsim.model.ListOfVariables import ListOfVariables
 from libsignetsim.model.sbml.container.ListOfEvents import ListOfEvents
 from libsignetsim.model.sbml.container.ListOfInitialAssignments import ListOfInitialAssignments
@@ -54,7 +55,7 @@ class MathSubmodel(object):
 		self.listOfEvents = ListOfEvents(self, self, math_only=True)
 		self.listOfInitialAssignments = ListOfInitialAssignments(self, self, math_only=True)
 
-		self.solvedInitialConditions = {}
+		self.solvedInitialConditions = ListOfInitialConditions(self)
 		self.listOfFunctionDefinitions = self.parentModel.listOfFunctionDefinitions
 		self.nbOdes = None
 		self.nbAssignments = None
@@ -96,9 +97,11 @@ class MathSubmodel(object):
 		print self.listOfCFEs
 		print self.listOfDAEs
 		print self.listOfODEs
+		print self.solvedInitialConditions
 		print "-----------------------------"
 
 	def pprint(self):
 		self.listOfCFEs.pprint()
 		self.listOfDAEs.pprint()
 		self.listOfODEs.pprint()
+		self.solvedInitialConditions.pprint()

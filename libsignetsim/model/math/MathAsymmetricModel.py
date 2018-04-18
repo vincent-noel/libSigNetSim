@@ -118,7 +118,7 @@ class MathAsymmetricModel(MathSubmodel):
 
 	def __findReducibleVariables(self, allowed_laws, allowed_variables):
 
-		cons_matrix = self.parentModel.listOfConservationLaws.getConservationMatrix()
+		cons_matrix = self.parentModel.conservationMatrix.getConservationMatrix()
 		cons_matrix_allowed = cons_matrix[allowed_laws, allowed_variables]
 
 		# Here we are trying to find groups of symmetrical variables.
