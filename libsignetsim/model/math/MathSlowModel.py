@@ -54,7 +54,7 @@ class MathSlowModel(MathSubmodel):
 		self.fastStoichiometryMatrix = MathStoichiometryMatrix(sbml_model)
 		self.slowStoichiometryMatrix = MathStoichiometryMatrix(sbml_model)
 		self.fastConservationLaws = ListOfConservationLaws(sbml_model)
-		self.DEBUG = True
+		self.DEBUG = False
 
 	def copyEquations(self):
 

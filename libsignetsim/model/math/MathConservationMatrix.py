@@ -38,13 +38,17 @@ class MathConservationMatrix(object):
 
 	def getConservationMatrix(self, stoichiometry_matrix=None):
 
-		if self.conservationMatrix is None:
-			self.buildConservationMatrix(stoichiometry_matrix)
+		if stoichiometry_matrix is not None:
+			return self.buildConservationMatrix(stoichiometry_matrix)
+
+		elif self.conservationMatrix is None:
+			self.conservationMatrix = self.buildConservationMatrix(stoichiometry_matrix)
 
 		return self.conservationMatrix
 
 	def buildConservationMatrix(self, stoichiometry_matrix=None):
 
+		conservationMatrix = None
 		if stoichiometry_matrix is None:
 			sm = self.__model.stoichiometryMatrix.getStoichiometryMatrix()
 		else:
@@ -67,8 +71,9 @@ class MathConservationMatrix(object):
 					all_zero &= all([j_i == 0 for j_i in Ts[j][i, 0:n]])
 
 			last_T = Ts[len(Ts) - 1]
-			self.conservationMatrix = last_T[:, n:n + sm.shape[0]]
+			conservationMatrix = last_T[:, n:n + sm.shape[0]]
 
+		return conservationMatrix
 	def __str__(self):
 		if self.conservationMatrix is not None:
 			return srepr(self.conservationMatrix)
