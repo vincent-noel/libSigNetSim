@@ -47,10 +47,15 @@ class MathStoichiometryMatrix(object):
 	def build(self, including_fast_reactions=True, including_slow_reactions=True, include_variable_stoichiometry=False):
 
 		t0 = time()
+
+		subs = {}
+		for var, value in self.__model.solvedInitialConditions.items():
+			subs.update({var: value.getInternalMathFormula()})
+
 		matrix = None
 		for i, reaction in enumerate(self.__model.listOfReactions.values()):
 
-			reaction_matrix = reaction.getStoichiometryMatrix(
+			reaction_matrix = reaction.getStoichiometryMatrix(subs,
 					including_fast_reactions=including_fast_reactions,
 					including_slow_reactions=including_slow_reactions,
 					include_variable_stoichiometry=include_variable_stoichiometry
