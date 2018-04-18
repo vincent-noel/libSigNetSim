@@ -48,10 +48,14 @@ class TestSuite(object):
 	# FastReations cases
 	INCOMPATIBLE_CASES += [
 		986, 987, 988,
-		1398, # Variable stoichiometry, assigned by an event
-		1399, # Two possible choices for initial values, not sure how to choose
-		1565,
-		1568, 1569, 1570, 1571, 1572
+		1398,# Variable stoichiometry, assigned by an event. Not today
+		1399,# Two possible choices for initial values, not sure how to choose
+		1565,# Problem evaluating sec(0.5) ??!! Also, takes ages
+		1568,# Piecewise logic in a conservation law
+		1569,# Four possible choices for initial values, not sure again
+		1570,# Piecewise login, again
+		1571,# Different output type for solve, should be easy
+		1572, #Two possible initial conditions
 	]
 
 	# RandomEventExecution : This case count twice as much events as it should...
