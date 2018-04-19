@@ -137,20 +137,24 @@ class ListOfMathVariables(object):
 	def changeVariableType(self, variable, new_type):
 
 		if variable.isDerivative():
-			self.__model.variablesOdes.remove(variable)
-			self.__model.nbOdes -= 1
+			if variable in self.__model.variablesOdes:
+				self.__model.variablesOdes.remove(variable)
+				self.__model.nbOdes -= 1
 
 		elif variable.isAssignment():
-			self.__model.variablesAssignment.remove(variable)
-			self.__model.nbAssignments -= 1
+			if variable in self.__model.variablesAssignment:
+				self.__model.variablesAssignment.remove(variable)
+				self.__model.nbAssignments -= 1
 
 		elif variable.isConstant():
-			self.__model.variablesConstant.remove(variable)
-			self.__model.nbConstants -= 1
+			if variable in self.__model.variablesConstant:
+				self.__model.variablesConstant.remove(variable)
+				self.__model.nbConstants -= 1
 
 		elif variable.isAlgebraic():
-			self.__model.variablesAlgebraic.remove(variable)
-			self.__model.nbAlgebraics -= 1
+			if variable in self.__model.variablesAlgebraic:
+				self.__model.variablesAlgebraic.remove(variable)
+				self.__model.nbAlgebraics -= 1
 
 		if new_type == MathVariable.VAR_ODE:
 			self.__model.variablesOdes.append(variable)
