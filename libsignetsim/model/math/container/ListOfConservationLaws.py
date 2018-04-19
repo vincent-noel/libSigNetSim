@@ -26,12 +26,12 @@
 
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.ConservationLaw import ConservationLaw
-from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyEqual
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyEqual, SympyAdd, SympyMul, SympyPow
 from libsignetsim.model.ListOfVariables import ListOfVariables
 from libsignetsim.model.sbml.ConservedMoiety import ConservedMoiety
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 
-from sympy import eye, Matrix, ones, pretty
+from sympy import ones, pretty, srepr
 
 
 class ListOfConservationLaws(list):
@@ -46,6 +46,28 @@ class ListOfConservationLaws(list):
 		self.extraVariables = ListOfVariables(self.__model)
 		self.conservationMatrix = None
 
+	def getRawFormulas(self, stoichiometry_matrix):
+		return [SympyEqual(law, value) for law, value in self.__build(stoichiometry_matrix)]
+
+	def build(self):
+
+		self.clear()
+		laws = self.__build()
+		for law, value in laws:
+			self.__buildConservationLaw(law, value)
+
+	def __str__(self):
+		res = ""
+		for law in self:
+			res += "%s\n" % law
+		return res
+
+	def pprint(self):
+
+		for cons in self:
+			cons.pprint()
+			print("\n")
+
 	def hasConservationLaws(self):
 		return len(self) > 0
 
@@ -56,11 +78,12 @@ class ListOfConservationLaws(list):
 		for variable in self.__model.listOfVariables:
 			if variable.isConservedMoiety():
 				to_remove.append(variable)
-				self.__model.variablesConstant.remove(variable)
+				if variable.isConstant():
+					self.__model.variablesConstant.remove(variable)
+					self.__model.nbConstants -= 1
 
 		for variable in to_remove:
 			self.__model.listOfVariables.remove(variable)
-
 
 	def __getVariableFormula(self, variable):
 
@@ -68,7 +91,7 @@ class ListOfConservationLaws(list):
 
 		if variable.isSpecies():
 			if not variable.hasOnlySubstanceUnits:
-				formula /= variable.getCompartment().symbol.getSymbol()
+				formula *= variable.getCompartment().symbol.getSymbol()
 
 			if variable.isSetConversionFactor():
 				formula /= variable.getSymbolConversionFactor()
@@ -90,7 +113,7 @@ class ListOfConservationLaws(list):
 			value = self.__model.solvedInitialConditions[symbol].getDeveloppedInternalMathFormula()
 			if variable.isSpecies():
 				if not variable.hasOnlySubstanceUnits:
-					value /= variable.getCompartment().symbol.getSymbol()
+					value *= variable.getCompartment().symbol.getSymbol()
 
 				if variable.isSetConversionFactor():
 					conv_factor = variable.getSymbolConversionFactor()
@@ -108,6 +131,52 @@ class ListOfConservationLaws(list):
 
 		return value
 
+	def __extractCompartment(self, raw_value):
+
+		if raw_value.func == SympyMul:
+			return (
+				raw_value.args[0],
+				self.__model.listOfVariables.getBySymbol(raw_value.args[1])
+			)
+		else:
+			return raw_value, None
+
+	def __addConservedMoiety(self, raw_value):
+
+		(value, compartment) = self.__extractCompartment(raw_value)
+		new_var = ConservedMoiety(self.__model)
+
+		if compartment is None:
+			name = "total_%d" % len(self)
+		else:
+			name = "total_%d_%s" % (len(self), compartment.getSbmlId())
+
+		new_var.new(name, value)
+
+		self.__solveInitialConditions(new_var)
+
+		if compartment is None:
+			return new_var.symbol.getInternalMathFormula(rawFormula=True)
+		else:
+			return (
+				new_var.symbol.getInternalMathFormula(rawFormula=True) *
+				compartment.symbol.getInternalMathFormula()
+			)
+
+	def __solveInitialConditions(self, moiety):
+
+		solved_value = MathFormula(self.__model)
+		t_solved_value = moiety.value.getInternalMathFormula()
+
+		for var in t_solved_value.atoms(SympySymbol):
+			if var not in [SympySymbol("_avogadro_")]:
+				t_solved_value = unevaluatedSubs(
+					t_solved_value,
+					{var: self.__model.solvedInitialConditions[var].getInternalMathFormula()})
+
+		solved_value.setInternalMathFormula(t_solved_value)
+		self.__model.solvedInitialConditions.update({moiety.symbol.getSymbol(): solved_value})
+
 	def __buildConservationLaw(self, t_law, t_value):
 
 		t_vars = []
@@ -119,27 +188,18 @@ class ListOfConservationLaws(list):
 		t_lhs = MathFormula(self.__model)
 		t_lhs.setInternalMathFormula(t_law)
 
-		new_var = ConservedMoiety(self.__model)
-		new_var.setSbmlId("total_%d" % len(self))
-		new_var.value.setInternalMathFormula(t_value)
+		final_value = SympyInteger(0)
 
-		self.__model.listOfVariables.addVariable(new_var)
-		self.__model.listOfVariables.changeVariableType(new_var, ConservedMoiety.VAR_CST)
-
-		solved_value = MathFormula(self.__model)
-		t_solved_value = new_var.value.getInternalMathFormula()
-
-		for var in t_solved_value.atoms(SympySymbol):
-			if var not in [SympySymbol("_avogadro_")]:
-				t_solved_value = unevaluatedSubs(
-					t_solved_value,
-					{var: self.__model.solvedInitialConditions[var].getInternalMathFormula()})
-
-		solved_value.setInternalMathFormula(t_solved_value)
-		self.__model.solvedInitialConditions.update({new_var.symbol.getSymbol(): solved_value})
+		if t_value.func == SympyAdd:
+			# Should be only positive terms, divided by the compartment
+			for arg in t_value.args:
+				moeity_value = self.__addConservedMoiety(arg)
+				final_value += moeity_value
+		else:
+			final_value = self.__addConservedMoiety(t_value)
 
 		t_rhs = MathFormula(self.__model)
-		t_rhs.setInternalMathFormula(t_value)
+		t_rhs.setInternalMathFormula(final_value)
 
 		t_conservation_law = ConservationLaw(self.__model)
 		t_conservation_law.new(t_lhs, t_rhs, t_vars)
@@ -182,123 +242,4 @@ class ListOfConservationLaws(list):
 								t_value += tt_res * tt_value
 
 						laws.append((t_law, t_value))
-
-
 		return laws
-
-	def getRawFormulas(self, stoichiometry_matrix):
-		return [SympyEqual(law, value) for law, value in self.__build(stoichiometry_matrix)]
-
-	def build(self):
-
-		self.clear()
-		laws = self.__build()
-		for law, value in laws:
-			self.__buildConservationLaw(law, value)
-	#
-	# def __buildS(self, T, n):
-	# 	S = []
-	# 	for i in range(T.shape[0]):
-	# 		S.append(set([ii for ii, ii_val in enumerate(T[i, n:T.shape[1] + 1]) if ii_val == 0]))
-	# 	return S
-	#
-	# def __getCondition1(self, T, i, j, k):
-	# 	return T[i, j] * T[k, j] < 0
-	#
-	# def __getCondition2(self, T, S, i, k):
-	#
-	# 	intersection = S[i].intersection(S[k])
-	# 	result = True
-	# 	for l in range(T.shape[0]):
-	# 		if l != k and l != i:
-	# 			if intersection.issubset(S[l]):
-	# 				result = False
-	#
-	# 	return result
-	#
-	# def __buildIndices(self, T, S, j):
-	#
-	# 	indices = []
-	# 	for i in range(T.shape[0]):
-	# 		for k in range(T.shape[0]):
-	# 			if i != k and i < k:
-	# 				if self.__getCondition1(T, i, j, k) and self.__getCondition2(T, S, i, k):
-	# 					indices.append((i, k))
-	#
-	# 	return indices
-	#
-	# def __buildVectors(self, T, j, indices):
-	#
-	# 	result = []
-	# 	for i, k in indices:
-	# 		vector = abs(T[i, j]) * T[k, :] + abs(T[k, j]) * T[i, :]
-	# 		result.append(vector)
-	#
-	# 	return result
-	#
-	# def __buildTp1(self, T, j, vectors):
-	#
-	# 	T_p1 = Matrix([[]])
-	# 	if len(vectors) > 0:
-	# 		for i in range(len(vectors)):
-	# 			T_p1 = T_p1.col_join(vectors[i])
-	#
-	# 	for i in range(T.shape[0]):
-	# 		if T[i, j] == 0:
-	# 			T_p1 = T_p1.col_join(T[i, :])
-	#
-	# 	return T_p1
-	#
-	# def __next_tableau(self, T_i, j, n):
-	#
-	# 	S = self.__buildS(T_i, n)
-	# 	indices = self.__buildIndices(T_i, S, j)
-	# 	vectors = self.__buildVectors(T_i, j, indices)
-	# 	T_ip1 = self.__buildTp1(T_i, j, vectors)
-	#
-	# 	return T_ip1
-	#
-	# def getConservationMatrix(self, stoichiometry_matrix=None):
-	#
-	# 	if self.conservationMatrix is None:
-	# 		self.buildConservationMatrix(stoichiometry_matrix)
-	#
-	# 	return self.conservationMatrix
-	#
-	# def buildConservationMatrix(self, stoichiometry_matrix=None):
-	#
-	# 	if stoichiometry_matrix is None:
-	# 		sm = self.__model.stoichiometryMatrix.getStoichiometryMatrix()
-	# 	else:
-	# 		sm = stoichiometry_matrix.getStoichiometryMatrix()
-	#
-	# 	if sm is not None:
-	# 		sm = sm.evalf()
-	# 		T0 = sm.row_join(eye(sm.shape[0]))
-	# 		n = sm.shape[1]
-	#
-	# 		Ts = [T0]
-	# 		j = 0
-	#
-	# 		all_zero = False
-	# 		while not all_zero:
-	# 			Ts.append(self.__next_tableau(Ts[j], j, n))
-	# 			j += 1
-	# 			all_zero = True
-	# 			for i in range(Ts[j].shape[0]):
-	# 				all_zero &= all([j_i == 0 for j_i in Ts[j][i, 0:n]])
-	#
-	# 		last_T = Ts[len(Ts) - 1]
-	# 		self.conservationMatrix = last_T[:, n:n + sm.shape[0]]
-
-	def __str__(self):
-		res = ""
-		for law in self:
-			res += "%s\n" % law
-		return res
-
-	def pprint(self):
-
-		for cons in self:
-			cons.pprint()
-			print("\n")
