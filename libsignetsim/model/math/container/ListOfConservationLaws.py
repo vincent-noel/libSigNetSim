@@ -108,23 +108,23 @@ class ListOfConservationLaws(list):
 
 		symbol = variable.symbol.getSymbol()
 
-		if symbol in self.__model.solvedInitialConditions.keys():
+		if symbol in self.__model.listOfInitialConditions.keys():
 
-			value = self.__model.solvedInitialConditions[symbol].getDeveloppedInternalMathFormula()
+			value = self.__model.listOfInitialConditions[symbol].getDeveloppedInternalMathFormula()
 			if variable.isSpecies():
 				if not variable.hasOnlySubstanceUnits:
 					value *= variable.getCompartment().symbol.getSymbol()
 
 				if variable.isSetConversionFactor():
 					conv_factor = variable.getSymbolConversionFactor()
-					value /= self.__model.solvedInitialConditions[conv_factor].getDeveloppedInternalMathFormula()
+					value /= self.__model.listOfInitialConditions[conv_factor].getDeveloppedInternalMathFormula()
 
 				elif self.__model.isSetConversionFactor():
 					conv_factor = self.__model.getSymbolConversionFactor()
-					value /= self.__model.solvedInitialConditions[conv_factor].getDeveloppedInternalMathFormula()
+					value /= self.__model.listOfInitialConditions[conv_factor].getDeveloppedInternalMathFormula()
 			elif self.__model.isSetConversionFactor():
 				conv_factor = self.__model.getSymbolConversionFactor()
-				value /= self.__model.solvedInitialConditions[conv_factor].getDeveloppedInternalMathFormula()
+				value /= self.__model.listOfInitialConditions[conv_factor].getDeveloppedInternalMathFormula()
 
 		else:
 			value = SympySymbol("_%s_0_" % str(symbol))
@@ -172,10 +172,10 @@ class ListOfConservationLaws(list):
 			if var not in [SympySymbol("_avogadro_")]:
 				t_solved_value = unevaluatedSubs(
 					t_solved_value,
-					{var: self.__model.solvedInitialConditions[var].getInternalMathFormula()})
+					{var: self.__model.listOfInitialConditions[var].getInternalMathFormula()})
 
 		solved_value.setInternalMathFormula(t_solved_value)
-		self.__model.solvedInitialConditions.update({moiety.symbol.getSymbol(): solved_value})
+		self.__model.listOfInitialConditions.update({moiety.symbol.getSymbol(): solved_value})
 
 	def __buildConservationLaw(self, t_law, t_value):
 

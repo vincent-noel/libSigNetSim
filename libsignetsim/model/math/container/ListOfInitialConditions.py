@@ -24,9 +24,14 @@
 
 """
 
-from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyEqual
+from libsignetsim.model.math.MathException import MathException
+from libsignetsim.model.math.MathFormula import MathFormula
+from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyEqual, SympyInteger, SympyFloat
+from libsignetsim.settings.Settings import Settings
 
 from sympy import pretty
+from time import time
 
 
 class ListOfInitialConditions(dict):
@@ -53,3 +58,117 @@ class ListOfInitialConditions(dict):
 			var0 = SympySymbol("(" + str(var) + ")_0")
 			print(pretty(SympyEqual(var0, value.getDeveloppedInternalMathFormula())))
 			print("\n")
+
+
+	def solve(self, tmin):
+		""" Initial conditions are a mess between values, initial assignments,
+			and assignment rules. We actually need to solve them to make sure
+			all dependencies are respected
+
+			Unfortunately, this can be quite costly for large system
+			So we'll try to just solve the minimum for C simulations
+
+			"""
+
+		DEBUG = False
+
+		t0 = time()
+
+		if tmin == 0:
+			init_cond = {SympySymbol("_time_"): SympyInteger(tmin)}
+		else:
+			init_cond = {SympySymbol("_time_"): SympyFloat(tmin)}
+
+		for init_ass in self.__model.listOfInitialAssignments.values():
+			if init_ass.isValid():
+				t_var = init_ass.getVariable().symbol.getSymbol()
+				t_value = init_ass.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula()
+				init_cond.update({t_var: t_value})
+
+		if DEBUG:
+			print init_cond
+
+		for rule in self.__model.listOfRules.values():
+			if rule.isAssignment() and rule.isValid():
+				t_var = rule.getVariable().symbol.getSymbol()
+				if t_var not in init_cond.keys():
+					t_value = rule.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula()
+					init_cond.update({t_var: t_value})
+
+		if DEBUG:
+			print init_cond
+
+		for var in self.__model.listOfVariables.values():
+			t_var = var.symbol.getSymbol()
+			if t_var not in init_cond.keys():
+				t_value = var.value.getDeveloppedInternalMathFormula()
+				if t_value is not None:
+					init_cond.update({t_var: t_value})
+				elif not var.isAlgebraic():
+					init_cond.update({t_var: SympyFloat(0.0)})
+
+		if DEBUG:
+			print init_cond
+
+		crossDependencies = True
+		passes = 1
+		while crossDependencies:
+
+			if DEBUG:
+				print "PASS : %d" % passes
+
+			crossDependencies = False
+
+			for t_var in init_cond.keys():
+				t_def = init_cond[t_var]
+				if len(t_def.atoms(SympySymbol).intersection(set(init_cond.keys()))) > 0:
+					crossDependencies = True
+
+					if DEBUG:
+						print "\n> " + str(t_var) + " : " + str(t_def)
+
+					for match in t_def.atoms(SympySymbol).intersection(set(init_cond.keys())):
+						if match == t_var:
+							raise MathException("Initial values : self dependency is bad")
+						if DEBUG:
+							print ">> " + str(match) + " : " + str(init_cond[match])
+
+						t_def = unevaluatedSubs(t_def, {match: init_cond[match]})
+						init_cond.update({t_var: t_def})
+
+					if DEBUG:
+						if len(t_def.atoms(SympySymbol).intersection(set(init_cond.keys()))) == 0:
+							print "> " + str(t_var) + " : " + str(t_def) + " [OK]"
+						else:
+							print "> " + str(t_var) + " : " + str(t_def) + " [ERR]"
+			passes += 1
+			if passes >= 100:
+				raise MathException("Initial values : Probable circular dependencies")
+
+			if DEBUG:
+				print ""
+
+		if DEBUG:
+			print init_cond.keys()
+			print self.__model.listOfVariables.symbols()
+
+		# self.listOfInitialConditions = {}
+		dict.clear(self)
+		for var, value in init_cond.items():
+			if var != SympySymbol("_time_"):
+				t_var = self.__model.listOfVariables.getBySymbol(var)
+				if t_var is not None:
+					t_value = MathFormula(self.__model)
+					t_value.setInternalMathFormula(value.doit())
+					dict.update(self, {t_var.symbol.getSymbol(): t_value})
+
+		if DEBUG:
+			print "> Final listOfInitialConditions"
+			print dict.keys(self)
+
+		for var in self.__model.listOfVariables.values():
+			if not var.symbol.getSymbol() in dict.keys(self) and not var.isAlgebraic():
+				print "Lacks an initial condition : %s" % var.getSbmlId()
+
+		if Settings.verbose >= 1:
+			print "> Finished calculating initial conditions (%.2gs)" % (time()-t0)

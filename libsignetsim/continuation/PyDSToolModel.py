@@ -69,12 +69,12 @@ class PyDSToolModel(object):
 
 			if variable.isConstant():
 				t_symbol = variable.symbol.getInternalMathFormula()
-				t_value = self.model.solvedInitialConditions[t_symbol].getInternalMathFormula()
+				t_value = self.model.listOfInitialConditions[t_symbol].getInternalMathFormula()
 				parameters.update({str(t_symbol): str(t_value)})
 
 			elif variable.isDerivative():
 				t_symbol = variable.symbol.getInternalMathFormula()
-				t_value = self.model.solvedInitialConditions[t_symbol].getInternalMathFormula()
+				t_value = self.model.listOfInitialConditions[t_symbol].getInternalMathFormula()
 				variables.update({str(t_symbol): str(t_value)})
 
 		for ode in self.model.getMathModel().listOfODEs:

@@ -49,7 +49,7 @@ class MathStoichiometryMatrix(object):
 		t0 = time()
 
 		subs = {}
-		for var, value in self.__model.solvedInitialConditions.items():
+		for var, value in self.__model.listOfInitialConditions.items():
 			subs.update({var: value.getInternalMathFormula()})
 
 		matrix = None

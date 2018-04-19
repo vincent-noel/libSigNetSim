@@ -55,7 +55,7 @@ class MathSubmodel(object):
 		self.listOfEvents = ListOfEvents(self, self, math_only=True)
 		self.listOfInitialAssignments = ListOfInitialAssignments(self, self, math_only=True)
 
-		self.solvedInitialConditions = ListOfInitialConditions(self)
+		self.listOfInitialConditions = ListOfInitialConditions(self)
 		self.listOfFunctionDefinitions = self.parentModel.listOfFunctionDefinitions
 		self.nbOdes = None
 		self.nbAssignments = None
@@ -76,14 +76,14 @@ class MathSubmodel(object):
 		self.__upToDate = value
 
 	def copyVariables(self):
-		""" Copies the listOfVariables and the solvedInitialConditions """
+		""" Copies the listOfVariables and the listOfInitialConditions """
 
 		self.listOfVariables.copySubmodel(self.parentModel)
 
-		for variable, value in self.parentModel.solvedInitialConditions.items():
+		for variable, value in self.parentModel.listOfInitialConditions.items():
 			t_value = MathFormula(self)
 			t_value.setInternalMathFormula(value.getInternalMathFormula())
-			self.solvedInitialConditions.update({variable: t_value})
+			self.listOfInitialConditions.update({variable: t_value})
 
 	def copyEvents(self):
 		self.listOfEvents.copySubmodel(self.parentModel.listOfEvents)
@@ -97,11 +97,11 @@ class MathSubmodel(object):
 		print self.listOfCFEs
 		print self.listOfDAEs
 		print self.listOfODEs
-		print self.solvedInitialConditions
+		print self.listOfInitialConditions
 		print "-----------------------------"
 
 	def pprint(self):
 		self.listOfCFEs.pprint()
 		self.listOfDAEs.pprint()
 		self.listOfODEs.pprint()
-		self.solvedInitialConditions.pprint()
+		self.listOfInitialConditions.pprint()

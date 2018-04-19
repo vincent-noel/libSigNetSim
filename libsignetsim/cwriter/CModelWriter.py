@@ -100,7 +100,7 @@ class CModelWriter(object):
 				f_c.write("  %s.alg_der_variables = (ModelVariable *) malloc(sizeof(ModelVariable) * %s.nb_algebraic_variables);\n" % (variable_name, variable_name))
 
 		for i_var, variable_ode in enumerate(self.getMathModel().variablesOdes):
-			t_value = self.getMathModel().solvedInitialConditions[variable_ode.symbol.getSymbol()]
+			t_value = self.getMathModel().listOfInitialConditions[variable_ode.symbol.getSymbol()]
 
 			f_c.write("  %s.derivative_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_DERIVATIVE};\n" % (
 							variable_name, i_var, t_value.getCMathFormula(), variable_ode.getSymbolStr()))
@@ -110,18 +110,18 @@ class CModelWriter(object):
 								variable_name, i_var, variable_ode.symbol.getPrettyPrintMathFormula()))
 
 		for i_var, variable_ass in enumerate(self.getMathModel().variablesAssignment):
-			t_value = self.getMathModel().solvedInitialConditions[variable_ass.symbol.getSymbol()]
+			t_value = self.getMathModel().listOfInitialConditions[variable_ass.symbol.getSymbol()]
 			f_c.write("  %s.assignment_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_ASSIGNMENT};\n" % (
 								variable_name, i_var, t_value.getCMathFormula(), variable_ass.getSymbolStr()))
 
 		for i_var, variable_cst in enumerate(self.getMathModel().variablesConstant):
-			t_value = self.getMathModel().solvedInitialConditions[variable_cst.symbol.getSymbol()]
+			t_value = self.getMathModel().listOfInitialConditions[variable_cst.symbol.getSymbol()]
 			f_c.write("  %s.constant_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_CONSTANT};\n" % (
 								variable_name, i_var, t_value.getCMathFormula(), variable_cst.getSymbolStr()))
 
 
 		for i_var, variable_alg in enumerate(self.getMathModel().variablesAlgebraic):
-			t_value = self.getMathModel().solvedInitialConditions[variable_alg.symbol.getSymbol()]
+			t_value = self.getMathModel().listOfInitialConditions[variable_alg.symbol.getSymbol()]
 			f_c.write("  %s.algebraic_variables[%d] = (ModelVariable) {%s, \"%s\", VAR_ALGEBRAIC};\n" % (
 								variable_name, i_var, t_value.getCMathFormula(), variable_alg.getSymbolStr()))
 

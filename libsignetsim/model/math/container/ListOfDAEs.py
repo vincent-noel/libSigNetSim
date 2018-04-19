@@ -59,7 +59,7 @@ class ListOfDAEs(list):
 		system = []
 
 		subs = {SympySymbol('time'): SympyFloat(tmin)}
-		for var, val in self.__model.solvedInitialConditions.items():
+		for var, val in self.__model.listOfInitialConditions.items():
 			if not self.__model.listOfVariables.getBySymbol(var).isAlgebraic():
 				subs.update({var: val.getInternalMathFormula()})
 
@@ -187,16 +187,16 @@ class ListOfDAEs(list):
 				print init_cond.keys()
 				print self.__model.listOfVariables.symbols()
 
-			self.__model.solvedInitialConditions = {}
+			self.__model.listOfInitialConditions = {}
 			for var, value in init_cond.items():
 				t_var = self.__model.listOfVariables.getBySymbol(var)
 				if t_var is not None:
 					t_value = MathFormula(self.__model)
 					t_value.setInternalMathFormula(value)
-					self.__model.solvedInitialConditions.update({t_var.symbol.getSymbol():t_value})
+					self.__model.listOfInitialConditions.update({t_var.symbol.getSymbol():t_value})
 
 			for var in self.__model.listOfVariables.values():
-				if not var.symbol.getSymbol() in self.__model.solvedInitialConditions.keys():
+				if not var.symbol.getSymbol() in self.__model.listOfInitialConditions.keys():
 					print "Lacks an initial condition : %s" % var.getSbmlId()
 
 	def solveDAEs(self):

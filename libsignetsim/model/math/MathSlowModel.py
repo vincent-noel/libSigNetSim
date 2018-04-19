@@ -218,7 +218,7 @@ class MathSlowModel(MathSubmodel):
 		system_vars = self.fastLaws_vars
 
 		subs = {}
-		for var, math_formula in self.sbmlModel.solvedInitialConditions.items():
+		for var, math_formula in self.sbmlModel.listOfInitialConditions.items():
 			variable = self.sbmlModel.listOfVariables.getBySymbol(var)
 			if var not in system_vars or variable.boundaryCondition:
 				subs.update({var: math_formula.getDeveloppedInternalMathFormula()})
@@ -252,6 +252,6 @@ class MathSlowModel(MathSubmodel):
 			math_formula = MathFormula(self)
 			math_formula.setInternalMathFormula(unevaluatedSubs(value, subs))
 
-			self.solvedInitialConditions.update({var: math_formula})
+			self.listOfInitialConditions.update({var: math_formula})
 
 		self.setUpToDate(True)
