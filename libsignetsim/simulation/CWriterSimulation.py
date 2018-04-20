@@ -79,9 +79,6 @@ class CWriterSimulation(CWriterModels, CWriterData):
 		if self.experiment is not None:
 			treated_variables_names = self.experiment.getTreatedVariables()
 
-
-
-
 		for modelInd, model in enumerate(self.listOfModels):
 			treated_variables = []
 			for name in treated_variables_names:
@@ -92,11 +89,12 @@ class CWriterSimulation(CWriterModels, CWriterData):
 				elif self.workingModel.listOfCompartments.containsName(name):
 					treated_variables.append(self.workingModel.listOfCompartments.getByName(name).getSbmlId())
 
-			dont_reduce = not Settings.reduceByDefault
-			if len(treated_variables) > 0:
-				dont_reduce = True
+			reduce = Settings.reduceByDefault
 
-			model.build(vars_to_keep=treated_variables, dont_reduce=dont_reduce, tmin=self.timeMin[modelInd])
+			if len(treated_variables) > 0:
+				reduce = False
+
+			model.build(vars_to_keep=treated_variables, reduce=reduce, tmin=self.timeMin[modelInd])
 
 		start = time()
 		self.writeModelFiles()

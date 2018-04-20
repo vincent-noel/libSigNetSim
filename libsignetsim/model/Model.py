@@ -43,11 +43,11 @@ class Model(SbmlModel, MathModel):
 		MathModel.__init__(self, obj_id)
 		self.listOfVariables = ListOfVariables(self)
 
-	def build(self, vars_to_keep=[], dont_reduce=(not Settings.reduceByDefault), tmin=0):
+	def build(self, vars_to_keep=[], reduce=Settings.reduceByDefault, tmin=0):
 
 		t0 = time()
 		self.listOfVariables.classifyVariables()
-		MathModel.buildModel(self, vars_to_keep=vars_to_keep, dont_reduce=dont_reduce, tmin=tmin)
+		MathModel.buildModel(self, vars_to_keep=vars_to_keep, reduce=reduce, tmin=tmin)
 
 		if Settings.verboseTiming >= 1:
 			print ">> Model built in %.2gs" % (time()-t0)

@@ -53,7 +53,7 @@ class Optimization(OptimizationExecution, OptimizationParameters):
 
 		if self.workingModel.parentDoc is not None:
 			self.workingModel.parentDoc.writeSbmlToFile(join(self.getTempDirectory(), "model.sbml"))
-		self.workingModel.build(dont_reduce=True)
+		self.workingModel.build(reduce=False)
 
 
 	def initializeOptimizationParameters(self):

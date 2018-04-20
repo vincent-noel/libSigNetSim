@@ -90,7 +90,7 @@ class MathModel(CModelWriter):
 		else:
 			return self
 
-	def buildModel(self, vars_to_keep=[], dont_reduce=(not Settings.reduceByDefault), tmin=0):
+	def buildModel(self, vars_to_keep=[], reduce=Settings.reduceByDefault, tmin=0):
 
 		self.listOfCFEs.build()
 		self.listOfODEs.build()
@@ -107,7 +107,7 @@ class MathModel(CModelWriter):
 			self.listOfDAEs.solveInitialConditions(tmin)
 			self.listOfDAEs.solveDAEs()
 
-		if not dont_reduce:
+		if reduce:
 			self.buildReducedModel(vars_to_keep=vars_to_keep)
 
 		if len(self.listOfEvents) == 0 and self.listOfReactions.hasFastReaction():
@@ -161,4 +161,4 @@ class MathModel(CModelWriter):
 		self.listOfCFEs.pprint()
 		self.listOfDAEs.pprint()
 		self.listOfODEs.pprint()
-		self.listOfInitialAssignments.pprint()
+		self.listOfInitialConditions.pprint()
