@@ -65,6 +65,9 @@ class MathAsymmetricModel(MathSubmodel):
 
 	def build(self, treated_variables=[]):
 
+		if not self.parentModel.listOfConservationLaws.isUpToDate():
+			self.parentModel.listOfConservationLaws.build()
+
 		independent_species = []
 		independent_species_formula = {}
 

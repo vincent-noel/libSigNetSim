@@ -59,6 +59,6 @@ class ConservedMoiety(Variable, SbmlObject, InitiallyAssignedVariable,
 		SbmlObject.new(self)
 		Variable.new(self, name, Variable.CONSERVED_MOIETY)
 		HasUnits.new(self, unit)
-		self.setSbmlId(self.__model.listOfVariables.newSbmlId(self, name))
+
 		self.value.setInternalMathFormula(value)
 		self.__model.listOfVariables.changeVariableType(self, Variable.VAR_CST)

@@ -45,9 +45,12 @@ class ListOfConservationLaws(list):
 
 		self.extraVariables = ListOfVariables(self.__model)
 		self.conservationMatrix = None
-
+		self.__upToDate = False
 	def getRawFormulas(self, stoichiometry_matrix):
 		return [SympyEqual(law, value) for law, value in self.__build(stoichiometry_matrix)]
+
+	def isUpToDate(self):
+		return self.__upToDate
 
 	def build(self):
 
@@ -55,6 +58,8 @@ class ListOfConservationLaws(list):
 		laws = self.__build()
 		for law, value in laws:
 			self.__buildConservationLaw(law, value)
+
+		self.__upToDate = True
 
 	def __str__(self):
 		res = ""
@@ -90,9 +95,6 @@ class ListOfConservationLaws(list):
 		formula = variable.symbol.getSymbol()
 
 		if variable.isSpecies():
-			if not variable.hasOnlySubstanceUnits:
-				formula *= variable.getCompartment().symbol.getSymbol()
-
 			if variable.isSetConversionFactor():
 				formula /= variable.getSymbolConversionFactor()
 
@@ -112,9 +114,6 @@ class ListOfConservationLaws(list):
 
 			value = self.__model.listOfInitialConditions[symbol].getDeveloppedInternalMathFormula()
 			if variable.isSpecies():
-				if not variable.hasOnlySubstanceUnits:
-					value *= variable.getCompartment().symbol.getSymbol()
-
 				if variable.isSetConversionFactor():
 					conv_factor = variable.getSymbolConversionFactor()
 					value /= self.__model.listOfInitialConditions[conv_factor].getDeveloppedInternalMathFormula()
@@ -131,37 +130,14 @@ class ListOfConservationLaws(list):
 
 		return value
 
-	def __extractCompartment(self, raw_value):
+	def __addConservedMoiety(self, value):
 
-		if raw_value.func == SympyMul:
-			return (
-				raw_value.args[0],
-				self.__model.listOfVariables.getBySymbol(raw_value.args[1])
-			)
-		else:
-			return raw_value, None
-
-	def __addConservedMoiety(self, raw_value):
-
-		(value, compartment) = self.__extractCompartment(raw_value)
 		new_var = ConservedMoiety(self.__model)
-
-		if compartment is None:
-			name = "total_%d" % len(self)
-		else:
-			name = "total_%d_%s" % (len(self), compartment.getSbmlId())
-
+		name = "total_%d" % len(self)
 		new_var.new(name, value)
-
 		self.__solveInitialConditions(new_var)
 
-		if compartment is None:
-			return new_var.symbol.getInternalMathFormula(rawFormula=True)
-		else:
-			return (
-				new_var.symbol.getInternalMathFormula(rawFormula=True) *
-				compartment.symbol.getInternalMathFormula()
-			)
+		return new_var.symbol.getInternalMathFormula(rawFormula=True)
 
 	def __solveInitialConditions(self, moiety):
 

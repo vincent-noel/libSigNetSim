@@ -36,7 +36,7 @@ class CFE(object):
 	REACTION            = 1
 	SOLVED              = 2
 
-	def __init__ (self, model, cfe_type=SOLVED):
+	def __init__(self, model, cfe_type=SOLVED):
 		""" Constructor of ode class """
 
 		self.__model = model
