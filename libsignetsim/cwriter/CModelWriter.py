@@ -130,26 +130,26 @@ class CModelWriter(object):
 				f_c.write("  %s.alg_der_variables[%d] = (ModelVariable) {RCONST(0.0), \"%s\", VAR_ALG_DER};\n" % (
 								variable_name, i_var, variable_alg.getSymbolStr()))
 
-		f_c.write("  %s.nb_init_assignments = %d;\n" % (variable_name, len(self.listOfInitialAssignments)))
-		f_c.write("  %s.nb_events = %d;\n" % (variable_name, self.listOfEvents.nbValidEvents()))
-		f_c.write("  %s.nb_roots = %d;\n" % (variable_name, self.listOfEvents.nbRoots()))
+		f_c.write("  %s.nb_init_assignments = %d;\n" % (variable_name, len(self.getMathModel().listOfInitialAssignments)))
+		f_c.write("  %s.nb_events = %d;\n" % (variable_name, self.getMathModel().listOfEvents.nbValidEvents()))
+		f_c.write("  %s.nb_roots = %d;\n" % (variable_name, self.getMathModel().listOfEvents.nbRoots()))
 
-		if self.listOfEvents.nbRoots() > 0:
-			f_c.write("  %s.roots_operators = calloc(%d, sizeof(int));\n" % (variable_name, len(self.listOfEvents.getRootsOperators())))
+		if self.getMathModel().listOfEvents.nbRoots() > 0:
+			f_c.write("  %s.roots_operators = calloc(%d, sizeof(int));\n" % (variable_name, len(self.getMathModel().listOfEvents.getRootsOperators())))
 			for i, roots_operators in enumerate(self.listOfEvents.getRootsOperators()):
 				f_c.write("  %s.roots_operators[%d] = %d;\n" % (variable_name, i, roots_operators))
 
-		if self.listOfEvents.nbValidEvents() > 0:
+		if self.getMathModel().listOfEvents.nbValidEvents() > 0:
 			f_c.write("  %s.events_init = calloc(%s.nb_events, sizeof(int));\n" % (variable_name, variable_name))
-			for i, event in enumerate(self.listOfEvents.validEvents()):
+			for i, event in enumerate(self.getMathModel().listOfEvents.validEvents()):
 				f_c.write("  %s.events_init[%d] = %d;\n" % (variable_name, i, event.trigger.initialValue))
 
 			f_c.write("  %s.memory_size_per_event = calloc(%s.nb_events, sizeof(int));\n" % (variable_name, variable_name))
-			for event in self.listOfEvents.validEvents():
+			for event in self.getMathModel().listOfEvents.validEvents():
 				f_c.write("  %s.memory_size_per_event[%d] = %d;\n" % (variable_name, event.objId, event.memorySize()))
 
 			f_c.write("  %s.events_has_priority = calloc(%s.nb_events, sizeof(int));\n" % (variable_name, variable_name))
-			for event in self.listOfEvents.validEvents():
+			for event in self.getMathModel().listOfEvents.validEvents():
 				f_c.write("  %s.events_has_priority[%d] = %d;\n" % (variable_name, event.objId, event.priority is not None))
 
 		list_samples_str = "%.16g" % list_samples[0]
@@ -214,10 +214,10 @@ class CModelWriter(object):
 			f_c.write("  free(%s.der_der_variables);\n" % variable_name)
 
 
-		if self.listOfEvents.nbRoots() > 0:
+		if self.getMathModel().listOfEvents.nbRoots() > 0:
 			f_c.write("  free(%s.roots_operators);\n" % variable_name)
 
-		if len(self.listOfEvents) > 0:
+		if len(self.getMathModel().listOfEvents) > 0:
 			f_c.write("  free(%s.events_init);\n" % variable_name)
 			f_c.write("  free(%s.memory_size_per_event);\n" % variable_name)
 			f_c.write("  free(%s.events_has_priority);\n" % variable_name)
