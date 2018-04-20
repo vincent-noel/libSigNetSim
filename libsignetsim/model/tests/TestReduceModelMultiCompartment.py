@@ -23,47 +23,44 @@
 	Testing the research for conservation laws, and the subsequent reduction
 
 """
-
-from libsignetsim import Model, KineticLaw
+from libsignetsim import Model, KineticLaw, TimeseriesSimulation
 
 from unittest import TestCase
 
 
-class TestReduceModel(TestCase):
+class TestReduceModelMultiCompartment(TestCase):
 	""" Tests high level functions """
 
 
 	def testReduceModel(self):
 
 		model = Model()
-		cytosol = model.listOfCompartments.new("Cytosol")
-		membrane = model.listOfCompartments.new("Membrane")
+		cytosol = model.listOfCompartments.new("Cytosol", value=100)
+		membrane = model.listOfCompartments.new("Membrane", value=10)
 
-		ras_cytosol = model.listOfSpecies.new("Ras (cytosol)", cytosol, 200)
-		ras_membrane = model.listOfSpecies.new("Ras (membrane)", membrane, 50)
+		ras_cytosol = model.listOfSpecies.new("Ras (cytosol)", cytosol, 27.5)
+		ras_membrane = model.listOfSpecies.new("Ras (membrane)", membrane, 0)
 
-		kf = model.listOfParameters.new("To cytosol")
-		kr = model.listOfParameters.new("To membrane")
+		kf = model.listOfParameters.new("To cytosol", 1)
+		kr = model.listOfParameters.new("To membrane", 1)
 
 		r = model.listOfReactions.new("Ras transport")
-		r.listOfReactants.add(ras_cytosol)
-		r.listOfProducts.add(ras_membrane)
+		r.listOfReactants.add(ras_membrane)
+		r.listOfProducts.add(ras_cytosol)
 
 		r.setKineticLaw(KineticLaw.MASS_ACTION, reversible=True, parameters=[kf, kr])
 
-		# print("> Model")
-		model.build()
-		# model.pprint()
+		model.build(reduce=False)
 
-		# print("\n> Stoichiometric matrix")
-		model.stoichiometryMatrix.build()
-		# model.stoichiometryMatrix.pprint()
+		sim = TimeseriesSimulation([model], time_min=0, time_max=100, time_ech=10)
+		sim.run()
+		t, ys = sim.getRawData()[0]
 
-		# print("\n> Conservation laws")
-		model.listOfConservationLaws.build()
-		# model.listOfConservationLaws.pprint()
+		model.build(reduce=True, vars_to_keep=[ras_cytosol.getSymbolStr()])
 
-		# print("\n> Reduced model")
-		model.asymetricModel.build()
-		# model.asymetricModel.pprint()
+		sim_reduced = TimeseriesSimulation([model], time_min=0, time_max=100, time_ech=10)
+		sim_reduced.run()
+		t_reduced, ys_reduced = sim_reduced.getRawData()[0]
 
+		for i, y in enumerate(ys['Ras_cytosol']):
+			self.assertAlmostEqual(y, ys_reduced['Ras_cytosol'][i], delta=y*1e-4)

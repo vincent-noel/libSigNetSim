@@ -24,7 +24,7 @@
 
 """
 
-from libsignetsim import SbmlDocument
+from libsignetsim import SbmlDocument, TimeseriesSimulation
 
 from unittest import TestCase
 from os.path import join, dirname
@@ -42,16 +42,17 @@ class TestReduceModel(TestCase):
 		sbml_doc.readSbmlFromFile(join(testfiles_path, "modelqlzB7i.xml"))
 
 		sbml_model = sbml_doc.getModelInstance()
-		sbml_model.build()
-		# sbml_model.pprint()
+		sbml_model.build(reduce=False)
 
-		sbml_model.stoichiometryMatrix.build()
-		# sbml_model.stoichiometryMatrix.pprint()
-
-		sbml_model.listOfConservationLaws.build()
-		# sbml_model.listOfConservationLaws.pprint()
-
+		sim = TimeseriesSimulation([sbml_model], time_min=0, time_max=10000, time_ech=100)
+		sim.run()
+		t, ys = sim.getRawData()[0]
 
 		sbml_model.asymetricModel.build()
-		# sbml_model.asymetricModel.pprint()
 
+		sim_reduced = TimeseriesSimulation([sbml_model], time_min=0, time_max=10000, time_ech=100)
+		sim_reduced.run()
+		t_reduced, ys_reduced = sim_reduced.getRawData()[0]
+
+		for i, y in enumerate(ys['mapk_pp']):
+			self.assertAlmostEqual(y, ys_reduced['mapk_pp'][i], delta=y*1e-4)
