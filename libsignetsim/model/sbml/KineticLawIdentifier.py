@@ -394,7 +394,8 @@ class KineticLawIdentifier(object):
 		param_catalytic = None
 		param_michaelis = None
 
-		t_formula = self.removeSpeciesAndCompartmentsFromRate()
+
+		t_formula = simplify(self.removeSpeciesAndCompartmentsFromRate())
 
 		if t_formula.func == SympyMul:
 			if t_formula.args[0].func == SympyPow:
