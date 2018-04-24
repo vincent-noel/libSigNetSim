@@ -62,7 +62,7 @@ class TestFindKineticLaws(TestCase):
 			['parameter_5', 'parameter_6'],
 			['ras_inactivation_by_gap_cat', 'ras_inactivation_by_gap_mich'],
 			['ras_activation_by_gef_cat', 'ras_activation_by_gef_mich'],
-			[None],
+			['parameter_12'],
 			['sos_inactivation_by_ras_cat', 'parameter_18'],
 			['sos_ras_n17_comp', 'sos_ras_n17_decomp'],
 			['raf_activation_cat', 'raf_activation_mich'],
