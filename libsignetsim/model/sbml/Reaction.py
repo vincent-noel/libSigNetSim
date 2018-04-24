@@ -541,3 +541,9 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 
 	def isValid(self):
 		return self.kineticLaw.getDefinition() is not None
+
+	def getCompartment(self):
+		if len(self.listOfReactants) > 0:
+			return self.listOfReactants[0].getSpecies().getCompartment()
+		elif len(self.listOfProducts) > 0:
+			return self.listOfProducts[0].getSpecies().getCompartment()
