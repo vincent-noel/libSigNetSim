@@ -271,15 +271,6 @@ class KineticLawIdentifier(object):
 		):
 			self.reactionType = self.MICHAELIS
 
-		elif self.isReversible(t_formula):
-			self.reversible = True
-			self.reaction.reversible = True
-			(forward, backward) = self.getReversibleRates(self.mathRate)
-
-			if (self.isMassAction(self.simplifyRate(forward))
-				and self.isMassAction(self.simplifyRate(backward))):
-
-				self.reactionType = self.MASS_ACTION
 		else:
 			self.reactionType = self.UNDEFINED
 
