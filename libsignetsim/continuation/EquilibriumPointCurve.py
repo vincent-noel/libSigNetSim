@@ -270,7 +270,7 @@ class EquilibriumPointCurve(object):
 			limit_cycle_args.MaxStepSize = self.ds*100
 			limit_cycle_args.LocBifPoints = 'all'
 			limit_cycle_args.SaveEigen = True
-			limit_cycle_args.verbosity = 0
+			limit_cycle_args.verbosity = self.verbosity
 			self.continuation.newCurve(limit_cycle_args)
 
 			self.continuation[self.LIMIT_CYCLE_CURVE].forward()
