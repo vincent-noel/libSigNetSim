@@ -82,12 +82,10 @@ class CWriterSimulation(CWriterModels, CWriterData):
 		for modelInd, model in enumerate(self.listOfModels):
 			treated_variables = []
 			for name in treated_variables_names:
-				if self.workingModel.listOfSpecies.containsName(name):
-					treated_variables.append(self.workingModel.listOfSpecies.getByName(name).getSbmlId())
-				elif self.workingModel.listOfParameters.containsName(name):
-					treated_variables.append(self.workingModel.listOfParameters.getByName(name).getSbmlId())
-				elif self.workingModel.listOfCompartments.containsName(name):
-					treated_variables.append(self.workingModel.listOfCompartments.getByName(name).getSbmlId())
+				if model.listOfVariables.containsName(name):
+					treated_variables.append(model.listOfVariables.getByName(name).getSbmlId())
+				elif model.listOfVariables.containsSbmlId(name):
+					treated_variables.append(model.listOfVariables.getBySbmlId(name).getSbmlId())
 
 			reduce = Settings.reduceByDefault
 
