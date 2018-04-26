@@ -4,9 +4,10 @@ apt-get install -y libopenmpi-dev openmpi-bin \
                     liblapack-dev libblas-dev libatlas-dev libatlas-base-dev \
                     python-pip python-dev make swig python3-pip python3-dev
 
-pip install pip --upgrade
+pip2 install pip --upgrade
 if [ ! -f /usr/bin/pip ]
 then
+    ln -s /usr/local/bin/pip2 /usr/bin/pip2
     ln -s /usr/local/bin/pip /usr/bin/pip
 fi
 

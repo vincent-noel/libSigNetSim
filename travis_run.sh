@@ -26,7 +26,7 @@ else
         if [ "$4" = "python3" ]; then
             pip3 install coveralls || exit 1;
         else
-            pip install coveralls || exit 1;
+            pip2 install coveralls || exit 1;
         fi
         docker pull signetsim/travis_testenv:stretch || exit 1;
 
@@ -34,7 +34,14 @@ else
         docker run -di --name test_env -v $(pwd):/home/travis/build/vincent-noel/libSigNetSim signetsim/travis_testenv:stretch bash || exit 1;
         docker exec test_env chown -R www-data:www-data /home/travis/ || exit 1;
         docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; bash scripts/install_dep.sh" || exit 1;
-        docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; scripts/install.sh" || exit 1;
+
+        if [ "$4" = "python3" ]; then
+            docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; scripts/install3.sh" || exit 1;
+        else
+            docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; scripts/install.sh" || exit 1;
+        fi
+
+
         docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim/libsignetsim/lib/integrate/; make"
         docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim/libsignetsim/lib/plsa/; make all"
     elif [ $1 = "script" ]; then

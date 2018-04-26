@@ -2,7 +2,7 @@
 if [ "$3" = "python3" ]; then
     coverage_binary="coverage3"
 else
-    coverage_binary="coverage"
+    coverage_binary="coverage2"
 fi
 
 if [ $1 = "sbml-test-suite" ]; then
@@ -86,15 +86,15 @@ elif [ $1 = "continuation" ]; then
     $coverage_binary run -a -m unittest libsignetsim.continuation.tests.TestContinuation || exit 1;
 
 elif [ $1 = "others" ]; then
-    $0 models || exit 1;
-    $0 simulation || exit 1;
-    $0 optimization || exit 1;
-    $0 sedml || exit 1;
-    $0 combine || exit 1;
-    $0 uris || exit 1;
-    $0 data || exit 1;
-    $0 numl || exit 1;
-    $0 continuation || exit 1;
+    $0 models $2 $3 || exit 1;
+    $0 simulation $2 $3 || exit 1;
+    $0 optimization $2 $3 || exit 1;
+    $0 sedml $2 $3 || exit 1;
+    $0 combine $2 $3 || exit 1;
+    $0 uris $2 $3 || exit 1;
+    $0 data $2 $3 || exit 1;
+    $0 numl $2 $3 || exit 1;
+    $0 continuation $2 $3 || exit 1;
 
 else
     exit 1;
