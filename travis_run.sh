@@ -23,10 +23,10 @@ if [ $2 = "docker" ]; then
 
 else
     if [ $1 = "before_install" ]; then
-        if [ $4 = "python3" ]; then
+        if [ "$4" = "python3" ]; then
             pip3 install coveralls || exit 1;
         else
-            pip3 install coveralls || exit 1;
+            pip install coveralls || exit 1;
         fi
         docker pull signetsim/travis_testenv:stretch || exit 1;
 

@@ -138,7 +138,7 @@ class MathVariable(object):
 			self.isInitialized = True
 			self.value.setValueMathFormula(value)
 
-		elif isinstance(value, str):
+		elif isinstance(value, basestring):
 			self.isInitialized = True
 			self.value.setPrettyPrintMathFormula(value)
 

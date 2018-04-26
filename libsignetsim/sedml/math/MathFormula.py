@@ -97,7 +97,7 @@ class MathFormula(SedmlMathReader, SedmlMathWriter):
 
 	def printSbml(self, formula, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		if isinstance(formula, str):
+		if isinstance(formula, basestring):
 			return formula
 		elif isinstance(formula, ASTNode):# or isinstance(formula, ASTNodeSBML):
 			return formulaToString(formula)
