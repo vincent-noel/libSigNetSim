@@ -65,8 +65,6 @@ class KineticLaw(KineticLawIdentifier):
 		t_formula = unevaluatedSubs(t_formula, t_convs)
 
 		if extent_conversion is not None:
-			print(srepr(extent_conversion.getInternalMathFormula()))
-			print(srepr(t_formula))
 			t_formula *= extent_conversion.getInternalMathFormula()
 
 		if time_conversion is not None:

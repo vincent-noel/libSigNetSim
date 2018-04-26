@@ -26,6 +26,7 @@
 
 from builtins import str
 from builtins import object
+from six import string_types
 from libsignetsim.model.math.MathSymbol import MathSymbol
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
@@ -138,7 +139,7 @@ class MathVariable(object):
 			self.isInitialized = True
 			self.value.setValueMathFormula(value)
 
-		elif isinstance(value, basestring):
+		elif isinstance(value, string_types):
 			self.isInitialized = True
 			self.value.setPrettyPrintMathFormula(value)
 

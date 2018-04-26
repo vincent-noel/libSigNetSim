@@ -24,6 +24,7 @@
 
 """
 from __future__ import print_function
+from six import string_types
 
 from builtins import str
 from builtins import range
@@ -59,7 +60,7 @@ class SbmlMathWriter(object):
 
 	def printSbml(self, formula, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
-		if isinstance(formula, basestring):
+		if isinstance(formula, string_types):
 			return formula
 		elif isinstance(formula, libsbml.ASTNode):
 			if sbml_level <= 2:
@@ -146,7 +147,7 @@ class SbmlMathWriter(object):
 		# 	t_ast.setValue(tree)
 		# 	return t_ast
 
-		# elif isinstance(tree, basestring):
+		# elif isinstance(tree, str):
 		# 	return self.translateVariableForSbml(tree, sbml_level, sbml_version)
 
 		if tree is None:

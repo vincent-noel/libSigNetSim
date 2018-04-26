@@ -24,6 +24,7 @@
 
 """
 from __future__ import print_function
+from six import string_types
 
 from builtins import str
 from builtins import range
@@ -62,7 +63,7 @@ class SbmlMathReader(object):
 
 	def printSbml(self, formula, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
-		if isinstance(formula, basestring):
+		if isinstance(formula, string_types):
 			return formula
 		elif isinstance(formula, libsbml.ASTNode):
 			if sbml_level <= 2:
@@ -189,7 +190,7 @@ class SbmlMathReader(object):
 
 			return SympyFloat(tree)
 
-		elif isinstance(tree, basestring):
+		elif isinstance(tree, string_types):
 			return self.translateVariableForInternal(tree, sbml_level, sbml_version, simplified, develop)
 
 		# print libsbml.formulaToString(tree)

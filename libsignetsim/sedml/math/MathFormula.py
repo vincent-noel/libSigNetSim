@@ -25,7 +25,7 @@
 """
 from __future__ import print_function
 from __future__ import absolute_import
-
+from six import string_types
 from builtins import str
 from builtins import range
 from libsignetsim.sedml.math.SedmlMathReader import SedmlMathReader
@@ -97,7 +97,7 @@ class MathFormula(SedmlMathReader, SedmlMathWriter):
 
 	def printSbml(self, formula, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
-		if isinstance(formula, basestring):
+		if isinstance(formula, string_types):
 			return formula
 		elif isinstance(formula, ASTNode):# or isinstance(formula, ASTNodeSBML):
 			return formulaToString(formula)
