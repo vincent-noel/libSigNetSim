@@ -23,7 +23,11 @@ if [ $2 = "docker" ]; then
 
 else
     if [ $1 = "before_install" ]; then
-        pip install coveralls || exit 1;
+        if [ $4 = "python3" ]; then
+            pip3 install coveralls || exit 1;
+        else
+            pip3 install coveralls || exit 1;
+        fi
         docker pull signetsim/travis_testenv:stretch || exit 1;
 
     elif [ $1 = "install" ]; then
@@ -34,7 +38,7 @@ else
         docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim/libsignetsim/lib/integrate/; make"
         docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim/libsignetsim/lib/plsa/; make all"
     elif [ $1 = "script" ]; then
-        docker exec -u www-data test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim/; bash ./scripts/run_tests.sh $2 $3"
+        docker exec -u www-data test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim/; bash ./scripts/run_tests.sh $2 $3 $4"
 
     elif [ $1 = "after_script" ]; then
         coveralls
