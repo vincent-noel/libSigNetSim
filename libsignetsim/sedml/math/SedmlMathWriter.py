@@ -124,7 +124,7 @@ class SedmlMathWriter(object):
 			# else:
 			t_ast = ASTNode()
 			t_ast.setType(AST_NAME)
-			t_ast.setName(str(tree))
+			t_ast.setName(tree.name)
 			return t_ast
 
 		elif tree.func == SympyInteger:

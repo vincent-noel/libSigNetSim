@@ -82,7 +82,7 @@ class Model(SedBase, HasId):
 			model.setLanguage(self.__language)
 
 		if self.__source.writeSedml(level, version) is not None:
-			model.setSource(self.__source.writeSedml(level, version))
+			model.setSource(str(self.__source.writeSedml(level, version)))
 
 		self.listOfChanges.writeSedml(model.getListOfChanges(), level, version)
 
