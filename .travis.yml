@@ -7,34 +7,34 @@ language: python
 python: 2.7
 
 env:
-  - JOB=sbml-test-suite ARG=3.2
-  - JOB=sbml-test-suite ARG=3.1
-  - JOB=sbml-test-suite ARG=2.5
-  - JOB=sbml-test-suite ARG=2.4
-  - JOB=sbml-test-suite ARG=2.3
-  - JOB=sbml-test-suite ARG=2.2
-  - JOB=sbml-test-suite ARG=2.1
-  - JOB=sbml-test-suite ARG=1.2
-  - JOB=others
-  - JOB=sbml-test-suite ARG=3.2 python3
-  - JOB=sbml-test-suite ARG=3.1 python3
-  - JOB=sbml-test-suite ARG=2.5 python3
-  - JOB=sbml-test-suite ARG=2.4 python3
-  - JOB=sbml-test-suite ARG=2.3 python3
-  - JOB=sbml-test-suite ARG=2.2 python3
-  - JOB=sbml-test-suite ARG=2.1 python3
-  - JOB=sbml-test-suite ARG=1.2 python3
-  - JOB=others python3
+  - JOB=sbml-test-suite ARG=3.2 PY=python2
+  - JOB=sbml-test-suite ARG=3.1 PY=python2
+  - JOB=sbml-test-suite ARG=2.5 PY=python2
+  - JOB=sbml-test-suite ARG=2.4 PY=python2
+  - JOB=sbml-test-suite ARG=2.3 PY=python2
+  - JOB=sbml-test-suite ARG=2.2 PY=python2
+  - JOB=sbml-test-suite ARG=2.1 PY=python2
+  - JOB=sbml-test-suite ARG=1.2 PY=python2
+  - JOB=others ARG=NULL PY=python2
+  - JOB=sbml-test-suite ARG=3.2 PY=python3
+  - JOB=sbml-test-suite ARG=3.1 PY=python3
+  - JOB=sbml-test-suite ARG=2.5 PY=python3
+  - JOB=sbml-test-suite ARG=2.4 PY=python3
+  - JOB=sbml-test-suite ARG=2.3 PY=python3
+  - JOB=sbml-test-suite ARG=2.2 PY=python3
+  - JOB=sbml-test-suite ARG=2.1 PY=python3
+  - JOB=sbml-test-suite ARG=1.2 PY=python3
+  - JOB=others ARG=NULL PY=python3
   - secure: "FPYoBFdmbc5kPuE16lqGRnlm/qwZ6eONcm33auAWIkp7JiSiLD4bZKYx+mBBiOy8bFI58pnXijQ0ruUDtHagFU9t7ozMXgaQAJjvxKqyJSwJpojTnveOKwUIaakbymAQa6+2cBC+IJ/yTlpqnxhWUolDc+9iTi0ZP91dVttxATJIguYtngVkcJsnMYWadThhjvfERkdHswDyGzB8Io725peA1xJwY5fDqmPTULsVMJs/XYBhGQEowURR3guxCsp5ghqXmxeqzlpMTGbgMZTQ++FGzfIC5ZVNqLFEXD/RrU5qxb9NHzff8WjGQo7mU1vALKkbFCHrCIJX/TTbLYIZg8r5hzbetFUh9YHtRCJIBfs+je1QdYO2GEHxgx2aHpnRwqH6EjefWglDWo9dBkdkkHg4R0p5CY2037vTmkWFcgtdZ7SR+AzV3dA37ETGFZSwIq/9OUqbKJ+5jofvGPQo+9Ol0fhQhNNueHKl+yfQ2rHbLwTUOZUjHiLTGdNO0WL7dSewh2KwACMKX+AiTQzCM/xgDZjdzVdquXb/H7lQcFWRJ0+4OqmjqIuQR9MKArxnoe5rHFzo+Yz8gYPSulI+qOQeSC7uboypNiFOzLcI89h7astges6cKe71yaxfIWoQ3cwvPHM4Q5Ej2zYWo9Sa7AsVTG6eAEGalRIV49A0UWY="
 
 before_install:
-- /bin/bash travis_run.sh before_install $JOB $ARG
+- /bin/bash travis_run.sh before_install $JOB $ARG $PY
 
 install:
-- /bin/bash travis_run.sh install $JOB $ARG
+- /bin/bash travis_run.sh install $JOB $ARG $PY
 
 script:
-- /bin/bash travis_run.sh script $JOB $ARG
+- /bin/bash travis_run.sh script $JOB $ARG $PY
 
 after_script:
-- /bin/bash travis_run.sh after_script $JOB $ARG
+- /bin/bash travis_run.sh after_script $JOB $ARG $PY
