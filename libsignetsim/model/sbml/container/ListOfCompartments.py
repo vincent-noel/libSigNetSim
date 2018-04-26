@@ -86,7 +86,7 @@ class ListOfCompartments(ListOf, HasIds, SbmlObject, HasParentObj):
 
 			SbmlObject.copy(self, obj)
 
-			for compartment in obj.values():
+			for compartment in list(obj.values()):
 				if compartment not in deletions:
 
 					t_compartment = Compartment(self.__model, self, self.nextId())

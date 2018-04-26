@@ -25,6 +25,7 @@
 
 """
 
+from builtins import object
 from libsignetsim.settings.Settings import Settings
 
 from shutil import copytree, copyfile

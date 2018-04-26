@@ -78,7 +78,7 @@ class ListOfSubmodels(ListOf, HasIds):#, SbmlObject):
 	def remove(self, sbml_obj):
 		""" Remove an object from the list """
 
-		for object in self.__model.listOfSbmlObjects.values():
+		for object in list(self.__model.listOfSbmlObjects.values()):
 			if object.hasReplacedElements() and object.getListOfReplacedElements().containsSubmodel(sbml_obj.getSbmlId()):
 				raise CannotDeleteException("Submodel %s is used. Please remove the substitutions first" % sbml_obj.getNameOrSbmlId())
 

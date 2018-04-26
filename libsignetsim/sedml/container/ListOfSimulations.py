@@ -33,7 +33,8 @@ from libsignetsim.settings.Settings import Settings
 
 import libsbml
 from libsedml import SEDML_SIMULATION_UNIFORMTIMECOURSE, SEDML_SIMULATION_ONESTEP, SEDML_SIMULATION_STEADYSTATE
-reload(libsbml)
+from six.moves import reload_module
+reload_module(libsbml)
 
 class ListOfSimulations(ListOf):
 

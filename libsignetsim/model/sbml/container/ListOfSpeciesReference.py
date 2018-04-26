@@ -88,7 +88,7 @@ class ListOfSpeciesReference(ListOf, HasIds, SbmlObject):
 
 		if obj not in deletions:
 			SbmlObject.copy(self, obj)
-			for speciesReference in obj.values():
+			for speciesReference in list(obj.values()):
 				if speciesReference not in deletions:
 					t_sr = SpeciesReference(self.__model, self.nextId())
 					t_sr.copy(speciesReference, sids_subs=sids_subs, symbols_subs=symbols_subs)
@@ -96,7 +96,7 @@ class ListOfSpeciesReference(ListOf, HasIds, SbmlObject):
 
 	def hasVariableStoichiometry(self):
 
-		for sr in self.values():
+		for sr in list(self.values()):
 			if sr.isVariableStoichiometry():
 				return True
 		return False

@@ -69,7 +69,7 @@ class ListOfReplacedElements(ListOf):#, SimpleSbmlObject):
 
 	def copy(self, obj, prefix="", shift=0):
 
-		for replaced_element in obj.values():
+		for replaced_element in list(obj.values()):
 			t_re = ReplacedElement(self.__model, self.__parentObj, (replaced_element.objId + shift))
 			t_re.copy(replaced_element, prefix, shift)
 			ListOf.add(self, t_re)

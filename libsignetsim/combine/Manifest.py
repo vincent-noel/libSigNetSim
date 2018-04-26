@@ -24,6 +24,7 @@
 
 """
 
+from builtins import object
 from libsignetsim.settings.Settings import Settings
 
 from lxml import etree
@@ -48,7 +49,7 @@ class Manifest(object):
 		root = etree.fromstring(manifest)
 		for child in root:
 			if child.tag == self.CONTENT:
-				if self.LOCATION in child.keys() and self.FORMAT in child.keys():
+				if self.LOCATION in list(child.keys()) and self.FORMAT in list(child.keys()):
 
 					self.__locations.append(child.get(self.LOCATION)[2:])
 

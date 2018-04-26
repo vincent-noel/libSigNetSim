@@ -23,7 +23,9 @@
 	This file ...
 
 """
+from __future__ import print_function
 
+from builtins import str
 from libsignetsim.model.math.MathException import MathException
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
@@ -79,28 +81,28 @@ class ListOfInitialConditions(dict):
 		else:
 			init_cond = {SympySymbol("_time_"): SympyFloat(tmin)}
 
-		for init_ass in self.__model.listOfInitialAssignments.values():
+		for init_ass in list(self.__model.listOfInitialAssignments.values()):
 			if init_ass.isValid():
 				t_var = init_ass.getVariable().symbol.getSymbol()
 				t_value = init_ass.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula()
 				init_cond.update({t_var: t_value})
 
 		if DEBUG:
-			print init_cond
+			print(init_cond)
 
-		for rule in self.__model.listOfRules.values():
+		for rule in list(self.__model.listOfRules.values()):
 			if rule.isAssignment() and rule.isValid():
 				t_var = rule.getVariable().symbol.getSymbol()
-				if t_var not in init_cond.keys():
+				if t_var not in list(init_cond.keys()):
 					t_value = rule.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula()
 					init_cond.update({t_var: t_value})
 
 		if DEBUG:
-			print init_cond
+			print(init_cond)
 
-		for var in self.__model.listOfVariables.values():
+		for var in list(self.__model.listOfVariables.values()):
 			t_var = var.symbol.getSymbol()
-			if t_var not in init_cond.keys():
+			if t_var not in list(init_cond.keys()):
 				t_value = var.value.getDeveloppedInternalMathFormula()
 				if t_value is not None:
 					init_cond.update({t_var: t_value})
@@ -108,53 +110,53 @@ class ListOfInitialConditions(dict):
 					init_cond.update({t_var: SympyFloat(0.0)})
 
 		if DEBUG:
-			print init_cond
+			print(init_cond)
 
 		crossDependencies = True
 		passes = 1
 		while crossDependencies:
 
 			if DEBUG:
-				print "PASS : %d" % passes
+				print("PASS : %d" % passes)
 
 			crossDependencies = False
 
-			for t_var in init_cond.keys():
+			for t_var in list(init_cond.keys()):
 				t_def = init_cond[t_var]
 				if len(t_def.atoms(SympySymbol).intersection(set(init_cond.keys()))) > 0:
 					crossDependencies = True
 
 					if DEBUG:
-						print "\n> " + str(t_var) + " : " + str(t_def)
+						print("\n> " + str(t_var) + " : " + str(t_def))
 
 					for match in t_def.atoms(SympySymbol).intersection(set(init_cond.keys())):
 						if match == t_var:
 							raise MathException("Initial values : self dependency is bad")
 						if DEBUG:
-							print ">> " + str(match) + " : " + str(init_cond[match])
+							print(">> " + str(match) + " : " + str(init_cond[match]))
 
 						t_def = unevaluatedSubs(t_def, {match: init_cond[match]})
 						init_cond.update({t_var: t_def})
 
 					if DEBUG:
 						if len(t_def.atoms(SympySymbol).intersection(set(init_cond.keys()))) == 0:
-							print "> " + str(t_var) + " : " + str(t_def) + " [OK]"
+							print("> " + str(t_var) + " : " + str(t_def) + " [OK]")
 						else:
-							print "> " + str(t_var) + " : " + str(t_def) + " [ERR]"
+							print("> " + str(t_var) + " : " + str(t_def) + " [ERR]")
 			passes += 1
 			if passes >= 100:
 				raise MathException("Initial values : Probable circular dependencies")
 
 			if DEBUG:
-				print ""
+				print("")
 
 		if DEBUG:
-			print init_cond.keys()
-			print self.__model.listOfVariables.symbols()
+			print(list(init_cond.keys()))
+			print(self.__model.listOfVariables.symbols())
 
 		# self.listOfInitialConditions = {}
 		dict.clear(self)
-		for var, value in init_cond.items():
+		for var, value in list(init_cond.items()):
 			if var != SympySymbol("_time_"):
 				t_var = self.__model.listOfVariables.getBySymbol(var)
 				if t_var is not None:
@@ -163,12 +165,12 @@ class ListOfInitialConditions(dict):
 					dict.update(self, {t_var.symbol.getSymbol(): t_value})
 
 		if DEBUG:
-			print "> Final listOfInitialConditions"
-			print dict.keys(self)
+			print("> Final listOfInitialConditions")
+			print(dict.keys(self))
 
-		for var in self.__model.listOfVariables.values():
+		for var in list(self.__model.listOfVariables.values()):
 			if not var.symbol.getSymbol() in dict.keys(self) and not var.isAlgebraic():
-				print "Lacks an initial condition : %s" % var.getSbmlId()
+				print("Lacks an initial condition : %s" % var.getSbmlId())
 
 		if Settings.verbose >= 1:
-			print "> Finished calculating initial conditions (%.2gs)" % (time()-t0)
+			print("> Finished calculating initial conditions (%.2gs)" % (time()-t0))

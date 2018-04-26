@@ -23,12 +23,19 @@
 	This file ...
 
 """
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import division
 
+from builtins import zip
+from builtins import range
+from builtins import object
+from past.utils import old_div
 from PyDSTool import args, ContClass, PyDSTool_ExistError
 
 import threading
 from time import time
-from PyDSToolModel import PyDSToolModel
+from .PyDSToolModel import PyDSToolModel
 
 class EquilibriumPointCurve(object):
 
@@ -98,7 +105,7 @@ class EquilibriumPointCurve(object):
 		self.continuationParameters.StepSize = abs(self.ds)
 		self.continuationParameters.MaxNumPoints = self.maxSteps
 		self.continuationParameters.MaxStepSize = self.ds*100
-		self.continuationParameters.MinStepSize = self.ds/100
+		self.continuationParameters.MinStepSize = old_div(self.ds,100)
 		self.continuationParameters.LocBifPoints = 'All'
 		self.continuationParameters.verbosity = self.verbosity
 		self.continuationParameters.SaveEigen = True
@@ -171,7 +178,7 @@ class EquilibriumPointCurve(object):
 			stability = []
 			for i in range(len(self.continuation[self.MAIN_CURVE].sol.labels)):
 				label = self.continuation[self.MAIN_CURVE].sol.labels[i]
-				if 'EP' in label.keys() and i < len(x) and self.fromValue <= x[i] <= self.toValue:
+				if 'EP' in list(label.keys()) and i < len(x) and self.fromValue <= x[i] <= self.toValue:
 						stability.append(label['EP']['stab'])
 
 			return stability
@@ -200,13 +207,13 @@ class EquilibriumPointCurve(object):
 
 			split_stability = []
 			split_x = []
-			split_ys = {var: [] for var in ys.keys()}
+			split_ys = {var: [] for var in list(ys.keys())}
 
 			for inds in split:
 				split_stability.append(stability[inds[0]])
 				split_x.append([x[i] for i in inds])
 
-				for var, y in ys.items():
+				for var, y in list(ys.items()):
 					split_ys[var].append([y[i] for i in inds])
 
 			return split_x, split_ys, split_stability
@@ -217,7 +224,7 @@ class EquilibriumPointCurve(object):
 		x = []
 		curves = {}
 
-		if self.status == self.SUCCESS and self.LIMIT_CYCLE_CURVE in self.continuation.curves.keys():
+		if self.status == self.SUCCESS and self.LIMIT_CYCLE_CURVE in list(self.continuation.curves.keys()):
 
 			len_curve = len(self.continuation[self.LIMIT_CYCLE_CURVE].curve[:, 1]) - 1
 			nb_variables = len(self.continuation[self.LIMIT_CYCLE_CURVE].varslist)
@@ -245,7 +252,7 @@ class EquilibriumPointCurve(object):
 			for var in self.continuation[self.MAIN_CURVE].varslist:
 				t_points.update({var: []})
 
-			for points_type, points in self.continuation[self.MAIN_CURVE].BifPoints.items():
+			for points_type, points in list(self.continuation[self.MAIN_CURVE].BifPoints.items()):
 				for point in points.found:
 					if self.fromValue <= point.X[self.parameter.getSymbolStr()] <= self.toValue:
 						points_x = point.X[self.parameter.getSymbolStr()]
@@ -266,7 +273,7 @@ class EquilibriumPointCurve(object):
 			limit_cycle_args.freepars = [self.parameter.getSymbolStr()]
 			limit_cycle_args.MaxNumPoints = self.maxSteps
 			limit_cycle_args.setSize = self.ds
-			limit_cycle_args.MinStepSize = self.ds/100
+			limit_cycle_args.MinStepSize = old_div(self.ds,100)
 			limit_cycle_args.MaxStepSize = self.ds*100
 			limit_cycle_args.LocBifPoints = 'all'
 			limit_cycle_args.SaveEigen = True

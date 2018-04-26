@@ -23,7 +23,10 @@
 	This file is made to be called by the SBML Test Suite
 
 """
+from __future__ import print_function
 
+from builtins import str
+from builtins import object
 from libsignetsim.tests.sbmltestsuite.TestSuiteCase import TestSuiteCase
 from libsignetsim.model.ModelException import LibSigNetSimException
 from libsignetsim.simulation.SimulationException import SimulationException
@@ -35,7 +38,7 @@ from optparse import OptionParser
 
 import traceback
 
-class __main__():
+class __main__(object):
 
 	def __init__(self):
 
@@ -78,8 +81,8 @@ class __main__():
 				test.runTestSuiteWraper()
 
 			except LibSigNetSimException as e:
-				print "Caught %s" % str(type(e))
-				print "> %s" % e.message
+				print("Caught %s" % str(type(e)))
+				print("> %s" % e.message)
 				traceback.print_exc()
 
 		# elif options.test_export is not None:

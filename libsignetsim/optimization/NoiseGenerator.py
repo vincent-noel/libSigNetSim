@@ -23,7 +23,10 @@
 	This file ...
 
 """
+from __future__ import division
 
+from builtins import object
+from past.utils import old_div
 from math import exp
 from numpy.random import normal
 
@@ -50,7 +53,7 @@ class NoiseGenerator(object):
 			if self.sampling is not None:
 				for j,t_time in enumerate(t_experimental_data.t):
 
-					if not (abs((float(t_time)/self.sampling - round(float(t_time)/self.sampling, 0))) > 1e-12 and float(t_time) > 0):
+					if not (abs((old_div(float(t_time),self.sampling) - round(old_div(float(t_time),self.sampling), 0))) > 1e-12 and float(t_time) > 0):
 						t_filtered_t.append(float(t_time))
 						t_filtered_values.append(float(t_experimental_data.values[j]))
 

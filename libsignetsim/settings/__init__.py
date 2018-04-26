@@ -23,5 +23,6 @@
 	Initialization of the module SigNetSim/settings
 
 """
+from __future__ import absolute_import
 
-from Settings import Settings
+from .Settings import Settings

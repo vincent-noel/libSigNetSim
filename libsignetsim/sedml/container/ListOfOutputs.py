@@ -32,7 +32,8 @@ from libsignetsim.settings.Settings import Settings
 
 import libsbml
 from libsedml import SEDML_OUTPUT_PLOT2D, SEDML_OUTPUT_REPORT
-reload(libsbml)
+from six.moves import reload_module
+reload_module(libsbml)
 
 class ListOfOutputs(ListOf):
 

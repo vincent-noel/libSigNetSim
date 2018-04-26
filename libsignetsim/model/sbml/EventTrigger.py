@@ -23,7 +23,10 @@
 	This file ...
 
 """
+from __future__ import division
 
+from builtins import str
+from past.utils import old_div
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.ModelException import SbmlException
@@ -84,8 +87,8 @@ class EventTrigger(MathFormula, SbmlObject):
 			SbmlObject.copy(self, obj)
 
 		t_convs = {}
-		for var, conversion in conversion_factors.items():
-			t_convs.update({var: var/conversion})
+		for var, conversion in list(conversion_factors.items()):
+			t_convs.update({var: old_div(var,conversion)})
 
 		t_formula = unevaluatedSubs(obj.getInternalMathFormula(rawFormula=False), symbols_subs)
 		t_formula = unevaluatedSubs(t_formula, t_convs)
@@ -110,7 +113,7 @@ class EventTrigger(MathFormula, SbmlObject):
 		MathFormula.readSbml(self, sbml_formula, self.sbmlLevel, self.sbmlVersion)
 		if not rawFormula:
 			t_subs_mask = {}
-			for t_var in self.__model.listOfSpecies.values():
+			for t_var in list(self.__model.listOfSpecies.values()):
 				if t_var.isConcentration():
 					t_symbol = SympySymbol("_speciesForcedConcentration_%s_" % str(t_var.symbol.getInternalMathFormula()))
 					t_subs_mask.update({t_var.symbol.getInternalMathFormula(): t_symbol})

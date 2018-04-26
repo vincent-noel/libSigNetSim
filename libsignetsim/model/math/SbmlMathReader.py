@@ -23,7 +23,11 @@
 	This file ...
 
 """
+from __future__ import print_function
 
+from builtins import str
+from builtins import range
+from builtins import object
 import libsbml
 from math import isinf, isnan
 from sympy import srepr
@@ -51,10 +55,10 @@ class SbmlMathReader(object):
 		self.internalTree = self.translateForInternal(formula, sbml_level, sbml_version)
 
 		if Settings.verbose >= 2:
-			print "\n> readSbml : "
-			print ">> input : %s" % self.printSbml(formula)
-			print ">> output simplified : %s" % str(self.internalTree)
-			print ">> output : %s" % srepr(self.internalTree)
+			print("\n> readSbml : ")
+			print(">> input : %s" % self.printSbml(formula))
+			print(">> output simplified : %s" % str(self.internalTree))
+			print(">> output : %s" % srepr(self.internalTree))
 
 	def printSbml(self, formula, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 

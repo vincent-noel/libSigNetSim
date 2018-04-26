@@ -72,7 +72,7 @@ class ListOfFunctionDefinitions(ListOf, HasIds, SbmlObject):
 
 		if obj not in deletions:
 			SbmlObject.copy(self, obj)
-			for function_definition in obj.values():
+			for function_definition in list(obj.values()):
 				if function_definition not in deletions:
 					t_function = FunctionDefinition(self.__model, self.nextId())
 					t_function.copy(function_definition, sids_subs=sids_subs)

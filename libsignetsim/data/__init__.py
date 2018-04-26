@@ -23,5 +23,6 @@
 	Initialization of the module SigNetSim/Data
 
 """
+from __future__ import absolute_import
 
-from Experiment import Experiment
+from .Experiment import Experiment

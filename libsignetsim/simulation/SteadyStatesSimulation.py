@@ -23,6 +23,7 @@
     This file ...
 
 """
+from __future__ import print_function
 
 from libsignetsim.simulation.Simulation import Simulation
 from libsignetsim.data.Experiment import Experiment
@@ -78,7 +79,7 @@ class SteadyStatesSimulation(Simulation):
         mid = clock()
 
         if Settings.verboseTiming >= 1:
-            print "> Files written in %.2fs" % (mid-start)
+            print("> Files written in %.2fs" % (mid-start))
 
         self.runSimulation(steady_states=True)
         self.loadSimulationResults()
@@ -89,14 +90,14 @@ class SteadyStatesSimulation(Simulation):
         stop = clock()
 
         if Settings.verboseTiming >= 1:
-            print "> Simulation executed in %.2fs" % (stop-start)
+            print("> Simulation executed in %.2fs" % (stop-start))
 
     def loadSimulationResults(self):
 
         t_model = self.listOfModels[0]
         self.rawData = {}
 
-        for variable in t_model.listOfVariables.values():
+        for variable in list(t_model.listOfVariables.values()):
             self.rawData.update({variable.getSbmlId(): []})
 
         if len(self.listOfInitialValues) > 1:

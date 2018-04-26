@@ -23,7 +23,9 @@
 	This file ...
 
 """
+from __future__ import print_function
 
+from builtins import range
 from libsignetsim.simulation.CWriterSimulation import CWriterSimulation
 from libsignetsim.simulation.SimulationException import (
 	SimulationExecutionException, SimulationCompilationException, SimulationNoDataException, SimulationException
@@ -176,23 +178,26 @@ class Simulation(CWriterSimulation):
 		else:
 			cmd_comp = "make -C %s sim-parallel" % self.getTempDirectory()
 
-		res_comp = call(cmd_comp,
-						stdout=open("%sout_comp" % self.getTempDirectory(),"w"),
-						stderr=open("%serr_comp" % self.getTempDirectory(),"w"),
-						shell=True,preexec_fn=setpgrp,close_fds=True)
+
+		with open("%sout_comp" % self.getTempDirectory(), "w") as stdout, open("%serr_comp" % self.getTempDirectory(), "w") as stderr:
+			res_comp = call(cmd_comp,
+							stdout=stdout, #open("%sout_comp" % self.getTempDirectory(),"w"),
+							stderr=stderr, #open("%serr_comp" % self.getTempDirectory(),"w"),
+							shell=True,preexec_fn=setpgrp,close_fds=True)
 
 		if (res_comp != 0
 			or getsize(self.getTempDirectory() + "err_comp") > 0):
 
 
 			if Settings.verbose >= 1:
-				print "-"*40 + "\n"
-				print "> Error during simulation compilation :"
-				f_err_comp = open(self.getTempDirectory() + "err_comp", 'r')
-				for line in f_err_comp:
-					print line
-				print "-"*40 + "\n"
-				f_err_comp.close()
+				print("-"*40 + "\n")
+				print("> Error during simulation compilation :")
+				with open(self.getTempDirectory() + "err_comp", 'r') as f_err_comp:
+					for line in f_err_comp:
+						print(line)
+
+				print("-"*40 + "\n")
+				# f_err_comp.close()
 
 			raise SimulationCompilationException("Error during simulation compilation (%d)" % res_comp)
 
@@ -216,43 +221,47 @@ class Simulation(CWriterSimulation):
 					nb_procs, flags,
 					present_dir)
 
-		res_sim = call(cmd_sim,
-					  stdout=open("%sout_sim" % self.getTempDirectory(),"w"),
-					  stderr=open("%serr_sim" % self.getTempDirectory(),"w"),
-					  shell=True,preexec_fn=setpgrp,close_fds=True)
+		with open("%sout_sim" % self.getTempDirectory(), "w") as stdout, open("%serr_sim" % self.getTempDirectory(), "w") as stderr:
+
+			res_sim = call(cmd_sim,
+						  stdout=stdout, #open("%sout_sim" % self.getTempDirectory(),"w"),
+						  stderr=stderr, #open("%serr_sim" % self.getTempDirectory(),"w"),
+						  shell=True,preexec_fn=setpgrp,close_fds=True)
 
 		if res_sim != 0 or getsize(join(self.getTempDirectory(), "err_sim")) > 0:
 
 			# There is some weird error here, apparently caused by docker filesystem.
 			# ** apparently ** we can ignore it
 			non_docker_err = False
-			f_err_sim = open(self.getTempDirectory() + "err_sim", 'r')
-			for line in f_err_sim:
-				if not line.startswith("Unexpected end of /proc/mounts"):
-					non_docker_err = True
+			with open(self.getTempDirectory() + "err_sim", 'r') as f_err_sim:
+				for line in f_err_sim:
+					if not line.startswith("Unexpected end of /proc/mounts"):
+						non_docker_err = True
+
 
 			if non_docker_err:
 				if Settings.verbose >= 1:
-					print "-" * 40 + "\n"
-					print "> Error during simulation execution :"
-					f_err_sim = open(self.getTempDirectory() + "err_sim", 'r')
-					for line in f_err_sim:
-						if not line.startswith("Unexpected end of /proc/mounts"):
-							print line
-					print "-" * 40 + "\n"
-					f_err_sim.close()
+					print("-" * 40 + "\n")
+					print("> Error during simulation execution :")
+					with open(self.getTempDirectory() + "err_sim", 'r') as f_err_sim:
+						for line in f_err_sim:
+							if not line.startswith("Unexpected end of /proc/mounts"):
+								print(line)
+					print("-" * 40 + "\n")
+					# f_err_sim.close()
 
 				raise SimulationExecutionException("Error during simulation execution (%d)" % res_sim)
 
 		else:
 			if Settings.verbose >= 2:
-				print "-"*40 + "\n"
-				print "> Execution returned : \n"
-				f_out_sim = open(self.getTempDirectory() + "out_sim", 'r')
-				for line in f_out_sim:
-					print line
-				print "-"*40 + "\n"
-				f_out_sim.close()
+				print("-"*40 + "\n")
+				print("> Execution returned : \n")
+				with open(self.getTempDirectory() + "out_sim", 'r') as f_out_sim:
+					for line in f_out_sim:
+						print(line)
+
+				print("-"*40 + "\n")
+				# f_out_sim.close()
 
 
 	def runSimulation(self, progress_signal=None, steady_states=False, nb_procs=Settings.defaultMaxProcNumbers):
@@ -263,13 +272,13 @@ class Simulation(CWriterSimulation):
 		mid = time()
 
 		if Settings.verboseTiming >= 1:
-			print ">> Compilation executed in %.2fs" % (mid-start)
+			print(">> Compilation executed in %.2fs" % (mid-start))
 
 		self.__execute__(nb_procs=nb_procs, steady_states=steady_states)
 		end = time()
 
 		if Settings.verboseTiming >= 1:
-			print ">> Simulation executed in %.2fs" % (end-mid)
+			print(">> Simulation executed in %.2fs" % (end-mid))
 
 		self.__simulationDone = self.SIM_DONE
 

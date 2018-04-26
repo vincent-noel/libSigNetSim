@@ -24,6 +24,8 @@
 
 """
 
+from builtins import range
+from builtins import object
 from .ListOfFiles import ListOfFiles
 from .CombineException import (
 	FileNotFoundException, NotAZipFileException, NoMasterSedmlFoundException, NoMasterSbmlFoundException,

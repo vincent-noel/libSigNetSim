@@ -24,6 +24,7 @@
 
 """
 
+from builtins import object
 class RuledVariable(object):
 
 

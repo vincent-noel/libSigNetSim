@@ -24,6 +24,8 @@
 
 """
 
+from builtins import str
+from builtins import object
 import requests
 from json import loads
 
@@ -52,8 +54,9 @@ class PubmedResolver(object):
 		r = requests.get(self.URL % self.__id, headers={"Content-Type": "application/json"})
 
 		if r.ok:
-			self.__json = loads(r.content)
-			self.__json = self.__json[u'result'][unicode(self.__id)]
+			self.__json = loads(r.content.decode('utf-8'))
+			print(self.__json)
+			self.__json = self.__json[u'result'][str(self.__id)]
 
 	def parseJSON(self):
 
@@ -74,7 +77,7 @@ class PubmedResolver(object):
 		r = requests.get(self.URL_ABSTRACTS % self.__id, headers={"Content-Type": "application/json"})
 
 		if r.ok:
-			self.__text_abstract = r.content
+			self.__text_abstract = r.content.decode('utf-8')
 
 	def parseRawAbstract(self):
 

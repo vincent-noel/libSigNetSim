@@ -24,6 +24,7 @@
 
 """
 
+from builtins import object
 from os.path import join
 
 

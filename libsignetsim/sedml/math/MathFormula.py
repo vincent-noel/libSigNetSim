@@ -23,15 +23,20 @@
 	This file ...
 
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
+from builtins import str
+from builtins import range
 from libsignetsim.sedml.math.SedmlMathReader import SedmlMathReader
 from libsignetsim.sedml.math.SedmlMathWriter import SedmlMathWriter
 from libsignetsim.settings.Settings import Settings
-from sympy_shortcuts import (SympySymbol, SympyInteger, SympyFloat, SympyTrue, SympyFalse, SympyLambda)
+from .sympy_shortcuts import (SympySymbol, SympyInteger, SympyFloat, SympyTrue, SympyFalse, SympyLambda)
 
 import libsbml
 from libsedml import formulaToString, ASTNode, parseFormula, parseL3Formula
-reload(libsbml)
+from six.moves import reload_module
+reload_module(libsbml)
 
 from sympy import srepr
 from numpy import sum, product
@@ -69,10 +74,10 @@ class MathFormula(SedmlMathReader, SedmlMathWriter):
 			self.internalTree = SedmlMathReader.translateForInternal(self, formula)
 
 			if Settings.verbose >= 2:
-				print "\n> readSedml : "
-				print ">> input : %s" % self.printSbml(formula)
-				print ">> output simplified : %s" % str(self.internalTree)
-				print ">> output : %s" % srepr(self.internalTree)
+				print("\n> readSedml : ")
+				print(">> input : %s" % self.printSbml(formula))
+				print(">> output simplified : %s" % str(self.internalTree))
+				print(">> output : %s" % srepr(self.internalTree))
 
 	def writeSedml(self, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 		""" Export math formula to sbml """
@@ -81,10 +86,10 @@ class MathFormula(SedmlMathReader, SedmlMathWriter):
 			formula = SedmlMathWriter.translateForSedml(self, self.internalTree, level, version)
 
 			if Settings.verbose >= 2:
-				print "\n> writeSedml"
-				print ">> input : %s" % srepr(self.internalTree)
-				print ">> input simplified : %s" % str(self.internalTree)
-				print ">> output : %s" % self.printSbml(formula, level, version)
+				print("\n> writeSedml")
+				print(">> input : %s" % srepr(self.internalTree))
+				print(">> input simplified : %s" % str(self.internalTree))
+				print(">> output : %s" % self.printSbml(formula, level, version))
 
 			return formula
 
@@ -101,7 +106,7 @@ class MathFormula(SedmlMathReader, SedmlMathWriter):
 
 	def evaluateMathFormula(self, data, parameters):
 
-		nb_timepoints = len(data.values()[0])
+		nb_timepoints = len(list(data.values())[0])
 		return self.evaluate(self.internalTree, data, parameters, nb_timepoints)
 
 	def evaluate(self, expr, data, parameters, nb_timepoints):
@@ -119,10 +124,10 @@ class MathFormula(SedmlMathReader, SedmlMathWriter):
 		elif expr == SympyFalse:
 			return [False]*nb_timepoints
 
-		elif expr in data.keys():
+		elif expr in list(data.keys()):
 			return data[expr]
 
-		elif expr in parameters.keys():
+		elif expr in list(parameters.keys()):
 			return [parameters[expr]]*nb_timepoints
 
 		elif str(expr.func) in ["min", "max", "sum", "product"]:

@@ -32,7 +32,8 @@ from libsignetsim.settings.Settings import Settings
 
 import libsbml, libnuml
 from libnuml import readNUMLFromFile, writeNUML, NUMLDocument
-reload(libsbml)
+from six.moves import reload_module
+reload_module(libsbml)
 from os.path import exists, dirname, basename
 
 class NuMLDocument (NMBase):
@@ -48,20 +49,20 @@ class NuMLDocument (NMBase):
 
 
 	def readNuML(self, numl_document, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
-		reload(libnuml)
+		reload_module(libnuml)
 		NMBase.readNuML(self, numl_document, level, version)
 		self.listOfOntologyTerms.readNuML(numl_document.getOntologyTerms(), level, version)
 		self.listOfResultComponents.readNuML(numl_document.getResultComponents(), level, version)
-		reload(libsbml)
+		reload_module(libsbml)
 	def writeNuML(self, level=Settings.defaultNuMLLevel, version=Settings.defaultNuMLVersion):
-		reload(libnuml)
+		reload_module(libnuml)
 		document = NUMLDocument(level, version)
 
 		NMBase.writeNuML(self, document, level, version)
 
 		self.listOfOntologyTerms.writeNuML(document, level, version)
 		self.listOfResultComponents.writeNuML(document, level, version)
-		reload(libsbml)
+		reload_module(libsbml)
 		return document
 
 	def readNuMLFromFile(self, filename):

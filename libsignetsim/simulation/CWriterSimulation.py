@@ -23,6 +23,7 @@
 	This file ...
 
 """
+from __future__ import print_function
 
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.cwriter.CWriterModels import CWriterModels
@@ -99,4 +100,4 @@ class CWriterSimulation(CWriterModels, CWriterData):
 		self.writeDataFiles()
 
 		if Settings.verboseTiming >= 1:
-				print ">> Files written in %.2fs" % (time()-start)
+				print(">> Files written in %.2fs" % (time()-start))

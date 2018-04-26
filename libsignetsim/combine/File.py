@@ -24,6 +24,7 @@
 
 """
 
+from builtins import object
 from libsignetsim.settings.Settings import Settings
 from os.path import dirname, basename, join
 from mimetypes import guess_type
@@ -32,7 +33,8 @@ from libsbml import SBMLReader
 import libsbml
 from libnuml import readNUMLFromString
 from libsedml import readSedMLFromString
-reload(libsbml)
+from six.moves import reload_module
+reload_module(libsbml)
 from shutil import copy
 
 

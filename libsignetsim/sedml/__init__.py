@@ -23,9 +23,10 @@
 	Initialization of the module SED-ML
 
 """
+from __future__ import absolute_import
 
-from SedmlDocument import SedmlDocument
-from SedmlException import (
+from .SedmlDocument import SedmlDocument
+from .SedmlException import (
 	SedmlException, SedmlMathException, SedmlFileNotFound, SedmlMixedSubtasks, SedmlModelLanguageNotSupported,
 	SedmlModelNotFound, SedmlModelObjectNotFound, SedmlMultipleModels, SedmlNotImplemented, SedmlOneStepTaskException,
 	SedmlUnknownURI, SedmlUnknownXPATH

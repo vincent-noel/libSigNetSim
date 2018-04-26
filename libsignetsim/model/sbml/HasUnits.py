@@ -24,6 +24,7 @@
 
 """
 
+from builtins import object
 from libsignetsim.model.sbml.UnitDefinition import UnitDefinition
 from libsignetsim.settings.Settings import Settings
 
@@ -96,7 +97,7 @@ class HasUnits(object):
 
 
 	def copy(self, obj, usids_subs={}):
-		if obj.getUnitId() in usids_subs.keys():
+		if obj.getUnitId() in list(usids_subs.keys()):
 			self.__unit = usids_subs[obj.getUnitId()]
 		else:
 			self.__unit = obj.getUnitId()

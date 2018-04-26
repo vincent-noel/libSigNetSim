@@ -24,11 +24,13 @@
 
 """
 
+from builtins import object
 from libsignetsim.settings.Settings import Settings
 
 import libsbml
 from libsedml import XMLNode
-reload(libsbml)
+from six.moves import reload_module
+reload_module(libsbml)
 
 
 class NewXML(object):

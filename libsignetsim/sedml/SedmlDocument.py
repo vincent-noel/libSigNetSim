@@ -39,7 +39,8 @@ from libsignetsim.settings.Settings import Settings
 
 import libsbml
 from libsedml import readSedMLFromFile, writeSedMLToFile, SedDocument, writeSedMLToString
-reload(libsbml)
+from six.moves import reload_module
+reload_module(libsbml)
 
 from os.path import dirname, basename, exists
 

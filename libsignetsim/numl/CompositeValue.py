@@ -24,6 +24,7 @@
 
 """
 
+from builtins import str
 from libsignetsim.numl.Dimension import Dimension
 from libsignetsim.numl.TupleValue import TupleValue
 from libsignetsim.numl.AtomicValue import AtomicValue

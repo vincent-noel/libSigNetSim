@@ -23,7 +23,9 @@
 	This file ...
 
 """
+from __future__ import print_function
 
+from builtins import str
 from libsignetsim.model.math.ODE import ODE
 
 class ListOfODEs(list):
@@ -38,7 +40,7 @@ class ListOfODEs(list):
 	def build(self, including_fast_reactions=True):
 
 		self[:] = []
-		for variable in self.__model.listOfVariables.values():
+		for variable in list(self.__model.listOfVariables.values()):
 			if variable.isDerivative():
 				t_ode = ODE(self.__model)
 				t_ode.new(variable,	variable.getODE(including_fast_reactions, rawFormula=True))

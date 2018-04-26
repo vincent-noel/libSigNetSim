@@ -70,18 +70,18 @@ class TestContinuation(TestCase):
 		curve_points = t_ep_curve.getPoints()
 
 		self.assertEqual(len(x), 199)
-		self.assertEqual(len(ys.keys()), 3)
+		self.assertEqual(len(list(ys.keys())), 3)
 		self.assertEqual(len(ys['sos']), 199)
 		self.assertEqual(len(curve_points), 3)
 
 		for i, x_i in enumerate(x):
 			self.assertAlmostEqual(x_i, RESULT_X[i], delta=1e-6 * x_i)
 
-		for var, y in ys.items():
+		for var, y in list(ys.items()):
 			for i, y_i in enumerate(y):
 				self.assertAlmostEqual(y_i, RESULT_CURVE[var][i], delta=1e-6*y_i)
 
-		for var, points in curve_points.items():
+		for var, points in list(curve_points.items()):
 			for i, (point_type, x, y) in enumerate(points):
 				self.assertEqual(point_type, RESULT_POINTS[var][i][0])
 				self.assertAlmostEqual(x, RESULT_POINTS[var][i][1], delta=1e-6*x)
@@ -119,20 +119,20 @@ class TestContinuation(TestCase):
 		curve_points = t_ep_curve.getPoints()
 
 		self.assertEqual(len(x), 522)
-		self.assertEqual(len(ys.keys()), 2)
+		self.assertEqual(len(list(ys.keys())), 2)
 		self.assertEqual(len(ys['cyclin_cdk']), 522)
 
 		for i, x_i in enumerate(x):
 			self.assertAlmostEqual(x_i, RESULT_CURVE_X[i], delta=1e-6 * x_i)
 
-		for var, y in ys.items():
+		for var, y in list(ys.items()):
 			for i, y_i in enumerate(y):
 				self.assertAlmostEqual(y_i, RESULT_CURVES_YS[var][i], delta=1e-6 * y_i)
 
 		self.assertEqual(len(curve_points), 2)
 		self.assertEqual(len(curve_points['cyclin_cdk']), 2)
 
-		for var, points in curve_points.items():
+		for var, points in list(curve_points.items()):
 			for i, (point_type, x, y) in enumerate(points):
 				self.assertEqual(point_type, RESULT_POINTS[var][i][0])
 				self.assertAlmostEqual(x, RESULT_POINTS[var][i][1], delta=1e-6*x)
@@ -143,14 +143,14 @@ class TestContinuation(TestCase):
 		lc_x, lc_ys = t_ep_curve.getLimitCycleCurves()
 
 		self.assertEqual(len(lc_x), 486)
-		self.assertEqual(len(lc_ys.keys()), 2)
-		self.assertEqual(lc_ys['cyclin_cdk'].keys(), ['max', 'min'])
+		self.assertEqual(len(list(lc_ys.keys())), 2)
+		self.assertEqual(list(lc_ys['cyclin_cdk'].keys()), ['max', 'min'])
 		self.assertEqual(len(lc_ys['cyclin_cdk']['min']), 486)
 
 		for i, x_i in enumerate(lc_x):
 			self.assertAlmostEqual(x_i, RESULT_LC_X[i], delta=1e-6 * x_i)
 
-		for var, y in lc_ys.items():
+		for var, y in list(lc_ys.items()):
 			for i, y_i in enumerate(y['min']):
 				self.assertAlmostEqual(y_i, RESULT_LC_YS[var]['min'][i], delta=1e-6 * y_i)
 			for i, y_i in enumerate(y['max']):

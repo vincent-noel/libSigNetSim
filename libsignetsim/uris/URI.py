@@ -24,6 +24,7 @@
 
 """
 
+from builtins import object
 from libsignetsim.uris.NCBITaxonomyResolver import NCBITaxonomyResolver
 from libsignetsim.uris.SBOResolver import SBOResolver
 from libsignetsim.uris.GoResolver import GoResolver
@@ -58,7 +59,7 @@ class URI(object):
 		self.__id = tokens[-1]
 		start_token = self.__rawURI.replace(self.__id, "")
 
-		for identifier, string in self.IDENTIFIERS.items():
+		for identifier, string in list(self.IDENTIFIERS.items()):
 			if start_token.startswith(string):
 				self.__identifier = identifier
 

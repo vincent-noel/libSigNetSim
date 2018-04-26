@@ -78,7 +78,7 @@ class ListOfUnitDefinitions(ListOf, HasIds, SbmlObject):
 
 			SbmlObject.copy(self, obj)
 
-			for unit_definition in obj.values():
+			for unit_definition in list(obj.values()):
 				if unit_definition not in deletions:
 
 					t_definition = UnitDefinition(self.__model, self.nextId())

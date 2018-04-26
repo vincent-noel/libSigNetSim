@@ -24,6 +24,7 @@
 
 """
 
+from builtins import str
 from libsignetsim.sedml.Change import Change
 from libsignetsim.sedml.XPath import XPath
 from libsignetsim.settings.Settings import Settings

@@ -23,5 +23,6 @@
 	Initialization of the module signetsim.continuation
 
 """
+from __future__ import absolute_import
 
-from EquilibriumPointCurve import EquilibriumPointCurve
+from .EquilibriumPointCurve import EquilibriumPointCurve

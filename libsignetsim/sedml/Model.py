@@ -102,10 +102,10 @@ class Model(SedBase, HasId):
 		sbml_doc = SbmlDocument()
 
 		if self.listOfChanges.nbXMLChanges() > 0:
-			with open(self.__source.getFilename(), 'r') as sbml_file:
-				sbmlTree = etree.fromstring(sbml_file.read())
+			with open(self.__source.getFilename(), 'rb') as sbml_file:
+				sbmlTree = etree.XML(sbml_file.read())
 				self.listOfChanges.applyXMLChanges(sbmlTree)
-				sbml_doc.readSbmlFromString(etree.tostring(sbmlTree))
+				sbml_doc.readSbmlFromString(etree.tostring(sbmlTree).decode('utf-8'))
 		else:
 			sbml_doc.readSbmlFromFile(self.__source.getFilename())
 

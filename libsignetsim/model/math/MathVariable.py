@@ -24,6 +24,8 @@
 
 """
 
+from builtins import str
+from builtins import object
 from libsignetsim.model.math.MathSymbol import MathSymbol
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
@@ -74,7 +76,7 @@ class MathVariable(object):
 
 	def copy(self, obj, symbols_subs={}, conversion_factor=None, pure_math_variable=False):
 
-		if obj.symbol.getSymbol() in symbols_subs.keys():
+		if obj.symbol.getSymbol() in list(symbols_subs.keys()):
 			self.symbol.setInternalMathFormula(symbols_subs[obj.symbol.getSymbol()])
 		else:
 			self.symbol.setInternalMathFormula(obj.symbol.getSymbol())

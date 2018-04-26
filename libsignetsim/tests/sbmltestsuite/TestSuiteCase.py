@@ -23,7 +23,10 @@
 	This file ...
 
 """
+from __future__ import print_function
 
+from builtins import str
+from builtins import object
 from libsignetsim import SedmlDocument, Settings
 
 from os.path import join, exists, isdir
@@ -171,7 +174,7 @@ class TestSuiteCase(object):
 
 
 		if precisionError:
-			print "> Precision error in variables : %s" % str(precisionErrorVariables)
+			print("> Precision error in variables : %s" % str(precisionErrorVariables))
 			return False
 
 		return result

@@ -23,7 +23,9 @@
 	This file ...
 
 """
+from __future__ import print_function
 
+from builtins import str
 from libsignetsim.model.math.CFE import CFE
 from libsignetsim.model.math.ODE import ODE
 from libsignetsim.model.math.MathSubmodel import MathSubmodel
@@ -79,20 +81,20 @@ class MathSlowModel(MathSubmodel):
 	def findFastReactions(self):
 		""" Finds the fast reactions and build the fast stoichiometry matrix """
 
-		for reaction in self.sbmlModel.listOfReactions.values():
+		for reaction in list(self.sbmlModel.listOfReactions.values()):
 			if reaction.fast:
 				self.fastLaws.append(reaction.kineticLaw.getDefinition().getDeveloppedInternalMathFormula())
 
-				for reactant in reaction.listOfReactants.values():
+				for reactant in list(reaction.listOfReactants.values()):
 					self.fastLaws_vars.append(reactant.getSpecies().symbol.getDeveloppedInternalMathFormula())
 
-				for product in reaction.listOfProducts.values():
+				for product in list(reaction.listOfProducts.values()):
 					self.fastLaws_vars.append(product.getSpecies().symbol.getDeveloppedInternalMathFormula())
 
 	def findVelocities(self, subs={}, include_fast_reaction=True, include_slow_reaction=True):
 
 		matrix_velocities = None
-		for reaction in self.sbmlModel.listOfReactions.values():
+		for reaction in list(self.sbmlModel.listOfReactions.values()):
 			velocities = reaction.kineticLaw.getRawVelocities(
 				subs=subs,
 				include_fast_reaction=include_fast_reaction,
@@ -200,13 +202,13 @@ class MathSlowModel(MathSubmodel):
 		slow_system = slow_matrix * slow_velocities
 
 		if self.DEBUG:
-			print "> Fast system matrix"
+			print("> Fast system matrix")
 			pprint(fast_system)
-			print "\n"
+			print("\n")
 
-			print "> Slow system matrix"
+			print("> Slow system matrix")
 			pprint(slow_system)
-			print "\n"
+			print("\n")
 
 		subs = self.reducedModel.listOfCFEs.getSubs()
 		slow_variables, fast_variables = self.__classifyVariables(kept_variables)
@@ -218,7 +220,7 @@ class MathSlowModel(MathSubmodel):
 		system_vars = self.fastLaws_vars
 
 		subs = {}
-		for var, math_formula in self.sbmlModel.listOfInitialConditions.items():
+		for var, math_formula in list(self.sbmlModel.listOfInitialConditions.items()):
 			variable = self.sbmlModel.listOfVariables.getBySymbol(var)
 			if var not in system_vars or variable.boundaryCondition:
 				subs.update({var: math_formula.getDeveloppedInternalMathFormula()})
@@ -240,15 +242,15 @@ class MathSlowModel(MathSubmodel):
 				system.append(formula)
 
 		if self.DEBUG:
-			print system
-			print system_vars
+			print(system)
+			print(system_vars)
 
 		res = solve(system, system_vars)
 
 		if self.DEBUG:
-			print res
+			print(res)
 
-		for var, value in res.items():
+		for var, value in list(res.items()):
 			math_formula = MathFormula(self)
 			math_formula.setInternalMathFormula(unevaluatedSubs(value, subs))
 

@@ -79,7 +79,7 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 		t_stoichiometry = unevaluatedSubs(obj.stoichiometry.getInternalMathFormula(), symbols_subs)
 		self.stoichiometry.setInternalMathFormula(t_stoichiometry)
 
-		if obj.getSpecies().getSbmlId() in sids_subs.keys():
+		if obj.getSpecies().getSbmlId() in list(sids_subs.keys()):
 			self.__species = sids_subs[obj.getSpecies().getSbmlId()]
 		else:
 			self.__species = obj.getSpecies().getSbmlId()

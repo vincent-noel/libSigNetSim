@@ -23,7 +23,10 @@
 	This file ...
 
 """
+from __future__ import print_function
 
+from builtins import str
+from builtins import range
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.ConservationLaw import ConservationLaw
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyEqual, SympyAdd, SympyMul, SympyPow
@@ -110,7 +113,7 @@ class ListOfConservationLaws(list):
 
 		symbol = variable.symbol.getSymbol()
 
-		if symbol in self.__model.listOfInitialConditions.keys():
+		if symbol in list(self.__model.listOfInitialConditions.keys()):
 
 			value = self.__model.listOfInitialConditions[symbol].getDeveloppedInternalMathFormula()
 			if variable.isSpecies():

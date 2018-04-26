@@ -24,6 +24,7 @@
 
 """
 
+from builtins import object
 from libsignetsim.settings.Settings import Settings
 
 class HasId(object):

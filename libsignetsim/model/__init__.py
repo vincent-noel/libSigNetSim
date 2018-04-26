@@ -23,10 +23,11 @@
 	Initialization of the module SigNetSim/SbmlModel
 
 """
+from __future__ import absolute_import
 
-from Model import Model
+from .Model import Model
 
-from ModelException import (
+from .ModelException import (
 	ModelException, SbmlException, FileException,
 	MissingModelException, MissingSubmodelException,
 	PackageNotImplementedModelException, TagNotImplementedModelException,
@@ -34,7 +35,7 @@ from ModelException import (
 	CannotCreateException, CannotDeleteException
 )
 
-from SbmlDocument import SbmlDocument
+from .SbmlDocument import SbmlDocument
 
-from math import MathFormula
-from sbml import KineticLaw
+from .math import MathFormula
+from .sbml import KineticLaw

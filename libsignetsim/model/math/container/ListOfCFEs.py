@@ -23,7 +23,9 @@
 	This file ...
 
 """
+from __future__ import print_function
 
+from builtins import str
 from libsignetsim.model.math.CFE import CFE
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.sympy_shortcuts import SympyPiecewise, SympyITE, SympyInf, SympyNan, SympyEqual, SympySymbol, SympyPow
@@ -46,13 +48,13 @@ class ListOfCFEs(list):
 
 		self[:] = []
 
-		for rule in self.__model.listOfRules.values():
+		for rule in list(self.__model.listOfRules.values()):
 			if rule.isAssignment() and rule.isValid():
 				t_cfe = CFE(self.__model, CFE.ASSIGNMENT)
 				t_cfe.new(rule.getVariable(), rule.getDefinition(rawFormula=True))
 				list.append(self, t_cfe)
 
-		for reaction in self.__model.listOfReactions.values():
+		for reaction in list(self.__model.listOfReactions.values()):
 			if reaction.isValid():
 				t_cfe = CFE(self.__model, CFE.REACTION)
 				t_cfe.new(reaction, reaction.value)
@@ -66,7 +68,7 @@ class ListOfCFEs(list):
 		DEBUG = False
 
 		if DEBUG:
-			print self
+			print(self)
 
 		t0 = time()
 
@@ -77,53 +79,53 @@ class ListOfCFEs(list):
 				cfe_vars.append(t_cfe.getVariable().symbol.getInternalMathFormula())
 
 			if DEBUG:
-				print cfe_vars
+				print(cfe_vars)
 			crossDependencies = True
 			passes = 1
 
 			while crossDependencies:
 
 				if DEBUG:
-					print "PASS : %d" % passes
+					print("PASS : %d" % passes)
 
 				crossDependencies = False
 				for t_cfe in self:
 					t_def = t_cfe.getDefinition().getDeveloppedInternalMathFormula()
 					if DEBUG:
-						print t_def
+						print(t_def)
 					if len(t_def.atoms(SympySymbol).intersection(set(cfe_vars))) > 0:
 
 						crossDependencies = True
 
 						if DEBUG:
-							print "\n> " + str(t_cfe)
+							print("\n> " + str(t_cfe))
 
 						for match in t_def.atoms(SympySymbol).intersection(set(cfe_vars)):
 							if match == t_cfe.getVariable().symbol:
 								raise MathException("Developping CFEs : self dependency is bad")
 
 							if DEBUG:
-								print ">> " + str(self.getBySymbol(match))
+								print(">> " + str(self.getBySymbol(match)))
 
 							t_cfe.setDefinitionMath(t_cfe.getDefinition().simpleSubsDevelopped(self.getBySymbol(match).getSubs()))
 
 						if DEBUG:
 							if len(t_cfe.getDefinition().getDeveloppedInternalMathFormula().atoms(SympySymbol).intersection(set(cfe_vars))) == 0:
-								print "> " + str(t_cfe) + " [OK]"
+								print("> " + str(t_cfe) + " [OK]")
 
 							else:
-								print "> " + str(t_cfe) + " [ERR]"
+								print("> " + str(t_cfe) + " [ERR]")
 
 				passes += 1
 				if passes >= 100:
 					raise MathException("Developping CFEs : Probable circular dependencies")
 
 				if DEBUG:
-					print ""
+					print("")
 
 		t1 = time()
 		if Settings.verbose >= 1:
-			print "> Finished developping closed forms (%.2gs)" % (t1-t0)
+			print("> Finished developping closed forms (%.2gs)" % (t1-t0))
 
 	def __str__(self):
 

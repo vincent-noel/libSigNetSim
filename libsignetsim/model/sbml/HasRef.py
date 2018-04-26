@@ -23,7 +23,9 @@
 	This file is the parent class for all objects having refs
 
 """
+from __future__ import print_function
 
+from builtins import object
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.sbml.HasSBaseRef import HasSBaseRef
 
@@ -114,7 +116,7 @@ class HasRef(object):
 		if self.hasIdRef():
 
 			if self.hasSBaseRef():
-				print self.getSBaseRef().getRef()
+				print(self.getSBaseRef().getRef())
 
 			if self.__model.listOfVariables.containsSbmlId(self.getIdRef()):
 				return self.__model.listOfVariables.getBySbmlId(self.getIdRef())

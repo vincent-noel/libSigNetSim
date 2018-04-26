@@ -24,7 +24,10 @@
 	in the SBmL Test Suite
 
 """
+from __future__ import print_function
 
+from builtins import str
+from builtins import object
 from libsignetsim.tests.sbmltestsuite.TestSuiteCase import TestSuiteCase
 from libsignetsim import Settings
 
@@ -132,7 +135,7 @@ class TestSuite(object):
 
 		nb_success = 0
 		nb_cases = 0
-		for case_id, case_tags in self.testCasesTags.items():
+		for case_id, case_tags in list(self.testCasesTags.items()):
 
 			compatible = True
 			if self.TODO_TAGS != []:
@@ -152,7 +155,7 @@ class TestSuite(object):
 					compatible = False
 
 				for todo_version in self.TODO_VERSIONS:
-					if todo_version in self.VERSION_INCOMPATIBLE_TAGS.keys() and tag.strip() in self.VERSION_INCOMPATIBLE_TAGS[todo_version]:
+					if todo_version in list(self.VERSION_INCOMPATIBLE_TAGS.keys()) and tag.strip() in self.VERSION_INCOMPATIBLE_TAGS[todo_version]:
 						compatible = False
 
 
@@ -167,7 +170,7 @@ class TestSuite(object):
 
 
 		if nb_cases > 0:
-			print "\n> %d success out of %d tests (%.0f%%)" % (nb_success, nb_cases, nb_success*100/nb_cases)
+			print("\n> %d success out of %d tests (%.0f%%)" % (nb_success, nb_cases, nb_success*100/nb_cases))
 		return nb_cases == nb_success
 
 	def runCase(self, case):
@@ -178,7 +181,7 @@ class TestSuite(object):
 		for versions in self.testCasesVersions[case]:
 			if self.TODO_VERSIONS == [] or versions in self.TODO_VERSIONS:
 
-				print "> Running case %05d (%s)" % (case, str(self.TODO_VERSIONS))
+				print("> Running case %05d (%s)" % (case, str(self.TODO_VERSIONS)))
 
 				level_version = versions.split('.')
 				level = int(level_version[0])
@@ -187,7 +190,7 @@ class TestSuite(object):
 				nb_cases += 1
 				if self.FAIL_ON_EXCEPTION:
 					if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
-						print ""
+						print("")
 
 					test = TestSuiteCase(case, str(level), str(version), test_export=self.testExport)
 					if test.run():
@@ -196,12 +199,12 @@ class TestSuite(object):
 				else:
 					try:
 						if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
-							print ""
+							print("")
 
 						test = TestSuiteCase(case, str(level), str(version), test_export=self.testExport)
 						if test.run():
 							nb_success += 1
 					except Exception as e:
-						print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
+						print(">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e))
 
 		return nb_success, nb_cases

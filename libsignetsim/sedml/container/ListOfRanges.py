@@ -34,7 +34,8 @@ from libsignetsim.settings.Settings import Settings
 
 import libsbml
 from libsedml import SEDML_RANGE_UNIFORMRANGE, SEDML_RANGE_VECTORRANGE, SEDML_RANGE_FUNCTIONALRANGE
-reload(libsbml)
+from six.moves import reload_module
+reload_module(libsbml)
 
 
 class ListOfRanges(ListOf):

@@ -24,6 +24,7 @@
 
 """
 
+from builtins import str
 from libsignetsim.sedml.SedBase import SedBase
 from libsignetsim.settings.Settings import Settings
 

@@ -24,6 +24,7 @@
 
 """
 
+from builtins import object
 from libsignetsim.model.sbml.container.ListOfSpecies import ListOfSpecies
 from libsignetsim.model.sbml.container.ListOfParameters import ListOfParameters
 from libsignetsim.model.sbml.container.ListOfReactions import ListOfReactions

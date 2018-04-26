@@ -23,11 +23,13 @@
 	This file is a simple example of reading and writing a basic NuML doc
 
 """
+from __future__ import print_function
 import libnuml
 from libnuml import readNUMLFromFile, writeNUML, writeNUMLToString, XMLNode, NUMLDocument
 from libsignetsim import Settings
 from unittest import TestCase
 from os.path import join, dirname
+from six.moves import reload_module
 
 
 class TestExampleNotes(TestCase):
@@ -35,9 +37,9 @@ class TestExampleNotes(TestCase):
 
 	def testExampleNotes(self):
 
-		print "\n\n"
+		print("\n\n")
 		numl_doc = NUMLDocument()
-		reload(libnuml)
+		reload_module(libnuml)
 		time_term = numl_doc.createOntologyTerm()
 		time_term.setId("time_term")
 		time_term.setTerm("time")

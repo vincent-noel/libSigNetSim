@@ -24,6 +24,7 @@
 
 """
 
+from builtins import object
 class InitiallyAssignedVariable(object):
 
 	def __init__(self, model):

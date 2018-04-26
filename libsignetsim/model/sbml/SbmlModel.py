@@ -23,6 +23,7 @@
 	This file ...
 
 """
+from __future__ import print_function
 
 from libsignetsim.model.sbml.container.ListOfSpecies import ListOfSpecies
 from libsignetsim.model.sbml.container.ListOfParameters import ListOfParameters
@@ -143,7 +144,7 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 			self.listOfPorts.readSbml(sbmlModel.getPlugin("comp").getListOfPorts(), self.sbmlLevel, self.sbmlVersion)
 
 		if Settings.verboseTiming >= 1:
-			print ">> SBML Model %s read in %.2gs" % (self.getSbmlId(), time()-t0)
+			print(">> SBML Model %s read in %.2gs" % (self.getSbmlId(), time()-t0))
 
 
 	def writeSbml(self, sbmlModel,
@@ -180,7 +181,7 @@ class SbmlModel(HasId, SbmlObject, ModelUnits, SbmlModelAnnotation, HasConversio
 			self.listOfPorts.writeSbml(sbmlModel.getPlugin("comp"), self.sbmlLevel, self.sbmlVersion)
 
 		if Settings.verboseTiming >= 2:
-			print "> SBML Model %s written in %.2gs" % (self.getSbmlId(), time()-t0)
+			print("> SBML Model %s written in %.2gs" % (self.getSbmlId(), time()-t0))
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		""" Here we rename the variable in all the math """

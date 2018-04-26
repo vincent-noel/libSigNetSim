@@ -24,6 +24,7 @@
 
 """
 
+from builtins import object
 from re import sub
 
 class ListOfSbmlVariables(object):

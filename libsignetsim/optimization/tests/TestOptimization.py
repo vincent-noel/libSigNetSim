@@ -69,7 +69,7 @@ class TestOptimization(TestCase):
 			condition.addObservation(reference_times[i], 'P', data)
 
 		selected_parameters = []
-		for parameter in m.listOfParameters.values():
+		for parameter in list(m.listOfParameters.values()):
 			selected_parameters.append((parameter, 1, 1e-6, 1e+6, 4))
 
 		fit = ModelVsTimeseriesOptimization(
@@ -126,7 +126,7 @@ class TestOptimization(TestCase):
 			condition.addObservation(reference_times[i], 'P', data)
 
 		selected_parameters = []
-		for parameter in r.listOfLocalParameters.values():
+		for parameter in list(r.listOfLocalParameters.values()):
 			selected_parameters.append((parameter, 1, 1e-6, 1e+6, 4))
 
 		fit = ModelVsTimeseriesOptimization(

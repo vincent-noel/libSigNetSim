@@ -82,7 +82,7 @@ class ListOfReactions(ListOf, HasIds, SbmlObject, HasParentObj):
 
 		if obj not in deletions:
 			SbmlObject.copy(self, obj)
-			for reaction in obj.values():
+			for reaction in list(obj.values()):
 				if reaction not in deletions:
 
 					t_reaction = Reaction(self.__model, self, self.nextId())

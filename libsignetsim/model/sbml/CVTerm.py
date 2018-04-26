@@ -24,6 +24,9 @@
 
 """
 
+from builtins import str
+from builtins import range
+from builtins import object
 from libsignetsim.uris.URI import URI
 from libsignetsim.settings.Settings import Settings
 from libsbml import (
@@ -124,22 +127,22 @@ class CVTerm(object):
 		self.__resources.append(uri)
 
 	def isHasPart(self):
-		return self.__qualifierType == BIOLOGICAL_QUALIFIER and self.biological_qualifiers.keys()[self.__qualifier] == BQB_HAS_PART
+		return self.__qualifierType == BIOLOGICAL_QUALIFIER and list(self.biological_qualifiers.keys())[self.__qualifier] == BQB_HAS_PART
 
 	def isHasProperty(self):
-		return self.__qualifierType == BIOLOGICAL_QUALIFIER and self.biological_qualifiers.keys()[self.__qualifier] == BQB_HAS_PROPERTY
+		return self.__qualifierType == BIOLOGICAL_QUALIFIER and list(self.biological_qualifiers.keys())[self.__qualifier] == BQB_HAS_PROPERTY
 
 	def isHasTaxon(self):
-		return self.__qualifierType == BIOLOGICAL_QUALIFIER and self.biological_qualifiers.keys()[self.__qualifier] == BQB_HAS_TAXON
+		return self.__qualifierType == BIOLOGICAL_QUALIFIER and list(self.biological_qualifiers.keys())[self.__qualifier] == BQB_HAS_TAXON
 
 	def isHasVersion(self):
-		return self.__qualifierType == BIOLOGICAL_QUALIFIER and self.biological_qualifiers.keys()[self.__qualifier] == BQB_HAS_VERSION
+		return self.__qualifierType == BIOLOGICAL_QUALIFIER and list(self.biological_qualifiers.keys())[self.__qualifier] == BQB_HAS_VERSION
 
 	def isIs(self):
-		return self.__qualifierType == BIOLOGICAL_QUALIFIER and self.biological_qualifiers.keys()[self.__qualifier] == BQB_IS
+		return self.__qualifierType == BIOLOGICAL_QUALIFIER and list(self.biological_qualifiers.keys())[self.__qualifier] == BQB_IS
 
 	def isIsDescribedBy(self):
-		return self.__qualifierType == BIOLOGICAL_QUALIFIER and self.biological_qualifiers.keys()[self.__qualifier] == BQB_IS_DESCRIBED_BY
+		return self.__qualifierType == BIOLOGICAL_QUALIFIER and list(self.biological_qualifiers.keys())[self.__qualifier] == BQB_IS_DESCRIBED_BY
 
 	def setIsDescribedBy(self):
 
@@ -147,40 +150,40 @@ class CVTerm(object):
 		self.__qualifier = BQB_IS_DESCRIBED_BY
 
 	def isIsEncodedBy(self):
-		return self.__qualifierType == BIOLOGICAL_QUALIFIER and self.biological_qualifiers.keys()[self.__qualifier] == BQB_IS_ENCODED_BY
+		return self.__qualifierType == BIOLOGICAL_QUALIFIER and list(self.biological_qualifiers.keys())[self.__qualifier] == BQB_IS_ENCODED_BY
 
 	def isIsHomologTo(self):
-		return self.__qualifierType == BIOLOGICAL_QUALIFIER and self.biological_qualifiers.keys()[self.__qualifier] == BQB_IS_HOMOLOG_TO
+		return self.__qualifierType == BIOLOGICAL_QUALIFIER and list(self.biological_qualifiers.keys())[self.__qualifier] == BQB_IS_HOMOLOG_TO
 
 	def isIsPartOf(self):
-		return self.__qualifierType == BIOLOGICAL_QUALIFIER and self.biological_qualifiers.keys()[self.__qualifier] == BQB_IS_PART_OF
+		return self.__qualifierType == BIOLOGICAL_QUALIFIER and list(self.biological_qualifiers.keys())[self.__qualifier] == BQB_IS_PART_OF
 
 	def isIsPropertyOf(self):
-		return self.__qualifierType == BIOLOGICAL_QUALIFIER and self.biological_qualifiers.keys()[self.__qualifier] == BQB_IS_PROPERTY_OF
+		return self.__qualifierType == BIOLOGICAL_QUALIFIER and list(self.biological_qualifiers.keys())[self.__qualifier] == BQB_IS_PROPERTY_OF
 
 	def isIsVersionOf(self):
-		return self.__qualifierType == BIOLOGICAL_QUALIFIER and self.biological_qualifiers.keys()[self.__qualifier] == BQB_IS_VERSION_OF
+		return self.__qualifierType == BIOLOGICAL_QUALIFIER and list(self.biological_qualifiers.keys())[self.__qualifier] == BQB_IS_VERSION_OF
 
 	def isOccursIn(self):
-		return self.__qualifierType == BIOLOGICAL_QUALIFIER and self.biological_qualifiers.keys()[self.__qualifier] == BQB_OCCURS_IN
+		return self.__qualifierType == BIOLOGICAL_QUALIFIER and list(self.biological_qualifiers.keys())[self.__qualifier] == BQB_OCCURS_IN
 
 	def isUnknown(self):
-		return self.__qualifierType == BIOLOGICAL_QUALIFIER and self.biological_qualifiers.keys()[self.__qualifier] == BQB_UNKNOWN
+		return self.__qualifierType == BIOLOGICAL_QUALIFIER and list(self.biological_qualifiers.keys())[self.__qualifier] == BQB_UNKNOWN
 
 	def isModelHasInstance(self):
-		return self.__qualifierType == MODEL_QUALIFIER and self.model_qualifiers.keys()[self.__qualifier] == BQM_HAS_INSTANCE
+		return self.__qualifierType == MODEL_QUALIFIER and list(self.model_qualifiers.keys())[self.__qualifier] == BQM_HAS_INSTANCE
 
 	def isModelIs(self):
-		return self.__qualifierType == MODEL_QUALIFIER and self.model_qualifiers.keys()[self.__qualifier] == BQM_IS
+		return self.__qualifierType == MODEL_QUALIFIER and list(self.model_qualifiers.keys())[self.__qualifier] == BQM_IS
 
 	def isModelIsDerivedFrom(self):
-		return self.__qualifierType == MODEL_QUALIFIER and self.model_qualifiers.keys()[self.__qualifier] == BQM_IS_DERIVED_FROM
+		return self.__qualifierType == MODEL_QUALIFIER and list(self.model_qualifiers.keys())[self.__qualifier] == BQM_IS_DERIVED_FROM
 
 	def isModelIsDescribedBy(self):
-		return self.__qualifierType == MODEL_QUALIFIER and self.model_qualifiers.keys()[self.__qualifier] == BQM_IS_DESCRIBED_BY
+		return self.__qualifierType == MODEL_QUALIFIER and list(self.model_qualifiers.keys())[self.__qualifier] == BQM_IS_DESCRIBED_BY
 
 	def isModelIsInstanceOf(self):
-		return self.__qualifierType == MODEL_QUALIFIER and self.model_qualifiers.keys()[self.__qualifier] == BQM_IS_INSTANCE_OF
+		return self.__qualifierType == MODEL_QUALIFIER and list(self.model_qualifiers.keys())[self.__qualifier] == BQM_IS_INSTANCE_OF
 
 	def isModelUnknown(self):
-		return self.__qualifierType == MODEL_QUALIFIER and self.model_qualifiers.keys()[self.__qualifier] == BQM_UNKNOWN
+		return self.__qualifierType == MODEL_QUALIFIER and list(self.model_qualifiers.keys())[self.__qualifier] == BQM_UNKNOWN

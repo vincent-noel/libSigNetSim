@@ -24,6 +24,7 @@
 
 """
 
+from builtins import object
 from libsignetsim.data.ListOfExperimentalData import ListOfExperimentalData
 from libsignetsim.data.ExperimentalData import ExperimentalData
 class ExperimentalCondition(object):

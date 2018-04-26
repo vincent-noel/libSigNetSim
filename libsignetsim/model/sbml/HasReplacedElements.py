@@ -24,6 +24,7 @@
 
 """
 
+from builtins import object
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.sbml.container.ListOfReplacedElements import ListOfReplacedElements
 from libsignetsim.model.sbml.ReplacedBy import ReplacedBy
@@ -90,7 +91,7 @@ class HasReplacedElements(object):
 
 	def getReplacedElements(self):
 		if self.hasReplacedElements():
-			return self.__listOfReplacedElements.values()
+			return list(self.__listOfReplacedElements.values())
 
 	def getListOfReplacedElements(self):
 		if self.hasReplacedElements():

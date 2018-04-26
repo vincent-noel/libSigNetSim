@@ -23,7 +23,10 @@
 	This file ...
 
 """
+from __future__ import print_function
 
+from builtins import str
+from builtins import range
 from libsignetsim.model.math.DAE import DAE
 from libsignetsim.model.math.CFE import CFE
 from libsignetsim.model.math.ODE import ODE
@@ -90,7 +93,7 @@ class MathAsymmetricModel(MathSubmodel):
 
 	def __findAllowedVariables(self, treated_variables):
 
-		all_variables = range(len(self.parentModel.variablesOdes))
+		all_variables = list(range(len(self.parentModel.variablesOdes)))
 
 		forbidden_variables = []
 		for i_species, species in enumerate(self.parentModel.variablesOdes):
@@ -141,7 +144,7 @@ class MathAsymmetricModel(MathSubmodel):
 				if val > 0:
 					t_dict[int(val)].append(i)
 
-			for nb, species in t_dict.items():
+			for nb, species in list(t_dict.items()):
 				if species not in groups:
 					groups.append(species)
 
@@ -150,7 +153,7 @@ class MathAsymmetricModel(MathSubmodel):
 		for group in groups:
 			dependent_vars.append(allowed_variables[choice(group)])
 
-		all_variables = range(len(self.parentModel.variablesOdes))
+		all_variables = list(range(len(self.parentModel.variablesOdes)))
 
 		independent_vars = list(set(all_variables).difference(set(dependent_vars)))
 
@@ -178,18 +181,18 @@ class MathAsymmetricModel(MathSubmodel):
 		result_system = solve(system, vars)
 
 		if self.DEBUG:
-			print result_system
+			print(result_system)
 
 		independent_species = []
 		independent_species_formula = []
 
 		if len(result_system) > 0:
 			if isinstance(result_system, dict):
-				for var, value in result_system.items():
+				for var, value in list(result_system.items()):
 					independent_species.append(var)
 					independent_species_formula.append(value)
 			else:
-				print result_system
+				print(result_system)
 
 		return independent_species, independent_species_formula
 
