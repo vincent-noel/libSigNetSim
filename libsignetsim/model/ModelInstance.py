@@ -88,13 +88,13 @@ class ModelInstance(Model):
 							old_symbol = variable.symbol.getInternalMathFormula()
 							new_symbol = SympySymbol("_local_%d_%s" % (variable.reaction.objId,
 								(self.PREFIX_PATTERN % submodel.getSbmlId())
-								+ str(variable.getSbmlId())
+								+ variable.getSbmlId()
 							))
 						else:
 							old_symbol = variable.symbol.getInternalMathFormula()
 							new_symbol = SympySymbol(
 								(self.PREFIX_PATTERN % submodel.getSbmlId())
-								+ str(variable.symbol.getInternalMathFormula())
+								+ variable.symbol.getInternalMathFormula().name
 							)
 						self.submodel_symbols_subs[submodel.getSbmlId()].update({old_symbol: new_symbol})
 

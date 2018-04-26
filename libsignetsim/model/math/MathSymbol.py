@@ -73,9 +73,9 @@ class MathSymbol(MathFormula):
 		else:
 
 			if not developped:
-				return SympySymbol("_speciesForcedConcentration_%s_" % str(MathFormula.getInternalMathFormula(self)))
+				return SympySymbol("_speciesForcedConcentration_%s_" % MathFormula.getInternalMathFormula(self).name)
 			else:
-				return old_div(MathFormula.getInternalMathFormula(self),self.__variable.getCompartment().symbol.getInternalMathFormula(rawFormula=rawFormula))
+				return MathFormula.getInternalMathFormula(self)/self.__variable.getCompartment().symbol.getInternalMathFormula(rawFormula=rawFormula)
 
 
 	def getSymbol(self):
