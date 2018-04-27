@@ -30,7 +30,7 @@ from builtins import object
 from libsignetsim.sedml.URI import URI
 from libsignetsim.sedml.SedmlException import SedmlFileNotFound
 from libsignetsim.settings.Settings import Settings
-from urllib.request import urlretrieve
+from six.moves.urllib.request import urlretrieve
 from os.path import join, exists, isabs, relpath, commonprefix, basename
 from os import getcwd
 
