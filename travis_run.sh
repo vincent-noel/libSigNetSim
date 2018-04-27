@@ -23,11 +23,7 @@ if [ $2 = "docker" ]; then
 
 else
     if [ $1 = "before_install" ]; then
-        if [ "$4" = "python3" ]; then
-            pip3 install coveralls || exit 1;
-        else
-            pip2 install coveralls || exit 1;
-        fi
+        pip install coveralls || exit 1;
         docker pull signetsim/travis_testenv:stretch || exit 1;
 
     elif [ $1 = "install" ]; then
@@ -40,7 +36,6 @@ else
         else
             docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; scripts/install.sh" || exit 1;
         fi
-
 
         docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim/libsignetsim/lib/integrate/; make"
         docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim/libsignetsim/lib/plsa/; make all"
