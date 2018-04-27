@@ -24,7 +24,7 @@
 
 """
 
-from builtins import str
+#from builtins import str
 from libsignetsim.model.sbml.EventAssignedVariable import EventAssignedVariable
 from libsignetsim.model.sbml.InitiallyAssignedVariable import InitiallyAssignedVariable
 from libsignetsim.model.sbml.RuledVariable import RuledVariable

@@ -24,7 +24,6 @@
 
 """
 
-from builtins import str
 from builtins import object
 from six import string_types
 from libsignetsim.model.math.MathSymbol import MathSymbol
@@ -271,4 +270,4 @@ class MathVariable(object):
 
 	def getSymbolStr(self):
 
-		return str(self.symbol.getSymbol())
+		return self.symbol.getSymbol().name

@@ -25,7 +25,7 @@
 """
 from __future__ import division
 
-from builtins import str
+#from builtins import str
 from past.utils import old_div
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings

@@ -25,7 +25,7 @@
 """
 from __future__ import print_function
 
-from builtins import str
+#from builtins import str
 from libsignetsim.model.math.MathException import MathException
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs

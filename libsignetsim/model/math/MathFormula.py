@@ -25,7 +25,7 @@
 """
 from __future__ import absolute_import
 
-from builtins import str
+#from builtins import str
 from libsignetsim.model.math.sympy_shortcuts import  (
 	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
 	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,

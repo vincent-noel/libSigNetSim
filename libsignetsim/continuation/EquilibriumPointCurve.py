@@ -23,14 +23,10 @@
 	This file ...
 
 """
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import division
 
 from builtins import zip
 from builtins import range
 from builtins import object
-from past.utils import old_div
 from PyDSTool import args, ContClass, PyDSTool_ExistError
 
 import threading
@@ -105,7 +101,7 @@ class EquilibriumPointCurve(object):
 		self.continuationParameters.StepSize = abs(self.ds)
 		self.continuationParameters.MaxNumPoints = self.maxSteps
 		self.continuationParameters.MaxStepSize = self.ds*100
-		self.continuationParameters.MinStepSize = old_div(self.ds,100)
+		self.continuationParameters.MinStepSize = self.ds/100
 		self.continuationParameters.LocBifPoints = 'All'
 		self.continuationParameters.verbosity = self.verbosity
 		self.continuationParameters.SaveEigen = True
@@ -273,7 +269,7 @@ class EquilibriumPointCurve(object):
 			limit_cycle_args.freepars = [self.parameter.getSymbolStr()]
 			limit_cycle_args.MaxNumPoints = self.maxSteps
 			limit_cycle_args.setSize = self.ds
-			limit_cycle_args.MinStepSize = old_div(self.ds,100)
+			limit_cycle_args.MinStepSize = self.ds/100
 			limit_cycle_args.MaxStepSize = self.ds*100
 			limit_cycle_args.LocBifPoints = 'all'
 			limit_cycle_args.SaveEigen = True

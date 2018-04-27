@@ -24,7 +24,7 @@
 
 """
 
-from builtins import str
+#from builtins import str
 from libsignetsim.model.sbml.HasId import HasId
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.sbml.Unit import Unit
