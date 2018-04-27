@@ -144,7 +144,7 @@ class TestContinuation(TestCase):
 
 		self.assertEqual(len(lc_x), 486)
 		self.assertEqual(len(list(lc_ys.keys())), 2)
-		self.assertEqual(list(lc_ys['cyclin_cdk'].keys()), ['max', 'min'])
+		self.assertEqual(sorted(list(lc_ys['cyclin_cdk'].keys())), ['max', 'min'])
 		self.assertEqual(len(lc_ys['cyclin_cdk']['min']), 486)
 
 		for i, x_i in enumerate(lc_x):
