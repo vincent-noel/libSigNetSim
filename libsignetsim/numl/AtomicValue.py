@@ -24,7 +24,6 @@
 
 """
 
-from builtins import str
 from libsignetsim.numl.Dimension import Dimension
 from libsignetsim.settings.Settings import Settings
 

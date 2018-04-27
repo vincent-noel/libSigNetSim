@@ -161,17 +161,17 @@ class File(object):
 		if tag == "sbml":
 			sbmlReader = SBMLReader()
 			if sbmlReader is not None:
-				sbmlDoc = sbmlReader.readSBMLFromString(xml_content.decode('utf-8'))
+				sbmlDoc = sbmlReader.readSBMLFromString(str("%s" % xml_content.decode('ascii', 'ignore')))
 				return self.SBML + ".level-%d.version-%d" % (sbmlDoc.getLevel(), sbmlDoc.getVersion())
 			else:
 				return self.SBML
 
 		elif tag == "sedML":
-			sedmlDoc = readSedMLFromString(xml_content.decode('utf-8'))
+			sedmlDoc = readSedMLFromString(str("%s" % xml_content.decode('ascii', 'ignore')))
 			return self.SEDML + ".level-%d.version-%d" % (sedmlDoc.getLevel(), sedmlDoc.getVersion())
 
 		elif tag == "numl":
-			numlDoc = readNUMLFromString(xml_content.decode('utf-8'))
+			numlDoc = readNUMLFromString(str("%s" % xml_content.decode('ascii', 'ignore')))
 			return self.NUML + ".level-%d.version-%d" % (numlDoc.getLevel(), numlDoc.getVersion())
 
 		elif tag == "omexManifest":

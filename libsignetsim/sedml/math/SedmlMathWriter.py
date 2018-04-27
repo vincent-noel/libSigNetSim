@@ -25,7 +25,7 @@
 """
 from __future__ import absolute_import
 
-from builtins import str
+# from builtins import str
 from builtins import range
 from builtins import object
 from libsignetsim.settings.Settings import Settings

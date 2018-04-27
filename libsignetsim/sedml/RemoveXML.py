@@ -25,37 +25,21 @@
 """
 
 from libsignetsim.sedml.Change import Change
-from libsignetsim.sedml.XPath import XPath
 from libsignetsim.settings.Settings import Settings
-from libsignetsim.sedml.SedmlException import SedmlModelObjectNotFound
 
-class ChangeAttribute(Change):
+
+class RemoveXML(Change):
 
 	def __init__(self, document):
 
 		Change.__init__(self, document)
 		self.__document = document
-		self.__newValue = None
 
 	def readSedml(self, change, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
 		Change.readSedml(self, change, level, version)
-		if change.isSetNewValue():
-			self.__newValue = change.getNewValue()
+
 
 	def writeSedml(self, change, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
 
 		Change.writeSedml(self, change, level, version)
-
-		if self.__newValue is not None:
-			change.setNewValue(str(self.__newValue))
-
-	def setNewValue(self, value):
-		self.__newValue = value
-
-	def getNewValue(self):
-		return self.__newValue
-
-	def applyChange(self, sbml_model):
-		self.getTarget().changeModelObject(sbml_model, self.__newValue)
-
