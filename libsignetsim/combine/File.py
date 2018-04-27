@@ -110,7 +110,8 @@ class File(object):
 		if self.__extension in self.KNOWN_FORMATS:
 			self.__format = self.KNOWN_FORMATS[self.__extension]
 			if self.__format == self.XML:
-				self.__format = self.guessXML(open(filename, 'r').read())
+				with open(filename, 'r') as new_file:
+					self.__format = self.guessXML(new_file.read().encode('utf-8'))
 
 		else:
 			self.__format = "http://purl.org/NET/mediatypes/%s" % guess_type(filename)[0]
@@ -160,17 +161,17 @@ class File(object):
 		if tag == "sbml":
 			sbmlReader = SBMLReader()
 			if sbmlReader is not None:
-				sbmlDoc = sbmlReader.readSBMLFromString(xml_content)
+				sbmlDoc = sbmlReader.readSBMLFromString(xml_content.decode('utf-8'))
 				return self.SBML + ".level-%d.version-%d" % (sbmlDoc.getLevel(), sbmlDoc.getVersion())
 			else:
 				return self.SBML
 
 		elif tag == "sedML":
-			sedmlDoc = readSedMLFromString(xml_content)
+			sedmlDoc = readSedMLFromString(xml_content.decode('utf-8'))
 			return self.SEDML + ".level-%d.version-%d" % (sedmlDoc.getLevel(), sedmlDoc.getVersion())
 
 		elif tag == "numl":
-			numlDoc = readNUMLFromString(xml_content)
+			numlDoc = readNUMLFromString(xml_content.decode('utf-8'))
 			return self.NUML + ".level-%d.version-%d" % (numlDoc.getLevel(), numlDoc.getVersion())
 
 		elif tag == "omexManifest":

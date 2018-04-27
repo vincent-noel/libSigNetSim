@@ -61,10 +61,11 @@ class Manifest(object):
 					else:
 						self.__masters.append(False)
 
+
 	def writeManifest(self):
 
 		root = etree.Element("omexManifest")
-		root.set("xmlns","http://identifiers.org/combine.specifications/omex-manifest")
+		root.set("xmlns", "http://identifiers.org/combine.specifications/omex-manifest")
 
 		archive = etree.SubElement(root, "content")
 		archive.set("location", ".")
@@ -81,9 +82,8 @@ class Manifest(object):
 			if file.isMaster():
 				t_content.set("master", "true")
 
-		str = etree.tostring(root, encoding='utf-8', pretty_print=True, xml_declaration=True)
-		# print str
-		return str
+		tree = etree.tostring(root, encoding='utf-8', pretty_print=True, xml_declaration=True)
+		return str(tree.decode('utf-8'))
 
 	# def getMaster(self):
 	# 	print self.__masters.index(True)

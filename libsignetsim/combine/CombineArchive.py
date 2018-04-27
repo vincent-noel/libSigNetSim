@@ -88,6 +88,7 @@ class CombineArchive(object):
 		self.__listOfFiles.readListOfFiles(self.__file)
 
 		self.__extractArchive()
+		# self.__file.close()
 		#TODO : browse the manifest, check if the archive exists, then create add the file to the list of files ?
 
 	def getListOfFiles(self):
