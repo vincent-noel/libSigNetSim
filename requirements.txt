@@ -4,7 +4,7 @@ python-libsedml
 python-libnuml
 numpy
 scipy<1.0.0
-PyDSTool
+git+https://github.com/tkf/pydstool.git@py3k-TestFunc
 sympy
 bioservices
 pandas
