@@ -24,7 +24,6 @@
 
 """
 
-#from builtins import str
 from libsignetsim.model.sbml.container.ListOfParameters import ListOfParameters
 from libsignetsim.model.sbml.container.ListOfSpeciesReference import ListOfSpeciesReference
 

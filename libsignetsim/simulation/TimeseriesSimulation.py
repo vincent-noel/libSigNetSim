@@ -25,7 +25,6 @@
 """
 from __future__ import division
 
-#from builtins import str
 from past.utils import old_div
 from libsignetsim.simulation.Simulation import Simulation
 from libsignetsim.figure.SigNetSimFigure import SigNetSimFigure

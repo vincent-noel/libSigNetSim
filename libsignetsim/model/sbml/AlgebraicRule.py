@@ -24,7 +24,6 @@
 
 """
 
-#from builtins import str
 from libsignetsim.model.sbml.Rule import Rule
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.MathFormula import MathFormula

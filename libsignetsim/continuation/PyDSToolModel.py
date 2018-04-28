@@ -24,7 +24,6 @@
 
 """
 
-#from builtins import str
 from builtins import object
 from PyDSTool import args, Generator
 from PyDSTool.Toolbox import phaseplane as pp

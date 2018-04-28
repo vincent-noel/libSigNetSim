@@ -25,7 +25,6 @@
 """
 from __future__ import print_function
 
-#from builtins import str
 from builtins import range
 from libsignetsim.model.math.DAE import DAE
 from libsignetsim.model.math.CFE import CFE

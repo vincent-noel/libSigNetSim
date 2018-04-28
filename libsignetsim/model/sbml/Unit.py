@@ -24,7 +24,6 @@
 
 """
 
-#from builtins import str
 from builtins import object
 from libsignetsim.model.sbml.HasId import HasId
 from libsignetsim.settings.Settings import Settings
