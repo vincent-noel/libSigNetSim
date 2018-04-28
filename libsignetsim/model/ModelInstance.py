@@ -26,7 +26,6 @@
 from __future__ import print_function
 from __future__ import division
 
-from past.utils import old_div
 from libsignetsim.model.Model import Model
 from libsignetsim.model.Variable import Variable
 from libsignetsim.model.sbml.FunctionDefinition import FunctionDefinition
@@ -129,7 +128,10 @@ class ModelInstance(Model):
 					self.submodel_timeConversionFactor.update(
 						{submodel.getSbmlId(): submodel.getTimeConversionFactor()}
 					)
-					self.submodel_symbols_subs[submodel.getSbmlId()].update({SympySymbol("_time_"): old_div(SympySymbol("_time_"),submodel.getTimeConversionFactor().getInternalMathFormula())})
+					self.submodel_symbols_subs[submodel.getSbmlId()].update(
+						{SympySymbol("_time_"): SympySymbol("_time_") / submodel.getTimeConversionFactor().getInternalMathFormula()}
+					)
+
 
 				else:
 					self.submodel_timeConversionFactor.update({submodel.getSbmlId(): None})

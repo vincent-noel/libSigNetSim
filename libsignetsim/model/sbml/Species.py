@@ -25,7 +25,6 @@
 """
 from __future__ import division
 
-from past.utils import old_div
 from libsignetsim.model.sbml.EventAssignedVariable import EventAssignedVariable
 from libsignetsim.model.sbml.InitiallyAssignedVariable import InitiallyAssignedVariable
 from libsignetsim.model.sbml.RuledVariable import RuledVariable
@@ -171,7 +170,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 				sbml_sp.setInitialAmount(t_value.getValue())
 			else:
 				t_formula = MathFormula(self.__model)
-				t_formula.setInternalMathFormula(old_div(self.value.getInternalMathFormula(),self.getCompartment().symbol.getInternalMathFormula()))
+				t_formula.setInternalMathFormula(
+					self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula()
+				)
 				sbml_sp.setInitialConcentration(t_formula.getValueMathFormula())
 
 		if self.boundaryCondition is not None and (sbml_level >= 3 or self.boundaryCondition is not False):
@@ -323,7 +324,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 		if rawFormula and (self.isDeclaredConcentration or not self.hasOnlySubstanceUnits):
 			t_formula = MathFormula(self.__model)
-			t_formula.setInternalMathFormula(old_div(self.value.getInternalMathFormula(),self.getCompartment().symbol.getInternalMathFormula()))
+			t_formula.setInternalMathFormula(
+				self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula()
+			)
 			return t_formula
 		else:
 			return self.value
@@ -333,7 +336,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 		if self.isInitialized:
 			if self.isDeclaredConcentration:
-				return float(old_div(self.value.getInternalMathFormula(),self.getCompartment().symbol.getInternalMathFormula()))
+				return float(self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula())
 			else:
 				return Variable.getValue(self)
 

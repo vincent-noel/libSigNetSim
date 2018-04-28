@@ -26,7 +26,6 @@
 from __future__ import division
 
 from builtins import object
-from past.utils import old_div
 from libsignetsim.settings.Settings import Settings
 import matplotlib.pyplot as plt
 
@@ -46,11 +45,11 @@ class SigNetSimFigure(object):
         else:
             self.__dpi = dpi
         if width is None:
-            self.w = old_div(self.default_width, float(self.__dpi))
-            self.h = old_div((self.default_width * 0.667), float(self.__dpi))
+            self.w = self.default_width/float(self.__dpi)
+            self.h = (self.default_width * 0.667)/float(self.__dpi)
         else:
-            self.w = old_div(width, float(self.__dpi))
-            self.h = old_div((width * 0.667), float(self.__dpi))
+            self.w = width/float(self.__dpi)
+            self.h = (width * 0.667)/float(self.__dpi)
 
 
     def add_subplot(self, nb_cols=1, nb_rows=None, id_cell=None, x_label=None, y_label=None):

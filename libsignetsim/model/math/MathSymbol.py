@@ -25,7 +25,6 @@
 """
 from __future__ import division
 
-from past.utils import old_div
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.sympy_shortcuts import  (

@@ -26,7 +26,6 @@
 from __future__ import print_function
 from __future__ import division
 
-from past.utils import old_div
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.model.sbml.HasParentObj import HasParentObj
 from libsignetsim.model.math.MathFormula import MathFormula
@@ -107,7 +106,7 @@ class InitialAssignment(SbmlObject, HasParentObj):
 
 		t_convs = {}
 		for var, conversion in list(conversion_factors.items()):
-			t_convs.update({var: old_div(var,conversion)})
+			t_convs.update({var: var/conversion})
 
 		if obj.getDefinition() is not None:
 			t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(), symbols_subs)
@@ -182,7 +181,9 @@ class InitialAssignment(SbmlObject, HasParentObj):
 			if self.getVariable().isSpecies() and not self.getVariable().hasOnlySubstanceUnits:
 				t_comp = self.getVariable().getCompartment()
 				t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
-				t_math_formula.setInternalMathFormula(old_div(self.__definition.getInternalMathFormula(),t_comp.symbol.getInternalMathFormula()))
+				t_math_formula.setInternalMathFormula(
+					self.__definition.getInternalMathFormula()/t_comp.symbol.getInternalMathFormula()
+				)
 				return t_math_formula.getPrettyPrintMathFormula()
 
 			else:

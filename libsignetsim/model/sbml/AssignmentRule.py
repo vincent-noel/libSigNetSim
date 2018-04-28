@@ -25,7 +25,6 @@
 """
 from __future__ import division
 
-from past.utils import old_div
 from libsignetsim.model.sbml.Rule import Rule
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
@@ -108,7 +107,7 @@ class AssignmentRule(Rule):
 		if obj.getDefinition() is not None:
 			t_convs = {}
 			for var, conversion in list(conversion_factors.items()):
-				t_convs.update({var: old_div(var,conversion)})
+				t_convs.update({var: var / conversion})
 
 			t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(), symbols_subs)
 			t_definition = unevaluatedSubs(t_definition, t_convs)
@@ -192,7 +191,9 @@ class AssignmentRule(Rule):
 			if self.getVariable().isConcentration():
 				t_comp = self.getVariable().getCompartment()
 				t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
-				t_math_formula.setInternalMathFormula(old_div(self.__definition.getInternalMathFormula(),t_comp.symbol.getInternalMathFormula()))
+				t_math_formula.setInternalMathFormula(
+					self.__definition.getInternalMathFormula() / t_comp.symbol.getInternalMathFormula()
+				)
 				return t_math_formula.getPrettyPrintMathFormula()
 
 			else:

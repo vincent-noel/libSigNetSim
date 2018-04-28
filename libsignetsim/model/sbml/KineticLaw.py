@@ -25,7 +25,6 @@
 """
 from __future__ import division
 
-from past.utils import old_div
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.sympy_shortcuts import  (
 	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
@@ -59,7 +58,7 @@ class KineticLaw(KineticLawIdentifier):
 
 		t_convs = {}
 		for var, conversion in list(conversion_factors.items()):
-			t_convs.update({var: old_div(var,conversion)})
+			t_convs.update({var: var/conversion})
 
 		t_formula = unevaluatedSubs(obj.kineticLaw.getDefinition().getInternalMathFormula(), symbols_subs)
 		t_formula = unevaluatedSubs(t_formula, t_convs)
@@ -90,7 +89,7 @@ class KineticLaw(KineticLawIdentifier):
 			if (not rawFormula and len(self.reaction.listOfReactants) > 0
 				and self.reaction.listOfReactants[0].getSpecies().isConcentration()):
 				comp = self.reaction.listOfReactants[0].getSpecies().getCompartment()
-				# formula /= comp.symbol.getInternalMathFormula()
+
 				formula = SympyMul(
 					formula,
 					SympyPow(
@@ -145,7 +144,9 @@ class KineticLaw(KineticLawIdentifier):
 			if first_reactant.isConcentration():
 				t_comp = first_reactant.getCompartment()
 				t_math_formula = MathFormula(self.__model, MathFormula.MATH_KINETICLAW)
-				t_math_formula.setInternalMathFormula(old_div(self.__definition.getInternalMathFormula(),t_comp.symbol.getInternalMathFormula()))
+				t_math_formula.setInternalMathFormula(
+					self.__definition.getInternalMathFormula() / t_comp.symbol.getInternalMathFormula()
+				)
 				t_math_formula = t_math_formula.getPrettyPrintMathFormula()
 			else:
 				t_math_formula = self.__definition.getPrettyPrintMathFormula()

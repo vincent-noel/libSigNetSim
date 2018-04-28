@@ -25,7 +25,6 @@
 """
 from __future__ import division
 
-from past.utils import old_div
 from libsignetsim.simulation.Simulation import Simulation
 from libsignetsim.figure.SigNetSimFigure import SigNetSimFigure
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol
@@ -69,7 +68,7 @@ class TimeseriesSimulation(Simulation):
 	def buildListSamples(self, time_min, time_max, log_scale, time_ech, nb_samples):
 
 		if time_ech is not None:
-			nb_samples = int(round(old_div((time_max-time_min),time_ech)))+1
+			nb_samples = int(round((time_max-time_min) / time_ech))+1
 
 		if log_scale:
 			self.listOfSamples = [float(value) for value in logspace(time_min, time_max, nb_samples)]
@@ -137,7 +136,7 @@ class TimeseriesSimulation(Simulation):
 						if abs(t_comp_traj[i]) < self.absTol[0]:
 							res_traj.append(0.0)
 						else:
-							res_traj.append(old_div(point,t_comp_traj[i]))
+							res_traj.append(point / t_comp_traj[i])
 
 				trajs.update({variable.getSymbolStr(): res_traj})
 			else:

@@ -25,7 +25,6 @@
 """
 from __future__ import division
 
-from past.utils import old_div
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
 
@@ -104,7 +103,7 @@ class EventAssignment(SbmlObject):
 
 			t_convs = {}
 			for var, conversion in list(conversion_factors.items()):
-				t_convs.update({var: old_div(var,conversion)})
+				t_convs.update({var: var/conversion})
 
 			t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(rawFormula=False), symbols_subs)
 			t_definition = unevaluatedSubs(t_definition, t_convs)
