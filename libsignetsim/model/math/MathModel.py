@@ -23,6 +23,7 @@
 	This file ...
 
 """
+from __future__ import print_function
 
 from libsignetsim.cwriter.CModelWriter import CModelWriter
 from libsignetsim.model.math.container.ListOfConservationLaws import ListOfConservationLaws
@@ -101,7 +102,7 @@ class MathModel(CModelWriter):
 		self.listOfInitialConditions.solve(tmin)
 
 		if Settings.verboseTiming >= 1:
-			print "> Initial condition solved in %.2gs" % (time()-t0)
+			print("> Initial condition solved in %.2gs" % (time()-t0))
 
 		if len(self.listOfDAEs) > 0:
 			self.listOfDAEs.solveInitialConditions(tmin)
@@ -120,12 +121,12 @@ class MathModel(CModelWriter):
 		t0 = time()
 		self.stoichiometryMatrix.build()
 		if Settings.verboseTiming >= 2:
-			print "> stoichiometry matrix built in %.2gs" % (time() -t0)
+			print("> stoichiometry matrix built in %.2gs" % (time() -t0))
 
 		t0 = time()
 		self.listOfConservationLaws.build()
 		if Settings.verboseTiming >= 2:
-			print "> conservation laws built in %.2gs" % (time() - t0)
+			print("> conservation laws built in %.2gs" % (time() - t0))
 
 	def buildReducedModel(self, vars_to_keep=[]):
 
@@ -134,7 +135,7 @@ class MathModel(CModelWriter):
 		self.listOfConservationLaws.build()
 		self.asymetricModel.build(treated_variables=vars_to_keep)
 		if Settings.verboseTiming >= 1:
-			print "> model reduced in %.2gs" % (time() - t0)
+			print("> model reduced in %.2gs" % (time() - t0))
 
 	def buildSlowModel(self):
 
@@ -148,14 +149,14 @@ class MathModel(CModelWriter):
 
 	def prettyPrint(self):
 
-		print "\n> Full system : "
+		print("\n> Full system : ")
 
-		print self.listOfCFEs
-		print self.listOfDAEs
-		print self.listOfODEs
-		print self.listOfConservationLaws
+		print(self.listOfCFEs)
+		print(self.listOfDAEs)
+		print(self.listOfODEs)
+		print(self.listOfConservationLaws)
 
-		print "-----------------------------"
+		print("-----------------------------")
 
 	def pprint(self):
 		self.listOfCFEs.pprint()

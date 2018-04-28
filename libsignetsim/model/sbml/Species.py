@@ -23,6 +23,7 @@
 	This file ...
 
 """
+from __future__ import division
 
 from libsignetsim.model.sbml.EventAssignedVariable import EventAssignedVariable
 from libsignetsim.model.sbml.InitiallyAssignedVariable import InitiallyAssignedVariable
@@ -72,7 +73,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			if len(self.__model.listOfCompartments) == 0:
 				self.__model.listOfCompartments.new("cell")
 
-			self.__compartment = self.__model.listOfCompartments.values()[0].getSbmlId()
+			self.__compartment = list(self.__model.listOfCompartments.values())[0].getSbmlId()
 
 		SbmlObject.new(self)
 		Variable.new(self, name, Variable.SPECIES)
@@ -169,7 +170,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 				sbml_sp.setInitialAmount(t_value.getValue())
 			else:
 				t_formula = MathFormula(self.__model)
-				t_formula.setInternalMathFormula(self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula())
+				t_formula.setInternalMathFormula(
+					self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula()
+				)
 				sbml_sp.setInitialConcentration(t_formula.getValueMathFormula())
 
 		if self.boundaryCondition is not None and (sbml_level >= 3 or self.boundaryCondition is not False):
@@ -227,9 +230,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			makes sense.
 		"""
 
-		for reaction in self.__model.listOfReactions.values():
+		for reaction in list(self.__model.listOfReactions.values()):
 				if reaction.listOfReactants:
-					for reactant in reaction.listOfReactants.values():
+					for reactant in list(reaction.listOfReactants.values()):
 						if reactant.getSpecies() == self:
 							if reaction.fast:
 								return True
@@ -237,7 +240,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 								return False
 
 				if reaction.listOfProducts:
-					for product in reaction.listOfProducts.values():
+					for product in list(reaction.listOfProducts.values()):
 						if product.getSpecies() == self:
 							if reaction.fast:
 								return True
@@ -252,15 +255,15 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			makes sense.
 		"""
 
-		for reaction in self.__model.listOfReactions.values():
+		for reaction in list(self.__model.listOfReactions.values()):
 				if reaction.listOfReactants:
-					for reactant in reaction.listOfReactants.values():
+					for reactant in list(reaction.listOfReactants.values()):
 						if reactant.getSpecies() == self:
 							if not reaction.fast:
 								return False
 
 				if reaction.listOfProducts:
-					for product in reaction.listOfProducts.values():
+					for product in list(reaction.listOfProducts.values()):
 						if product.getSpecies() == self:
 							if not reaction.fast:
 								return False
@@ -302,7 +305,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			ode = MathFormula.ZERO
 
 			if not self.boundaryCondition:
-				for reaction in self.__model.listOfReactions.values():
+				for reaction in list(self.__model.listOfReactions.values()):
 					if not reaction.fast or including_fast_reactions:
 						ode += reaction.getODE(self, symbols=symbols, rawFormula=rawFormula).getInternalMathFormula()
 
@@ -321,7 +324,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 		if rawFormula and (self.isDeclaredConcentration or not self.hasOnlySubstanceUnits):
 			t_formula = MathFormula(self.__model)
-			t_formula.setInternalMathFormula(self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula())
+			t_formula.setInternalMathFormula(
+				self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula()
+			)
 			return t_formula
 		else:
 			return self.value
@@ -390,7 +395,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 	def setCompartment(self, compartment, sids_subs={}):
 
-		if compartment.getSbmlId() in sids_subs.keys():
+		if compartment.getSbmlId() in list(sids_subs.keys()):
 			self.__compartment = sids_subs[compartment.getSbmlId()]
 		else:
 			self.__compartment = compartment.getSbmlId()

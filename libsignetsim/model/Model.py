@@ -23,6 +23,7 @@
 	This file ...
 
 """
+from __future__ import print_function
 
 from libsignetsim.model.sbml.SbmlModel import SbmlModel
 from libsignetsim.model.math.MathModel import MathModel
@@ -50,7 +51,7 @@ class Model(SbmlModel, MathModel):
 		MathModel.buildModel(self, vars_to_keep=vars_to_keep, reduce=reduce, tmin=tmin)
 
 		if Settings.verboseTiming >= 1:
-			print ">> Model built in %.2gs" % (time()-t0)
+			print(">> Model built in %.2gs" % (time()-t0))
 
 	def cleanBeforePickle(self):
 		# self.listOfVariables.cleanFinal()

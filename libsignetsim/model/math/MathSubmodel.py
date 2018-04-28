@@ -23,6 +23,8 @@
 	This file ...
 
 """
+from __future__ import print_function
+
 
 from libsignetsim.model.math.container.ListOfODEs import ListOfODEs
 from libsignetsim.model.math.container.ListOfCFEs import ListOfCFEs
@@ -80,7 +82,7 @@ class MathSubmodel(object):
 
 		self.listOfVariables.copySubmodel(self.parentModel)
 
-		for variable, value in self.parentModel.listOfInitialConditions.items():
+		for variable, value in list(self.parentModel.listOfInitialConditions.items()):
 			t_value = MathFormula(self)
 			t_value.setInternalMathFormula(value.getInternalMathFormula())
 			self.listOfInitialConditions.update({variable: t_value})
@@ -93,12 +95,12 @@ class MathSubmodel(object):
 
 	def prettyPrint(self):
 
-		print "\n> Full system : "
-		print self.listOfCFEs
-		print self.listOfDAEs
-		print self.listOfODEs
-		print self.listOfInitialConditions
-		print "-----------------------------"
+		print("\n> Full system : ")
+		print(self.listOfCFEs)
+		print(self.listOfDAEs)
+		print(self.listOfODEs)
+		print(self.listOfInitialConditions)
+		print("-----------------------------")
 
 	def pprint(self):
 		self.listOfCFEs.pprint()

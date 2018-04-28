@@ -24,6 +24,7 @@
 
 """
 
+
 from sympy import simplify, expand, srepr
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 from libsignetsim.model.math.sympy_shortcuts import (
@@ -145,7 +146,7 @@ class KineticLawIdentifier(object):
 
 		t_replaces = {}
 
-		for compartment in self.model.listOfCompartments.values():
+		for compartment in list(self.model.listOfCompartments.values()):
 			t_replaces.update({compartment.symbol.getInternalMathFormula(): SympyInteger(1)})
 
 		return unevaluatedSubs(t_rate, t_replaces)
@@ -160,10 +161,10 @@ class KineticLawIdentifier(object):
 
 		t_replaces = {}
 
-		for compartment in self.model.listOfCompartments.values():
+		for compartment in list(self.model.listOfCompartments.values()):
 			t_replaces.update({compartment.symbol.getInternalMathFormula(): SympyInteger(1)})
 
-		for species in self.model.listOfSpecies.values():
+		for species in list(self.model.listOfSpecies.values()):
 			t_replaces.update({species.symbol.getInternalMathFormula(): SympyInteger(1)})
 
 		return expand(simplify(unevaluatedSubs(t_rate, t_replaces)))
@@ -178,7 +179,7 @@ class KineticLawIdentifier(object):
 
 		t_replaces = {}
 
-		for var in self.model.listOfVariables.values():
+		for var in list(self.model.listOfVariables.values()):
 			if var.isParameter():
 				t_replaces.update({var.symbol.getInternalMathFormula(): self.T_PARAM})
 			elif var.isCompartment():
@@ -277,7 +278,7 @@ class KineticLawIdentifier(object):
 	def getReversibleFormulas(self):
 
 		t_formula = self.getDefinition().getDeveloppedInternalMathFormula()
-		for compartment in self.model.listOfCompartments.values():
+		for compartment in list(self.model.listOfCompartments.values()):
 			t_formula = t_formula.subs(compartment.symbol.getInternalMathFormula(), SympyInteger(1))
 
 		t_formula = expand(simplify(t_formula))

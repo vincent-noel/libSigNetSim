@@ -23,7 +23,9 @@
 	This file is made for 'high level' tests, using various components
 
 """
+from __future__ import division
 
+from past.utils import old_div
 from libsignetsim import SedmlDocument, Settings
 from unittest import TestCase
 from os.path import join, dirname, isdir
@@ -102,13 +104,13 @@ class TestSteadyStatesScan(TestCase):
 		data_basal_var_ALL.setModel(model)
 		data_basal_var_ALL.setTarget(sbml_model.listOfSpecies.getBySbmlId("ALL"))
 
-		t_formula = data_basal_var_basal.getSympySymbol() / (
+		t_formula = old_div(data_basal_var_basal.getSympySymbol(), (
 			data_basal_var_basal.getSympySymbol()
 			+ data_basal_var_basalAch.getSympySymbol()
 			+ data_basal_var_DLL.getSympySymbol()
 			+ data_basal_var_ILL.getSympySymbol()
 			+ data_basal_var_ALL.getSympySymbol()
-		)
+		))
 		data_basal.getMath().setInternalMathFormula(t_formula)
 
 
@@ -140,13 +142,13 @@ class TestSteadyStatesScan(TestCase):
 		data_basalAch_var_ALL.setModel(model)
 		data_basalAch_var_ALL.setTarget(sbml_model.listOfSpecies.getBySbmlId("ALL"))
 
-		t_formula = data_basalAch_var_basalAch.getSympySymbol() / (
+		t_formula = old_div(data_basalAch_var_basalAch.getSympySymbol(), (
 			data_basalAch_var_basal.getSympySymbol()
 			+ data_basalAch_var_basalAch.getSympySymbol()
 			+ data_basalAch_var_DLL.getSympySymbol()
 			+ data_basalAch_var_ILL.getSympySymbol()
 			+ data_basalAch_var_ALL.getSympySymbol()
-		)
+		))
 		data_basalAch.getMath().setInternalMathFormula(t_formula)
 
 
@@ -178,13 +180,13 @@ class TestSteadyStatesScan(TestCase):
 		data_DLL_var_ALL.setModel(model)
 		data_DLL_var_ALL.setTarget(sbml_model.listOfSpecies.getBySbmlId("ALL"))
 
-		t_formula = data_DLL_var_DLL.getSympySymbol() / (
+		t_formula = old_div(data_DLL_var_DLL.getSympySymbol(), (
 			data_DLL_var_basal.getSympySymbol()
 			+ data_DLL_var_basalAch.getSympySymbol()
 			+ data_DLL_var_DLL.getSympySymbol()
 			+ data_DLL_var_ILL.getSympySymbol()
 			+ data_DLL_var_ALL.getSympySymbol()
-		)
+		))
 		data_DLL.getMath().setInternalMathFormula(t_formula)
 
 
@@ -216,13 +218,13 @@ class TestSteadyStatesScan(TestCase):
 		data_ILL_var_ALL.setModel(model)
 		data_ILL_var_ALL.setTarget(sbml_model.listOfSpecies.getBySbmlId("ALL"))
 
-		t_formula = data_ILL_var_ILL.getSympySymbol() / (
+		t_formula = old_div(data_ILL_var_ILL.getSympySymbol(), (
 			data_ILL_var_basal.getSympySymbol()
 			+ data_ILL_var_basalAch.getSympySymbol()
 			+ data_ILL_var_DLL.getSympySymbol()
 			+ data_ILL_var_ILL.getSympySymbol()
 			+ data_ILL_var_ALL.getSympySymbol()
-		)
+		))
 		data_ILL.getMath().setInternalMathFormula(t_formula)
 
 
@@ -254,13 +256,13 @@ class TestSteadyStatesScan(TestCase):
 		data_ALL_var_ALL.setModel(model)
 		data_ALL_var_ALL.setTarget(sbml_model.listOfSpecies.getBySbmlId("ALL"))
 
-		t_formula = data_ALL_var_ALL.getSympySymbol() / (
+		t_formula = old_div(data_ALL_var_ALL.getSympySymbol(), (
 			data_ALL_var_basal.getSympySymbol()
 			+ data_ALL_var_basalAch.getSympySymbol()
 			+ data_ALL_var_DLL.getSympySymbol()
 			+ data_ALL_var_ILL.getSympySymbol()
 			+ data_ALL_var_ALL.getSympySymbol()
-		)
+		))
 		data_ALL.getMath().setInternalMathFormula(t_formula)
 
 

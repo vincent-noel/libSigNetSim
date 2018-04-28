@@ -30,11 +30,17 @@ else
         docker run -di --name test_env -v $(pwd):/home/travis/build/vincent-noel/libSigNetSim signetsim/travis_testenv:stretch bash || exit 1;
         docker exec test_env chown -R www-data:www-data /home/travis/ || exit 1;
         docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; bash scripts/install_dep.sh" || exit 1;
-        docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; scripts/install.sh" || exit 1;
+
+        if [ "$4" = "python3" ]; then
+            docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; scripts/install3.sh" || exit 1;
+        else
+            docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; scripts/install.sh" || exit 1;
+        fi
+
         docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim/libsignetsim/lib/integrate/; make"
         docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim/libsignetsim/lib/plsa/; make all"
     elif [ $1 = "script" ]; then
-        docker exec -u www-data test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim/; bash ./scripts/run_tests.sh $2 $3"
+        docker exec -u www-data test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim/; bash ./scripts/run_tests.sh $2 $3 $4"
 
     elif [ $1 = "after_script" ]; then
         coveralls

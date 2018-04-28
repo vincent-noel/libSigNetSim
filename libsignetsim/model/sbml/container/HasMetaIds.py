@@ -24,6 +24,7 @@
 
 """
 
+
 class HasMetaIds(object):
 	""" Parent class for all the ListOf containers in a sbml model """
 
@@ -36,13 +37,13 @@ class HasMetaIds(object):
 
 	def metaIds(self):
 		""" Return set of names of the sbml objects """
-		return [obj.getMetaId() for obj in self.values()]
+		return [obj.getMetaId() for obj in list(self.values())]
 
 	def getByMetaId(self, meta_id, pos=0):
 		""" Find sbml objects by their name """
 
 		res = []
-		for obj in self.values():
+		for obj in list(self.values()):
 			if obj.getMetaId() == meta_id:
 				res.append(obj)
 
@@ -56,7 +57,7 @@ class HasMetaIds(object):
 		""" Test if a name is in the list """
 
 		res = False
-		for obj in self.values():
+		for obj in list(self.values()):
 			if meta_id == obj.getMetaId():
 				res = True
 

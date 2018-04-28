@@ -23,6 +23,8 @@
 	This file ...
 
 """
+from __future__ import print_function
+
 
 from libsignetsim.model.Model import Model
 from libsignetsim.model.sbml.HasParentObj import HasParentObj
@@ -117,7 +119,7 @@ class SbmlDocument(HasParentObj):
 				# Handle other error cases here.
 				if Settings.showSbmlErrors:# and Settings.verbose:
 					for error in range(0, sbmlDoc.getNumErrors()):
-						print ">>> SBML Error %d : %s" % (error, sbmlDoc.getError(error).getMessage())
+						print(">>> SBML Error %d : %s" % (error, sbmlDoc.getError(error).getMessage()))
 
 
 		self.sbmlLevel = sbmlDoc.getLevel()
@@ -159,7 +161,7 @@ class SbmlDocument(HasParentObj):
 			raise MissingModelException(t_filename)
 
 		if Settings.verbose >= 2:
-			print "> Opening SBML file : %s" % t_filename
+			print("> Opening SBML file : %s" % t_filename)
 
 		sbmlReader = SBMLReader()
 		if sbmlReader == None:
@@ -216,10 +218,10 @@ class SbmlDocument(HasParentObj):
 			for error in range(0, sbmlDoc.getNumErrors()):
 
 				if sbmlDoc.getError(error).getSeverity() not in [LIBSBML_SEV_INFO, LIBSBML_SEV_WARNING]:
-					print ">>> SBML Error %d : %s" % (error, sbmlDoc.getError(error).getMessage())
+					print(">>> SBML Error %d : %s" % (error, sbmlDoc.getError(error).getMessage()))
 
 				else:
-					print ">>> SBML Warning %d : %s" % (error, sbmlDoc.getError(error).getMessage())
+					print(">>> SBML Warning %d : %s" % (error, sbmlDoc.getError(error).getMessage()))
 
 		return sbmlDoc
 
@@ -260,7 +262,7 @@ class SbmlDocument(HasParentObj):
 				t1 = time()
 
 				if Settings.verboseTiming >= 1:
-					print "> Instance produced in %.2gs" % (t1-t0)
+					print("> Instance produced in %.2gs" % (t1-t0))
 
 			return self.modelInstance
 		else:
@@ -299,7 +301,7 @@ class SbmlDocument(HasParentObj):
 			self.documentDependenciesPaths = []
 
 			if sbml_doc is None:
-				for external_doc in self.listOfExternalModelDefinitions.values():
+				for external_doc in list(self.listOfExternalModelDefinitions.values()):
 					self.documentDependenciesPaths.append(external_doc.getSource())
 			else:
 				for external_doc in sbml_doc.getPlugin("comp").getListOfExternalModelDefinitions():
@@ -325,7 +327,7 @@ class SbmlDocument(HasParentObj):
 
 	def renameExternalDocumentDependencies(self, names):
 
-		for external_doc in self.listOfExternalModelDefinitions.values():
+		for external_doc in list(self.listOfExternalModelDefinitions.values()):
 			external_doc.setSource(names[external_doc.getSource()])
 
 

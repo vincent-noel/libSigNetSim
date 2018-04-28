@@ -46,8 +46,10 @@ class ListOfFiles(list):
 			# raise NoManifestFoundException("No manifest found")
 			pass
 		else:
+			# with archive_file.read(self.MANIFEST) as manifest_file:
+			# 	self.__manifest.readManifest(manifest_file)
 			self.__manifest.readManifest(archive_file.read(self.MANIFEST))
-			# self.__manifest.writeManifest()
+		# self.__manifest.writeManifest()
 
 		for t_file in archive_file.namelist():
 			if not t_file.endswith("/") and t_file != self.MANIFEST:

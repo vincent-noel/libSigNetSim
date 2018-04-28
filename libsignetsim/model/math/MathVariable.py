@@ -24,6 +24,8 @@
 
 """
 
+
+from six import string_types
 from libsignetsim.model.math.MathSymbol import MathSymbol
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
@@ -74,7 +76,7 @@ class MathVariable(object):
 
 	def copy(self, obj, symbols_subs={}, conversion_factor=None, pure_math_variable=False):
 
-		if obj.symbol.getSymbol() in symbols_subs.keys():
+		if obj.symbol.getSymbol() in list(symbols_subs.keys()):
 			self.symbol.setInternalMathFormula(symbols_subs[obj.symbol.getSymbol()])
 		else:
 			self.symbol.setInternalMathFormula(obj.symbol.getSymbol())
@@ -136,7 +138,7 @@ class MathVariable(object):
 			self.isInitialized = True
 			self.value.setValueMathFormula(value)
 
-		elif isinstance(value, str):
+		elif isinstance(value, string_types):
 			self.isInitialized = True
 			self.value.setPrettyPrintMathFormula(value)
 
@@ -268,4 +270,4 @@ class MathVariable(object):
 
 	def getSymbolStr(self):
 
-		return str(self.symbol.getSymbol())
+		return self.symbol.getSymbol().name

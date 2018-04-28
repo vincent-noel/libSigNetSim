@@ -24,10 +24,13 @@
 
 """
 
+from future import standard_library
+standard_library.install_aliases()
+
 from libsignetsim.sedml.URI import URI
 from libsignetsim.sedml.SedmlException import SedmlFileNotFound
 from libsignetsim.settings.Settings import Settings
-from urllib import URLopener
+from six.moves.urllib.request import urlretrieve
 from os.path import join, exists, isabs, relpath, commonprefix, basename
 from os import getcwd
 
@@ -103,8 +106,7 @@ class Source(object):
 
 	def downloadSource(self):
 
-		download_file = URLopener()
-		download_file.retrieve(self.__url, self.__filename)
+		urlretrieve(self.__url, self.__filename)
 		self.__sourceAvailable = True
 
 	def getSource(self):

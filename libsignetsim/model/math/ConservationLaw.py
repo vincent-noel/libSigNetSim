@@ -23,6 +23,8 @@
 	This file ...
 
 """
+from __future__ import print_function
+
 
 from libsignetsim.model.math.sympy_shortcuts import SympyEqual, SympyInteger
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
@@ -68,7 +70,7 @@ class ConservationLaw(object):
 		if not rawFormula:
 
 			comp_symbols = {}
-			for comp in self.__model.listOfCompartments.values():
+			for comp in list(self.__model.listOfCompartments.values()):
 				comp_symbols.update({comp.symbol.getInternalMathFormula():SympyInteger(1)})
 
 			return SympyEqual(

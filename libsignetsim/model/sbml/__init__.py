@@ -23,5 +23,6 @@
 	Initialization of the module signetsim.model.sbml.
 
 """
+from __future__ import absolute_import
 
-from KineticLaw import KineticLaw
+from .KineticLaw import KineticLaw

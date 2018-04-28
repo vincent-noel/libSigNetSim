@@ -23,6 +23,9 @@
 	This file ...
 
 """
+from __future__ import print_function
+
+
 
 from libsignetsim.settings.Settings import Settings
 from time import time
@@ -43,7 +46,7 @@ class CModelWriter(object):
 		t0 = time()
 		self.writeSimulationInitialization(f_h, f_c, i_model, time_min, list_samples, abs_tol, rel_tol)
 		if Settings.verboseTiming >= 2:
-			print ">>> Initialization written in %.2gs" % (time()-t0)
+			print(">>> Initialization written in %.2gs" % (time()-t0))
 
 		self.writeSimulationFinalization(f_h, f_c, i_model)
 		self.writeInitialAssignments(f_h, f_c, i_model)
@@ -53,12 +56,12 @@ class CModelWriter(object):
 		else:
 			self.writeCVodeSimulationFunction(f_h, f_c, i_model)
 		if Settings.verboseTiming >= 2:
-			print ">>> System written in %.2gs" % (time() - t0)
+			print(">>> System written in %.2gs" % (time() - t0))
 
 		t0 = time()
 		self.writeSimulationComputeRules(f_h, f_c, i_model)
 		if Settings.verboseTiming >= 2:
-			print ">>> Rules written in %.2gs" % (time() - t0)
+			print(">>> Rules written in %.2gs" % (time() - t0))
 
 		t0 = time()
 		self.writeEventsTriggersFunction(f_h, f_c, i_model)
@@ -66,7 +69,7 @@ class CModelWriter(object):
 		self.writeEventsAssignmentFunction(f_h, f_c, i_model)
 		self.writeEventsPriorityFunction(f_h, f_c, i_model)
 		if Settings.verboseTiming >= 2:
-			print ">>> Events written in %.2gs" % (time() - t0)
+			print(">>> Events written in %.2gs" % (time() - t0))
 
 	def writeSimulationInitialization(self, f_h, f_c, model_id, time_min, list_samples, abs_tol, rel_tol):
 		""" Writes the model initialization function in C files """
@@ -301,7 +304,7 @@ class CModelWriter(object):
 				t0 = time()
 				t_c_ode = t_ode.getDefinition().getCMathFormula()
 				if Settings.verboseTiming >= 2:
-					print ">>> ODE #%s translated in %.2gs" % (i_ode, time() - t0)
+					print(">>> ODE #%s translated in %.2gs" % (i_ode, time() - t0))
 
 				f_c.write("  // ODE\n")
 				f_c.write("  Ith(ydot, %d) = %s;\n\n" % (t_var.ind+1, t_c_ode))
@@ -377,7 +380,7 @@ class CModelWriter(object):
 			f_h.write("int roots_events_%d(realtype t, N_Vector y, realtype *gout,void *user_data);\n" % model_id)
 			f_c.write("int roots_events_%d(realtype t, N_Vector y, realtype *gout,void *user_data)\n{\n" % model_id)
 
-		if self.getMathModel().listOfEvents.validEvents() > 0:
+		if self.getMathModel().listOfEvents.nbValidEvents() > 0:
 
 			f_c.write("  IntegrationData * data = (IntegrationData *) user_data;\n")
 			f_c.write("  N_Vector cst = data->constant_variables;\n")

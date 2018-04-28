@@ -24,6 +24,7 @@
 
 """
 
+
 from libsignetsim.data.ExperimentalCondition import ExperimentalCondition
 from libsignetsim.numl.NuMLDocument import NuMLDocument
 
@@ -76,7 +77,7 @@ class Experiment(object):
 		if self.notes is not None and len(self.notes) > 0:
 			experiment.setNotes(self.notes)
 
-		for condition in self.listOfConditions.values():
+		for condition in list(self.listOfConditions.values()):
 			t_condition = experiment.createCompositeValue(experiment.getDescription().getContent(), condition.name)
 
 			condition.writeNuML(t_condition)
@@ -97,7 +98,7 @@ class Experiment(object):
 	def getMaxTime(self):
 
 		max_time = 0
-		for condition in self.listOfConditions.values():
+		for condition in list(self.listOfConditions.values()):
 			if condition.getMaxTime() > max_time:
 				max_time = condition.getMaxTime()
 
@@ -106,13 +107,13 @@ class Experiment(object):
 
 	def getTimes(self):
 		times = []
-		for condition in self.listOfConditions.values():
+		for condition in list(self.listOfConditions.values()):
 			times += condition.getTimes()
 		return list(set(times))
 
 	def getTreatedVariables(self):
 		species = []
-		for condition in self.listOfConditions.values():
+		for condition in list(self.listOfConditions.values()):
 			species += condition.getTreatedVariables()
 
 		if len(species) > 1:
@@ -122,7 +123,7 @@ class Experiment(object):
 
 	def getVariables(self):
 		species = []
-		for condition in self.listOfConditions.values():
+		for condition in list(self.listOfConditions.values()):
 			species += condition.getVariables()
 
 		if len(species) > 1:

@@ -23,9 +23,10 @@
 	Initialization of the combine archive module
 
 """
+from __future__ import absolute_import
 
-from CombineArchive import CombineArchive
-from CombineException import (
+from .CombineArchive import CombineArchive
+from .CombineException import (
 	FileNotFoundException, NotAZipFileException, NoManifestFoundException,
 	NoMasterSedmlFoundException, NoMasterSbmlFoundException, NoMasterNumlFoundException,
 	NoSedmlFoundException

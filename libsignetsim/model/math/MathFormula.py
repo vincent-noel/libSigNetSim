@@ -23,6 +23,7 @@
 	This file ...
 
 """
+from __future__ import absolute_import
 
 from libsignetsim.model.math.sympy_shortcuts import  (
 	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
@@ -48,7 +49,7 @@ from libsignetsim.model.ModelException import SbmlException
 from libsbml import parseL3Formula, formulaToL3String
 from sympy import simplify, srepr
 
-from MathDevelopper import unevaluatedSubs
+from .MathDevelopper import unevaluatedSubs
 
 class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 	""" Class for handling math formulaes """
@@ -131,7 +132,7 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 
 		if not rawFormula:
 			t_subs_mask = {}
-			for t_var in self.__model.listOfSpecies.values():
+			for t_var in list(self.__model.listOfSpecies.values()):
 				if t_var.isConcentration():
 					t_subs_mask.update({SympySymbol(
 						"_speciesForcedConcentration_%s_" % str(t_var.symbol.getInternalMathFormula())):t_var.symbol.getInternalMathFormula()})
@@ -144,7 +145,7 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 
 		if not rawFormula:
 			t_subs_mask = {}
-			for t_var in self.__model.listOfSpecies.values():
+			for t_var in list(self.__model.listOfSpecies.values()):
 				if t_var.isConcentration():
 					t_subs_mask.update({SympySymbol(
 						"_speciesForcedConcentration_%s_" % str(
@@ -223,7 +224,7 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 		self.readSbml(sbml_formula, self.sbmlLevel, self.sbmlVersion)
 		if not rawFormula:
 			t_subs_mask = {}
-			for t_var in self.__model.listOfSpecies.values():
+			for t_var in list(self.__model.listOfSpecies.values()):
 				if t_var.isConcentration():
 					t_subs_mask.update({t_var.symbol.getInternalMathFormula():SympySymbol("_speciesForcedConcentration_%s_" % str(t_var.symbol.getInternalMathFormula()))})
 

@@ -24,6 +24,7 @@
 
 """
 
+
 from libsignetsim.settings.Settings import Settings
 from string import punctuation
 from sympy import Symbol
@@ -50,7 +51,7 @@ class HasId(object):
 
 	def copy(self, obj, sids_subs={}):
 
-		if obj.getSbmlId() in sids_subs.keys():
+		if obj.getSbmlId() in list(sids_subs.keys()):
 			self.__sbmlId = sids_subs[obj.getSbmlId()]
 		else:
 			self.__sbmlId = obj.getSbmlId()

@@ -31,7 +31,8 @@ from libsignetsim.settings.Settings import Settings
 
 import libsbml
 from libsedml import SEDML_TASK, SEDML_TASK_REPEATEDTASK
-reload(libsbml)
+from six.moves import reload_module
+reload_module(libsbml)
 
 
 class ListOfTasks(ListOf):

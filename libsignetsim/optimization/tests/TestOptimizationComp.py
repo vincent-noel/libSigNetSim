@@ -57,6 +57,6 @@ class TestOptimizationComp(TestCase):
 		score_def = fit.runOptimization(2)
 		res_def = fit.readOptimizationOutput()
 
-		self.assertEqual(res_def.keys()[0], param_def)
+		self.assertEqual(list(res_def.keys())[0], param_def)
 		self.assertAlmostEqual(score_def, 1.006, delta=1e-3)
 		self.assertAlmostEqual(res_def[param_def], 18.87788, delta=res_def[param_def]*1e-4)

@@ -2035,6 +2035,6 @@ class TestSpecificationL1V2(TestCase):
 		# Just running it to see if it fails
 		sedml_doc.showFigures()
 
-		for var, values in self.expected_data.items():
+		for var, values in list(self.expected_data.items()):
 			for i, value in enumerate(values):
 				self.assertAlmostEqual(value, simulated_data[var][i], delta=(Settings.defaultTestAbsTol+value*Settings.defaultTestRelTol))

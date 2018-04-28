@@ -54,7 +54,7 @@ class TestShowCase(TestCase):
 				sedml_doc = ca.runSedml(sedml)
 				data = sedml_doc.listOfOutputs.getReports()[0].getData()
 
-				for var, values in self.expected_results.items():
+				for var, values in list(self.expected_results.items()):
 					for i, value in enumerate(values):
 						self.assertAlmostEqual(data[var][i], value, delta=(Settings.defaultTestAbsTol+value*Settings.defaultTestRelTol))
 
@@ -72,6 +72,6 @@ class TestShowCase(TestCase):
 				sedml_doc = ca.runSedml(sedml)
 				data = sedml_doc.listOfOutputs.getReports()[0].getData()
 
-				for var, values in self.expected_results.items():
+				for var, values in list(self.expected_results.items()):
 					for i, value in enumerate(values):
 						self.assertAlmostEqual(data[var][i], value, delta=(Settings.defaultTestAbsTol+value*Settings.defaultTestRelTol))

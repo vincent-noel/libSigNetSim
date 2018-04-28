@@ -24,6 +24,7 @@
 
 """
 
+
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.LibSigNetSimException import UnknownObservationException, UnknownTreatmentException, NoTreatmentException, NoObservationException
 
@@ -50,7 +51,7 @@ class CWriterData(object):
 					# Here we need to find all the timings of the treatments. That will be the set of initial values.
 					# Then, each set of initial values can have multiple assignments
 					t_times = []
-					for initial_value in condition.listOfInitialConditions.values():
+					for initial_value in list(condition.listOfInitialConditions.values()):
 						t_times.append(initial_value.t)
 
 					# Removing doublons
@@ -63,7 +64,7 @@ class CWriterData(object):
 					for k, t_time in enumerate(t_times):
 
 						treatments = []
-						for initial_value in condition.listOfInitialConditions.values():
+						for initial_value in list(condition.listOfInitialConditions.values()):
 							if initial_value.t == t_time:
 								treatments.append(initial_value)
 
@@ -72,7 +73,7 @@ class CWriterData(object):
 							t_variable = None
 
 							if self.mapping is not None and len(self.mapping) > 0:
-								if i < len(self.mapping) and treatment.name in self.mapping[i].keys():
+								if i < len(self.mapping) and treatment.name in list(self.mapping[i].keys()):
 									t_variable = self.workingModel.parentDoc.getByXPath(
 										self.mapping[i][treatment.name],
 										instance=self.workingModel.parentDoc.useCompPackage
@@ -107,7 +108,7 @@ class CWriterData(object):
 
 						t_variable = None
 						if self.mapping is not None and len(self.mapping) > 0:
-							if i < len(self.mapping) and observed_value.name in self.mapping[i].keys():
+							if i < len(self.mapping) and observed_value.name in list(self.mapping[i].keys()):
 								t_variable = self.workingModel.parentDoc.getByXPath(
 									self.mapping[i][observed_value.name],
 									instance=self.workingModel.parentDoc.useCompPackage
@@ -133,8 +134,8 @@ class CWriterData(object):
 							raise UnknownTreatmentException(
 								"Unknown attribute for variable : %s" % observed_value.name_attribute)
 
-						if t_variable is not None and t_variable not in vars_observed.keys():
-							vars_observed.update({t_variable: len(vars_observed.keys())})
+						if t_variable is not None and t_variable not in list(vars_observed.keys()):
+							vars_observed.update({t_variable: len(list(vars_observed.keys()))})
 
 							nb_observable += 1
 
@@ -235,7 +236,7 @@ class CWriterData(object):
 			for i, experiment in enumerate(self.listOfExperiments):
 
 				f_c.write("    experiments[%d].name = \"%s\";\n" % (i, experiment.name))
-				f_c.write("    experiments[%d].nb_conditions = %d;\n" % (i, len(experiment.listOfConditions.keys())))
+				f_c.write("    experiments[%d].nb_conditions = %d;\n" % (i, len(list(experiment.listOfConditions.keys()))))
 				f_c.write("    experiments[%d].conditions = malloc(sizeof(ExperimentalCondition)*experiments[%d].nb_conditions);\n" % (i,i))
 				f_c.write("\n")
 
@@ -244,7 +245,7 @@ class CWriterData(object):
 					# Here we need to find all the timings of the treatments. That will be the set of initial values.
 					# Then, each set of initial values can have multiple assignments
 					t_times = []
-					for initial_value in condition.listOfInitialConditions.values():
+					for initial_value in list(condition.listOfInitialConditions.values()):
 						t_times.append(initial_value.t)
 
 					# Removing doublons
@@ -259,7 +260,7 @@ class CWriterData(object):
 					for k, t_time in enumerate(t_times):
 
 						treatments = []
-						for initial_value in condition.listOfInitialConditions.values():
+						for initial_value in list(condition.listOfInitialConditions.values()):
 							if initial_value.t == t_time:
 								treatments.append(initial_value)
 
@@ -270,7 +271,7 @@ class CWriterData(object):
 
 							t_variable = None
 							if self.mapping is not None and len(self.mapping) > 0:
-								if i < len(self.mapping) and treatment.name in self.mapping[i].keys():
+								if i < len(self.mapping) and treatment.name in list(self.mapping[i].keys()):
 									# print "> MApping: %s : %s" % (treatment.name, self.mapping[i][treatment.name])
 									t_variable = self.workingModel.parentDoc.getByXPath(
 										self.mapping[i][treatment.name],
@@ -303,7 +304,7 @@ class CWriterData(object):
 							# 	print "> ERROR: Couldn't find variable %s" % observed_value.name
 
 					 # Observed_values
-					f_c.write("    experiments[%d].conditions[%d].nb_observed_values = %d;\n" % (i, j, len(condition.listOfExperimentalData.keys())))
+					f_c.write("    experiments[%d].conditions[%d].nb_observed_values = %d;\n" % (i, j, len(list(condition.listOfExperimentalData.keys()))))
 					f_c.write("    experiments[%d].conditions[%d].observed_values = malloc(sizeof(ExperimentalObservation)*experiments[%d].conditions[%d].nb_observed_values);\n" % (i,j,i,j))
 					f_c.write("\n")
 					vars_observed = {}
@@ -312,7 +313,7 @@ class CWriterData(object):
 
 						t_variable = None
 						if self.mapping is not None and len(self.mapping) > 0:
-							if i < len(self.mapping) and observed_value.name in self.mapping[i].keys():
+							if i < len(self.mapping) and observed_value.name in list(self.mapping[i].keys()):
 								# print "> MApping: %s : %s" % (observed_value.name, self.mapping[i][observed_value.name])
 								t_variable = self.workingModel.parentDoc.getByXPath(self.mapping[i][observed_value.name], instance=self.workingModel.parentDoc.useCompPackage)
 							# else:
@@ -336,8 +337,8 @@ class CWriterData(object):
 
 
 						if t_variable is not None:
-							if t_variable not in vars_observed.keys():
-								vars_observed.update({t_variable: len(vars_observed.keys()) })
+							if t_variable not in list(vars_observed.keys()):
+								vars_observed.update({t_variable: len(list(vars_observed.keys())) })
 
 							# if t_variable is not None:
 							t_variable_id = t_variable.getPos()
@@ -367,11 +368,11 @@ class CWriterData(object):
 			for i, experiment in enumerate(self.listOfExperiments):
 				for j, condition in enumerate(experiment.listOfConditions.values()):
 
-					if len(condition.listOfInitialConditions.keys()) > 0:
+					if len(list(condition.listOfInitialConditions.keys())) > 0:
 						f_c.write("    free(experiments[%d].conditions[%d].timed_treatments);\n" % (i,j))
 
 						t_times = []
-						for initial_value in condition.listOfInitialConditions.values():
+						for initial_value in list(condition.listOfInitialConditions.values()):
 							t_times.append(initial_value.t)
 
 						# Removing doublons
@@ -381,7 +382,7 @@ class CWriterData(object):
 							f_c.write("    free(experiments[%d].conditions[%d].timed_treatments[%d].treatments);\n" % (i,j,k))
 
 
-					if len(condition.listOfExperimentalData.keys()) > 0:
+					if len(list(condition.listOfExperimentalData.keys())) > 0:
 						f_c.write("    free(experiments[%d].conditions[%d].observed_values);\n" % (i,j))
 
 				f_c.write("    free(experiments[%d].conditions);\n" % i)

@@ -22,7 +22,8 @@
 
 
 """
+from __future__ import absolute_import
 
-from ModelVsTimeseriesOptimization import ModelVsTimeseriesOptimization
-from OptimizationException import OptimizationException
+from .ModelVsTimeseriesOptimization import ModelVsTimeseriesOptimization
+from .OptimizationException import OptimizationException
 

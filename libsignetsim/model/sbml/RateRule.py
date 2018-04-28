@@ -23,6 +23,7 @@
 	This file ...
 
 """
+from __future__ import division
 
 from libsignetsim.model.sbml.Rule import Rule
 from libsignetsim.model.math.MathFormula import MathFormula
@@ -94,7 +95,7 @@ class RateRule(Rule):
 
 		Rule.copy(self, obj)
 
-		if obj.getVariable().getSbmlId() in sids_subs.keys():
+		if obj.getVariable().getSbmlId() in list(sids_subs.keys()):
 			self.__var = self.__model.listOfVariables.getBySbmlId(sids_subs[obj.getVariable().getSbmlId()])
 		else:
 			self.__var = self.__model.listOfVariables.getBySbmlId(obj.getVariable().getSbmlId())
@@ -103,7 +104,7 @@ class RateRule(Rule):
 
 		if obj.getDefinition().getInternalMathFormula() is not None:
 			t_convs = {}
-			for var, conversion in conversion_factors.items():
+			for var, conversion in list(conversion_factors.items()):
 				t_convs.update({var: var/conversion})
 
 			t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(), symbols_subs)
@@ -149,7 +150,9 @@ class RateRule(Rule):
 			if self.getVariable().isConcentration():
 				t_comp = self.getVariable().getCompartment()
 				t_math_formula = MathFormula(self.__model, MathFormula.MATH_ASSIGNMENTRULE)
-				t_math_formula.setInternalMathFormula(self.__definition.getInternalMathFormula()/t_comp.symbol.getInternalMathFormula())
+				t_math_formula.setInternalMathFormula(
+					self.__definition.getInternalMathFormula()/t_comp.symbol.getInternalMathFormula()
+				)
 				return t_math_formula.getPrettyPrintMathFormula()
 
 			else:
@@ -165,7 +168,7 @@ class RateRule(Rule):
 
 			if not rawFormula:
 				subs = {}
-				for species in self.__model.listOfSpecies.values():
+				for species in list(self.__model.listOfSpecies.values()):
 					if species.isConcentration():
 						subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
 				formula = unevaluatedSubs(formula, subs)

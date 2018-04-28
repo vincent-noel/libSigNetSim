@@ -23,24 +23,28 @@
 	This file ...
 
 """
+from __future__ import absolute_import
+
+# from builtins import str
+
 
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.sedml.SedmlException import SedmlMathException
 import libsbml
 # token: cn , ci , csymbol , sep
 from libsedml import AST_NAME, AST_NAME_TIME, AST_INTEGER, AST_REAL
-from sympy_shortcuts import SympyInteger, SympyFloat, SympySymbol
+from .sympy_shortcuts import SympyInteger, SympyFloat, SympySymbol
 # qualifiers: degree , bvar , logbase
 
 # general : apply , piecewise , piece , otherwise , lambda
 from libsedml import AST_FUNCTION_PIECEWISE, AST_LAMBDA
-from sympy_shortcuts import SympyPiecewise, SympyITE, SympyLambda
+from .sympy_shortcuts import SympyPiecewise, SympyITE, SympyLambda
 
 # relational operators: eq , neq , gt , lt , geq , leq
 from libsedml import (
 	AST_RELATIONAL_EQ, AST_RELATIONAL_NEQ, AST_RELATIONAL_GT, AST_RELATIONAL_LT, AST_RELATIONAL_GEQ, AST_RELATIONAL_LEQ
 )
-from sympy_shortcuts import (
+from .sympy_shortcuts import (
 	SympyEqual, SympyUnequal, SympyStrictGreaterThan, SympyStrictLessThan, SympyGreaterThan, SympyLessThan
 )
 
@@ -50,52 +54,53 @@ from libsedml import (
 	AST_PLUS, AST_MINUS, AST_TIMES, AST_DIVIDE, AST_FUNCTION_POWER, AST_FUNCTION_ROOT, AST_FUNCTION_ABS, AST_FUNCTION_EXP,
 	AST_FUNCTION_LN, AST_FUNCTION_LOG, AST_FUNCTION_FLOOR, AST_FUNCTION_CEILING
 )
-from sympy_shortcuts import (SympyAdd, SympyMul, SympyPow, SympyAbs, SympyExp, SympyLog, SympyFloor, SympyCeiling)
+from .sympy_shortcuts import (SympyAdd, SympyMul, SympyPow, SympyAbs, SympyExp, SympyLog, SympyFloor, SympyCeiling)
 
 
 # factorial
 from libsedml import AST_FUNCTION_FACTORIAL
-from sympy_shortcuts import SympyFactorial
+from .sympy_shortcuts import SympyFactorial
 
 # logical operators: and , or , xor , not
 from libsedml import AST_LOGICAL_AND, AST_LOGICAL_OR, AST_LOGICAL_XOR, AST_LOGICAL_NOT
-from sympy_shortcuts import SympyAnd, SympyOr, SympyXor, SympyNot
+from .sympy_shortcuts import SympyAnd, SympyOr, SympyXor, SympyNot
 
 # trigonometric operators: sin , cos , tan , sec , csc , cot
 from libsedml import (
 	AST_FUNCTION_SIN, AST_FUNCTION_COS, AST_FUNCTION_TAN, AST_FUNCTION_SEC, AST_FUNCTION_CSC, AST_FUNCTION_COT
 )
-from sympy_shortcuts import (SympySin, SympyCos, SympyTan, SympySec, SympyCsc, SympyCot)
+from .sympy_shortcuts import (SympySin, SympyCos, SympyTan, SympySec, SympyCsc, SympyCot)
 
 
 # trigonometric operators: sinh , cosh , tanh , sech , csch , coth ,
 from libsedml import (AST_FUNCTION_SINH, AST_FUNCTION_COSH, AST_FUNCTION_TANH, AST_FUNCTION_COTH)
-from sympy_shortcuts import (SympySinh, SympyCosh, SympyTanh, SympyCoth)
+from .sympy_shortcuts import (SympySinh, SympyCosh, SympyTanh, SympyCoth)
 
 # trigonometric operators: arcsin , arccos , arctan , arcsec , arccsc , arccot
 from libsedml import (
 	AST_FUNCTION_ARCSIN, AST_FUNCTION_ARCCOS, AST_FUNCTION_ARCTAN,
 	AST_FUNCTION_ARCSEC, AST_FUNCTION_ARCCSC, AST_FUNCTION_ARCCOT
 )
-from sympy_shortcuts import (SympyAsin, SympyAcos, SympyAtan, SympyAsec, SympyAcsc, SympyAcot)
+from .sympy_shortcuts import (SympyAsin, SympyAcos, SympyAtan, SympyAsec, SympyAcsc, SympyAcot)
 
 # trigonometric operators: arcsinh , arccosh , arctanh , arcsech , arccsch , arccoth
 from libsedml import (
 	AST_FUNCTION_ARCSINH, AST_FUNCTION_ARCCOSH, AST_FUNCTION_ARCTANH,
 	AST_FUNCTION_ARCSECH, AST_FUNCTION_ARCCSCH, AST_FUNCTION_ARCCOTH
 )
-from sympy_shortcuts import (SympyAsinh, SympyAcosh, SympyAtanh, SympyAcoth)
+from .sympy_shortcuts import (SympyAsinh, SympyAcosh, SympyAtanh, SympyAcoth)
 
-from sympy_shortcuts import (SympyUndefinedFunction)
+from .sympy_shortcuts import (SympyUndefinedFunction)
 # constants: true , false , notanumber , pi , infinity , exponentiale
 # TODO : Infinity, NaN
 from libsedml import (AST_CONSTANT_TRUE, AST_CONSTANT_FALSE, AST_CONSTANT_PI, AST_CONSTANT_E)
-from sympy_shortcuts import (
+from .sympy_shortcuts import (
 	SympyTrue, SympyFalse, SympyPi, SympyE, SympyExp1, SympyInf, SympyNan, SympyOne, SympyNegOne, SympyHalf, SympyZero
 )
 # import libsbml
 from libsedml import ASTNode, parseFormula, formulaToString
-reload(libsbml)
+from six.moves import reload_module
+reload_module(libsbml)
 
 
 class SedmlMathWriter(object):
@@ -119,7 +124,7 @@ class SedmlMathWriter(object):
 			# else:
 			t_ast = ASTNode()
 			t_ast.setType(AST_NAME)
-			t_ast.setName(str(tree))
+			t_ast.setName(tree.name)
 			return t_ast
 
 		elif tree.func == SympyInteger:

@@ -10,3 +10,4 @@ bioservices
 pandas
 lxml
 jinja2
+future

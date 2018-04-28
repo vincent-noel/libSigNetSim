@@ -23,6 +23,7 @@
 	This file ...
 
 """
+from __future__ import print_function
 
 from libsignetsim.model.sbml.container.ListOf import ListOf
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
@@ -85,7 +86,7 @@ class ListOfInitialAssignments(ListOf, SbmlObject, HasParentObj):
 
 			SbmlObject.copy(self, obj)
 
-			for init_ass in obj.values():
+			for init_ass in list(obj.values()):
 				if init_ass not in deletions:
 
 					t_init_ass = InitialAssignment(self.__model, self, self.nextId())
@@ -94,7 +95,7 @@ class ListOfInitialAssignments(ListOf, SbmlObject, HasParentObj):
 
 	def copySubmodel(self, obj):
 
-		for init_ass in obj.values():
+		for init_ass in list(obj.values()):
 			t_init_ass = InitialAssignment(self.__model, self, init_ass.objId, math_only=self.mathOnly)
 			t_init_ass.copySubmodel(init_ass)
 			ListOf.add(self, t_init_ass)

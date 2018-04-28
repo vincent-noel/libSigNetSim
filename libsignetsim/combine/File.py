@@ -24,6 +24,7 @@
 
 """
 
+
 from libsignetsim.settings.Settings import Settings
 from os.path import dirname, basename, join
 from mimetypes import guess_type
@@ -32,7 +33,8 @@ from libsbml import SBMLReader
 import libsbml
 from libnuml import readNUMLFromString
 from libsedml import readSedMLFromString
-reload(libsbml)
+from six.moves import reload_module
+reload_module(libsbml)
 from shutil import copy
 
 
@@ -108,7 +110,8 @@ class File(object):
 		if self.__extension in self.KNOWN_FORMATS:
 			self.__format = self.KNOWN_FORMATS[self.__extension]
 			if self.__format == self.XML:
-				self.__format = self.guessXML(open(filename, 'r').read())
+				with open(filename, 'r') as new_file:
+					self.__format = self.guessXML(new_file.read().encode('utf-8'))
 
 		else:
 			self.__format = "http://purl.org/NET/mediatypes/%s" % guess_type(filename)[0]
@@ -158,17 +161,17 @@ class File(object):
 		if tag == "sbml":
 			sbmlReader = SBMLReader()
 			if sbmlReader is not None:
-				sbmlDoc = sbmlReader.readSBMLFromString(xml_content)
+				sbmlDoc = sbmlReader.readSBMLFromString(str("%s" % xml_content.decode('ascii', 'ignore')))
 				return self.SBML + ".level-%d.version-%d" % (sbmlDoc.getLevel(), sbmlDoc.getVersion())
 			else:
 				return self.SBML
 
 		elif tag == "sedML":
-			sedmlDoc = readSedMLFromString(xml_content)
+			sedmlDoc = readSedMLFromString(str("%s" % xml_content.decode('ascii', 'ignore')))
 			return self.SEDML + ".level-%d.version-%d" % (sedmlDoc.getLevel(), sedmlDoc.getVersion())
 
 		elif tag == "numl":
-			numlDoc = readNUMLFromString(xml_content)
+			numlDoc = readNUMLFromString(str("%s" % xml_content.decode('ascii', 'ignore')))
 			return self.NUML + ".level-%d.version-%d" % (numlDoc.getLevel(), numlDoc.getVersion())
 
 		elif tag == "omexManifest":

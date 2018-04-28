@@ -23,6 +23,10 @@
 	This file ...
 
 """
+from __future__ import print_function
+from six import string_types
+
+
 
 import libsbml
 from math import isinf, isnan
@@ -51,14 +55,14 @@ class SbmlMathReader(object):
 		self.internalTree = self.translateForInternal(formula, sbml_level, sbml_version)
 
 		if Settings.verbose >= 2:
-			print "\n> readSbml : "
-			print ">> input : %s" % self.printSbml(formula)
-			print ">> output simplified : %s" % str(self.internalTree)
-			print ">> output : %s" % srepr(self.internalTree)
+			print("\n> readSbml : ")
+			print(">> input : %s" % self.printSbml(formula))
+			print(">> output simplified : %s" % str(self.internalTree))
+			print(">> output : %s" % srepr(self.internalTree))
 
 	def printSbml(self, formula, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
-		if isinstance(formula, str):
+		if isinstance(formula, string_types):
 			return formula
 		elif isinstance(formula, libsbml.ASTNode):
 			if sbml_level <= 2:
@@ -185,7 +189,7 @@ class SbmlMathReader(object):
 
 			return SympyFloat(tree)
 
-		elif isinstance(tree, str):
+		elif isinstance(tree, string_types):
 			return self.translateVariableForInternal(tree, sbml_level, sbml_version, simplified, develop)
 
 		# print libsbml.formulaToString(tree)

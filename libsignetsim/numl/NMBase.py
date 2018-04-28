@@ -24,10 +24,12 @@
 
 """
 
+
 from libsignetsim.settings.Settings import Settings
 import libsbml
 from libnuml import XMLNode
-reload(libsbml)
+from six.moves import reload_module
+reload_module(libsbml)
 
 
 class NMBase (object):

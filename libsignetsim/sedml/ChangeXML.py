@@ -20,9 +20,26 @@
 
 """
 
-	Initialization of the module signetsim.continuation
+	This file ...
 
 """
-from __future__ import absolute_import
 
-from .EquilibriumPointCurve import EquilibriumPointCurve
+from libsignetsim.sedml.Change import Change
+from libsignetsim.settings.Settings import Settings
+
+
+class ChangeXML(Change):
+
+	def __init__(self, document):
+
+		Change.__init__(self, document)
+		self.__document = document
+
+	def readSedml(self, change, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		Change.readSedml(self, change, level, version)
+
+
+	def writeSedml(self, change, level=Settings.defaultSedmlLevel, version=Settings.defaultSedmlVersion):
+
+		Change.writeSedml(self, change, level, version)

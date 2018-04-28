@@ -23,6 +23,9 @@
 	This file ...
 
 """
+from __future__ import print_function
+
+
 
 from sympy import simplify, srepr
 from libsignetsim.model.math.sympy_shortcuts import *
@@ -63,10 +66,10 @@ class CMathWriter(object):
 
 		math = self.translateForC(tree)
 		if Settings.verbose >= 2:
-			print "\n> writeCCode"
-			print ">> input : %s" % srepr(tree)
-			print ">> input simplified : %s" % str(tree)
-			print ">> output : %s" % math
+			print("\n> writeCCode")
+			print(">> input : %s" % srepr(tree))
+			print(">> input simplified : %s" % str(tree))
+			print(">> output : %s" % math)
 
 		return math
 
@@ -87,7 +90,7 @@ class CMathWriter(object):
 		if self.model.listOfVariables.containsSymbol(variable):
 			t_var = self.model.listOfVariables.getBySymbol(variable)
 		else:
-			print "> Err : %s" % str(variable)
+			print("> Err : %s" % str(variable))
 
 		t_pos = None
 		if t_var.isDerivative():

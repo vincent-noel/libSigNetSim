@@ -89,7 +89,7 @@ class ListOfRules(ListOf, SbmlObject):
 		if obj not in deletions:
 			SbmlObject.copy(self, obj)
 
-			for sbml_rule in obj.values():
+			for sbml_rule in list(obj.values()):
 
 				if sbml_rule not in deletions:
 

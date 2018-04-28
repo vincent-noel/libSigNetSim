@@ -23,6 +23,7 @@
 	This file ...
 
 """
+from __future__ import division
 
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.sbml.SbmlObject import SbmlObject
@@ -91,7 +92,7 @@ class EventAssignment(SbmlObject):
 		if not self.mathOnly:
 			SbmlObject.copy(self, obj)
 
-		if obj.getVariable().getSbmlId() in sids_subs.keys():
+		if obj.getVariable().getSbmlId() in list(sids_subs.keys()):
 			self.__var = self.__model.listOfVariables.getBySbmlId(sids_subs[obj.getVariable().getSbmlId()])
 		else:
 			self.__var = self.__model.listOfVariables.getBySbmlId(obj.getVariable().getSbmlId())
@@ -101,7 +102,7 @@ class EventAssignment(SbmlObject):
 		if obj.getDefinition().getInternalMathFormula() is not None:
 
 			t_convs = {}
-			for var, conversion in conversion_factors.items():
+			for var, conversion in list(conversion_factors.items()):
 				t_convs.update({var: var/conversion})
 
 			t_definition = unevaluatedSubs(obj.getDefinition().getInternalMathFormula(rawFormula=False), symbols_subs)

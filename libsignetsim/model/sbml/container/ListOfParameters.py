@@ -91,7 +91,7 @@ class ListOfParameters(ListOf, HasIds, SbmlObject, HasParentObj):
 
 			SbmlObject.copy(self, obj)
 
-			for parameter in obj.values():
+			for parameter in list(obj.values()):
 
 				if parameter not in deletions:
 					t_parameter = Parameter(

@@ -24,6 +24,7 @@
 
 """
 
+
 import requests
 from json import loads
 
@@ -48,7 +49,7 @@ class NCBITaxonomyResolver(object):
 		r = requests.get(self.URL % self.__id, headers={"Content-Type": "application/json"})
 
 		if r.ok:
-			self.__json = loads(r.content)
+			self.__json = loads(r.content.decode('utf-8'))
 
 	def parseJSON(self):
 

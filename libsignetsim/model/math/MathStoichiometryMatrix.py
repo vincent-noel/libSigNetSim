@@ -23,6 +23,8 @@
 	This file ...
 
 """
+from __future__ import print_function
+
 
 from libsignetsim.settings.Settings import Settings
 from sympy import pretty
@@ -49,7 +51,7 @@ class MathStoichiometryMatrix(object):
 		t0 = time()
 
 		subs = {}
-		for var, value in self.__model.listOfInitialConditions.items():
+		for var, value in list(self.__model.listOfInitialConditions.items()):
 			subs.update({var: value.getInternalMathFormula()})
 
 		matrix = None
@@ -69,7 +71,7 @@ class MathStoichiometryMatrix(object):
 		self.stoichiometryMatrix = matrix
 
 		if Settings.verboseTiming >= 2:
-			print "reaction matrix built in %.2gs" % (time()-t0)
+			print("reaction matrix built in %.2gs" % (time()-t0))
 
 	def getStoichiometryMatrix(self, including_fast_reactions=True, including_slow_reactions=True, include_variable_stoichiometry=False):
 

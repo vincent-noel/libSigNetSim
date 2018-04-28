@@ -84,7 +84,7 @@ class ListOfSpecies(ListOf, HasIds, SbmlObject, HasParentObj):
 		if obj not in deletions:
 
 			SbmlObject.copy(self, obj)
-			for species in obj.values():
+			for species in list(obj.values()):
 
 				if species not in deletions:
 

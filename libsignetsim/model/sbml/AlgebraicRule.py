@@ -72,7 +72,7 @@ class AlgebraicRule(Rule):
 		formula = self.__definition.getInternalMathFormula()
 		if formula is not None and not rawFormula:
 			subs = {}
-			for species in self.__model.listOfSpecies.values():
+			for species in list(self.__model.listOfSpecies.values()):
 				if species.isConcentration():
 					subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
 			formula = unevaluatedSubs(formula, subs)

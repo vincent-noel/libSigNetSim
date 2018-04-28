@@ -23,6 +23,7 @@
 	Initialization of the module NuML
 
 """
+from __future__ import absolute_import
 
-from NuMLDocument import NuMLDocument
-from NuMLException import NuMLException, NuMLFileNotFound
+from .NuMLDocument import NuMLDocument
+from .NuMLException import NuMLException, NuMLFileNotFound

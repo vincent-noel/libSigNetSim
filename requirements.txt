@@ -11,3 +11,4 @@ pandas
 lxml
 jinja2
 coveralls<1.2.0
+future

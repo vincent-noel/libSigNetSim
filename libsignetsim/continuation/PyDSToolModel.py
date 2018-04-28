@@ -24,6 +24,7 @@
 
 """
 
+
 from PyDSTool import args, Generator
 from PyDSTool.Toolbox import phaseplane as pp
 
@@ -53,7 +54,7 @@ class PyDSToolModel(object):
 	def buildDS(self):
 
 		comp_subs = {}
-		for comp in self.model.listOfCompartments.values():
+		for comp in list(self.model.listOfCompartments.values()):
 			comp_subs.update({comp.symbol.getInternalMathFormula():comp.value.getInternalMathFormula()})
 
 		parameters = {}
@@ -65,7 +66,7 @@ class PyDSToolModel(object):
 			t_definition = cfe.getDefinition().getDeveloppedInternalMathFormula()
 			subs_cfes.update({cfe.getVariable().symbol.getInternalMathFormula(): t_definition})
 
-		for variable in self.model.getMathModel().listOfVariables.values():
+		for variable in list(self.model.getMathModel().listOfVariables.values()):
 
 			if variable.isConstant():
 				t_symbol = variable.symbol.getInternalMathFormula()

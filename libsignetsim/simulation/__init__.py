@@ -23,9 +23,10 @@
     Initialization of the module SigNetSim/Simulation
 
 """
+from __future__ import absolute_import
 
-from TimeseriesSimulation import TimeseriesSimulation
-from SteadyStatesSimulation import SteadyStatesSimulation
-from SimulationException import (
+from .TimeseriesSimulation import TimeseriesSimulation
+from .SteadyStatesSimulation import SteadyStatesSimulation
+from .SimulationException import (
 	SimulationCompilationException, SimulationExecutionException, SimulationNoDataException, SimulationException
 )

@@ -23,6 +23,8 @@
 	This file ...
 
 """
+from __future__ import print_function
+
 
 from libsignetsim.settings.Settings import Settings
 
@@ -78,10 +80,8 @@ class OptimizationExecution(object):
 								self.getTempDirectory(),
 								target)
 
-		res_comp = call(cmd_comp,
-								stdout=open(join(self.getTempDirectory(), "sout_optim_comp"), "w"),
-								stderr=open(join(self.getTempDirectory(), "err_optim_comp"), "w"),
-								shell=True, preexec_fn=setpgrp, close_fds=True)
+		with open(join(self.getTempDirectory(), "sout_optim_comp"), "w") as stdout,  open(join(self.getTempDirectory(), "err_optim_comp"), "w") as stderr:
+			res_comp = call(cmd_comp, stdout=stdout, stderr=stderr, shell=True, preexec_fn=setpgrp, close_fds=True)
 
 		timeout = 3
 		i = 0
@@ -119,10 +119,10 @@ class OptimizationExecution(object):
 
 		t_command_line = "%s" % target
 
-		res_optim = call(t_command_line,
-				stdout=open(join(self.getTempDirectory(), "out_optim"), "w"),
-				stderr=open(join(self.getTempDirectory(), "err_optim"), "w"),
-				shell=True, preexec_fn=setpgrp, close_fds=True)
+		with open(join(self.getTempDirectory(), "out_optim"), "w") as stdout, open(join(self.getTempDirectory(), "err_optim"), "w") as stderr:
+			res_optim = call(t_command_line,
+					stdout=stdout, stderr=stderr,
+					shell=True, preexec_fn=setpgrp, close_fds=True)
 
 		if res_optim != 0 and res_optim != 124:
 			self.stopTime = int(time())
@@ -163,7 +163,7 @@ class OptimizationExecution(object):
 
 
 		if Settings.verbose >= 1:
-			print "> Optimization executed. Final score : %.5g" % final_score
+			print("> Optimization executed. Final score : %.5g" % final_score)
 		return final_score
 
 
@@ -187,9 +187,9 @@ class OptimizationExecution(object):
 				self.finalScore = self.readFinalScore()
 				return self.finalScore
 			elif Settings.verbose >= 1:
-				print "> Execution failed !"
+				print("> Execution failed !")
 		elif Settings.verbose >= 1:
-			print "> Compilation failed !"
+			print("> Compilation failed !")
 
 		self.stopTime = int(time())
 		self.elapsedTime = self.stopTime - self.startTime

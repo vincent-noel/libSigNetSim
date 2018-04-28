@@ -123,8 +123,8 @@ class RepeatedTask(AbstractTask):
 
 			simulation = SteadyStatesSimulation(
 				list_of_models=models,
-				species_input=value_changes.keys()[0],
-				list_of_initial_values=value_changes.values()[0]
+				species_input=list(value_changes.keys())[0],
+				list_of_initial_values=list(value_changes.values())[0]
 			)
 			simulation.run()
 			self.__results = simulation.getRawData()
