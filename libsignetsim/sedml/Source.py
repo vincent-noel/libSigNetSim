@@ -26,7 +26,7 @@
 
 from future import standard_library
 standard_library.install_aliases()
-from builtins import object
+
 from libsignetsim.sedml.URI import URI
 from libsignetsim.sedml.SedmlException import SedmlFileNotFound
 from libsignetsim.settings.Settings import Settings

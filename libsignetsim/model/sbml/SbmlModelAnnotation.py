@@ -24,7 +24,7 @@
 
 """
 
-from builtins import object
+
 from libsignetsim.model.sbml.SbmlModelHistory import SbmlModelHistory
 
 from libsignetsim.settings.Settings import Settings

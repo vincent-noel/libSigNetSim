@@ -24,7 +24,7 @@
 
 """
 
-from builtins import object
+
 from libsignetsim.settings.Settings import Settings
 
 class SbmlModelCreator(object):

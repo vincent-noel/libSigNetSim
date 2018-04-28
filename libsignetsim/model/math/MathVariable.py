@@ -24,7 +24,7 @@
 
 """
 
-from builtins import object
+
 from six import string_types
 from libsignetsim.model.math.MathSymbol import MathSymbol
 from libsignetsim.model.math.MathFormula import MathFormula

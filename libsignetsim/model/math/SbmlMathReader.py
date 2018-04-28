@@ -26,8 +26,8 @@
 from __future__ import print_function
 from six import string_types
 
-from builtins import range
-from builtins import object
+
+
 import libsbml
 from math import isinf, isnan
 from sympy import srepr

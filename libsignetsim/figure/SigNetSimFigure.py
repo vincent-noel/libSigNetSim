@@ -25,7 +25,7 @@
 """
 from __future__ import division
 
-from builtins import object
+
 from libsignetsim.settings.Settings import Settings
 import matplotlib.pyplot as plt
 

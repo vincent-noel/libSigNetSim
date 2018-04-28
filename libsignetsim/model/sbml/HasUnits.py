@@ -24,7 +24,7 @@
 
 """
 
-from builtins import object
+
 from libsignetsim.model.sbml.UnitDefinition import UnitDefinition
 from libsignetsim.settings.Settings import Settings
 

@@ -25,7 +25,7 @@
 """
 from __future__ import print_function
 
-from builtins import object
+
 from libsignetsim.model.math.container.ListOfODEs import ListOfODEs
 from libsignetsim.model.math.container.ListOfCFEs import ListOfCFEs
 from libsignetsim.model.math.container.ListOfDAEs import ListOfDAEs

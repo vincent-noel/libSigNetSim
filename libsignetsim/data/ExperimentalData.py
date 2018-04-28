@@ -24,7 +24,7 @@
 
 """
 
-from builtins import object
+
 import re
 
 class ExperimentalData(object):

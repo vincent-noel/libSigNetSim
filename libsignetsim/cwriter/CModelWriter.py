@@ -25,8 +25,8 @@
 """
 from __future__ import print_function
 
-from builtins import range
-from builtins import object
+
+
 from libsignetsim.settings.Settings import Settings
 from time import time
 from sympy import Symbol

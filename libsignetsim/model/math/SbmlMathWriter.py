@@ -26,8 +26,8 @@
 from __future__ import print_function
 from six import string_types
 
-from builtins import range
-from builtins import object
+
+
 from libsignetsim.model.math.sympy_shortcuts import *
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.MathException import MathException

@@ -27,7 +27,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from six import string_types
 # from builtins import str
-from builtins import range
+
 from libsignetsim.sedml.math.SedmlMathReader import SedmlMathReader
 from libsignetsim.sedml.math.SedmlMathWriter import SedmlMathWriter
 from libsignetsim.settings.Settings import Settings

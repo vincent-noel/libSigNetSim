@@ -25,7 +25,7 @@
 """
 from __future__ import print_function
 
-from builtins import range
+
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.ConservationLaw import ConservationLaw
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyInteger, SympyEqual, SympyAdd, SympyMul, SympyPow

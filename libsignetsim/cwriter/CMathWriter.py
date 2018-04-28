@@ -25,8 +25,8 @@
 """
 from __future__ import print_function
 
-from builtins import range
-from builtins import object
+
+
 from sympy import simplify, srepr
 from libsignetsim.model.math.sympy_shortcuts import *
 

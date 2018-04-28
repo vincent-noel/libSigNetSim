@@ -24,9 +24,9 @@
 
 """
 
-from builtins import zip
-from builtins import range
-from builtins import object
+
+
+
 from PyDSTool import args, ContClass, PyDSTool_ExistError
 
 import threading

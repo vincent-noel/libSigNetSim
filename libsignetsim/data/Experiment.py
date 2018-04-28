@@ -24,7 +24,7 @@
 
 """
 
-from builtins import object
+
 from libsignetsim.data.ExperimentalCondition import ExperimentalCondition
 from libsignetsim.numl.NuMLDocument import NuMLDocument
 

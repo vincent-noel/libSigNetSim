@@ -25,7 +25,7 @@
 """
 from __future__ import print_function
 
-from builtins import range
+
 from libsignetsim.model.Model import Model
 from libsignetsim.model.sbml.HasParentObj import HasParentObj
 from libsignetsim.model.sbml.container.ListOfModelDefinitions import ListOfModelDefinitions

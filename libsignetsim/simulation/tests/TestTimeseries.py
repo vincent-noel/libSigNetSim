@@ -24,7 +24,7 @@
 
 """
 
-from builtins import range
+
 from libsignetsim import Model, SbmlDocument, TimeseriesSimulation, Settings
 from unittest import TestCase
 from os.path import exists, join, dirname

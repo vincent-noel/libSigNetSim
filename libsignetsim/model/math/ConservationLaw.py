@@ -25,7 +25,7 @@
 """
 from __future__ import print_function
 
-from builtins import object
+
 from libsignetsim.model.math.sympy_shortcuts import SympyEqual, SympyInteger
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 from sympy import pretty

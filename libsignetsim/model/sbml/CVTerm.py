@@ -24,8 +24,8 @@
 
 """
 
-from builtins import range
-from builtins import object
+
+
 from libsignetsim.uris.URI import URI
 from libsignetsim.settings.Settings import Settings
 from libsbml import (

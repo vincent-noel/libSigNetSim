@@ -25,7 +25,7 @@
 """
 from __future__ import print_function
 
-from builtins import range
+
 from libsignetsim.simulation.CWriterSimulation import CWriterSimulation
 from libsignetsim.simulation.SimulationException import (
 	SimulationExecutionException, SimulationCompilationException, SimulationNoDataException, SimulationException

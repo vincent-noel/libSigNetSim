@@ -24,7 +24,7 @@
 
 """
 
-from builtins import range
+
 from libsignetsim.numl.DimensionDescription import DimensionDescription
 from libsignetsim.numl.AtomicDescription import AtomicDescription
 from libsignetsim.settings.Settings import Settings

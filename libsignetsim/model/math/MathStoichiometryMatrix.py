@@ -25,7 +25,7 @@
 """
 from __future__ import print_function
 
-from builtins import object
+
 from libsignetsim.settings.Settings import Settings
 from sympy import pretty
 from time import time

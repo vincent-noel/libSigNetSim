@@ -24,7 +24,7 @@
 
 """
 
-from builtins import object
+
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.MathVariable import MathVariable
 from libsignetsim.model.math.sympy_shortcuts import  (

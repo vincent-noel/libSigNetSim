@@ -24,7 +24,7 @@
 
 """
 
-from builtins import object
+
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.LibSigNetSimException import UnknownObservationException, UnknownTreatmentException, NoTreatmentException, NoObservationException
 

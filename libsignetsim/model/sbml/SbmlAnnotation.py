@@ -24,7 +24,7 @@
 
 """
 
-from builtins import object
+
 import libsbml
 
 from libsignetsim.settings.Settings import Settings

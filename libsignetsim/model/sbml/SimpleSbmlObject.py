@@ -24,8 +24,8 @@
 
 """
 
-from builtins import range
-from builtins import object
+
+
 from libsignetsim.model.sbml.SbmlAnnotation import SbmlAnnotation
 from libsignetsim.settings.Settings import Settings
 from libsbml import SyntaxChecker

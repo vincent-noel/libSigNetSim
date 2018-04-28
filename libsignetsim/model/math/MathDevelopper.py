@@ -24,8 +24,8 @@
 
 """
 
-from builtins import range
-from builtins import object
+
+
 from libsignetsim.model.math.sympy_shortcuts import (
 	SympySymbol, SympyInteger, SympyFloat, SympyPi, SympyMul, SympyPow, SympyRateOf, SympyUndefinedFunction,
 	SympyTrue, SympyFalse, SympyExprCondPair, SympyITE, SympyLambda, SympyTuple, SympyAvogadro)

@@ -24,7 +24,7 @@
 
 """
 
-from builtins import object
+
 class EventAssignedVariable(object):
 
 	def __init__(self, model):

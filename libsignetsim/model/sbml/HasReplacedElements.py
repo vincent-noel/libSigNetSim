@@ -24,7 +24,7 @@
 
 """
 
-from builtins import object
+
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.sbml.container.ListOfReplacedElements import ListOfReplacedElements
 from libsignetsim.model.sbml.ReplacedBy import ReplacedBy

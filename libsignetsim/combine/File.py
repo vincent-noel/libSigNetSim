@@ -24,7 +24,7 @@
 
 """
 
-from builtins import object
+
 from libsignetsim.settings.Settings import Settings
 from os.path import dirname, basename, join
 from mimetypes import guess_type

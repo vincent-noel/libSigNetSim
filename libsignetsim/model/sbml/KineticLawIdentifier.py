@@ -24,7 +24,7 @@
 
 """
 
-from builtins import object
+
 from sympy import simplify, expand, srepr
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 from libsignetsim.model.math.sympy_shortcuts import (

@@ -24,7 +24,7 @@
 
 """
 
-from builtins import object
+
 class HasMetaIds(object):
 	""" Parent class for all the ListOf containers in a sbml model """
 

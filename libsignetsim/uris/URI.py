@@ -24,7 +24,7 @@
 
 """
 
-from builtins import object
+
 from libsignetsim.uris.NCBITaxonomyResolver import NCBITaxonomyResolver
 from libsignetsim.uris.SBOResolver import SBOResolver
 from libsignetsim.uris.GoResolver import GoResolver

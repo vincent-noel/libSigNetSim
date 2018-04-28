@@ -25,7 +25,7 @@
 """
 from __future__ import print_function
 
-from builtins import object
+
 from libsignetsim.tests.sbmltestsuite.TestSuiteCase import TestSuiteCase
 from libsignetsim.model.ModelException import LibSigNetSimException
 from libsignetsim.simulation.SimulationException import SimulationException
