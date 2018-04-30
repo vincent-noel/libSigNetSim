@@ -24,7 +24,8 @@ setup(name='libsignetsim',
 		'bioservices',
 		'pandas',
 		'lxml',
-		'coveralls<1.2.0'
+		'coveralls<1.2.0',
+		'future'
 	],
 	ext_modules=[
 		Extension(
