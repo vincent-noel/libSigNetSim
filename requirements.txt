@@ -7,7 +7,6 @@ scipy<1.0.0
 git+https://github.com/tkf/pydstool.git@py3k-TestFunc
 sympy
 bioservices
-pandas
 lxml
 jinja2
 coveralls

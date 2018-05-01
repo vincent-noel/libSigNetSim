@@ -22,7 +22,6 @@ setup(name='libsignetsim',
 		'pydstool',
 		'jinja2',
 		'bioservices',
-		'pandas',
 		'lxml',
 		'coveralls',
 		'future'
