@@ -2,7 +2,7 @@ apt-get update -qq
 apt-get install -y libopenmpi-dev openmpi-bin \
                     libsundials-serial-dev libsundials-serial \
                     liblapack-dev libblas-dev libatlas-dev libatlas-base-dev \
-                    python-pip python-dev make swig
+                    python-pip python-dev make swig git
 
 pip2 install pip --upgrade
 if [ -f /usr/bin/pip ]
