@@ -5,9 +5,16 @@ apt-get install -y libopenmpi-dev openmpi-bin \
                     make swig python3-pip python3-dev
 
 pip3 install pip --upgrade
-if [ ! -f /usr/bin/pip3 ]
+if [ -f /usr/bin/pip ]
 then
-    ln -s /usr/local/bin/pip3 /usr/bin/pip3
+    mv /usr/bin/pip /usr/bin/pip.bak
 fi
+ln -s /usr/local/bin/pip /usr/bin/pip
+
+if [ -f /usr/bin/pip3 ]
+then
+    mv /usr/bin/pip3 /usr/bin/pip3.bak
+fi
+ln -s /usr/local/bin/pip3 /usr/bin/pip3
 
 easy_install3 -U distribute

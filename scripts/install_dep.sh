@@ -5,12 +5,22 @@ apt-get install -y libopenmpi-dev openmpi-bin \
                     python-pip python-dev make swig
 
 pip2 install pip --upgrade
-if [ ! -f /usr/bin/pip ]
+if [ -f /usr/bin/pip ]
 then
-    ln -s /usr/local/bin/pip2 /usr/bin/pip2
-    ln -s /usr/local/bin/pip /usr/bin/pip
+    mv /usr/bin/pip /usr/bin/pip.bak
 fi
+ln -s /usr/local/bin/pip /usr/bin/pip
+
+if [ -f /usr/bin/pip2 ]
+then
+    mv /usr/bin/pip2 /usr/bin/pip2.bak
+fi
+ln -s /usr/local/bin/pip2 /usr/bin/pip2
 
 easy_install -U distribute
 
-pip install pyopenssl
+pip2 install setuptools --upgrade
+
+# Version incompatibility issue... Hopefully temporary
+pip2 install pyopenssl
+
