@@ -153,7 +153,7 @@ class KineticLaw(KineticLawIdentifier):
 		else:
 			t_math_formula = self.__definition.getPrettyPrintMathFormula()
 
-		if self.reaction.listOfLocalParameters > 0:
+		if len(self.reaction.listOfLocalParameters) > 0:
 			t_math_formula = t_math_formula.replace("_local_%d_" % (self.reaction.objId), "")
 
 		for species in list(self.__model.listOfSpecies.values()):
