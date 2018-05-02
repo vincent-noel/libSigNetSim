@@ -12,3 +12,5 @@ then
 fi
 
 easy_install -U distribute
+
+pip install pyopenssl
