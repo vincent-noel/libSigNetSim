@@ -7,6 +7,7 @@ RUN apt-get -qq update
 ADD . /libSigNetSim
 
 RUN /bin/bash /libSigNetSim/scripts/install_dep.sh
+RUN pip install -r /libSigNetSim/requirements.txt
 RUN pip install /libSigNetSim
 RUN pip install "jupyter<= 6"
 RUN jupyter notebook --generate-config --allow-root
