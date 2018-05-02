@@ -6,9 +6,15 @@ services:
       context: ./
       dockerfile: ./scripts/docker/Dockerfile
     image: signetsim/notebook:develop
+    container_name: libsignetsim-notebook
+    ports:
+      - "8888:8888"
 
   libsignetsim-notebook-python3:
     build:
       context: ./
       dockerfile: ./scripts/docker-python3/Dockerfile
     image: signetsim/notebook:develop-python3
+    container_name: libsignetsim-notebook-python3
+    ports:
+      - "8888:8888"
