@@ -33,6 +33,9 @@ from os.path import join
 from os import mkdir
 from shutil import copyfile
 from time import time
+from sys import version_info
+from glob import glob
+
 
 class CWriterSimulation(CWriterModels, CWriterData):
 
@@ -71,7 +74,13 @@ class CWriterSimulation(CWriterModels, CWriterData):
 		copyfile(join(Settings.basePath, "lib/integrate/src/types.h"), join(self.getTempDirectory(), "src/integrate/types.h"))
 
 		# Then the shared libraries
-		copyfile(join(Settings.basePath, "lib/integrate/integrate.so"), join(self.getTempDirectory(), "lib/integrate.so"))
+		if version_info[0] == 3 and version_info[1] >= 5:
+			integrate_filename = glob(join(Settings.basePath, "lib", "integrate", "*.so"))
+			if len(integrate_filename) > 0:
+				copyfile(integrate_filename[0], join(self.getTempDirectory(), "lib/integrate.so"))
+
+		else:
+			copyfile(join(Settings.basePath, "lib/integrate/integrate.so"), join(self.getTempDirectory(), "lib/integrate.so"))
 
 		copyfile(join(Settings.basePath, "lib/templates/simulation/Makefile"), join(self.getTempDirectory(), "Makefile") )
 		copyfile(join(Settings.basePath, "lib/templates/simulation/main.c"), join(self.getTempDirectory(), "src/main.c") )
