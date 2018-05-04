@@ -17,6 +17,4 @@ then
 fi
 ln -s /usr/local/bin/pip3 /usr/bin/pip3
 
-pip3 install setuptools --upgrade --ignore-installed
-
 easy_install3 -U distribute
