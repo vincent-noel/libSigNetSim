@@ -106,9 +106,6 @@ class EquilibriumPointCurve(object):
 
 	def executeCont(self, callback_function_success=None, callback_function_error=None):
 
-		if callback_function_success is not None:
-			print("> Starting thread")
-
 		self.status = self.STARTED
 		try:
 			t0 = time()
@@ -123,10 +120,7 @@ class EquilibriumPointCurve(object):
 			self.status = self.SUCCESS
 
 			if callback_function_success is not None:
-				print("> Exiting thread (executed in %.3gs)" % (time() - t0))
 				callback_function_success(self)
-
-
 
 		except RuntimeError:
 			self.status = self.FAILED
@@ -305,7 +299,9 @@ class EquilibriumPointCurve(object):
 	def plotLimitCycles(self, plot, variable):
 
 		if self.hasHopfBifurcations():
-			self.findLimitCycleCurves()
+			if not self.LIMIT_CYCLE_CURVE in list(self.continuation.curves.keys()):
+				self.findLimitCycleCurves()
+
 			x, ys = self.getLimitCycleCurves()
 			plot.plot(x, ys[variable.getSymbolStr()]['min'], 'b-')
 			plot.plot(x, ys[variable.getSymbolStr()]['max'], 'b-')
