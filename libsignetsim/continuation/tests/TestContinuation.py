@@ -107,7 +107,6 @@ class TestContinuation(TestCase):
 
 		t_ep_curve = EquilibriumPointCurve(doc.model)
 		t_ep_curve.setParameter(doc.model.listOfVariables.getBySbmlId("k4prime"))
-		t_ep_curve.setVariable(doc.model.listOfVariables.getBySbmlId("cyclin_cdk"))
 		t_ep_curve.setRange(0, 5000)
 		t_ep_curve.setDs(0.1)
 		t_ep_curve.setMaxSteps(1000)
