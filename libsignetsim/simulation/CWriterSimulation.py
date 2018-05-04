@@ -29,11 +29,10 @@ from libsignetsim.settings.Settings import Settings
 from libsignetsim.cwriter.CWriterModels import CWriterModels
 from libsignetsim.cwriter.CWriterData import CWriterData
 from libsignetsim.simulation.SimulationException import SimulationException
-from os.path import join
+from os.path import join, isfile
 from os import mkdir
 from shutil import copyfile
 from time import time
-from sys import version_info
 from glob import glob
 
 
@@ -74,11 +73,12 @@ class CWriterSimulation(CWriterModels, CWriterData):
 		copyfile(join(Settings.basePath, "lib/integrate/src/types.h"), join(self.getTempDirectory(), "src/integrate/types.h"))
 
 		# Then the shared libraries
-		if version_info[0] == 3 and version_info[1] >= 5:
-			integrate_filename = glob(join(Settings.basePath, "lib", "integrate", "*.so"))
+		if not isfile(join(Settings.basePath, "lib/integrate/integrate.so")):
+			integrate_filename = glob(join(Settings.basePath, "lib", "integrate", "integrate*.so"))
 			if len(integrate_filename) > 0:
 				copyfile(integrate_filename[0], join(self.getTempDirectory(), "lib/integrate.so"))
-
+			else:
+				raise SimulationException("Could not find the numerical integration library. Please reinstall libSigNetSim")
 		else:
 			copyfile(join(Settings.basePath, "lib/integrate/integrate.so"), join(self.getTempDirectory(), "lib/integrate.so"))
 
