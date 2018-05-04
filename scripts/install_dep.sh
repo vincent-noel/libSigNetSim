@@ -4,7 +4,7 @@ apt-get install -y libopenmpi-dev openmpi-bin \
                     liblapack-dev libblas-dev libatlas-dev libatlas-base-dev \
                     python-pip python-dev make swig git
 
-pip2 install pip --upgrade --ignore-installed
+pip install pip --upgrade --ignore-installed
 if [ -f /usr/bin/pip ]
 then
     mv /usr/bin/pip /usr/bin/pip.bak
@@ -17,9 +17,7 @@ then
 fi
 ln -s /usr/local/bin/pip2 /usr/bin/pip2
 
-easy_install -U distribute
-
-pip2 install setuptools --upgrade --ignore-installed
+pip2 install distribute setuptools --upgrade --ignore-installed
 
 # Version incompatibility issue... Hopefully temporary
 pip2 install pyopenssl
