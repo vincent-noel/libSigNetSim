@@ -17,4 +17,4 @@ then
 fi
 ln -s /usr/local/bin/pip3 /usr/bin/pip3
 
-pip3 install distribute setuptools --upgrate --ignore-installed
+pip3 install distribute setuptools --upgrade --ignore-installed
