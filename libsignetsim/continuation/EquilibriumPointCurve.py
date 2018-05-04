@@ -121,11 +121,15 @@ class EquilibriumPointCurve(object):
 			else:
 				self.continuation[self.MAIN_CURVE].backward()
 
+			if self.hasHopfBifurcations():
+				self.findLimitCycleCurves()
+
 			self.status = self.SUCCESS
 
 			if callback_function_success is not None:
 				print("> Exiting thread (executed in %.3gs)" % (time() - t0))
 				callback_function_success(self)
+
 
 
 		except RuntimeError:

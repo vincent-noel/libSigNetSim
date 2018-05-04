@@ -139,7 +139,7 @@ class TestContinuation(TestCase):
 				self.assertAlmostEqual(y, RESULT_POINTS[var][i][2], delta=1e-6*y)
 
 		self.assertTrue(t_ep_curve.hasHopfBifurcations())
-		t_ep_curve.findLimitCycleCurves()
+		# t_ep_curve.findLimitCycleCurves()
 		lc_x, lc_ys = t_ep_curve.getLimitCycleCurves()
 
 		self.assertEqual(len(lc_x), 486)
