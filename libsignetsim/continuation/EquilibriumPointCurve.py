@@ -49,7 +49,6 @@ class EquilibriumPointCurve(object):
 		self.system = PyDSToolModel(model)
 		self.continuation = None
 		self.parameter = None
-		self.variable = None
 		self.continuationParameters = None
 		self.fromValue = None
 		self.toValue = None
@@ -60,9 +59,6 @@ class EquilibriumPointCurve(object):
 
 	def setParameter(self, parameter):
 		self.parameter = parameter
-
-	def setVariable(self, variable):
-		self.variable = variable
 
 	def setRange(self, from_value, to_value):
 		self.fromValue = from_value
@@ -81,7 +77,7 @@ class EquilibriumPointCurve(object):
 
 		self.system.build(
 			self.parameter,
-			self.fromValue, vars_to_keep=[self.parameter.getSymbolStr(), self.variable.getSymbolStr()]
+			self.fromValue, vars_to_keep=[self.parameter.getSymbolStr()]
 		)
 
 		self.buildCont()
@@ -148,11 +144,11 @@ class EquilibriumPointCurve(object):
 		t.setDaemon(True)
 		t.start()
 
-	def getCurve(self):
+	def getCurve(self, variable):
 
 		if self.status == self.SUCCESS:
 			x, ys = self.getCurves()
-			return x, ys[self.variable.getSymbolStr()]
+			return x, ys[variable.getSymbolStr()]
 
 	def getCurves(self):
 
@@ -282,12 +278,12 @@ class EquilibriumPointCurve(object):
 
 			self.continuation[self.LIMIT_CYCLE_CURVE].forward()
 
-	def plotCurve(self, plot):
+	def plotCurve(self, plot, variable):
 
 		x, ys, stab = self.getStabilitySlicedCurves()
 		points = self.getPoints()
 
-		for i, (slice_x, slice_y) in enumerate(zip(x, ys[self.variable.getSymbolStr()])):
+		for i, (slice_x, slice_y) in enumerate(zip(x, ys[variable.getSymbolStr()])):
 
 			if stab[i] == 'S':
 				color = "b-"
@@ -300,16 +296,16 @@ class EquilibriumPointCurve(object):
 
 			plot.plot(slice_x, slice_y, color)
 
-		points_var = points[self.variable.getSymbolStr()]
+		points_var = points[variable.getSymbolStr()]
 		x = [x_i for _, x_i, _ in points_var]
 		y = [y_i for _, _, y_i in points_var]
 		plot.plot(x, y, 'ro')
 		plot.set_xlim(self.fromValue, self.toValue)
 
-	def plotLimitCycles(self, plot):
+	def plotLimitCycles(self, plot, variable):
 
 		if self.hasHopfBifurcations():
 			self.findLimitCycleCurves()
 			x, ys = self.getLimitCycleCurves()
-			plot.plot(x, ys[self.variable.getSymbolStr()]['min'], 'b-')
-			plot.plot(x, ys[self.variable.getSymbolStr()]['max'], 'b-')
+			plot.plot(x, ys[variable.getSymbolStr()]['min'], 'b-')
+			plot.plot(x, ys[variable.getSymbolStr()]['max'], 'b-')

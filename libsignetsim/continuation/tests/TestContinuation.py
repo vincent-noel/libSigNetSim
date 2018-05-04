@@ -59,7 +59,6 @@ class TestContinuation(TestCase):
 
 		t_ep_curve = EquilibriumPointCurve(doc.model)
 		t_ep_curve.setParameter(doc.model.listOfVariables.getBySbmlId("total_sos"))
-		t_ep_curve.setVariable(doc.model.listOfVariables.getBySbmlId("ras_gtp"))
 		t_ep_curve.setRange(0, 500)
 		t_ep_curve.setDs(0.1)
 		t_ep_curve.setMaxSteps(200)

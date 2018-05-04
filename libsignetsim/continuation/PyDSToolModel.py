@@ -45,7 +45,7 @@ class PyDSToolModel(object):
 		return self.system
 
 	def build(self, parameter, from_value, vars_to_keep=[]):
-		parameter.setValue(0)
+		parameter.setValue(from_value)
 		self.model.build(vars_to_keep=vars_to_keep)
 
 		self.model.buildReducedModel(vars_to_keep=vars_to_keep)
