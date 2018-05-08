@@ -38,11 +38,6 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, list):
 		ListOfSbmlVariables.__init__(self, model)
 		list.__init__(self)
 
-	def values(self):
-		""" Override values() to sort by id """
-		return self
-
-	# Add/Remove variables
 	def addVariable(self, variable, string=None):
 
 		t_sbmlId = ListOfSbmlVariables.newSbmlId(self, variable, string)

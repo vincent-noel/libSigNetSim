@@ -47,7 +47,7 @@ class SbmlModelAnnotation(object):
 	def getListOfSBOTermsDescriptions(self):
 
 		res = []
-		for object in list(self.listOfSbmlObjects.values()):
+		for object in self.listOfSbmlObjects:
 			t_description = object.getAnnotation().getSBOTermDescription()
 			if t_description is not None:
 				res.append(t_description)

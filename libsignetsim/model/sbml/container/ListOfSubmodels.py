@@ -61,7 +61,7 @@ class ListOfSubmodels(ListOf, HasIds):#, SbmlObject):
 					sbml_version=Settings.defaultSbmlVersion):
 		""" Writes compartments' list to a sbml file """
 
-		for t_submodel in ListOf.values(self):
+		for t_submodel in self:
 			t_submodel.writeSbml(sbml_model, sbml_level, sbml_version)
 
 		# SbmlObject.writeSbml(self, sbml_model, sbml_level, sbml_version)
@@ -78,7 +78,7 @@ class ListOfSubmodels(ListOf, HasIds):#, SbmlObject):
 	def remove(self, sbml_obj):
 		""" Remove an object from the list """
 
-		for object in list(self.__model.listOfSbmlObjects.values()):
+		for object in self.__model.listOfSbmlObjects:
 			if object.hasReplacedElements() and object.getListOfReplacedElements().containsSubmodel(sbml_obj.getSbmlId()):
 				raise CannotDeleteException("Submodel %s is used. Please remove the substitutions first" % sbml_obj.getNameOrSbmlId())
 
@@ -91,7 +91,7 @@ class ListOfSubmodels(ListOf, HasIds):#, SbmlObject):
 	def getSubmodels(self):
 
 		res = []
-		for submodel in ListOf.values(self):
+		for submodel in self:
 			res.append(submodel.getModelObject())
 
 		return res
@@ -100,7 +100,7 @@ class ListOfSubmodels(ListOf, HasIds):#, SbmlObject):
 		return HasIds.getBySbmlId(self, sbml_id_ref)
 
 	def getBySbmlIdRef(self, sbml_id):
-		for submodel in ListOf.values(self):
+		for submodel in self:
 			if submodel.getModelObject().getSbmlId() == sbml_id:
 				return submodel
 

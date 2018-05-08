@@ -38,13 +38,13 @@ class HasIds(HasMetaIds):
 
 	def sbmlIds(self):
 		""" Return a set of import ids of the sbml objects """
-		return [obj.getSbmlId() for obj in list(self.values())]
+		return [obj.getSbmlId() for obj in self]
 
 	def getBySbmlId(self, sbml_id, pos=0):
 		""" Find sbml objects by their import Id """
 
 		res = []
-		for obj in list(self.values()):
+		for obj in self:
 			if obj.getSbmlId() == sbml_id:
 				res.append(obj)
 
@@ -56,7 +56,7 @@ class HasIds(HasMetaIds):
 		""" Test if an sbml id is in the list """
 
 		res = False
-		for obj in list(self.values()):
+		for obj in self:
 			if sbml_id == obj.getSbmlId():
 				res = True
 
@@ -66,13 +66,13 @@ class HasIds(HasMetaIds):
 
 	def names(self):
 		""" Return set of names of the sbml objects """
-		return [obj.getName() for obj in list(self.values())]
+		return [obj.getName() for obj in self]
 
 	def getByName(self, name, pos=0):
 		""" Find sbml objects by their name """
 
 		res = []
-		for obj in list(self.values()):
+		for obj in self:
 			if obj.getName() == name:
 				res.append(obj)
 
@@ -85,7 +85,7 @@ class HasIds(HasMetaIds):
 		""" Test if a name is in the list """
 
 		res = False
-		for obj in list(self.values()):
+		for obj in self:
 			if name == obj.getName():
 				res = True
 

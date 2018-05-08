@@ -65,10 +65,10 @@ class ListOfCompartments(ListOf, HasIds, SbmlObject, HasParentObj):
 					sbml_version=Settings.defaultSbmlVersion):
 		""" Writes compartments' list to a sbml file """
 
-		for compartment in ListOf.values(self):
+		for compartment in self:
 			compartment.writeSbml(sbml_model, sbml_level, sbml_version)
 
-		if len(ListOf.values(self)):
+		if len(self) > 0:
 			SbmlObject.writeSbml(self, sbml_model.getListOfCompartments(), sbml_level, sbml_version)
 
 
@@ -86,7 +86,7 @@ class ListOfCompartments(ListOf, HasIds, SbmlObject, HasParentObj):
 
 			SbmlObject.copy(self, obj)
 
-			for compartment in list(obj.values()):
+			for compartment in obj:
 				if compartment not in deletions:
 
 					t_compartment = Compartment(self.__model, self, self.nextId())

@@ -146,7 +146,7 @@ class KineticLawIdentifier(object):
 
 		t_replaces = {}
 
-		for compartment in list(self.model.listOfCompartments.values()):
+		for compartment in self.model.listOfCompartments:
 			t_replaces.update({compartment.symbol.getInternalMathFormula(): SympyInteger(1)})
 
 		return unevaluatedSubs(t_rate, t_replaces)
@@ -161,10 +161,10 @@ class KineticLawIdentifier(object):
 
 		t_replaces = {}
 
-		for compartment in list(self.model.listOfCompartments.values()):
+		for compartment in self.model.listOfCompartments:
 			t_replaces.update({compartment.symbol.getInternalMathFormula(): SympyInteger(1)})
 
-		for species in list(self.model.listOfSpecies.values()):
+		for species in self.model.listOfSpecies:
 			t_replaces.update({species.symbol.getInternalMathFormula(): SympyInteger(1)})
 
 		return expand(simplify(unevaluatedSubs(t_rate, t_replaces)))
@@ -179,25 +179,25 @@ class KineticLawIdentifier(object):
 
 		t_replaces = {}
 
-		for var in list(self.model.listOfVariables.values()):
+		for var in self.model.listOfVariables:
 			if var.isParameter():
 				t_replaces.update({var.symbol.getInternalMathFormula(): self.T_PARAM})
 			elif var.isCompartment():
 				t_replaces.update({var.symbol.getInternalMathFormula(): SympyInteger(1)})
 
-		for i, reactant in enumerate(self.reaction.listOfReactants.values()):
+		for i, reactant in enumerate(self.reaction.listOfReactants):
 			if i == 0:
 				t_replaces.update({reactant.getSpecies().symbol.getInternalMathFormula(): self.T_REACTANT})
 			else:
 				t_replaces.update({reactant.getSpecies().symbol.getInternalMathFormula(): SympyInteger(1)})
 
-		for i, modifier in enumerate(self.reaction.listOfModifiers.values()):
+		for i, modifier in enumerate(self.reaction.listOfModifiers):
 			if i == 0:
 				t_replaces.update({modifier.getSpecies().symbol.getInternalMathFormula(): self.T_MODIFIER})
 			else:
 				t_replaces.update({modifier.getSpecies().symbol.getInternalMathFormula(): SympyInteger(1)})
 
-		for i, product in enumerate(self.reaction.listOfProducts.values()):
+		for i, product in enumerate(self.reaction.listOfProducts):
 			if i == 0:
 				t_replaces.update({product.getSpecies().symbol.getInternalMathFormula(): self.T_PRODUCT})
 			else:
@@ -278,7 +278,7 @@ class KineticLawIdentifier(object):
 	def getReversibleFormulas(self):
 
 		t_formula = self.getDefinition().getDeveloppedInternalMathFormula()
-		for compartment in list(self.model.listOfCompartments.values()):
+		for compartment in self.model.listOfCompartments:
 			t_formula = t_formula.subs(compartment.symbol.getInternalMathFormula(), SympyInteger(1))
 
 		t_formula = expand(simplify(t_formula))

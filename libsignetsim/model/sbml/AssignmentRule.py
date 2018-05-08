@@ -149,7 +149,7 @@ class AssignmentRule(Rule):
 
 			if not rawFormula:
 				subs = {}
-				for species in list(self.__model.listOfSpecies.values()):
+				for species in self.__model.listOfSpecies:
 					if species.isConcentration():
 						subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
 				formula = unevaluatedSubs(formula, subs)

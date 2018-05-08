@@ -63,7 +63,7 @@ class ListOfSbmlObjects(ListOf, HasMetaIds):
 	def getListOfSubstitutions(self):
 
 		res = []
-		for obj in ListOf.values(self):
+		for obj in self:
 			if obj.hasReplacedElements():
 				res += obj.getReplacedElements()
 

@@ -73,7 +73,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			if len(self.__model.listOfCompartments) == 0:
 				self.__model.listOfCompartments.new("cell")
 
-			self.__compartment = list(self.__model.listOfCompartments.values())[0].getSbmlId()
+			self.__compartment = self.__model.listOfCompartments[0].getSbmlId()
 
 		SbmlObject.new(self)
 		Variable.new(self, name, Variable.SPECIES)
@@ -195,12 +195,12 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			makes sense.
 		"""
 
-		for i_reaction, reaction in enumerate(self.__model.listOfReactions.values()):
+		for i_reaction, reaction in enumerate(self.__model.listOfReactions):
 			# print "\n> reaction #%d" % i_reaction
 			if not reaction.fast or including_fast_reactions:
 				# print "well, first, it's not fast"
 				if reaction.listOfReactants:
-					for i, reactant in enumerate(reaction.listOfReactants.values()):
+					for i, reactant in enumerate(reaction.listOfReactants):
 						# print ">>> reactant #%d : %s" % (i, reactant.getSpecies().getSbmlId())
 						if reactant.getSpecies() == self:
 							return True
@@ -213,12 +213,12 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 				#             return True
 
 				if reaction.listOfProducts:
-					for i, product in enumerate(reaction.listOfProducts.values()):
+					for i, product in enumerate(reaction.listOfProducts):
 						# print ">>> product #%d : %s" % (i, product.getSpecies().getSbmlId())
 						if product.getSpecies() == self:
 							return True
 				if including_modifiers and reaction.listOfModifiers:
-					for i, modifier in enumerate(reaction.listOfModifiers.values()):
+					for i, modifier in enumerate(reaction.listOfModifiers):
 						# print ">>> product #%d : %s" % (i, product.getSpecies().getSbmlId())
 						if modifier.getSpecies() == self:
 							return True
@@ -230,9 +230,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			makes sense.
 		"""
 
-		for reaction in list(self.__model.listOfReactions.values()):
+		for reaction in self.__model.listOfReactions:
 				if reaction.listOfReactants:
-					for reactant in list(reaction.listOfReactants.values()):
+					for reactant in reaction.listOfReactants:
 						if reactant.getSpecies() == self:
 							if reaction.fast:
 								return True
@@ -240,7 +240,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 								return False
 
 				if reaction.listOfProducts:
-					for product in list(reaction.listOfProducts.values()):
+					for product in reaction.listOfProducts:
 						if product.getSpecies() == self:
 							if reaction.fast:
 								return True
@@ -255,15 +255,15 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			makes sense.
 		"""
 
-		for reaction in list(self.__model.listOfReactions.values()):
+		for reaction in self.__model.listOfReactions:
 				if reaction.listOfReactants:
-					for reactant in list(reaction.listOfReactants.values()):
+					for reactant in reaction.listOfReactants:
 						if reactant.getSpecies() == self:
 							if not reaction.fast:
 								return False
 
 				if reaction.listOfProducts:
-					for product in list(reaction.listOfProducts.values()):
+					for product in reaction.listOfProducts:
 						if product.getSpecies() == self:
 							if not reaction.fast:
 								return False
@@ -305,7 +305,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			ode = MathFormula.ZERO
 
 			if not self.boundaryCondition:
-				for reaction in list(self.__model.listOfReactions.values()):
+				for reaction in self.__model.listOfReactions:
 					if not reaction.fast or including_fast_reactions:
 						ode += reaction.getODE(self, symbols=symbols, rawFormula=rawFormula).getInternalMathFormula()
 

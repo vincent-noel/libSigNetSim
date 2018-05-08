@@ -47,13 +47,13 @@ class ListOfCFEs(list):
 
 		self[:] = []
 
-		for rule in list(self.__model.listOfRules.values()):
+		for rule in self.__model.listOfRules:
 			if rule.isAssignment() and rule.isValid():
 				t_cfe = CFE(self.__model, CFE.ASSIGNMENT)
 				t_cfe.new(rule.getVariable(), rule.getDefinition(rawFormula=True))
 				list.append(self, t_cfe)
 
-		for reaction in list(self.__model.listOfReactions.values()):
+		for reaction in self.__model.listOfReactions:
 			if reaction.isValid():
 				t_cfe = CFE(self.__model, CFE.REACTION)
 				t_cfe.new(reaction, reaction.value)

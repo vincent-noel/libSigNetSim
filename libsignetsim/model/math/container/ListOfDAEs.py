@@ -47,7 +47,7 @@ class ListOfDAEs(list):
 
 	def build(self):
 
-		for rule in list(self.__model.listOfRules.values()):
+		for rule in self.__model.listOfRules:
 			if rule.isAlgebraic() and rule.isValid():
 				# self.__model.hasDAEs = True
 				t_dae = DAE(self.__model)
@@ -73,7 +73,7 @@ class ListOfDAEs(list):
 			)
 
 		system_vars = []
-		for var in list(self.__model.listOfVariables.values()):
+		for var in self.__model.listOfVariables:
 			if var.isAlgebraic():
 				system_vars.append(var.symbol.getInternalMathFormula())
 
@@ -117,7 +117,7 @@ class ListOfDAEs(list):
 			else:
 				init_cond.update({SympySymbol("_time_"): SympyFloat(tmin)})
 
-			for init_ass in list(self.__model.listOfInitialAssignments.values()):
+			for init_ass in self.__model.listOfInitialAssignments:
 				if init_ass.isValid():
 					t_var = init_ass.getVariable().symbol.getSymbol()
 					t_value = init_ass.getDefinition().getDeveloppedInternalMathFormula()
@@ -126,7 +126,7 @@ class ListOfDAEs(list):
 			if DEBUG:
 				print(init_cond)
 
-			for rule in list(self.__model.listOfRules.values()):
+			for rule in self.__model.listOfRules:
 				if rule.isAssignment() and rule.isValid():
 					t_var = rule.getVariable().symbol.getSymbol()
 
@@ -137,7 +137,7 @@ class ListOfDAEs(list):
 			if DEBUG:
 				print(init_cond)
 
-			for var in list(self.__model.listOfVariables.values()):
+			for var in self.__model.listOfVariables:
 				t_var = var.symbol.getSymbol()
 
 				if t_var not in list(init_cond.keys()):
@@ -194,9 +194,9 @@ class ListOfDAEs(list):
 				if t_var is not None:
 					t_value = MathFormula(self.__model)
 					t_value.setInternalMathFormula(value)
-					self.__model.listOfInitialConditions.update({t_var.symbol.getSymbol():t_value})
+					self.__model.listOfInitialConditions.update({t_var.symbol.getSymbol(): t_value})
 
-			for var in list(self.__model.listOfVariables.values()):
+			for var in self.__model.listOfVariables:
 				if not var.symbol.getSymbol() in list(self.__model.listOfInitialConditions.keys()):
 					print("Lacks an initial condition : %s" % var.getSbmlId())
 

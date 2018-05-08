@@ -55,7 +55,7 @@ class MathStoichiometryMatrix(object):
 			subs.update({var: value.getInternalMathFormula()})
 
 		matrix = None
-		for i, reaction in enumerate(self.__model.listOfReactions.values()):
+		for i, reaction in enumerate(self.__model.listOfReactions):
 
 			reaction_matrix = reaction.getStoichiometryMatrix(subs,
 					including_fast_reactions=including_fast_reactions,

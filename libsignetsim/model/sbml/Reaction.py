@@ -111,7 +111,7 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 			)
 
 		# Here we need to add the deleted local parameters to the symbols subs, because they were promoted
-		for local_param in list(obj.listOfLocalParameters.values()):
+		for local_param in obj.listOfLocalParameters:
 			if local_param in deletions and local_param.symbol.getSymbol() not in symbols_subs:
 				new_symbol = symbols_subs[SympySymbol(local_param.getSbmlId())]
 				symbols_subs.update({local_param.symbol.getSymbol(): new_symbol})
@@ -207,17 +207,17 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 			sbml_reaction.setFast(False)
 
 		if self.listOfModifiers:
-			for modifier in list(self.listOfModifiers.values()):
+			for modifier in self.listOfModifiers:
 				sbml_modifier = sbml_reaction.createModifier()
 				modifier.writeSbml(sbml_modifier, sbml_level, sbml_version)
 
 		if self.listOfReactants:
-			for reactant in list(self.listOfReactants.values()):
+			for reactant in self.listOfReactants:
 				sbml_reactant = sbml_reaction.createReactant()
 				reactant.writeSbml(sbml_reactant, sbml_level, sbml_version)
 
 		if self.listOfProducts:
-			for product in list(self.listOfProducts.values()):
+			for product in self.listOfProducts:
 				sbml_product = sbml_reaction.createProduct()
 				product.writeSbml(sbml_product, sbml_level, sbml_version)
 
@@ -281,7 +281,7 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 		lhs = ""
 		if len(self.listOfReactants) + len(self.listOfModifiers) > 0:
 
-			for i_reactant, reactant in enumerate(self.listOfReactants.values()):
+			for i_reactant, reactant in enumerate(self.listOfReactants):
 				if i_reactant > 0:
 					lhs += " + "
 
@@ -291,7 +291,7 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 				lhs += reactant.getSpecies().getNameOrSbmlId()
 
 			if len(self.listOfModifiers) > 0:
-				for i_modifier, modifier in enumerate(self.listOfModifiers.values()):
+				for i_modifier, modifier in enumerate(self.listOfModifiers):
 					if i_modifier + len(self.listOfReactants) > 0:
 						lhs += " + "
 
@@ -303,7 +303,7 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 		rhs = ""
 		if len(self.listOfProducts) + len(self.listOfModifiers) > 0:
 
-			for i_product, product in enumerate(self.listOfProducts.values()):
+			for i_product, product in enumerate(self.listOfProducts):
 				if i_product > 0:
 					rhs += " + "
 
@@ -313,7 +313,7 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 				rhs += product.getSpecies().getNameOrSbmlId()
 
 			if len(self.listOfModifiers) > 0:
-				for i_modifier, modifier in enumerate(self.listOfModifiers.values()):
+				for i_modifier, modifier in enumerate(self.listOfModifiers):
 					if i_modifier + len(self.listOfProducts) > 0:
 						rhs += " + "
 
@@ -361,13 +361,13 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 		# if the stoichiometry is a variable,then it's in the list of variables
 		# if it isn't, then there shouldn't be anything to rename
 
-		for reactant in list(self.listOfReactants.values()):
+		for reactant in self.listOfReactants:
 			reactant.renameSbmlId(old_sbml_id, new_sbml_id)
 
-		for modifier in list(self.listOfModifiers.values()):
+		for modifier in self.listOfModifiers:
 			modifier.renameSbmlId(old_sbml_id, new_sbml_id)
 
-		for product in list(self.listOfProducts.values()):
+		for product in self.listOfProducts:
 			product.renameSbmlId(old_sbml_id, new_sbml_id)
 
 
@@ -377,7 +377,7 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 
 		if self.listOfReactants:
 
-			for reactant in list(self.listOfReactants.values()):
+			for reactant in self.listOfReactants:
 
 				t_ode = MathFormula.ZERO
 
@@ -395,7 +395,7 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 
 
 		if self.listOfProducts:
-			for product in list(self.listOfProducts.values()):
+			for product in self.listOfProducts:
 				t_ode = MathFormula.ZERO
 
 				if product.getSpecies() == species:
@@ -427,7 +427,7 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 			)
 		):
 			if self.listOfReactants:
-				for reactant in list(self.listOfReactants.values()):
+				for reactant in self.listOfReactants:
 					if not reactant.getSpecies().boundaryCondition:
 						index = reactant.getSpecies().ind
 						stoichiometry = unevaluatedSubs(
@@ -437,7 +437,7 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 						front[index] = -stoichiometry + front[index]
 
 			if self.listOfProducts:
-				for product in list(self.listOfProducts.values()):
+				for product in self.listOfProducts:
 					if not product.getSpecies().boundaryCondition:
 						index = product.getSpecies().ind
 						stoichiometry = unevaluatedSubs(
@@ -460,7 +460,7 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 				)
 			):
 				if self.listOfReactants:
-					for reactant in list(self.listOfReactants.values()):
+					for reactant in self.listOfReactants:
 						if not reactant.getSpecies().boundaryCondition:
 							index = reactant.getSpecies().ind
 							stoichiometry = unevaluatedSubs(
@@ -470,7 +470,7 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 							back[index] = stoichiometry + back[index]
 
 				if self.listOfProducts:
-					for product in list(self.listOfProducts.values()):
+					for product in self.listOfProducts:
 						if not product.getSpecies().boundaryCondition:
 							index = product.getSpecies().ind
 							stoichiometry = unevaluatedSubs(
@@ -486,7 +486,7 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 
 	def isReactant(self, species):
 
-		for reactant in list(self.listOfReactants.values()):
+		for reactant in self.listOfReactants:
 			if reactant.getSpecies() == species:
 				return True
 
@@ -494,7 +494,7 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 
 	def isProduct(self, species):
 
-		for product in list(self.listOfProducts.values()):
+		for product in self.listOfProducts:
 			if product.getSpecies() == species:
 				return True
 

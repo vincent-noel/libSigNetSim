@@ -111,7 +111,7 @@ class EventTrigger(MathFormula, SbmlObject):
 		MathFormula.readSbml(self, sbml_formula, self.sbmlLevel, self.sbmlVersion)
 		if not rawFormula:
 			t_subs_mask = {}
-			for t_var in list(self.__model.listOfSpecies.values()):
+			for t_var in self.__model.listOfSpecies:
 				if t_var.isConcentration():
 					t_symbol = SympySymbol("_speciesForcedConcentration_%s_" % str(t_var.symbol.getInternalMathFormula()))
 					t_subs_mask.update({t_var.symbol.getInternalMathFormula(): t_symbol})

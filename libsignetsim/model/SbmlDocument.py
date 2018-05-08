@@ -301,7 +301,7 @@ class SbmlDocument(HasParentObj):
 			self.documentDependenciesPaths = []
 
 			if sbml_doc is None:
-				for external_doc in list(self.listOfExternalModelDefinitions.values()):
+				for external_doc in self.listOfExternalModelDefinitions:
 					self.documentDependenciesPaths.append(external_doc.getSource())
 			else:
 				for external_doc in sbml_doc.getPlugin("comp").getListOfExternalModelDefinitions():
@@ -327,7 +327,7 @@ class SbmlDocument(HasParentObj):
 
 	def renameExternalDocumentDependencies(self, names):
 
-		for external_doc in list(self.listOfExternalModelDefinitions.values()):
+		for external_doc in self.listOfExternalModelDefinitions:
 			external_doc.setSource(names[external_doc.getSource()])
 
 

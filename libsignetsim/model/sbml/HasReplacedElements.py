@@ -91,7 +91,7 @@ class HasReplacedElements(object):
 
 	def getReplacedElements(self):
 		if self.hasReplacedElements():
-			return list(self.__listOfReplacedElements.values())
+			return self.__listOfReplacedElements
 
 	def getListOfReplacedElements(self):
 		if self.hasReplacedElements():

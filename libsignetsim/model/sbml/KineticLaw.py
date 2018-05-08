@@ -102,7 +102,7 @@ class KineticLaw(KineticLawIdentifier):
 
 			if not rawFormula:
 				subs = {}
-				for species in list(self.__model.listOfSpecies.values()):
+				for species in self.__model.listOfSpecies:
 					if species.isConcentration():
 						subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
 				formula = unevaluatedSubs(formula, subs)
@@ -156,7 +156,7 @@ class KineticLaw(KineticLawIdentifier):
 		if len(self.reaction.listOfLocalParameters) > 0:
 			t_math_formula = t_math_formula.replace("_local_%d_" % (self.reaction.objId), "")
 
-		for species in list(self.__model.listOfSpecies.values()):
+		for species in self.__model.listOfSpecies:
 			if species.isConcentration():
 				t_math_formula = t_math_formula.replace(("_speciesForcedConcentration_%s_" % (species.symbol.getInternalMathFormula())), species.getSbmlId())
 
@@ -166,7 +166,7 @@ class KineticLaw(KineticLawIdentifier):
 	def getReactantsFormula(self):
 
 		t_reactants = 1
-		for reactant in list(self.reaction.listOfReactants.values()):
+		for reactant in self.reaction.listOfReactants:
 
 			t_reactants *= reactant.getSpecies().symbol.getInternalMathFormula(rawFormula=True)
 
@@ -179,7 +179,7 @@ class KineticLaw(KineticLawIdentifier):
 	def getModifiersFormula(self):
 
 		t_modifiers = 1
-		for modifier in list(self.reaction.listOfModifiers.values()):
+		for modifier in self.reaction.listOfModifiers:
 			t_modifiers *= modifier.getSpecies().symbol.getInternalMathFormula(rawFormula=True)
 
 			if not modifier.stoichiometry.isOne():
@@ -191,7 +191,7 @@ class KineticLaw(KineticLawIdentifier):
 	def getProductsFormula(self):
 
 		t_products = 1
-		for product in list(self.reaction.listOfProducts.values()):
+		for product in self.reaction.listOfProducts:
 			t_products *= product.getSpecies().symbol.getInternalMathFormula(rawFormula=True)
 
 			if not product.stoichiometry.isOne():

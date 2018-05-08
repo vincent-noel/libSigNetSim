@@ -80,7 +80,7 @@ class TestFindKineticLaws(TestCase):
 			['gef_rasn17_comp', 'gef_rasn17_decomp']
 		]
 
-		for i, reaction in enumerate(sbml_model.listOfReactions.values()):
+		for i, reaction in enumerate(sbml_model.listOfReactions):
 			self.assertEqual(reaction.getReactionType(), results_kinetic_law[i])
 			self.assertEqual(reaction.kineticLaw.reversible, results_reversibility[i])
 			self.assertEqual(

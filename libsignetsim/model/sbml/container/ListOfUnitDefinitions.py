@@ -58,10 +58,10 @@ class ListOfUnitDefinitions(ListOf, HasIds, SbmlObject):
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
 
-		for unitDefinition in ListOf.values(self):
+		for unitDefinition in self:
 			unitDefinition.writeSbml(sbml_model, sbml_level, sbml_version)
 
-		if len(ListOf.values(self)):
+		if len(self) > 0:
 			SbmlObject.writeSbml(self, sbml_model.getListOfUnitDefinitions(), sbml_level, sbml_version)
 
 
@@ -78,7 +78,7 @@ class ListOfUnitDefinitions(ListOf, HasIds, SbmlObject):
 
 			SbmlObject.copy(self, obj)
 
-			for unit_definition in list(obj.values()):
+			for unit_definition in obj:
 				if unit_definition not in deletions:
 
 					t_definition = UnitDefinition(self.__model, self.nextId())
@@ -126,14 +126,14 @@ class ListOfUnitDefinitions(ListOf, HasIds, SbmlObject):
 
 	def getExistingUnits(self, units):
 
-		for t_unit in ListOf.values(self):
+		for t_unit in self:
 			if units.isEqual(t_unit):
 				return t_unit
 
 
 	def containsUnits(self, units):
 
-		for t_unit in ListOf.values(self):
+		for t_unit in self:
 			if units.isEqual(t_unit):
 				return True
 

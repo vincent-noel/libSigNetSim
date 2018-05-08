@@ -67,10 +67,10 @@ class ListOfParameters(ListOf, HasIds, SbmlObject, HasParentObj):
 	def writeSbml(self, sbml_model, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 		""" Writes parameters' list to a sbml file """
 
-		for parameter in ListOf.values(self):
+		for parameter in self:
 			parameter.writeSbml(sbml_model, sbml_level, sbml_version)
 
-		if len(ListOf.values(self)):
+		if len(self) > 0:
 			SbmlObject.writeSbml(self, sbml_model.getListOfParameters(), sbml_level, sbml_version)
 
 
@@ -91,7 +91,7 @@ class ListOfParameters(ListOf, HasIds, SbmlObject, HasParentObj):
 
 			SbmlObject.copy(self, obj)
 
-			for parameter in list(obj.values()):
+			for parameter in obj:
 
 				if parameter not in deletions:
 					t_parameter = Parameter(

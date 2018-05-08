@@ -80,20 +80,20 @@ class MathSlowModel(MathSubmodel):
 	def findFastReactions(self):
 		""" Finds the fast reactions and build the fast stoichiometry matrix """
 
-		for reaction in list(self.sbmlModel.listOfReactions.values()):
+		for reaction in self.sbmlModel.listOfReactions:
 			if reaction.fast:
 				self.fastLaws.append(reaction.kineticLaw.getDefinition().getDeveloppedInternalMathFormula())
 
-				for reactant in list(reaction.listOfReactants.values()):
+				for reactant in reaction.listOfReactants:
 					self.fastLaws_vars.append(reactant.getSpecies().symbol.getDeveloppedInternalMathFormula())
 
-				for product in list(reaction.listOfProducts.values()):
+				for product in reaction.listOfProducts:
 					self.fastLaws_vars.append(product.getSpecies().symbol.getDeveloppedInternalMathFormula())
 
 	def findVelocities(self, subs={}, include_fast_reaction=True, include_slow_reaction=True):
 
 		matrix_velocities = None
-		for reaction in list(self.sbmlModel.listOfReactions.values()):
+		for reaction in self.sbmlModel.listOfReactions:
 			velocities = reaction.kineticLaw.getRawVelocities(
 				subs=subs,
 				include_fast_reaction=include_fast_reaction,

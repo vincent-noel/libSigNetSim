@@ -85,7 +85,7 @@ class ListOfMathVariables(object):
 		variables_constant = []
 		variables_algebraic = []
 
-		for variable in list(self.values()):
+		for variable in self:
 
 			if (variable.isReaction() or variable.isEvent()) or variable.isAssignmentRuled():
 				# print "Assignment variable detected : %s" % variable.getSbmlId()
@@ -188,7 +188,7 @@ class ListOfMathVariables(object):
 		# First we copy the variables list
 		self.clear()
 
-		for variable in list(model.listOfVariables.values()):
+		for variable in model.listOfVariables:
 			new_var = MathVariable(self.__model)
 			new_var.copy(variable, pure_math_variable=True)
 			self.append(new_var)

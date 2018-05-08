@@ -65,10 +65,10 @@ class ListOfInitialAssignments(ListOf, SbmlObject, HasParentObj):
 					sbml_version=Settings.defaultSbmlVersion):
 		""" Writes initial assignments' list to a sbml file """
 
-		for initial_assignment in ListOf.values(self):
+		for initial_assignment in self:
 			initial_assignment.writeSbml(sbml_model, sbml_level, sbml_version)
 
-		if len(ListOf.values(self)):
+		if len(self) > 0:
 			SbmlObject.writeSbml(self, sbml_model.getListOfInitialAssignments(), sbml_level, sbml_version)
 
 	def new(self, variable=None, expression=None, rawFormula=False):
@@ -86,7 +86,7 @@ class ListOfInitialAssignments(ListOf, SbmlObject, HasParentObj):
 
 			SbmlObject.copy(self, obj)
 
-			for init_ass in list(obj.values()):
+			for init_ass in obj:
 				if init_ass not in deletions:
 
 					t_init_ass = InitialAssignment(self.__model, self, self.nextId())
@@ -95,26 +95,26 @@ class ListOfInitialAssignments(ListOf, SbmlObject, HasParentObj):
 
 	def copySubmodel(self, obj):
 
-		for init_ass in list(obj.values()):
+		for init_ass in obj:
 			t_init_ass = InitialAssignment(self.__model, self, init_ass.objId, math_only=self.mathOnly)
 			t_init_ass.copySubmodel(init_ass)
 			ListOf.add(self, t_init_ass)
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 
-		for obj in ListOf.values(self):
+		for obj in self:
 			obj.renameSbmlId(old_sbml_id, new_sbml_id)
 
 
 	def hasInitialAssignment(self, variable):
 
-		for obj in ListOf.values(self):
+		for obj in self:
 			if obj.getVariable().getSbmlId() == variable.getSbmlId():
 				return True
 
 	def containsVariable(self, variable):
 
-		for init_ass in ListOf.values(self):
+		for init_ass in self:
 			if init_ass.containsVariable(variable):
 				return True
 		return False

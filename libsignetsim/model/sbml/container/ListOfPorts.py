@@ -60,7 +60,7 @@ class ListOfPorts(ListOf, HasIds):#, SbmlObject):
                     sbml_version=Settings.defaultSbmlVersion):
         """ Writes compartments' list to a sbml file """
 
-        for t_port in ListOf.values(self):
+        for t_port in self:
             sbml_port = sbml_model.createPort()
             t_port.writeSbml(sbml_port, sbml_level, sbml_version)
 

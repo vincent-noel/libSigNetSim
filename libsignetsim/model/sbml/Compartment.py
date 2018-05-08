@@ -217,7 +217,7 @@ class Compartment(Variable, SbmlObject, InitiallyAssignedVariable,
 	def getSpecies(self):
 
 		all_species = []
-		for species in list(self.__model.listOfSpecies.values()):
+		for species in self.__model.listOfSpecies:
 			if species.getCompartment() == self:
 				all_species.append(species)
 
@@ -227,7 +227,7 @@ class Compartment(Variable, SbmlObject, InitiallyAssignedVariable,
 	def getNbSpecies(self):
 
 		count = 0
-		for species in list(self.__model.listOfSpecies.values()):
+		for species in self.__model.listOfSpecies:
 			if species.getCompartment() == self:
 				count += 1
 		return count

@@ -97,7 +97,7 @@ class SteadyStatesSimulation(Simulation):
         t_model = self.listOfModels[0]
         self.rawData = {}
 
-        for variable in list(t_model.listOfVariables.values()):
+        for variable in t_model.listOfVariables:
             self.rawData.update({variable.getSbmlId(): []})
 
         if len(self.listOfInitialValues) > 1:

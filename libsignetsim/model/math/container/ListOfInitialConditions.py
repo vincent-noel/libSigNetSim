@@ -80,7 +80,7 @@ class ListOfInitialConditions(dict):
 		else:
 			init_cond = {SympySymbol("_time_"): SympyFloat(tmin)}
 
-		for init_ass in list(self.__model.listOfInitialAssignments.values()):
+		for init_ass in self.__model.listOfInitialAssignments:
 			if init_ass.isValid():
 				t_var = init_ass.getVariable().symbol.getSymbol()
 				t_value = init_ass.getDefinition(rawFormula=True).getDeveloppedInternalMathFormula()
@@ -89,7 +89,7 @@ class ListOfInitialConditions(dict):
 		if DEBUG:
 			print(init_cond)
 
-		for rule in list(self.__model.listOfRules.values()):
+		for rule in self.__model.listOfRules:
 			if rule.isAssignment() and rule.isValid():
 				t_var = rule.getVariable().symbol.getSymbol()
 				if t_var not in list(init_cond.keys()):
@@ -99,7 +99,7 @@ class ListOfInitialConditions(dict):
 		if DEBUG:
 			print(init_cond)
 
-		for var in list(self.__model.listOfVariables.values()):
+		for var in self.__model.listOfVariables:
 			t_var = var.symbol.getSymbol()
 			if t_var not in list(init_cond.keys()):
 				t_value = var.value.getDeveloppedInternalMathFormula()
@@ -167,7 +167,7 @@ class ListOfInitialConditions(dict):
 			print("> Final listOfInitialConditions")
 			print(dict.keys(self))
 
-		for var in list(self.__model.listOfVariables.values()):
+		for var in self.__model.listOfVariables:
 			if not var.symbol.getSymbol() in dict.keys(self) and not var.isAlgebraic():
 				print("Lacks an initial condition : %s" % var.getSbmlId())
 

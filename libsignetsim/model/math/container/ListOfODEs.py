@@ -39,7 +39,7 @@ class ListOfODEs(list):
 	def build(self, including_fast_reactions=True):
 
 		self[:] = []
-		for variable in list(self.__model.listOfVariables.values()):
+		for variable in self.__model.listOfVariables:
 			if variable.isDerivative():
 				t_ode = ODE(self.__model)
 				t_ode.new(variable,	variable.getODE(including_fast_reactions, rawFormula=True))

@@ -66,17 +66,17 @@ class ModelInstance(Model):
 		if len(self.__mainModel.listOfSubmodels) > 0:
 
 			# Instanciating submodels depth first
-			for submodel in list(self.__mainModel.listOfSubmodels.values()):
+			for submodel in self.__mainModel.listOfSubmodels:
 				t_submodel_instance = submodel.getModelInstance()
 				self.__submodelInstances.update({submodel.getSbmlId(): t_submodel_instance})
 				self.submodel_sids_subs.update({submodel.getSbmlId(): {}})
 				self.submodel_symbols_subs.update({submodel.getSbmlId(): {}})
 				self.submodel_usids_subs.update({submodel.getSbmlId(): {}})
 
-				for deletion in list(submodel.listOfDeletions.values()):
+				for deletion in submodel.listOfDeletions:
 					self.deletions.append(deletion.getDeletionObjectFromInstance(t_submodel_instance))
 
-				for variable in list(t_submodel_instance.listOfVariables.values()):
+				for variable in t_submodel_instance.listOfVariables:
 					if variable not in self.deletions:
 						self.submodel_sids_subs[submodel.getSbmlId()].update({
 							variable.getSbmlId(): (self.PREFIX_PATTERN % submodel.getSbmlId()) + variable.getSbmlId()
@@ -96,7 +96,7 @@ class ModelInstance(Model):
 							)
 						self.submodel_symbols_subs[submodel.getSbmlId()].update({old_symbol: new_symbol})
 
-				for function_definition in list(t_submodel_instance.listOfFunctionDefinitions.values()):
+				for function_definition in t_submodel_instance.listOfFunctionDefinitions:
 					if function_definition not in self.deletions:
 						self.submodel_sids_subs[submodel.getSbmlId()].update({
 							function_definition.getSbmlId(): (self.PREFIX_PATTERN % submodel.getSbmlId()) + function_definition.getSbmlId()
@@ -109,7 +109,7 @@ class ModelInstance(Model):
 						)
 						self.submodel_symbols_subs[submodel.getSbmlId()].update({old_symbol: new_symbol})
 
-				for unit_definition in list(t_submodel_instance.listOfUnitDefinitions.values()):
+				for unit_definition in t_submodel_instance.listOfUnitDefinitions:
 					if unit_definition not in self.deletions:
 						self.submodel_usids_subs[submodel.getSbmlId()].update({
 							unit_definition.getSbmlId(): (self.PREFIX_PATTERN % submodel.getSbmlId()) + unit_definition.getSbmlId()
@@ -156,11 +156,11 @@ class ModelInstance(Model):
 
 	def findReplacements(self):
 
-		for sbmlobject in list(self.__mainModel.listOfSbmlObjects.values()):
+		for sbmlobject in self.__mainModel.listOfSbmlObjects:
 
 			if isinstance(sbmlobject, SbmlObject) and sbmlobject.hasReplacedElements():
 
-				for replaced_element in list(sbmlobject.getListOfReplacedElements().values()):
+				for replaced_element in sbmlobject.getListOfReplacedElements():
 
 					replaced_object = replaced_element.getReplacedElementObjectFromInstance(self)
 					self.deletions.append(replaced_object)
@@ -262,7 +262,7 @@ class ModelInstance(Model):
 			self.__mainModel.listOfUnitDefinitions,
 			deletions=self.deletions,
 		)
-		for submodel in list(self.__mainModel.listOfSubmodels.values()):
+		for submodel in self.__mainModel.listOfSubmodels:
 			self.listOfUnitDefinitions.copy(
 				self.__submodelInstances[submodel.getSbmlId()].listOfUnitDefinitions,
 				deletions=self.deletions,
@@ -273,7 +273,7 @@ class ModelInstance(Model):
 			self.__mainModel.listOfFunctionDefinitions,
 			deletions=self.deletions,
 		)
-		for submodel in list(self.__mainModel.listOfSubmodels.values()):
+		for submodel in self.__mainModel.listOfSubmodels:
 			self.listOfFunctionDefinitions.copy(
 				self.__submodelInstances[submodel.getSbmlId()].listOfFunctionDefinitions,
 				deletions=self.deletions,
@@ -285,7 +285,7 @@ class ModelInstance(Model):
 			self.__mainModel.listOfCompartments,
 			deletions=self.deletions,
 		)
-		for submodel in list(self.__mainModel.listOfSubmodels.values()):
+		for submodel in self.__mainModel.listOfSubmodels:
 			self.listOfCompartments.copy(
 				self.__submodelInstances[submodel.getSbmlId()].listOfCompartments,
 				deletions=self.deletions,
@@ -298,7 +298,7 @@ class ModelInstance(Model):
 			self.__mainModel.listOfParameters,
 			deletions=self.deletions,
 		)
-		for submodel in list(self.__mainModel.listOfSubmodels.values()):
+		for submodel in self.__mainModel.listOfSubmodels:
 			self.listOfParameters.copy(
 				self.__submodelInstances[submodel.getSbmlId()].listOfParameters,
 				deletions=self.deletions,
@@ -311,7 +311,7 @@ class ModelInstance(Model):
 			self.__mainModel.listOfSpecies,
 			deletions=self.deletions,
 		)
-		for submodel in list(self.__mainModel.listOfSubmodels.values()):
+		for submodel in self.__mainModel.listOfSubmodels:
 			self.listOfSpecies.copy(
 				self.__submodelInstances[submodel.getSbmlId()].listOfSpecies,
 				deletions=self.deletions,
@@ -324,7 +324,7 @@ class ModelInstance(Model):
 			self.__mainModel.listOfReactions,
 			deletions=self.deletions,
 		)
-		for submodel in list(self.__mainModel.listOfSubmodels.values()):
+		for submodel in self.__mainModel.listOfSubmodels:
 			self.listOfReactions.copy(
 				self.__submodelInstances[submodel.getSbmlId()].listOfReactions,
 				deletions=self.deletions,
@@ -340,7 +340,7 @@ class ModelInstance(Model):
 			self.__mainModel.listOfInitialAssignments,
 			deletions=self.deletions,
 		)
-		for submodel in list(self.__mainModel.listOfSubmodels.values()):
+		for submodel in self.__mainModel.listOfSubmodels:
 			self.listOfInitialAssignments.copy(
 				self.__submodelInstances[submodel.getSbmlId()].listOfInitialAssignments,
 				deletions=self.deletions,
@@ -353,7 +353,7 @@ class ModelInstance(Model):
 			self.__mainModel.listOfRules,
 			deletions=self.deletions,
 		)
-		for submodel in list(self.__mainModel.listOfSubmodels.values()):
+		for submodel in self.__mainModel.listOfSubmodels:
 			self.listOfRules.copy(
 				self.__submodelInstances[submodel.getSbmlId()].listOfRules,
 				deletions=self.deletions,
@@ -368,7 +368,7 @@ class ModelInstance(Model):
 			deletions=self.deletions,
 		)
 
-		for submodel in list(self.__mainModel.listOfSubmodels.values()):
+		for submodel in self.__mainModel.listOfSubmodels:
 			self.listOfEvents.copy(
 				self.__submodelInstances[submodel.getSbmlId()].listOfEvents,
 				deletions=self.deletions,
@@ -378,13 +378,13 @@ class ModelInstance(Model):
 				time_conversion=self.submodel_timeConversionFactor[submodel.getSbmlId()],
 			)
 
-		for variable in list(self.__mainModel.listOfVariables.values()):
+		for variable in self.__mainModel.listOfVariables:
 			if self.listOfVariables.containsSbmlId(variable.getSbmlId()):
 				self.variablesDictionnary.update({
 					variable: self.listOfVariables.getBySbmlId(variable.getSbmlId())
 				})
 
-		for submodel in list(self.__mainModel.listOfSubmodels.values()):
+		for submodel in self.__mainModel.listOfSubmodels:
 			submodel_instance = self.__submodelInstances[submodel.getSbmlId()]
 
 			for variable_def, variable_instance in list(submodel_instance.variablesDictionnary.items()):

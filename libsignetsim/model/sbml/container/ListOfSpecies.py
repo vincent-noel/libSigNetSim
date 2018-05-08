@@ -63,10 +63,10 @@ class ListOfSpecies(ListOf, HasIds, SbmlObject, HasParentObj):
 					sbml_level=Settings.defaultSbmlLevel,
 					sbml_version=Settings.defaultSbmlVersion):
 
-		for species in ListOf.values(self):
+		for species in self:
 			species.writeSbml(sbml_model, sbml_level, sbml_version)
 
-		if len(ListOf.values(self)):
+		if len(self) > 0:
 			SbmlObject.writeSbml(self, sbml_model.getListOfSpecies(), sbml_level, sbml_version)
 
 
@@ -84,7 +84,7 @@ class ListOfSpecies(ListOf, HasIds, SbmlObject, HasParentObj):
 		if obj not in deletions:
 
 			SbmlObject.copy(self, obj)
-			for species in list(obj.values()):
+			for species in obj:
 
 				if species not in deletions:
 
@@ -101,7 +101,7 @@ class ListOfSpecies(ListOf, HasIds, SbmlObject, HasParentObj):
 	def nbFormulaInitialization(self):
 
 		count = 0
-		for species in ListOf.values(self):
+		for species in self:
 			if ((species.isConcentration() or species.isDeclaredConcentration)
 				and not self.__model.listOfInitialAssignments.hasInitialAssignment(species)):
 				count += 1
@@ -109,7 +109,7 @@ class ListOfSpecies(ListOf, HasIds, SbmlObject, HasParentObj):
 
 	def hasBoundaryConditions(self):
 
-		for species in ListOf.values(self):
+		for species in self:
 			if species.boundaryCondition:
 				return True
 
@@ -135,7 +135,7 @@ class ListOfSpecies(ListOf, HasIds, SbmlObject, HasParentObj):
 		self.remove(self.getById(species_obj_id))
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
-		for obj in ListOf.values(self):
+		for obj in self:
 			Species.renameSbmlId(obj, old_sbml_id, new_sbml_id)
 
 
