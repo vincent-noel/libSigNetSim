@@ -340,6 +340,10 @@ class SbmlDocument(HasParentObj):
 				else:
 					document.writeSbmlToFile(path=path)
 
+	def renameSbmlIdInSubstitutions(self, old_sbml_id, new_sbml_id, submodel_ref=None):
+		for substitution in self.model.listOfSbmlObjects.getListOfSubstitutions():
+			substitution.renameSbmlId(old_sbml_id, new_sbml_id, submodel_ref)
+
 	def resolveXPath(self, selector, instance=False):
 
 		if instance:

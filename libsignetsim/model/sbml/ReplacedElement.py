@@ -214,5 +214,9 @@ class ReplacedElement(HasRef):
 					elif t_deletion.hasMetaIdRef():
 						return tt_model.listOfSbmlObjects.getByMetaId(t_deletion.getMetaIdRef())
 
+	def renameSbmlId(self, old_sbml_id, new_sbml_id, submodel_ref=None):
+		if self.hasIdRef() and self.getIdRef() == old_sbml_id:
+			self.setIdRef(new_sbml_id)
+
 	def getParentObject(self):
 		return self.__parentObject
