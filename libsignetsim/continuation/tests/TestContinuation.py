@@ -69,22 +69,24 @@ class TestContinuation(TestCase):
 		curve_points = t_ep_curve.getPoints()
 
 		self.assertEqual(len(x), 199)
-		self.assertEqual(len(list(ys.keys())), 3)
+		self.assertEqual(len(list(ys.keys())), 5)
 		self.assertEqual(len(ys['sos']), 199)
-		self.assertEqual(len(curve_points), 3)
+		self.assertEqual(len(curve_points), 5)
 
 		for i, x_i in enumerate(x):
 			self.assertAlmostEqual(x_i, RESULT_X[i], delta=1e-6 * x_i)
 
 		for var, y in list(ys.items()):
-			for i, y_i in enumerate(y):
-				self.assertAlmostEqual(y_i, RESULT_CURVE[var][i], delta=1e-6*y_i)
+			if var in RESULT_CURVE.keys():
+				for i, y_i in enumerate(y):
+					self.assertAlmostEqual(y_i, RESULT_CURVE[var][i], delta=1e-6*y_i)
 
 		for var, points in list(curve_points.items()):
-			for i, (point_type, x, y) in enumerate(points):
-				self.assertEqual(point_type, RESULT_POINTS[var][i][0])
-				self.assertAlmostEqual(x, RESULT_POINTS[var][i][1], delta=1e-6*x)
-				self.assertAlmostEqual(y, RESULT_POINTS[var][i][2], delta=1e-6*y)
+			if var in RESULT_POINTS.keys():
+				for i, (point_type, x, y) in enumerate(points):
+					self.assertEqual(point_type, RESULT_POINTS[var][i][0])
+					self.assertAlmostEqual(x, RESULT_POINTS[var][i][1], delta=1e-6*x)
+					self.assertAlmostEqual(y, RESULT_POINTS[var][i][2], delta=1e-6*y)
 
 
 	def testLimitCycle(self):
