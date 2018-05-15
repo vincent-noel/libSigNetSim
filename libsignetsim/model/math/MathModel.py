@@ -93,6 +93,10 @@ class MathModel(CModelWriter):
 
 	def buildModel(self, vars_to_keep=[], reduce=Settings.reduceByDefault, tmin=0):
 
+		if not reduce:
+			self.slowModel.setUpToDate(False)
+			self.asymetricModel.setUpToDate(False)
+
 		self.listOfCFEs.build()
 		self.listOfODEs.build()
 		self.listOfDAEs.build()
