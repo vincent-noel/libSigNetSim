@@ -25,13 +25,13 @@
 """
 
 
-
-
 from PyDSTool import args, ContClass, PyDSTool_ExistError
-
-import threading
-from time import time
 from .PyDSToolModel import PyDSToolModel
+from libsignetsim.model.math.sympy_shortcuts import SympySymbol
+from os.path import isfile, join
+from os import remove, getcwd
+from threading import Thread
+
 
 class EquilibriumPointCurve(object):
 
@@ -43,7 +43,7 @@ class EquilibriumPointCurve(object):
 	MAIN_CURVE = 'EQ1'
 	LIMIT_CYCLE_CURVE = 'LC1'
 
-	def __init__ (self, model):
+	def __init__(self, model):
 
 		self.model = model
 		self.system = PyDSToolModel(model)
@@ -56,6 +56,10 @@ class EquilibriumPointCurve(object):
 		self.maxSteps = 1000
 		self.verbosity = 0
 		self.status = self.NOT_STARTED
+
+		self.x = []
+		self.ys = {}
+		self.points = {}
 
 	def setParameter(self, parameter):
 		self.parameter = parameter
@@ -73,11 +77,11 @@ class EquilibriumPointCurve(object):
 	def setVerbosity(self, verbosity):
 		self.verbosity = verbosity
 
-	def build(self):
+	def build(self, vars_to_keep=[]):
 
 		self.system.build(
 			self.parameter,
-			self.fromValue, vars_to_keep=[self.parameter.getSymbolStr()]
+			self.fromValue, vars_to_keep=[self.parameter.getSymbolStr()] + vars_to_keep
 		)
 
 		self.buildCont()
@@ -108,7 +112,6 @@ class EquilibriumPointCurve(object):
 
 		self.status = self.STARTED
 		try:
-			t0 = time()
 			if self.ds > 0:
 				self.continuation[self.MAIN_CURVE].forward()
 			else:
@@ -118,6 +121,11 @@ class EquilibriumPointCurve(object):
 				self.findLimitCycleCurves()
 
 			self.status = self.SUCCESS
+
+			self.buildCurves()
+			self.buildPoints()
+			self.calculateForExactVariables()
+			self.cleanupFiles()
 
 			if callback_function_success is not None:
 				callback_function_success(self)
@@ -132,34 +140,87 @@ class EquilibriumPointCurve(object):
 			if callback_function_error is not None:
 				callback_function_error()
 
+	def cleanupFiles(self):
+
+		if isfile(join(getcwd(), "_auto_model_0_vf.so")):
+			remove(join(getcwd(), "_auto_model_0_vf.so"))
+
+	def calculateForExactVariables(self):
+
+		for var in self.model.getMathModel().variablesAssignment:
+			if not self.model.listOfVariables.getBySymbolStr(var.getSymbolStr()).isReaction():
+
+				cfe = self.model.getMathModel().listOfCFEs.getByVariable(var)
+				math_formula = cfe.getDefinition().getDeveloppedInternalMathFormula()
+				vars_formula = list(math_formula.atoms(SympySymbol))
+
+				subs_constant = {}
+
+				for constant in self.model.getMathModel().variablesConstant:
+					if constant.symbol.getSymbol() in vars_formula and constant.symbol.getSymbol() != self.parameter.symbol.getSymbol():
+						init_cond = self.model.getMathModel().listOfInitialConditions[constant.symbol.getSymbol()]
+						subs_constant.update({constant.symbol.getSymbol(): init_cond.getInternalMathFormula()})
+
+				math_formula_2 = math_formula.subs(subs_constant)
+				vars_formula_2 = math_formula_2.atoms(SympySymbol).difference({self.parameter.symbol.getSymbol()})
+
+				res = []
+				for i, x_i in enumerate(self.x):
+					subs_variables = {}
+					for var_formula in vars_formula_2:
+						variable = self.model.getMathModel().listOfVariables.getBySymbol(var_formula).getSymbolStr()
+						subs_variables.update({var_formula: self.ys[variable][i]})
+
+					subs_variables.update({self.parameter.symbol.getSymbol(): x_i})
+
+					res.append(math_formula_2.subs(subs_variables))
+				self.ys.update({var.getSymbolStr(): res})
+
+				res = []
+				for i, (type, x, y) in enumerate(self.points[list(self.points.keys())[0]]):
+
+					subs_variables = {}
+					for var_formula in vars_formula_2:
+						variable = self.model.getMathModel().listOfVariables.getBySymbol(var_formula).getSymbolStr()
+						subs_variables.update({var_formula: self.points[variable][i][2]})
+
+					subs_variables.update({self.parameter.symbol.getSymbol(): x})
+					res.append((type, x, math_formula_2.subs(subs_variables)))
+
+				self.points.update({var.getSymbolStr(): res})
+
 	def executeContThread(self, callback_function_success, callback_function_error):
 
-		t = threading.Thread(group=None, target=self.executeCont, args=(callback_function_success, callback_function_error))
+		t = Thread(group=None, target=self.executeCont, args=(callback_function_success, callback_function_error))
 		t.setDaemon(True)
 		t.start()
 
 	def getCurve(self, variable):
 
 		if self.status == self.SUCCESS:
+
 			x, ys = self.getCurves()
 			return x, ys[variable.getSymbolStr()]
 
-	def getCurves(self):
+	def buildCurves(self):
 
 		if self.status == self.SUCCESS:
 
 			len_curve = len(self.continuation[self.MAIN_CURVE].curve[:, 1]) - 1
 			nb_variables = len(self.continuation[self.MAIN_CURVE].varslist)
-			x = self.continuation[self.MAIN_CURVE].curve[0:len_curve, nb_variables]
-			x = [x_i for x_i in x if self.fromValue <= x_i <= self.toValue]
-			ys = {}
+			self.x = self.continuation[self.MAIN_CURVE].curve[0:len_curve, nb_variables]
+			self.x = [x_i for x_i in self.x if self.fromValue <= x_i <= self.toValue]
+			self.ys = {}
 			for i, var in enumerate(self.continuation[self.MAIN_CURVE].varslist):
-
 				y = self.continuation[self.MAIN_CURVE].curve[0:len_curve, i]
-				y = [y_i for x_i, y_i in zip(x, y) if self.fromValue <= x_i <= self.toValue]
-				ys.update({var: y})
+				y = [y_i for x_i, y_i in zip(self.x, y) if self.fromValue <= x_i <= self.toValue]
+				self.ys.update({var: y})
 
-			return x, ys
+	def getCurves(self):
+
+		if self.status == self.SUCCESS:
+
+			return self.x, self.ys
 
 	def getStability(self, x):
 
@@ -234,22 +295,24 @@ class EquilibriumPointCurve(object):
 
 		return x, curves
 
+	def buildPoints(self):
+
+		self.points = {}
+		for var in self.continuation[self.MAIN_CURVE].varslist:
+			self.points.update({var: []})
+
+		for points_type, points in list(self.continuation[self.MAIN_CURVE].BifPoints.items()):
+			for point in points.found:
+				if self.fromValue <= point.X[self.parameter.getSymbolStr()] <= self.toValue:
+					points_x = point.X[self.parameter.getSymbolStr()]
+					for var in self.continuation[self.MAIN_CURVE].varslist:
+						self.points[var].append((points_type, points_x, point.X[var]))
+
 	def getPoints(self):
 
 		if self.status == self.SUCCESS:
 
-			t_points = {}
-			for var in self.continuation[self.MAIN_CURVE].varslist:
-				t_points.update({var: []})
-
-			for points_type, points in list(self.continuation[self.MAIN_CURVE].BifPoints.items()):
-				for point in points.found:
-					if self.fromValue <= point.X[self.parameter.getSymbolStr()] <= self.toValue:
-						points_x = point.X[self.parameter.getSymbolStr()]
-						for var in self.continuation[self.MAIN_CURVE].varslist:
-							t_points[var].append((points_type, points_x, point.X[var]))
-
-			return t_points
+			return self.points
 
 	def hasHopfBifurcations(self):
 		return len(self.continuation[self.MAIN_CURVE].BifPoints['H'].found) > 0
