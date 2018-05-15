@@ -223,10 +223,10 @@ class Simulation(CWriterSimulation):
 
 		with open("%sout_sim" % self.getTempDirectory(), "w") as stdout, open("%serr_sim" % self.getTempDirectory(), "w") as stderr:
 
-			res_sim = call(cmd_sim,
-						  stdout=stdout, #open("%sout_sim" % self.getTempDirectory(),"w"),
-						  stderr=stderr, #open("%serr_sim" % self.getTempDirectory(),"w"),
-						  shell=True,preexec_fn=setpgrp,close_fds=True)
+			res_sim = call(
+				cmd_sim, stdout=stdout, stderr=stderr,
+				shell=True, preexec_fn=setpgrp, close_fds=True
+			)
 
 		if res_sim != 0 or getsize(join(self.getTempDirectory(), "err_sim")) > 0:
 

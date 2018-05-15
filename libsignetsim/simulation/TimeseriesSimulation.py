@@ -32,6 +32,7 @@ from libsignetsim.settings.Settings import Settings
 from matplotlib.pyplot import show
 from numpy import amin, amax, linspace, logspace
 from os.path import join, isfile
+from threading import Thread
 
 
 class TimeseriesSimulation(Simulation):
@@ -83,6 +84,20 @@ class TimeseriesSimulation(Simulation):
 
 		if not self.keepFiles:
 			self.cleanTempDirectory()
+
+	def run_inside_thread(self, success, failure):
+		try:
+			self.run()
+			success()
+		except Exception as e:
+			failure(e)
+
+
+	def run_async(self, success, failure):
+
+		t = Thread(group=None, target=self.run_inside_thread, args=(success, failure))
+		t.setDaemon(True)
+		t.start()
 
 	def loadSimulationResults(self):
 		self.rawData = []
@@ -158,34 +173,41 @@ class TimeseriesSimulation(Simulation):
 
 		return (t, trajs)
 
-	def plot(self):
+	def plot(self, figure=None, variables=[], suffix=""):
 
-		if self.listOfModels[0].timeUnits is not None and self.listOfModels[0].extentUnits is not None:
-			figure = SigNetSimFigure(
-					x_unit=self.listOfModels[0].timeUnits.getNameOrSbmlId(),
-					y_unit=self.listOfModels[0].extentUnits.getNameOrSbmlId())
-		else:
-			figure = SigNetSimFigure()
+
+		if figure is None:
+			if self.listOfModels[0].timeUnits is not None and self.listOfModels[0].extentUnits is not None:
+				figure = SigNetSimFigure(
+						x_unit=self.listOfModels[0].timeUnits.getNameOrSbmlId(),
+						y_unit=self.listOfModels[0].extentUnits.getNameOrSbmlId())
+			else:
+				figure = SigNetSimFigure()
 		ax = figure.add_subplot(1, 1, 1)
 		t, trajs = self.getRawData()[0]
 
-		t_trajs = []
+		t_trajs = {}
 		x_min = amin(t)
 		x_max = amax(t)
 		y_min = 0
 		y_max = 0
 		for t_id in list(trajs.keys()):
-			y_min = min(y_min, amin(trajs[str(t_id)]))
-			y_max = max(y_max, amax(trajs[str(t_id)]))
-			t_trajs.append(trajs[str(t_id)])
 
-		for i_species, name in enumerate(trajs.keys()):
+			if len(variables) == 0 or self.listOfModels[0].listOfVariables.getBySymbolStr(t_id).getSbmlId() in variables:
 
-			t_var = self.listOfModels[0].listOfVariables.getBySymbol(SympySymbol(name))
-			if not t_var.isConstant():
-				figure.plot(ax, i_species, t, t_trajs[i_species], y_name=t_var.getNameOrSbmlId())
-				ax.legend(loc='upper right')
+				y_min = min(y_min, amin(trajs[str(t_id)]))
+				y_max = max(y_max, amax(trajs[str(t_id)]))
+				t_trajs.update({t_id: trajs[str(t_id)]})
+
+		for i_species, name in enumerate(t_trajs.keys()):
+
+				t_var = self.listOfModels[0].listOfVariables.getBySymbol(SympySymbol(name))
+				if not t_var.isConstant():
+					figure.plot(ax, i_species, t, t_trajs[name], y_name=t_var.getNameOrSbmlId()+suffix)
+					ax.legend(loc='upper right')
 
 		ax.set_xlim([x_min, x_max])
 		ax.set_ylim([y_min, y_max*1.1])
 		show()
+
+		return ax
