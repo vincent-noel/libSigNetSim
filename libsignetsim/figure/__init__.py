@@ -24,3 +24,4 @@
 
 """
 
+from .SigNetSimFigure import SigNetSimFigure

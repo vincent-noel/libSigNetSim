@@ -23,7 +23,7 @@
 	Initialization of the module SigNetSim
 
 """
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import, unicode_literals, print_function
 
 import matplotlib
 matplotlib.use("agg", warn=False)
@@ -57,5 +57,7 @@ from .model import (
 	CannotCreateException, CannotDeleteException,
 
 )
+
+from .figure import SigNetSimFigure
 
 from .LibSigNetSimException import LibSigNetSimException

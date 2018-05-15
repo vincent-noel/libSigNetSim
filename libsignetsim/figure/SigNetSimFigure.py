@@ -40,6 +40,8 @@ class SigNetSimFigure(object):
 
         self.__figure = plt.figure(figsize=(10, 6))
 
+        self.curveIds = {}
+        self.plots = []
         if dpi is None:
             self.__dpi = self.default_dpi
         else:
@@ -54,12 +56,13 @@ class SigNetSimFigure(object):
 
     def add_subplot(self, nb_cols=1, nb_rows=None, id_cell=None, x_label=None, y_label=None):
 
-        t_subplot = None
         if nb_rows == None and id_cell == None:
             t_subplot = self.__figure.add_subplot(nb_cols,1,1)
         else:
             t_subplot = self.__figure.add_subplot(nb_cols, nb_rows, id_cell)
 
+
+        self.curveIds.update({t_subplot: 0})
         # t_subplot.spines["top"].set_visible(False)
         # t_subplot.spines["right"].set_visible(False)
         # t_subplot.spines["bottom"].set_linewidth(0.3 * self.w)
@@ -86,21 +89,27 @@ class SigNetSimFigure(object):
 
         if y_label is not None:
             t_subplot.set_ylabel(y_label, fontsize=int(15 * self.w))
+
+        self.plots.append(t_subplot)
         return t_subplot
 
 
 
-    def plot(self, subplot, curve_id, x, y, x_name="", y_name=None):
+    def plot(self, subplot, curve_id, x, y, x_name="", y_name=None, marker="-"):
+
+        curve_id = self.curveIds[subplot]
 
         if y_name is None:
-            subplot.plot(x, y, '-',
+            subplot.plot(x, y, marker,
                 color=Settings.color_scheme[curve_id % len(Settings.color_scheme)],
                 # linewidth=int(5 * self.w),
                 # label=y_name
             )
         else:
-            subplot.plot(x, y, '-',
+            subplot.plot(x, y, marker,
                  color=Settings.color_scheme[curve_id % len(Settings.color_scheme)],
                  # linewidth=int(5 * self.w),
                  label=y_name
             )
+
+        self.curveIds.update({subplot: curve_id+1})
