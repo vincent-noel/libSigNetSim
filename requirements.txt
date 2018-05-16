@@ -3,7 +3,7 @@ python-libsbml
 python-libsedml
 python-libnuml
 numpy
-scipy<1.0.0
+scipy
 git+https://github.com/vincent-noel/pydstool.git@py3k-TestFunc
 sympy
 bioservices
