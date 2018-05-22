@@ -36,7 +36,12 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 
 #include <ida/ida.h>
-#include <ida/ida_dense.h>
+#ifdef SUNDIALS3
+    #include <sunmatrix/sunmatrix_dense.h> /* access to dense SUNMatrix       */
+    #include <sunlinsol/sunlinsol_dense.h> /* access to dense SUNLinearSolver */
+#else
+    #include <ida/ida_dense.h>
+#endif
 #include <stdlib.h>
 #include <float.h>                   /* for DBL_MAX */
 #include <limits.h>                  /* for INT_MAX */
@@ -109,11 +114,27 @@ void * InitializeIDA(ModelDefinition * model, IntegrationData * user_data, Exper
     if (check_flag(&flag, "IDASetMaxNumSteps", 1, errLog))
         return NULL;
 
+#ifdef SUNDIALS3
+    /* Create dense SUNMatrix for use in linear solves */
+    A = SUNDenseMatrix(
+        MAX((model->nb_derivative_variables + model->nb_algebraic_variables), 1),
+        MAX((model->nb_derivative_variables + model->nb_algebraic_variables), 1)
+    );
+    if(check_flag((void *)A, "SUNDenseMatrix", 0)) return(1);
+
+    /* Create dense SUNLinearSolver object for use by CVode */
+    LS = SUNDenseLinearSolver(model->derivative_variables, A);
+    if(check_flag((void *)LS, "SUNDenseLinearSolver", 0)) return(1);
+
+    /* Call CVDlsSetLinearSolver to attach the matrix and linear solver to CVode */
+    flag = IDADlsSetLinearSolver(cvode_mem, LS, A);
+    if(check_flag(&flag, "CVDlsSetLinearSolver", 1)) return(1);
+#else
     /* Call Dense to specify the dense linear solver */
     flag = IDADense(ida_mem, MAX((model->nb_derivative_variables + model->nb_algebraic_variables), 1));
     if (check_flag(&flag, "IDADense", 1, errLog))
         return NULL;
-
+#endif
     // /* Set the Jacobian routine to Jac (user-supplied) */
     // if (model->integration_functions->hasJacobian == 1)
     // {
