@@ -36,9 +36,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <cvode/cvode.h>             /* prototypes for CVODE fcts., consts. */
-#include <cvode/cvode_dense.h>       /* prototype for CVDense */
-
 #include "model.h"
 // #include "../C_generated/initial_values.h"
 #include "data.h"
