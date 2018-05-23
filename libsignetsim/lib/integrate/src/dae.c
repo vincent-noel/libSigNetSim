@@ -133,7 +133,7 @@ void * InitializeIDA(ModelDefinition * model, IntegrationData * user_data, Exper
     if(check_flag((void *)LS, "SUNDenseLinearSolver", 0, errLog)) return NULL;
 
     /* Call CVDlsSetLinearSolver to attach the matrix and linear solver to CVode */
-    flag = IDADlsSetLinearSolver(cvode_mem, LS, A);
+    flag = IDADlsSetLinearSolver(ida_mem, LS, A);
     if(check_flag(&flag, "CVDlsSetLinearSolver", 1, errLog)) return NULL;
 #else
     /* Call Dense to specify the dense linear solver */
