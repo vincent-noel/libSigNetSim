@@ -22,3 +22,14 @@ pip2 install distribute setuptools --upgrade --ignore-installed
 # Version incompatibility issue... Hopefully temporary
 pip2 install pyopenssl
 
+# Checking if mpicc is in /usr/bin
+if [ ! -f /usr/bin/mpicc ] ; then
+    mpicc_path=$(echo $(find /usr -name mpicc) | cut -d' ' -f1)
+    ln -s ${mpicc_path} /usr/bin
+fi
+
+# Checking if mpirun is in /usr/bin
+if [ ! -f /usr/bin/mpirun ] ; then
+    mpirun_path=$(echo $(find /usr -name mpirun) | cut -d' ' -f1)
+    ln -s ${mpirun_path} /usr/bin
+fi
