@@ -15,7 +15,7 @@
 
 log_dir = logs
 
-MPICC=$(echo $(find /usr -name mpicc) | cut -d' ' -f1)
+MPICC = mpicc
 SRCDIR = src
 LIBDIR = lib
 
