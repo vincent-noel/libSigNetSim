@@ -44,9 +44,9 @@ setup(name='libsignetsim',
 				"/usr/include/nvector"
 				"/usr/include/sundials",
 			],
-			define_macros=[
-				("SUNDIALS3", None) if "SUNDIALS_VERSION_MAJOR 3" in open("/usr/include/sundials/sundials_config.h").read() else ()
-			],
+			define_macros=(
+				[("SUNDIALS3", None)] if "SUNDIALS_VERSION_MAJOR 3" in open("/usr/include/sundials/sundials_config.h").read() else None
+			),
 		),
 		Extension(
 			'libsignetsim.lib.plsa.libplsa-serial',
