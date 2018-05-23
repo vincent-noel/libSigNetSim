@@ -39,7 +39,7 @@ events.o: $(SRCDIR)/events.c $(SRCDIR)/events.h
 	$(CC) $(FLAGS) -c $(SRCDIR)/events.c
 
 ode.o: $(SRCDIR)/ode.c $(SRCDIR)/ode.h
-ifeq ($SUNDIALS_MAIN_VERSION, 2)
+ifeq ($(SUNDIALS_MAIN_VERSION), 2)
 	$(CC) $(FLAGS) -c $(SRCDIR)/ode.c
 else
 	$(CC) $(FLAGS) -c $(SRCDIR)/ode.c -DSUNDIALS3
