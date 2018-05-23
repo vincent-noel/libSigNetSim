@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
-from setuptools import setup, find_packages, Extension
+from setuptools import find_packages
+from distutils.core import setup, Extension
 from os.path import dirname, join
 
 setup(name='libsignetsim',
 	version=open(join(dirname(__file__), 'VERSION')).read(),
-	description='An e-Science framework for mathematical modeling and computational simulation of molecular signaling networks',
+	description='A library designed for building, adjusting and analyzing quantitative biological models. ',
 	author='Vincent Noel',
-	author_email='vincent-noel@butantan.gov.br',
+	author_email='contact@vincent-noel.fr',
 	url='',
 	packages=find_packages(),
 	include_package_data=True,
@@ -36,7 +37,16 @@ setup(name='libsignetsim',
 				'libsignetsim/lib/integrate/src/dae.c',
 				'libsignetsim/lib/integrate/src/integrate.c',
 				'libsignetsim/lib/integrate/src/realtype_math.c',
-			]
+			],
+			include_dirs=[
+				"/usr/include/cvode/",
+				"/usr/include/ida/",
+				"/usr/include/nvector"
+				"/usr/include/sundials",
+			],
+			define_macros=[
+				("SUNDIALS3", None) if "SUNDIALS_VERSION_MAJOR 3" in open("/usr/include/sundials/sundials_config.h").read() else ()
+			],
 		),
 		Extension(
 			'libsignetsim.lib.plsa.libplsa-serial',

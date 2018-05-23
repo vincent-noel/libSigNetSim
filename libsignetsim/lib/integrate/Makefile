@@ -26,7 +26,7 @@ SUNDIALS_MAIN_VERSION := $(shell cat $(SUNDIALS_INCLUDE)/sundials/sundials_confi
 
 integrate.so: $(IOBJ)
 	$(CC) -shared -o integrate.so $(IOBJ)
-	rm -f *.o
+	$(RM) *.o
 
 #Integrate
 realtype_math.o: $(SRCDIR)/realtype_math.c $(SRCDIR)/realtype_math.h
@@ -39,21 +39,22 @@ events.o: $(SRCDIR)/events.c $(SRCDIR)/events.h
 	$(CC) $(FLAGS) -c $(SRCDIR)/events.c
 
 ode.o: $(SRCDIR)/ode.c $(SRCDIR)/ode.h
-ifeq ($SUNDIALS_MAIN_VERSION, 3)
-	$(CC) $(FLAGS) -c $(SRCDIR)/ode.c -DSUNDIALS3
-else
+ifeq ($SUNDIALS_MAIN_VERSION, 2)
 	$(CC) $(FLAGS) -c $(SRCDIR)/ode.c
+else
+	$(CC) $(FLAGS) -c $(SRCDIR)/ode.c -DSUNDIALS3
 endif
 
 dae.o: $(SRCDIR)/dae.c $(SRCDIR)/dae.h
-ifeq ($(SUNDIALS_MAIN_VERSION), 3)
-	$(CC) $(FLAGS) -c $(SRCDIR)/dae.c -DSUNDIALS3
-else
+ifeq ($(SUNDIALS_MAIN_VERSION), 2)
 	$(CC) $(FLAGS) -c $(SRCDIR)/dae.c
+else
+	$(CC) $(FLAGS) -c $(SRCDIR)/dae.c -DSUNDIALS3
+
 endif
 
 integrate.o: $(SRCDIR)/integrate.c $(SRCDIR)/integrate.h
 	$(CC) $(FLAGS) -c $(SRCDIR)/integrate.c
 
 clean:
-	rm -f *.o *.so
+	$(RM) *.o *.so

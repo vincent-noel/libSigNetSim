@@ -40,6 +40,7 @@
 #define LOGGING_ACTIVE        1
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
 
 #include "integrate.h"

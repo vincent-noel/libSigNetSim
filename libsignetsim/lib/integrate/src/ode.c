@@ -40,6 +40,7 @@
 #ifdef SUNDIALS3
     #include <sunmatrix/sunmatrix_dense.h> /* access to dense SUNMatrix       */
     #include <sunlinsol/sunlinsol_dense.h> /* access to dense SUNLinearSolver */
+    #include <cvode/cvode_direct.h> /* access to CVDls interface            */
 #else
     #include <cvode/cvode_dense.h>       /* prototype for CVDense */
 #endif
@@ -73,6 +74,11 @@ int roots_wrapper_cvode(realtype t, N_Vector y, realtype * gout, void * user_dat
 void * InitializeCVODE(ModelDefinition * model, IntegrationData * user_data, ExperimentalCondition * condition, FILE * errLog)
 {
 	int flag;
+
+#ifdef SUNDIALS3
+    SUNMatrix A;
+    SUNLinearSolver LS;
+#endif
 
 	/* Call CVodeCreate to create the solver memory and specify the
 	 * Backward Differentiation Formula and the use of a Newton iteration */
@@ -121,15 +127,15 @@ void * InitializeCVODE(ModelDefinition * model, IntegrationData * user_data, Exp
 #ifdef SUNDIALS3
     /* Create dense SUNMatrix for use in linear solves */
     A = SUNDenseMatrix(MAX(model->nb_derivative_variables, 1), MAX(model->nb_derivative_variables, 1));
-    if(check_flag((void *)A, "SUNDenseMatrix", 0)) return(1);
+    if(check_flag((void *)A, "SUNDenseMatrix", 0, errLog)) return NULL;
 
     /* Create dense SUNLinearSolver object for use by CVode */
-    LS = SUNDenseLinearSolver(model->derivative_variables, A);
-    if(check_flag((void *)LS, "SUNDenseLinearSolver", 0)) return(1);
+    LS = SUNDenseLinearSolver(user_data->derivative_variables, A);
+    if(check_flag((void *)LS, "SUNDenseLinearSolver", 0, errLog)) return NULL;
 
     /* Call CVDlsSetLinearSolver to attach the matrix and linear solver to CVode */
     flag = CVDlsSetLinearSolver(cvode_mem, LS, A);
-    if(check_flag(&flag, "CVDlsSetLinearSolver", 1)) return(1);
+    if(check_flag(&flag, "CVDlsSetLinearSolver", 1, errLog)) return NULL;
 #else
 
 	/* Call Dense to specify the dense linear solver */

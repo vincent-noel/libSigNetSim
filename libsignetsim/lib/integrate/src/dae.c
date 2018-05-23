@@ -39,6 +39,7 @@
 #ifdef SUNDIALS3
     #include <sunmatrix/sunmatrix_dense.h> /* access to dense SUNMatrix       */
     #include <sunlinsol/sunlinsol_dense.h> /* access to dense SUNLinearSolver */
+    #include <ida/ida_direct.h> /* access to IDADls interface           */
 #else
     #include <ida/ida_dense.h>
 #endif
@@ -72,6 +73,11 @@ int roots_wrapper_ida(realtype t, N_Vector y, N_Vector ydot, realtype * gout, vo
 void * InitializeIDA(ModelDefinition * model, IntegrationData * user_data, ExperimentalCondition * condition, FILE * errLog)
 {
     int flag;
+
+#ifdef SUNDIALS3
+    SUNMatrix A;
+    SUNLinearSolver LS;
+#endif
 
     /* Call IDACreate and IDAInit to initialize IDA memory */
     void * ida_mem = IDACreate();
@@ -120,15 +126,15 @@ void * InitializeIDA(ModelDefinition * model, IntegrationData * user_data, Exper
         MAX((model->nb_derivative_variables + model->nb_algebraic_variables), 1),
         MAX((model->nb_derivative_variables + model->nb_algebraic_variables), 1)
     );
-    if(check_flag((void *)A, "SUNDenseMatrix", 0)) return(1);
+    if(check_flag((void *)A, "SUNDenseMatrix", 0, errLog)) return NULL;
 
     /* Create dense SUNLinearSolver object for use by CVode */
-    LS = SUNDenseLinearSolver(model->derivative_variables, A);
-    if(check_flag((void *)LS, "SUNDenseLinearSolver", 0)) return(1);
+    LS = SUNDenseLinearSolver(user_data->derivative_variables, A);
+    if(check_flag((void *)LS, "SUNDenseLinearSolver", 0, errLog)) return NULL;
 
     /* Call CVDlsSetLinearSolver to attach the matrix and linear solver to CVode */
     flag = IDADlsSetLinearSolver(cvode_mem, LS, A);
-    if(check_flag(&flag, "CVDlsSetLinearSolver", 1)) return(1);
+    if(check_flag(&flag, "CVDlsSetLinearSolver", 1, errLog)) return NULL;
 #else
     /* Call Dense to specify the dense linear solver */
     flag = IDADense(ida_mem, MAX((model->nb_derivative_variables + model->nb_algebraic_variables), 1));
