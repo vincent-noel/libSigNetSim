@@ -123,6 +123,7 @@ class CWriterOptimization(object):
 	def writeOptimizationFilesHeaders(self, f_c, f_h):
 
 		f_c.write("#include <stdlib.h>\n")
+		f_c.write("#include <stdio.h>\n")
 		f_c.write("#include \"optim.h\"\n")
 
 		f_h.write("#include \"plsa/sa.h\"\n")

@@ -15,6 +15,7 @@
 
 log_dir = logs
 
+MPICC = mpicc
 SRCDIR = src
 LIBDIR = lib
 
@@ -27,30 +28,30 @@ SOBJ = main-serial.o
 POBJ = main-parallel.o
 
 all: sim-serial sim-parallel
-	rm -f *.o
+	$(RM) *.o
 
 sim-serial: $(OBJ) $(SOBJ)
-	gcc $(SOBJ) $(OBJ) $(LIBS) -o sim-serial
+	$(CC) $(SOBJ) $(OBJ) $(LIBS) -o sim-serial
 
 sim-parallel: $(OBJ) $(POBJ)
-	mpicc $(POBJ) $(OBJ) $(LIBS) -o sim-parallel
+	$(MPICC) $(POBJ) $(OBJ) $(LIBS) -o sim-parallel
 
 
 # Generated
 model.o: $(SRCDIR)/model.c $(SRCDIR)/model.h
-	gcc -pedantic -std=gnu99 -c $(SRCDIR)/model.c
+	$(CC) -pedantic -std=gnu99 -c $(SRCDIR)/model.c
 
 data.o: $(SRCDIR)/data.c $(SRCDIR)/data.h
-	gcc $(FLAGS) -c $(SRCDIR)/data.c
+	$(CC) $(FLAGS) -c $(SRCDIR)/data.c
 
 
 #Main
 main-serial.o:	$(SRCDIR)/main.c
-	gcc $(FLAGS) -c $(SRCDIR)/main.c -o main-serial.o
+	$(CC) $(FLAGS) -c $(SRCDIR)/main.c -o main-serial.o
 
 main-parallel.o:	$(SRCDIR)/main.c
-	mpicc $(FLAGS) -DMPI -c $(SRCDIR)/main.c -o main-parallel.o
+	$(MPICC) $(FLAGS) -DMPI -c $(SRCDIR)/main.c -o main-parallel.o
 
 # clean
 clean:
-	rm -f *.o results/* *_sim *_comp
+	$(RM) -f *.o results/* *_sim *_comp
