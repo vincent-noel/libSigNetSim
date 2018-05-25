@@ -173,17 +173,20 @@ class TimeseriesSimulation(Simulation):
 
 		return (t, trajs)
 
-	def plot(self, figure=None, variables=[], suffix=""):
+	def plot(self, figure=None, plot=None, variables=[], suffix=""):
 
 
-		if figure is None:
+		if plot is None and figure is None:
 			if self.listOfModels[0].timeUnits is not None and self.listOfModels[0].extentUnits is not None:
 				figure = SigNetSimFigure(
 						x_unit=self.listOfModels[0].timeUnits.getNameOrSbmlId(),
 						y_unit=self.listOfModels[0].extentUnits.getNameOrSbmlId())
 			else:
 				figure = SigNetSimFigure()
-		ax = figure.add_subplot(1, 1, 1)
+
+		if plot is None and figure is not None:
+			plot = figure.add_subplot(1, 1, 1)
+
 		t, trajs = self.getRawData()[0]
 
 		t_trajs = {}
@@ -203,11 +206,11 @@ class TimeseriesSimulation(Simulation):
 
 				t_var = self.listOfModels[0].listOfVariables.getBySymbol(SympySymbol(name))
 				if not t_var.isConstant():
-					figure.plot(ax, i_species, t, t_trajs[name], y_name=t_var.getNameOrSbmlId()+suffix)
-					ax.legend(loc='upper right')
+					figure.plot(plot, i_species, t, t_trajs[name], y_name=t_var.getNameOrSbmlId()+suffix)
+					plot.legend(loc='upper right')
 
-		ax.set_xlim([x_min, x_max])
-		ax.set_ylim([y_min, y_max*1.1])
+		plot.set_xlim([x_min, x_max])
+		plot.set_ylim([y_min, y_max*1.1])
 		show()
 
-		return ax
+		return figure
