@@ -27,6 +27,9 @@
 
 from libsignetsim.data.ExperimentalCondition import ExperimentalCondition
 from libsignetsim.numl.NuMLDocument import NuMLDocument
+from libsignetsim.figure.SigNetSimFigure import SigNetSimFigure
+from matplotlib.pyplot import show
+
 
 class Experiment(object):
 
@@ -130,3 +133,18 @@ class Experiment(object):
 			return list(set(species))
 		else:
 			return species
+
+
+	def plot(self, figure=None, suffix="", marker="-"):
+
+		if figure is None:
+			figure = SigNetSimFigure()
+
+		plots = []
+		for condition in list(self.listOfConditions.values()):
+			plots.append(condition.plot(figure, suffix=suffix, marker=marker))
+
+		show()
+
+		return plots
+
