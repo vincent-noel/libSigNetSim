@@ -86,6 +86,7 @@ setup(name='libsignetsim',
 				"/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2021/libevent/include",
 				"/usr/lib/x86_64-linux-gnu/openmpi/include",
 				"/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi",
+				"/usr/lib64/mpi/gcc/openmpi/include/", # Opensuse
 				"/usr/include/openmpi-x86_64/", # Fedora
 			],
 			define_macros=[("MPI", None)],
