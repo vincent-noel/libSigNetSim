@@ -23,8 +23,7 @@
 	This file ...
 
 """
-from __future__ import print_function
-
+# from __future__ import print_function
 
 from libsignetsim.settings.Settings import Settings
 
@@ -33,6 +32,8 @@ from os.path import join, getsize, isfile
 from os import getcwd, setpgrp, mkdir
 from subprocess import call
 from math import log10
+from threading import Thread
+
 
 class OptimizationExecution(object):
 
@@ -54,12 +55,10 @@ class OptimizationExecution(object):
 	def getTempDirectory(self):
 
 		if self.directory is None:
-			return join(Settings.tempDirectory,
-								"optimization_%s/" % str(self.optimizationId))
+			return join(Settings.tempDirectory,	"optimization_%s/" % str(self.optimizationId))
 
 		else:
-			return join(self.directory,
-								"optimization_%s/" % str(self.optimizationId))
+			return join(self.directory, "optimization_%s/" % str(self.optimizationId))
 
 	def setTempDirectory(self, directory):
 
@@ -80,7 +79,7 @@ class OptimizationExecution(object):
 								self.getTempDirectory(),
 								target)
 
-		with open(join(self.getTempDirectory(), "sout_optim_comp"), "w") as stdout,  open(join(self.getTempDirectory(), "err_optim_comp"), "w") as stderr:
+		with open(join(self.getTempDirectory(), "out_optim_comp"), "w") as stdout,  open(join(self.getTempDirectory(), "err_optim_comp"), "w") as stderr:
 			res_comp = call(cmd_comp, stdout=stdout, stderr=stderr, shell=True, preexec_fn=setpgrp, close_fds=True)
 
 		timeout = 3
@@ -151,6 +150,28 @@ class OptimizationExecution(object):
 		return self.OPTIM_SUCCESS
 
 
+	def run_inside_thread(self, success, failure, nb_procs=2):
+
+		try:
+			res = self.runOptimization(nb_procs=nb_procs)
+
+			if res != self.OPTIM_FAILURE:
+				success()
+			else:
+				failure()
+
+		except Exception as e:
+			# print(e.message)
+			failure(e)
+
+
+	def run_async(self, success, failure, nb_procs=2):
+
+		t = Thread(group=None, target=self.run_inside_thread, args=(success, failure, nb_procs))
+		t.setDaemon(True)
+		t.start()
+		return t
+
 	def readFinalScore(self):
 
 		file_final_score = open(join(self.getTempDirectory(), "logs", "score", "score"))
@@ -170,8 +191,9 @@ class OptimizationExecution(object):
 	def runOptimization(self, nb_procs, timeout=None, maxiter=None):
 
 		# if self.monitor:
-		#     t = OptimizationMonitor(self)  #threading.Thread(target=self.monitorOptimization)
-		#     t.start()
+		# t = OptimizationMonitor(self)  #threading.Thread(target=self.monitorOptimization)
+		# t.start()
+
 		self.startTime = int(time())
 
 		res = self.compile(nb_procs)
@@ -179,7 +201,6 @@ class OptimizationExecution(object):
 		if res == self.OPTIM_SUCCESS:
 
 			res_2 = self.run(nb_procs, timeout, maxiter)
-
 			if res_2 == self.OPTIM_SUCCESS:
 
 				self.stopTime = int(time())

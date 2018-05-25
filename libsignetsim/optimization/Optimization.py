@@ -47,12 +47,13 @@ class Optimization(OptimizationExecution, OptimizationParameters):
 		OptimizationParameters.__init__(self, workingModel, parameters_to_fit, model_instance)
 
 
-	def writeOptimizationFilesMain(self, nb_procs=1):
+	def writeOptimizationFilesMain(self):
 
 		mkdir(self.getTempDirectory())
 
 		if self.workingModel.parentDoc is not None:
 			self.workingModel.parentDoc.writeSbmlToFile(join(self.getTempDirectory(), "model.sbml"))
+
 		self.workingModel.build(reduce=False)
 
 
