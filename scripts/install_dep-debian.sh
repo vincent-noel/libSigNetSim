@@ -1,3 +1,10 @@
+if [ -z "$1" ]; then
+    PYTHON_VERSION=3
+else
+    PYTHON_VERSION=$1
+fi
+
+
 apt-get update -qq
 
 if [[ $(apt-cache search libsundials-serial | wc -l) -gt 0 ]]; then
@@ -33,27 +40,40 @@ else
 
 fi
 
+if [[ "${PYTHON_VERSION}" == 2 ]]; then
+    PYTHON_PACKAGES="python-pip python-dev"
+    PIP_EXECUTABLE="pip2"
+
+else
+    PYTHON_PACKAGES="python3-pip python3-dev"
+    PIP_EXECUTABLE="pip3"
+
+fi
 
 apt-get install -y libopenmpi-dev openmpi-bin \
                     ${SUNDIALS_BIN} ${SUNDIALS_DEV} \
                     liblapack-dev libblas-dev ${ATLAS_DEV} \
-                    make swig python3-pip python3-dev git
+                    ${PYTHON_PACKAGES} make swig git
 
-pip3 install pip --upgrade --ignore-installed
+${PIP_EXECUTABLE} install -i https://pypi.python.org/simple pip --upgrade  --ignore-installed
+
 if [ -f /usr/bin/pip ]
 then
     mv /usr/bin/pip /usr/bin/pip.bak
 fi
 ln -s /usr/local/bin/pip /usr/bin/pip
 
-if [ -f /usr/bin/pip3 ]
+if [ -f /usr/bin/${PIP_EXECUTABLE} ]
 then
-    mv /usr/bin/pip3 /usr/bin/pip3.bak
+    mv /usr/bin/${PIP_EXECUTABLE} /usr/bin/${PIP_EXECUTABLE}.bak
 fi
-ln -s /usr/local/bin/pip3 /usr/bin/pip3
+ln -s /usr/local/bin/${PIP_EXECUTABLE} /usr/bin/${PIP_EXECUTABLE}
 
-pip3 install distribute setuptools --upgrade --ignore-installed
-easy_install3 --upgrade distribute
+${PIP_EXECUTABLE} install distribute setuptools --upgrade --ignore-installed
+easy_install --upgrade distribute
+
+# Version incompatibility issue... Hopefully temporary
+${PIP_EXECUTABLE} install pyopenssl
 
 # Checking if mpicc is in /usr/bin
 if [ ! -f /usr/bin/mpicc ] ; then
@@ -67,6 +87,7 @@ if [ ! -f /usr/bin/mpirun ] ; then
     ln -s ${mpirun_path} /usr/bin
 
 fi
+
 
 # Checking if libatlas is in /usr/lib
 if [ ! -f /usr/lib/libatlas.so ] ; then
