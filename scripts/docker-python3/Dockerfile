@@ -6,7 +6,7 @@ RUN apt-get -qq update
 
 ADD . /libSigNetSim
 
-RUN /bin/bash /libSigNetSim/scripts/install_dep3.sh
+RUN /bin/bash /libSigNetSim/scripts/install_dep.sh 3
 RUN pip install -r /libSigNetSim/requirements.txt
 RUN pip install /libSigNetSim
 RUN pip install jupyter
