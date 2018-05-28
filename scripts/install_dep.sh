@@ -1,6 +1,5 @@
 apt-get update -qq
 
-echo "Looking for sundials binaries..."
 if [[ $(apt-cache search libsundials-serial | wc -l) -gt 0 ]]; then
     SUNDIALS_BIN="libsundials-serial"
 
@@ -40,7 +39,8 @@ apt-get install -y libopenmpi-dev openmpi-bin \
                     liblapack-dev libblas-dev ${ATLAS_DEV} \
                     python-pip python-dev make swig git
 
-pip install pip --upgrade --ignore-installed
+pip install -i https://pypi.python.org/simple pip --upgrade  --ignore-installed
+
 if [ -f /usr/bin/pip ]
 then
     mv /usr/bin/pip /usr/bin/pip.bak
@@ -54,6 +54,7 @@ fi
 ln -s /usr/local/bin/pip2 /usr/bin/pip2
 
 pip2 install distribute setuptools --upgrade --ignore-installed
+easy_install --upgrade distribute
 
 # Version incompatibility issue... Hopefully temporary
 pip2 install pyopenssl
