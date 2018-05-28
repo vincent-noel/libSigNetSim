@@ -69,8 +69,26 @@ then
 fi
 ln -s /usr/local/bin/${PIP_EXECUTABLE} /usr/bin/${PIP_EXECUTABLE}
 
-${PIP_EXECUTABLE} install distribute setuptools --upgrade --ignore-installed
-easy_install --upgrade distribute
+${PIP_EXECUTABLE} install setuptools --upgrade --ignore-installed
+if [[ "${PYTHON_VERSION}" == 3 ]]; then
+    EASY_INSTALL=$(find /usr -name easy_install-3*)
+
+    if [[ -z "${EASY_INSTALL}" ]]; then
+        EASY_INSTALL="easy_install"
+    fi
+
+elif [[ "${PYTHON_VERSION}" == 2 ]]; then
+    EASY_INSTALL=$(find /usr -name easy_install-2*)
+
+    if [[ -z "${EASY_INSTALL}" ]]; then
+        EASY_INSTALL="easy_install"
+    fi
+
+else
+    EASY_INSTALL="easy_install"
+
+fi
+${EASY_INSTALL} --upgrade distribute
 
 # Version incompatibility issue... Hopefully temporary
 ${PIP_EXECUTABLE} install pyopenssl
