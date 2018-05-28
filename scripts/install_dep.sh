@@ -1,7 +1,43 @@
 apt-get update -qq
+
+echo "Looking for sundials binaries..."
+if [[ $(apt-cache search libsundials-serial | wc -l) -gt 0 ]]; then
+    SUNDIALS_BIN="libsundials-serial"
+
+elif [[ $(apt-cache search libsundials-nvecserial2 | wc -l) -gt 0 ]] && [[ $(apt-cache search libsundials-cvode2 | wc -l) -gt 0 ]] && [[ $(apt-cache search libsundials-ida2 | wc -l) -gt 0 ]] ; then
+    SUNDIALS_BIN="libsundials-nvecserial2 libsundials-cvode2 libsundials-ida2"
+
+else
+    SUNDIALS_BIN=""
+
+fi
+
+if [[ $(apt-cache search libsundials-serial-dev | wc -l) -gt 0 ]]; then
+    SUNDIALS_DEV="libsundials-serial-dev"
+
+elif [[ $(apt-cache search libsundials-dev | wc -l) -gt 0 ]]; then
+    SUNDIALS_DEV="libsundials-dev"
+
+else
+    SUNDIALS_DEV=""
+
+fi
+
+if [[ $(apt-cache search libatlas-dev | wc -l) -gt 0 ]]; then
+    ATLAS_DEV="libatlas-dev"
+
+elif [[ $(apt-cache search libatlas-base-dev | wc -l) -gt 0 ]]; then
+    ATLAS_DEV="libatlas-base-dev"
+
+else
+    ATLAS_DEV=""
+
+fi
+
+
 apt-get install -y libopenmpi-dev openmpi-bin \
-                    libsundials-serial-dev libsundials-serial \
-                    liblapack-dev libblas-dev libatlas-dev libatlas-base-dev \
+                    ${SUNDIALS_BIN} ${SUNDIALS_DEV} \
+                    liblapack-dev libblas-dev ${ATLAS_DEV} \
                     python-pip python-dev make swig git
 
 pip install pip --upgrade --ignore-installed
