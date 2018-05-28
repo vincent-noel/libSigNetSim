@@ -3,7 +3,7 @@ EXEC_DIR=$PWD
 DIR=`dirname $PWD/$0`
 INSTALL_DIR=`dirname $DIR`
 
-if [[ -z "$1" ]] && [[ "$1" == 2 ]] ; then
+if [[ -n "$1" ]] && [[ "$1" == 2 ]] ; then
     PIP_EXECUTABLE="pip2"
 else
     PIP_EXECUTABLE="pip3"
