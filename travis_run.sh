@@ -62,7 +62,7 @@ else
                 docker run -di --name test_env -v $(pwd):/home/travis/build/vincent-noel/libSigNetSim signetsim/travis_testenv:stretch-python3 bash || exit 1;
                 docker exec test_env chown -R www-data:www-data /home/travis/ || exit 1;
                 docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; bash scripts/install_dep-debian.sh 3" || exit 1;
-                docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; scripts/install.sh 2" || exit 1;
+                docker exec test_env /bin/bash -c "cd /home/travis/build/vincent-noel/libSigNetSim; scripts/install.sh 3" || exit 1;
 
             else
                 docker run -di --name test_env -v $(pwd):/home/travis/build/vincent-noel/libSigNetSim signetsim/travis_testenv:stretch bash || exit 1;
