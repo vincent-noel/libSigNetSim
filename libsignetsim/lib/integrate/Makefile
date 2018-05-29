@@ -15,17 +15,20 @@
 
 SRCDIR = src
 LIBDIR = lib
-
+LIBSDIR = /usr/lib64/atlas-basic/
 FLAGS = -Wall -Werror -fPIC -pedantic -std=gnu99
-LIBS = -lsundials_cvode -lsundials_nvecserial -lsundials_ida -lm
+LIBS = -lsundials_cvode -lsundials_nvecserial -lsundials_ida -lm -llapack -latlas -lblas
+
 
 IOBJ = shared.o events.o ode.o dae.o integrate.o realtype_math.o
 
 SUNDIALS_INCLUDE = /usr/include
 SUNDIALS_MAIN_VERSION := $(shell cat $(SUNDIALS_INCLUDE)/sundials/sundials_config.h | grep SUNDIALS_PACKAGE_VERSION | cut -d' ' -f3 | tr -d '"' | cut -d'.' -f1)
 
+
+
 integrate.so: $(IOBJ)
-	$(CC) -shared -o integrate.so $(IOBJ)
+	$(CC) -shared -o integrate.so $(IOBJ) $(LIBS) -L$(LIBSDIR)
 	$(RM) *.o
 
 #Integrate
