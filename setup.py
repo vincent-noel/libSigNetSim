@@ -44,6 +44,8 @@ setup(name='libsignetsim',
 				"/usr/include/nvector"
 				"/usr/include/sundials",
 			],
+			libraries=['sundials_cvode', 'sundials_nvecserial', 'sundials_ida', 'm', 'lapack', 'atlas', 'blas'],
+			library_dirs=['/usr/lib64/atlas-basic/'],
 			define_macros=(
 				[("SUNDIALS3", None)] if "SUNDIALS_VERSION_MAJOR 3" in open("/usr/include/sundials/sundials_config.h").read() else None
 			),
