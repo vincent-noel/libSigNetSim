@@ -4,18 +4,7 @@ services: docker
 
 language: python
 
-python: 2.7
-
 env:
-  - JOB=sbml-test-suite ARG=3.2 PY=python2
-  - JOB=sbml-test-suite ARG=3.1 PY=python2
-  - JOB=sbml-test-suite ARG=2.5 PY=python2
-  - JOB=sbml-test-suite ARG=2.4 PY=python2
-  - JOB=sbml-test-suite ARG=2.3 PY=python2
-  - JOB=sbml-test-suite ARG=2.2 PY=python2
-  - JOB=sbml-test-suite ARG=2.1 PY=python2
-  - JOB=sbml-test-suite ARG=1.2 PY=python2
-  - JOB=others ARG=NULL PY=python2
   - JOB=sbml-test-suite ARG=3.2 PY=python3
   - JOB=sbml-test-suite ARG=3.1 PY=python3
   - JOB=sbml-test-suite ARG=2.5 PY=python3
@@ -25,6 +14,7 @@ env:
   - JOB=sbml-test-suite ARG=2.1 PY=python3
   - JOB=sbml-test-suite ARG=1.2 PY=python3
   - JOB=others ARG=NULL PY=python3
+  - JOB=others ARG=NULL PY=python2
   - secure: "FPYoBFdmbc5kPuE16lqGRnlm/qwZ6eONcm33auAWIkp7JiSiLD4bZKYx+mBBiOy8bFI58pnXijQ0ruUDtHagFU9t7ozMXgaQAJjvxKqyJSwJpojTnveOKwUIaakbymAQa6+2cBC+IJ/yTlpqnxhWUolDc+9iTi0ZP91dVttxATJIguYtngVkcJsnMYWadThhjvfERkdHswDyGzB8Io725peA1xJwY5fDqmPTULsVMJs/XYBhGQEowURR3guxCsp5ghqXmxeqzlpMTGbgMZTQ++FGzfIC5ZVNqLFEXD/RrU5qxb9NHzff8WjGQo7mU1vALKkbFCHrCIJX/TTbLYIZg8r5hzbetFUh9YHtRCJIBfs+je1QdYO2GEHxgx2aHpnRwqH6EjefWglDWo9dBkdkkHg4R0p5CY2037vTmkWFcgtdZ7SR+AzV3dA37ETGFZSwIq/9OUqbKJ+5jofvGPQo+9Ol0fhQhNNueHKl+yfQ2rHbLwTUOZUjHiLTGdNO0WL7dSewh2KwACMKX+AiTQzCM/xgDZjdzVdquXb/H7lQcFWRJ0+4OqmjqIuQR9MKArxnoe5rHFzo+Yz8gYPSulI+qOQeSC7uboypNiFOzLcI89h7astges6cKe71yaxfIWoQ3cwvPHM4Q5Ej2zYWo9Sa7AsVTG6eAEGalRIV49A0UWY="
   - secure: "dOs5DbB4v4T+nUkYASWUCjUay4BPgRKzBifh8uZu9XhuTG7DYAjdiK6wXcFCLa47EwCLiIZzfv2sXmkYkbv4AVJi10yQphi8UDIxPqO1gvwpSLEf4ySpjYpO93DMihIFuHxx6X12yhIvvwHELLsgjY5yH9f4Fzeoi2oJj5aR9e8PBzIo9F0IcOb6fCwIqUhrYM42FoLuYZS7wrNreYNJmlM8YtCP+Yp0G6U7cKA0BRxuNOfLztQg+YixHUTTOW6axjuLEtz0gVDldwZzVI9z5yYnSG4Wizwr08sxymhXR4YNhyjNBQTwAxJIycmLspB5yygPTkW+utHXjaYO5auLGmRfCLQZtrXQ17KDUynJsezFsE60qsF+n3AR+InDFhsKynuBAaSKpWD0mQmZg1l2bbyA/xZOfshKLTyMfZq1e0XCSil1Z5qd8/YdiWg2/27I1P4xOFX7XE3c4GjdUgtoOfw07GngIRJVhUh1vW0shZL2YtNZa/8Opg+rjcAtwHIYOAPeQPz8Pc61ZcgM5zL8SDJnWubc31tBB31r17zgVSIZELeGn/KTCGPmU85J7RFeR+5r1zV6jb9OUs0MqytPBbAWCiZgFhwiaoHPmIMlOhZlIel2CBcBcfaV/NYs4alWD4UCQWZEISz0mqT/um5IFT1GJnn61B0nXT2KY92mwjo="
 
