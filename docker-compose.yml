@@ -1,20 +1,20 @@
 #docker-compose.yml
 version: '3.3'
 services:
-  libsignetsim-notebook:
+  notebook-py2:
     build:
       context: ./
-      dockerfile: ./scripts/docker/Dockerfile
-    image: signetsim/notebook:develop
-    container_name: libsignetsim-notebook
+      dockerfile: ./scripts/docker-py2/Dockerfile
+    image: signetsim/notebook:develop-py2
+    container_name: libsignetsim-notebook-py2
     ports:
       - "8888:8888"
 
-  libsignetsim-notebook-python3:
+  notebook:
     build:
       context: ./
-      dockerfile: ./scripts/docker-python3/Dockerfile
-    image: signetsim/notebook:develop-python3
-    container_name: libsignetsim-notebook-python3
+      dockerfile: ./scripts/docker-py3/Dockerfile
+    image: signetsim/notebook:develop
+    container_name: libsignetsim-notebook
     ports:
       - "8888:8888"
