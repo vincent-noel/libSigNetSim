@@ -25,15 +25,16 @@ IOBJ = $(LIBDIR)/integrate.so
 OBJ = model.o data.o $(IOBJ)
 SOBJ = main-serial.o
 POBJ = main-parallel.o
+LIBS = -lsundials_cvode -lsundials_nvecserial -lsundials_ida -lm
 
 all: sim-serial sim-parallel
 	$(RM) *.o
 
 sim-serial: $(OBJ) $(SOBJ)
-	$(CC) $(SOBJ) $(OBJ) -o sim-serial
+	$(CC) $(SOBJ) $(OBJ) $(LIBS) -o sim-serial
 
 sim-parallel: $(OBJ) $(POBJ)
-	$(MPICC) $(POBJ) $(OBJ) -o sim-parallel
+	$(MPICC) $(POBJ) $(OBJ) $(LIBS) -o sim-parallel
 
 
 # Generated

@@ -28,14 +28,15 @@ OBJ = scoreFunctions.o model.o data.o $(IOBJ)
 SOBJ = optim.o $(LIBDIR)/libplsa-serial.so main.o
 POBJ = optim_p.o $(LIBDIR)/libplsa-parallel.so main_p.o
 IOBJ = $(LIBDIR)/integrate.so
+LIBS = -lsundials_cvode -lsundials_nvecserial -lsundials_ida -lm
 
 
 lsa: $(OBJ) $(SOBJ)
-	$(CC) $(OBJ) $(SOBJ) -o lsa
+	$(CC) $(OBJ) $(SOBJ) S(LIBS) -o lsa
 	$(RM) *.o
 
 lsa.mpi: $(OBJ) $(POBJ)
-	$(MPICC) $(OBJ) $(POBJ) -DMPI -o lsa.mpi
+	$(MPICC) $(OBJ) $(POBJ) $(LIBS) -DMPI -o lsa.mpi
 	$(RM) *.o
 
 
