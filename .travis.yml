@@ -19,7 +19,7 @@ env:
     - JOB=others ARG=NULL PY=python3
     - JOB=others ARG=NULL PY=python2
     - JOB=docker ARG=NULL PY=python3
-    - JOB=docker ARG=NULL PY=python3
+    - JOB=docker ARG=NULL PY=python2
 
 before_install:
 - /bin/bash travis_run.sh before_install $JOB $ARG $PY $PASSWORD
