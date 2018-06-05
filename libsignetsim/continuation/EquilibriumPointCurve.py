@@ -28,10 +28,13 @@
 from PyDSTool import args, ContClass, PyDSTool_ExistError
 from .PyDSToolModel import PyDSToolModel
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol
-from os.path import isfile, join
+from libsignetsim.settings.Settings import Settings
+from os.path import isfile, join, isdir
 from os import remove, getcwd
 from threading import Thread
-
+from random import choice
+from string import ascii_uppercase, ascii_lowercase, digits, punctuation
+from shutil import rmtree
 
 class EquilibriumPointCurve(object):
 
@@ -60,6 +63,7 @@ class EquilibriumPointCurve(object):
 		self.x = []
 		self.ys = {}
 		self.points = {}
+		self.continuationId = ''.join(choice(ascii_uppercase + ascii_lowercase + digits) for _ in range(6))
 
 	def setParameter(self, parameter):
 		self.parameter = parameter
@@ -95,7 +99,7 @@ class EquilibriumPointCurve(object):
 	def buildCont(self):
 
 		self.continuation = ContClass(self.system.getSystem())
-
+		# self.continuation.setTempDirectory(join(Settings.tempDirectory, "continuation_%s" % self.continuationId))
 		self.continuationParameters = args(name=self.MAIN_CURVE, type='EP-C')
 		self.continuationParameters.freepars = [self.parameter.getSymbolStr()]
 		self.continuationParameters.StepSize = abs(self.ds)
@@ -111,6 +115,7 @@ class EquilibriumPointCurve(object):
 	def executeCont(self, callback_function_success=None, callback_function_error=None):
 
 		self.status = self.STARTED
+
 		try:
 			if self.ds > 0:
 				self.continuation[self.MAIN_CURVE].forward()
@@ -130,20 +135,16 @@ class EquilibriumPointCurve(object):
 			if callback_function_success is not None:
 				callback_function_success(self)
 
-		except RuntimeError:
+		except:
 			self.status = self.FAILED
 			if callback_function_error is not None:
 				callback_function_error()
 
-		except PyDSTool_ExistError:
-			self.status = self.FAILED
-			if callback_function_error is not None:
-				callback_function_error()
 
 	def cleanupFiles(self):
 
-		if isfile(join(getcwd(), "_auto_model_0_vf.so")):
-			remove(join(getcwd(), "_auto_model_0_vf.so"))
+		if isdir(join(Settings.tempDirectory, "continuation_%s" % self.continuationId)):
+			rmtree(join(Settings.tempDirectory, "continuation_%s" % self.continuationId))
 
 	def calculateForExactVariables(self):
 
@@ -332,6 +333,7 @@ class EquilibriumPointCurve(object):
 			limit_cycle_args.SaveEigen = True
 			limit_cycle_args.verbosity = self.verbosity
 			self.continuation.newCurve(limit_cycle_args)
+
 
 			self.continuation[self.LIMIT_CYCLE_CURVE].forward()
 
