@@ -28,7 +28,7 @@ from libsignetsim.cwriter.CWriterOptimization import CWriterOptimization
 from libsignetsim.optimization.OptimizationParameters import OptimizationParameters
 from libsignetsim.optimization.OptimizationExecution import OptimizationExecution
 
-from os.path import join, isfile
+from os.path import join, isfile, isdir
 from os import mkdir
 
 
@@ -49,7 +49,8 @@ class Optimization(OptimizationExecution, OptimizationParameters):
 
 	def writeOptimizationFilesMain(self):
 
-		mkdir(self.getTempDirectory())
+		if not isdir(self.getTempDirectory()):
+			mkdir(self.getTempDirectory())
 
 		if self.workingModel.parentDoc is not None:
 			self.workingModel.parentDoc.writeSbmlToFile(join(self.getTempDirectory(), "model.sbml"))
