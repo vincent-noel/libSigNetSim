@@ -99,7 +99,7 @@ class EquilibriumPointCurve(object):
 	def buildCont(self):
 
 		self.continuation = ContClass(self.system.getSystem())
-		# self.continuation.setTempDirectory(join(Settings.tempDirectory, "continuation_%s" % self.continuationId))
+		self.continuation.setTempDirectory(join(Settings.tempDirectory, "continuation_%s" % self.continuationId))
 		self.continuationParameters = args(name=self.MAIN_CURVE, type='EP-C')
 		self.continuationParameters.freepars = [self.parameter.getSymbolStr()]
 		self.continuationParameters.StepSize = abs(self.ds)
