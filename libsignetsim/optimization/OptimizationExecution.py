@@ -100,6 +100,14 @@ class OptimizationExecution(object):
 
 		if res_comp != 0 or getsize(join(self.getTempDirectory(), "err_optim_comp")) > 0:
 			self.status = self.OPTIM_FAILURE
+			if Settings.verbose >= 1:
+				print("-"*40 + "\n")
+				print("> Error during optimization compilation :")
+				with open(join(self.getTempDirectory(), "err_optim_comp"), 'r') as f_err_comp:
+					for line in f_err_comp:
+						print(line)
+
+				print("-"*40 + "\n")
 			return self.OPTIM_FAILURE
 		else:
 			self.status = self.OPTIM_SUCCESS
@@ -156,6 +164,16 @@ class OptimizationExecution(object):
 				return self.OPTIM_FAILURE
 
 			err.close()
+
+			if Settings.verbose >= 1:
+				print("-"*40 + "\n")
+				print("> Error during optimization execution :")
+				with open(join(self.getTempDirectory(), "err_optim"), 'r') as f_err:
+					for line in f_err:
+						print(line)
+
+				print("-"*40 + "\n")
+
 
 		if isfile(join(self.getTempDirectory(), "pid")):
 			self.status = self.OPTIM_INTERRUPTED

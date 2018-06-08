@@ -103,7 +103,7 @@ class Settings(object):
 	optimizationDefaultCompartmentLowerBound = 1e-8
 	optimizationDefaultCompartmentUpperBound = 1e+8
 
-	verbose = 0
+	verbose = 1
 	verboseTiming = 0
 	showSbmlErrors = False
 	reduceByDefault = False
