@@ -155,24 +155,34 @@ class OptimizationExecution(object):
 
 		if getsize(join(self.getTempDirectory(), "err_optim")) > 0:
 
-			print("-" * 40 + "\n")
-			print("> Error during optimization execution :")
-			with open(join(self.getTempDirectory(), "err_optim"), 'r') as f_err:
-				for line in f_err:
-					print(line)
+			# There is some weird error here, apparently caused by docker filesystem.
+			# ** apparently ** we can ignore it
+			non_docker_err = False
+			with open(self.getTempDirectory() + "err_optim", 'r') as f_err_optim:
+				for line in f_err_optim:
+					if not line.startswith("Unexpected end of /proc/mounts"):
+						non_docker_err = True
 
-			print("-" * 40 + "\n")
 
-			err = open(join(self.getTempDirectory(), "err_optim"))
+			if non_docker_err:
+				print("-" * 40 + "\n")
+				print("> Error during optimization execution :")
+				with open(join(self.getTempDirectory(), "err_optim"), 'r') as f_err:
+					for line in f_err:
+						print(line)
 
-			if err.readline() != "mpirun: killing job...\n":
+				print("-" * 40 + "\n")
+
+				err = open(join(self.getTempDirectory(), "err_optim"))
+
+				if err.readline() != "mpirun: killing job...\n":
+					err.close()
+					self.stopTime = int(time())
+					self.elapsedTime = self.stopTime - self.startTime
+					self.status = self.OPTIM_FAILURE
+					return self.OPTIM_FAILURE
+
 				err.close()
-				self.stopTime = int(time())
-				self.elapsedTime = self.stopTime - self.startTime
-				self.status = self.OPTIM_FAILURE
-				return self.OPTIM_FAILURE
-
-			err.close()
 
 		if isfile(join(self.getTempDirectory(), "pid")):
 			self.status = self.OPTIM_INTERRUPTED
