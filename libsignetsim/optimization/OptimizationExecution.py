@@ -26,7 +26,7 @@
 # from __future__ import print_function
 
 from libsignetsim.settings.Settings import Settings
-
+from libsignetsim.optimization.OptimizationException import OptimizationCompilationException, OptimizationExecutionException
 from time import time, sleep
 from os.path import join, getsize, isfile
 from os import getcwd, setpgrp, mkdir
@@ -108,7 +108,7 @@ class OptimizationExecution(object):
 						print(line)
 
 				print("-"*40 + "\n")
-			return self.OPTIM_FAILURE
+			raise OptimizationCompilationException("Error during optimization compilation")
 		else:
 			self.status = self.OPTIM_SUCCESS
 			return self.OPTIM_SUCCESS
@@ -145,7 +145,7 @@ class OptimizationExecution(object):
 			self.stopTime = int(time())
 			self.elapsedTime = self.stopTime - self.startTime
 			self.status = self.OPTIM_FAILURE
-			return self.OPTIM_FAILURE
+			raise OptimizationExecutionException("Optim execution returned %s" % res_optim)
 
 		timeout = 3
 		i = 0
@@ -180,7 +180,7 @@ class OptimizationExecution(object):
 					self.stopTime = int(time())
 					self.elapsedTime = self.stopTime - self.startTime
 					self.status = self.OPTIM_FAILURE
-					return self.OPTIM_FAILURE
+					raise OptimizationExecutionException("Error during optimization execution")
 
 				err.close()
 
@@ -197,7 +197,7 @@ class OptimizationExecution(object):
 		try:
 			res = self.runOptimization(nb_procs=nb_procs, timeout=timeout, maxiter=maxiter)
 			print(res)
-			if res == self.OPTIM_SUCCESS:
+			if res != self.OPTIM_FAILURE:
 				if success is not None:
 					success(self)
 			else:
@@ -205,7 +205,6 @@ class OptimizationExecution(object):
 					failure(self)
 
 		except Exception as e:
-			# print(e.message)
 			if failure is not None:
 				failure(self, e)
 
@@ -222,7 +221,7 @@ class OptimizationExecution(object):
 		try:
 			res = self.restartOptimization(nb_procs=nb_procs, timeout=timeout, maxiter=maxiter)
 
-			if res == self.OPTIM_SUCCESS:
+			if res != self.OPTIM_FAILURE:
 				if success is not None:
 					success(self)
 			else:
@@ -230,7 +229,6 @@ class OptimizationExecution(object):
 					failure(self)
 
 		except Exception as e:
-			# print(e.message)
 			if failure is not None:
 				failure(self, e)
 
