@@ -155,6 +155,14 @@ class OptimizationExecution(object):
 
 		if getsize(join(self.getTempDirectory(), "err_optim")) > 0:
 
+			print("-" * 40 + "\n")
+			print("> Error during optimization execution :")
+			with open(join(self.getTempDirectory(), "err_optim"), 'r') as f_err:
+				for line in f_err:
+					print(line)
+
+			print("-" * 40 + "\n")
+
 			err = open(join(self.getTempDirectory(), "err_optim"))
 
 			if err.readline() != "mpirun: killing job...\n":
@@ -165,15 +173,6 @@ class OptimizationExecution(object):
 				return self.OPTIM_FAILURE
 
 			err.close()
-
-			print("-"*40 + "\n")
-			print("> Error during optimization execution :")
-			with open(join(self.getTempDirectory(), "err_optim"), 'r') as f_err:
-				for line in f_err:
-					print(line)
-
-			print("-"*40 + "\n")
-
 
 		if isfile(join(self.getTempDirectory(), "pid")):
 			self.status = self.OPTIM_INTERRUPTED
