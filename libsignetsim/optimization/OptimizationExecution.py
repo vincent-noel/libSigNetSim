@@ -185,20 +185,20 @@ class OptimizationExecution(object):
 
 	def run_inside_thread(self, success, failure, nb_procs=2, timeout=None, maxiter=None):
 
-		# try:
-		res = self.runOptimization(nb_procs=nb_procs, timeout=timeout, maxiter=maxiter)
+		try:
+			res = self.runOptimization(nb_procs=nb_procs, timeout=timeout, maxiter=maxiter)
+			print(res)
+			if res == self.OPTIM_SUCCESS:
+				if success is not None:
+					success(self)
+			else:
+				if failure is not None:
+					failure(self)
 
-		if res != self.OPTIM_FAILURE:
-			if success is not None:
-				success(self)
-		else:
+		except Exception as e:
+			# print(e.message)
 			if failure is not None:
-				failure(self)
-
-		# except Exception as e:
-		# 	# print(e.message)
-		# 	if failure is not None:
-		# 		failure(self, e)
+				failure(self, e)
 
 
 	def run_async(self, success, failure, nb_procs=2, timeout=None, maxiter=None):
@@ -213,7 +213,7 @@ class OptimizationExecution(object):
 		try:
 			res = self.restartOptimization(nb_procs=nb_procs, timeout=timeout, maxiter=maxiter)
 
-			if res != self.OPTIM_FAILURE:
+			if res == self.OPTIM_SUCCESS:
 				if success is not None:
 					success(self)
 			else:
