@@ -141,7 +141,7 @@ class OptimizationExecution(object):
 					shell=True, preexec_fn=setpgrp, close_fds=True)
 
 		if res_optim != 0 and res_optim != 124:
-			print("Optim execution returned %s" % res_optim)
+
 			self.stopTime = int(time())
 			self.elapsedTime = self.stopTime - self.startTime
 			self.status = self.OPTIM_FAILURE
@@ -165,13 +165,14 @@ class OptimizationExecution(object):
 
 
 			if non_docker_err:
-				print("-" * 40 + "\n")
-				print("> Error during optimization execution :")
-				with open(join(self.getTempDirectory(), "err_optim"), 'r') as f_err:
-					for line in f_err:
-						print(line)
+				if Settings.verbose >= 1:
+					print("-" * 40 + "\n")
+					print("> Error during optimization execution :")
+					with open(join(self.getTempDirectory(), "err_optim"), 'r') as f_err:
+						for line in f_err:
+							print(line)
 
-				print("-" * 40 + "\n")
+					print("-" * 40 + "\n")
 
 				err = open(join(self.getTempDirectory(), "err_optim"))
 
