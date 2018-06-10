@@ -26,7 +26,7 @@
 # from __future__ import print_function
 
 from libsignetsim.settings.Settings import Settings
-
+from libsignetsim.optimization.OptimizationException import OptimizationCompilationException, OptimizationExecutionException
 from time import time, sleep
 from os.path import join, getsize, isfile
 from os import getcwd, setpgrp, mkdir
@@ -100,7 +100,15 @@ class OptimizationExecution(object):
 
 		if res_comp != 0 or getsize(join(self.getTempDirectory(), "err_optim_comp")) > 0:
 			self.status = self.OPTIM_FAILURE
-			return self.OPTIM_FAILURE
+			if Settings.verbose >= 1:
+				print("-"*40 + "\n")
+				print("> Error during optimization compilation :")
+				with open(join(self.getTempDirectory(), "err_optim_comp"), 'r') as f_err_comp:
+					for line in f_err_comp:
+						print(line)
+
+				print("-"*40 + "\n")
+			raise OptimizationCompilationException("Error during optimization compilation")
 		else:
 			self.status = self.OPTIM_SUCCESS
 			return self.OPTIM_SUCCESS
@@ -133,10 +141,11 @@ class OptimizationExecution(object):
 					shell=True, preexec_fn=setpgrp, close_fds=True)
 
 		if res_optim != 0 and res_optim != 124:
+
 			self.stopTime = int(time())
 			self.elapsedTime = self.stopTime - self.startTime
 			self.status = self.OPTIM_FAILURE
-			return self.OPTIM_FAILURE
+			raise OptimizationExecutionException("Optim execution returned %s" % res_optim)
 
 		timeout = 3
 		i = 0
@@ -146,16 +155,35 @@ class OptimizationExecution(object):
 
 		if getsize(join(self.getTempDirectory(), "err_optim")) > 0:
 
-			err = open(join(self.getTempDirectory(), "err_optim"))
+			# There is some weird error here, apparently caused by docker filesystem.
+			# ** apparently ** we can ignore it
+			non_docker_err = False
+			with open(self.getTempDirectory() + "err_optim", 'r') as f_err_optim:
+				for line in f_err_optim:
+					if not line.startswith("Unexpected end of /proc/mounts"):
+						non_docker_err = True
 
-			if err.readline() != "mpirun: killing job...\n":
+
+			if non_docker_err:
+				if Settings.verbose >= 1:
+					print("-" * 40 + "\n")
+					print("> Error during optimization execution :")
+					with open(join(self.getTempDirectory(), "err_optim"), 'r') as f_err:
+						for line in f_err:
+							print(line)
+
+					print("-" * 40 + "\n")
+
+				err = open(join(self.getTempDirectory(), "err_optim"))
+
+				if err.readline() != "mpirun: killing job...\n":
+					err.close()
+					self.stopTime = int(time())
+					self.elapsedTime = self.stopTime - self.startTime
+					self.status = self.OPTIM_FAILURE
+					raise OptimizationExecutionException("Error during optimization execution")
+
 				err.close()
-				self.stopTime = int(time())
-				self.elapsedTime = self.stopTime - self.startTime
-				self.status = self.OPTIM_FAILURE
-				return self.OPTIM_FAILURE
-
-			err.close()
 
 		if isfile(join(self.getTempDirectory(), "pid")):
 			self.status = self.OPTIM_INTERRUPTED
@@ -169,7 +197,7 @@ class OptimizationExecution(object):
 
 		try:
 			res = self.runOptimization(nb_procs=nb_procs, timeout=timeout, maxiter=maxiter)
-
+			print(res)
 			if res != self.OPTIM_FAILURE:
 				if success is not None:
 					success(self)
@@ -178,7 +206,6 @@ class OptimizationExecution(object):
 					failure(self)
 
 		except Exception as e:
-			# print(e.message)
 			if failure is not None:
 				failure(self, e)
 
@@ -203,7 +230,6 @@ class OptimizationExecution(object):
 					failure(self)
 
 		except Exception as e:
-			# print(e.message)
 			if failure is not None:
 				failure(self, e)
 
