@@ -21,19 +21,6 @@ dnf -y install openmpi-devel openmpi \
                 make
 
 ${PIP_EXECUTABLE} install -i https://pypi.python.org/simple pip --upgrade  --ignore-installed
-
-if [ -f /usr/bin/pip ]
-then
-    mv /usr/bin/pip /usr/bin/pip.bak
-fi
-ln -s /usr/local/bin/pip /usr/bin/pip
-
-if [ -f /usr/bin/${PIP_EXECUTABLE} ]
-then
-    mv /usr/bin/${PIP_EXECUTABLE} /usr/bin/${PIP_EXECUTABLE}.bak
-fi
-ln -s /usr/local/bin/${PIP_EXECUTABLE} /usr/bin/${PIP_EXECUTABLE}
-
 ${PIP_EXECUTABLE} install setuptools --upgrade --ignore-installed
 if [[ "${PYTHON_VERSION}" == 3 ]]; then
     EASY_INSTALL=$(find /usr -name easy_install-3*)
