@@ -18,7 +18,7 @@ dnf -y install openmpi-devel openmpi \
                 sundials sundials-devel \
                 lapack-devel blas-devel atlas-devel atlas-static \
                 ${PYTHON_PACKAGES} redhat-rpm-config \
-                make
+                make gcc gcc-c++ swig
 
 ${PIP_EXECUTABLE} install -i https://pypi.python.org/simple pip --upgrade  --ignore-installed
 ${PIP_EXECUTABLE} install setuptools --upgrade --ignore-installed
