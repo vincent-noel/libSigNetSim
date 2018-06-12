@@ -84,7 +84,7 @@ class Settings(object):
 	simulationKeepFiles = True
 
 	steadyStatesMaxTime = 100000
-	defaultMaxProcNumbers = 4
+	defaultMaxProcNumbers = 2
 
 	plotTimeMin = 0
 	plotTimeEch = 10
