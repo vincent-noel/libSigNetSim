@@ -46,6 +46,7 @@ class RepeatedTask(AbstractTask):
 		self.listOfRanges = ListOfRanges(self.__document, self)
 		self.listOfSubTasks = ListOfSubTasks(self.__document)
 
+		self.__simulationObject = None
 		self.__times = None
 		self.__results = None
 
@@ -93,7 +94,7 @@ class RepeatedTask(AbstractTask):
 		else:
 			raise SedmlMultipleModels("Multiple models are not implemented")
 
-	def run(self):
+	def run(self, timeout=None):
 
 		if not self.listOfSubTasks.hasSingleTypeOfTask():
 			raise SedmlMixedSubtasks("Mixed subtasks are not implemented")
@@ -105,29 +106,29 @@ class RepeatedTask(AbstractTask):
 			range = self.listOfRanges.getByRangeId(self.__range)
 			timepoints = range.getValuesArray()
 
-			simulation = TimeseriesSimulation(
+			self.__simulationObject = TimeseriesSimulation(
 				list_of_models=models,
 				list_samples=timepoints,
 				abs_tol=abs_tol,
 				rel_tol=rel_tol,
 				keep_files=True
 			)
-			simulation.run()
+			self.__simulationObject.run(timeout=timeout)
 
-			self.__times = simulation.getRawData()[0][0]
-			self.__results = simulation.getRawData()[0][1]
+			self.__times = self.__simulationObject.getRawData()[0][0]
+			self.__results = self.__simulationObject.getRawData()[0][1]
 
 		elif self.listOfSubTasks.hasSteadyStates():
 			models = self.listOfSubTasks.getModels()
 			value_changes = self.listOfSetValueChanges.getValueChanges()
 
-			simulation = SteadyStatesSimulation(
+			self.__simulationObject = SteadyStatesSimulation(
 				list_of_models=models,
 				species_input=list(value_changes.keys())[0],
 				list_of_initial_values=list(value_changes.values())[0]
 			)
-			simulation.run()
-			self.__results = simulation.getRawData()
+			self.__simulationObject.run(timeout=timeout)
+			self.__results = self.__simulationObject.getRawData()
 
 		elif self.listOfSubTasks.hasUniformTimeCourses():
 			pass
@@ -138,3 +139,6 @@ class RepeatedTask(AbstractTask):
 
 	def getTimes(self):
 		return self.__times
+
+	def getDuration(self):
+		return self.__simulationObject.getSimulationDuration()

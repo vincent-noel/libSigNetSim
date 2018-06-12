@@ -72,7 +72,7 @@ class SteadyStatesSimulation(Simulation):
                     value=initial_value, name_attribute="id"
                 )
 
-    def run(self):
+    def run(self, timeout=None):
 
         start = clock()
         self.writeSimulationFiles()
@@ -81,7 +81,7 @@ class SteadyStatesSimulation(Simulation):
         if Settings.verboseTiming >= 1:
             print("> Files written in %.2fs" % (mid-start))
 
-        self.runSimulation(steady_states=True)
+        self.runSimulation(steady_states=True, timeout=timeout)
         self.loadSimulationResults()
 
         if not self.keepFiles:

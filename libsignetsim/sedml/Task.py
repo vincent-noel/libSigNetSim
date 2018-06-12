@@ -85,7 +85,7 @@ class Task(AbstractTask):
 	def setSimulation(self, simulation):
 		self.__simulationReference = simulation.getId()
 
-	def run(self):
+	def run(self, timeout=None):
 
 		# One step simulations cannot be executed as a single task, they must be part of a repeated task
 		# At least, that's what I understand
@@ -94,7 +94,7 @@ class Task(AbstractTask):
 
 		model = self.__document.listOfModels.getSbmlModelByReference(self.__modelReference)
 		simulation = self.__document.listOfSimulations.getSimulation(self.__simulationReference)
-		self.__simulationObject = simulation.run(model)
+		self.__simulationObject = simulation.run(model, timeout=timeout)
 		self.__results = self.__simulationObject.getRawData()[0]
 
 	def getSimulationObject(self):
