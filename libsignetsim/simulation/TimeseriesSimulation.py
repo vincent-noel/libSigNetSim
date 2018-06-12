@@ -76,26 +76,26 @@ class TimeseriesSimulation(Simulation):
 		else:
 			self.listOfSamples = [float(value) for value in linspace(time_min, time_max, nb_samples)]
 
-	def run(self):
+	def run(self, timeout=None):
 
 		self.writeSimulationFiles()
-		self.runSimulation()
+		self.runSimulation(timeout=timeout)
 		self.loadSimulationResults()
 
 		if not self.keepFiles:
 			self.cleanTempDirectory()
 
-	def run_inside_thread(self, success, failure):
+	def run_inside_thread(self, success, failure, timeout=None):
 		try:
-			self.run()
+			self.run(timeout=timeout)
 			success()
 		except Exception as e:
 			failure(e)
 
 
-	def run_async(self, success, failure):
+	def run_async(self, success, failure, timeout=None):
 
-		t = Thread(group=None, target=self.run_inside_thread, args=(success, failure))
+		t = Thread(group=None, target=self.run_inside_thread, args=(success, failure, timeout))
 		t.setDaemon(True)
 		t.start()
 

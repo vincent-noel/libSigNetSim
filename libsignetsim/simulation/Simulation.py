@@ -201,7 +201,7 @@ class Simulation(CWriterSimulation):
 
 			raise SimulationCompilationException("Error during simulation compilation (%d)" % res_comp)
 
-	def __execute__(self, nb_procs=Settings.defaultMaxProcNumbers, steady_states=False):
+	def __execute__(self, nb_procs=Settings.defaultMaxProcNumbers, steady_states=False, timeout=None):
 
 		present_dir = getcwd()
 
@@ -264,7 +264,7 @@ class Simulation(CWriterSimulation):
 				# f_out_sim.close()
 
 
-	def runSimulation(self, progress_signal=None, steady_states=False, nb_procs=Settings.defaultMaxProcNumbers):
+	def runSimulation(self, progress_signal=None, steady_states=False, nb_procs=Settings.defaultMaxProcNumbers, timeout=None):
 
 		start = time()
 		self.__compile__(nb_procs=nb_procs)
@@ -281,7 +281,7 @@ class Simulation(CWriterSimulation):
 			print(">> Simulation executed in %.2fs" % (end-mid))
 
 		self.__simulationDone = self.SIM_DONE
-
+		self.__simulationDuration = (end - start)*min(self.nbConditions * len(self.listOfModels), nb_procs)
 
 	def getRawData(self):
 		if self.__simulationDone == self.SIM_DONE:
@@ -289,3 +289,5 @@ class Simulation(CWriterSimulation):
 		else:
 			raise SimulationNoDataException("No data : simulation hasn't been executed yet")
 
+	def getSimulationDuration(self):
+		return self.__simulationDuration
