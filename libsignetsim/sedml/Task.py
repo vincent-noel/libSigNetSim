@@ -101,12 +101,13 @@ class Task(AbstractTask):
 		return self.__simulationObject
 
 	def getResults(self):
-
 		return self.__results
 
 	def getResultsByVariable(self, variable_sbmlid):
 		return self.__results[1][variable_sbmlid]
 
 	def getTimes(self):
-
 		return self.__results[0]
+
+	def getDuration(self):
+		return self.__simulationObject.getSimulationDuration()

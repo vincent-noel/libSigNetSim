@@ -64,6 +64,7 @@ class SedmlDocument(SedBase):
 		self.listOfOutputs = ListOfOutputs(self)
 
 		self.listOfIds = ListOfIds(self)
+		self.executionDuration = 0
 
 	def readSedmlFromFile(self, filename):
 
@@ -138,6 +139,7 @@ class SedmlDocument(SedBase):
 
 		for task in tasks_to_run:
 			task.run()
+			self.executionDuration += task.getDuration()
 
 		self.listOfDataGenerators.build()
 		# self.listOfOutputs.build()
