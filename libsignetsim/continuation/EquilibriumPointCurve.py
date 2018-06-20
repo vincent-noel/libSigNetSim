@@ -35,6 +35,8 @@ from threading import Thread
 from random import choice
 from string import ascii_uppercase, ascii_lowercase, digits, punctuation
 from shutil import rmtree
+from time import time
+
 
 class EquilibriumPointCurve(object):
 
@@ -59,7 +61,7 @@ class EquilibriumPointCurve(object):
 		self.maxSteps = 1000
 		self.verbosity = 0
 		self.status = self.NOT_STARTED
-
+		self.elapsedTime = 0
 		self.x = []
 		self.ys = {}
 		self.points = {}
@@ -115,10 +117,10 @@ class EquilibriumPointCurve(object):
 	def executeCont(self, callback_function_success=None, callback_function_error=None):
 
 		self.status = self.STARTED
-
+		startTime = time()
 		try:
 			if self.ds > 0:
-				self.continuation[self.MAIN_CURVE].forward()
+					self.continuation[self.MAIN_CURVE].forward()
 			else:
 				self.continuation[self.MAIN_CURVE].backward()
 
@@ -131,14 +133,16 @@ class EquilibriumPointCurve(object):
 			self.buildPoints()
 			self.calculateForExactVariables()
 			self.cleanupFiles()
+			self.elapsedTime = time() - startTime
 
 			if callback_function_success is not None:
 				callback_function_success(self)
 
-		except:
+		except Exception as e:
 			self.status = self.FAILED
+			self.elapsedTime = time() - startTime
 			if callback_function_error is not None:
-				callback_function_error()
+				callback_function_error(error=str(e))
 
 
 	def cleanupFiles(self):
@@ -210,11 +214,11 @@ class EquilibriumPointCurve(object):
 			len_curve = len(self.continuation[self.MAIN_CURVE].curve[:, 1]) - 1
 			nb_variables = len(self.continuation[self.MAIN_CURVE].varslist)
 			self.x = self.continuation[self.MAIN_CURVE].curve[0:len_curve, nb_variables]
-			self.x = [x_i for x_i in self.x if self.fromValue <= x_i <= self.toValue]
+			self.x = [float(x_i) for x_i in self.x if self.fromValue <= x_i <= self.toValue]
 			self.ys = {}
 			for i, var in enumerate(self.continuation[self.MAIN_CURVE].varslist):
 				y = self.continuation[self.MAIN_CURVE].curve[0:len_curve, i]
-				y = [y_i for x_i, y_i in zip(self.x, y) if self.fromValue <= x_i <= self.toValue]
+				y = [float(y_i) for x_i, y_i in zip(self.x, y) if self.fromValue <= x_i <= self.toValue]
 				self.ys.update({var: y})
 
 	def getCurves(self):
@@ -263,10 +267,10 @@ class EquilibriumPointCurve(object):
 
 			for inds in split:
 				split_stability.append(stability[inds[0]])
-				split_x.append([x[i] for i in inds])
+				split_x.append([float(x[i]) for i in inds])
 
 				for var, y in list(ys.items()):
-					split_ys[var].append([y[i] for i in inds])
+					split_ys[var].append([float(y[i]) for i in inds])
 
 			return split_x, split_ys, split_stability
 
