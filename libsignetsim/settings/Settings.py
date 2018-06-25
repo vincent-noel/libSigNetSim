@@ -24,6 +24,7 @@
 
 """
 
+
 from os.path import abspath, join, dirname, expanduser
 
 class Settings(object):
@@ -83,7 +84,7 @@ class Settings(object):
 	simulationKeepFiles = True
 
 	steadyStatesMaxTime = 100000
-	defaultMaxProcNumbers = 4
+	defaultMaxProcNumbers = 2
 
 	plotTimeMin = 0
 	plotTimeEch = 10
@@ -139,3 +140,11 @@ class Settings(object):
 
 	defaultPlsaTraceLog = 0
 	defaultPlsaParamsLog = 0
+
+	color_scheme = (["#FFB300", "#803E75", "#FF6800", "#A6BDD7"]
+					+ ["#C10020", "#CEA262", "#817066", "#007D34"]
+					+ ["#F6768E", "#00538A", "#FF7A5C", "#53377A"]
+					+ ["#FF8E00", "#B32851", "#F4C800", "#7F180D"]
+					+ ["#93AA00", "#593315", "#F13A13", "#232C16"])
+
+	color_scheme_light = ['#67b6ce']

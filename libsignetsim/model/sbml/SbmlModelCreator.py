@@ -24,6 +24,7 @@
 
 """
 
+
 from libsignetsim.settings.Settings import Settings
 
 class SbmlModelCreator(object):
@@ -64,16 +65,16 @@ class SbmlModelCreator(object):
 	def writeSbml(self, creator, level=Settings.defaultSbmlLevel, version=Settings.defaultSbmlVersion):
 
 		if self.__familyName is not None:
-			creator.setFamilyName(self.__familyName)
+			creator.setFamilyName(str(self.__familyName))
 
 		if self.__givenName is not None:
-			creator.setGivenName(self.__givenName)
+			creator.setGivenName(str(self.__givenName))
 
 		if self.__email is not None:
-			creator.setEmail(self.__email)
+			creator.setEmail(str(self.__email))
 
 		if self.__organisation is not None:
-			creator.setOrganisation(self.__organisation)
+			creator.setOrganisation(str(self.__organisation))
 
 	def getFamilyName(self):
 		return self.__familyName

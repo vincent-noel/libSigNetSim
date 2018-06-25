@@ -64,10 +64,10 @@ class ListOfReactions(ListOf, HasIds, SbmlObject, HasParentObj):
 					sbml_version=Settings.defaultSbmlVersion):
 		""" Writes a list of reactions from a sbml file """
 
-		for reaction in ListOf.values(self):
+		for reaction in self:
 			reaction.writeSbml(sbml_model, sbml_level, sbml_version)
 
-		if len(ListOf.values(self)):
+		if len(self):
 			SbmlObject.writeSbml(self, sbml_model.getListOfReactions(), sbml_level, sbml_version)
 
 	def new(self, name=None):
@@ -82,7 +82,7 @@ class ListOfReactions(ListOf, HasIds, SbmlObject, HasParentObj):
 
 		if obj not in deletions:
 			SbmlObject.copy(self, obj)
-			for reaction in obj.values():
+			for reaction in obj:
 				if reaction not in deletions:
 
 					t_reaction = Reaction(self.__model, self, self.nextId())
@@ -104,14 +104,14 @@ class ListOfReactions(ListOf, HasIds, SbmlObject, HasParentObj):
 		ListOf.remove(self, reaction)
 
 	def containsVariable(self, variable):
-		for reaction in ListOf.values(self):
+		for reaction in self:
 			if reaction.containsVariable(variable):
 				return True
 		return False
 
 	def containsLocalParameterSbmlId(self, sbml_id):
 
-		for reaction in ListOf.values(self):
+		for reaction in self:
 			if reaction.listOfLocalParameters.containsSbmlId(sbml_id):
 				return True
 		return False
@@ -119,7 +119,7 @@ class ListOfReactions(ListOf, HasIds, SbmlObject, HasParentObj):
 
 	def getLocalParameterReactionIdBySbmlId(self, sbml_id):
 
-		for reaction in ListOf.values(self):
+		for reaction in self:
 			if reaction.listOfLocalParameters.containsSbmlId(sbml_id):
 				return reaction.objId
 		return -1
@@ -127,7 +127,7 @@ class ListOfReactions(ListOf, HasIds, SbmlObject, HasParentObj):
 
 	def getLocalParameterIdBySbmlId(self, sbml_id):
 
-		for reaction in ListOf.values(self):
+		for reaction in self:
 			if reaction.listOfLocalParameters.containsSbmlId(sbml_id):
 				return reaction.listOfLocalParameters.getBySbmlId(sbml_id).objId
 		return -1
@@ -135,21 +135,28 @@ class ListOfReactions(ListOf, HasIds, SbmlObject, HasParentObj):
 	def countLocalParameters(self):
 
 		nb_local_parameters = 0
-		for reaction in ListOf.values(self):
+		for reaction in self:
 			nb_local_parameters += len(reaction.listOfLocalParameters)
 
 		return nb_local_parameters
 
 	def hasFastReaction(self):
 
-		for reaction in ListOf.values(self):
+		for reaction in self:
 			if reaction.fast:
+				return True
+		return False
+
+	def hasVariableStoichiometry(self):
+
+		for reaction in self:
+			if reaction.hasVariableStoichiometry():
 				return True
 		return False
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 
-		for obj in ListOf.values(self):
+		for obj in self:
 			obj.renameSbmlId(old_sbml_id, new_sbml_id)
 
 

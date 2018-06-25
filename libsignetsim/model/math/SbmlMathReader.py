@@ -23,6 +23,10 @@
 	This file ...
 
 """
+from __future__ import print_function
+from six import string_types
+
+
 
 import libsbml
 from math import isinf, isnan
@@ -51,14 +55,14 @@ class SbmlMathReader(object):
 		self.internalTree = self.translateForInternal(formula, sbml_level, sbml_version)
 
 		if Settings.verbose >= 2:
-			print "\n> readSbml : "
-			print ">> input : %s" % self.printSbml(formula)
-			print ">> output simplified : %s" % str(self.internalTree)
-			print ">> output : %s" % srepr(self.internalTree)
+			print("\n> readSbml : ")
+			print(">> input : %s" % self.printSbml(formula))
+			print(">> output simplified : %s" % str(self.internalTree))
+			print(">> output : %s" % srepr(self.internalTree))
 
 	def printSbml(self, formula, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
-		if isinstance(formula, str):
+		if isinstance(formula, string_types):
 			return formula
 		elif isinstance(formula, libsbml.ASTNode):
 			if sbml_level <= 2:
@@ -128,7 +132,10 @@ class SbmlMathReader(object):
 						or self.isEquation
 						or self.isEventAssignment
 						or self.isAssignmentRule
-						or self.isAlgebraicRule):
+						or self.isAlgebraicRule
+					  	or self.isDelay
+						or self.isPriority
+				):
 
 					# If the species represents a concentration
 					# We should make it corresponds to amount/size
@@ -161,8 +168,10 @@ class SbmlMathReader(object):
 
 		""" Translate an SBML Tree in a Sympy Tree """
 
+		if tree is None:
+			return None
 
-		if tree is None or tree == 0:
+		elif tree == 0:
 			return SympyInteger(0)
 
 		elif isinstance(tree,int):
@@ -180,7 +189,7 @@ class SbmlMathReader(object):
 
 			return SympyFloat(tree)
 
-		elif isinstance(tree, str):
+		elif isinstance(tree, string_types):
 			return self.translateVariableForInternal(tree, sbml_level, sbml_version, simplified, develop)
 
 		# print libsbml.formulaToString(tree)
@@ -218,10 +227,10 @@ class SbmlMathReader(object):
 				return SympyE
 
 			elif tree.getType() == libsbml.AST_CONSTANT_FALSE:
-				return False
+				return SympyFalse
 
 			elif tree.getType() == libsbml.AST_CONSTANT_TRUE:
-				return True
+				return SympyTrue
 
 			elif tree.getType() == libsbml.AST_CONSTANT_PI:
 				return SympyPi
@@ -242,28 +251,53 @@ class SbmlMathReader(object):
 				else:
 					t_children = []
 					for i_arg in range(tree.getNumChildren()):
-						t_children.append(self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop))
+						t_children.append(self.ensureFloat(self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop)))
 					return SympyAdd(*t_children, evaluate=False)
 
 
 			elif tree.getType() == libsbml.AST_MINUS:
 
 				if tree.getNumChildren() == 2:
-					return SympyAdd(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
-									SympyMul(SympyInteger(-1),self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False), evaluate=False)
+					return SympyAdd(
+						self.ensureFloat(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop)),
+						SympyMul(
+							SympyInteger(-1),
+							self.ensureFloat(self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop)),
+							evaluate=False
+						),
+						evaluate=False
+					)
 
 				elif tree.getNumChildren() == 1:
-					return SympyMul(SympyInteger(-1),
-									self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop), evaluate=False)
+					return SympyMul(
+						SympyInteger(-1),
+						self.ensureFloat(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop)),
+						evaluate=False
+					)
 
 				elif tree.getNumChildren() == 0:
 					return SympyInteger(0)
 
 				else:
-					t_tree = SympyAdd(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
-										SympyMul(SympyInteger(-1), self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), evaluate=False), evaluate=False)
-					for i_arg in range(2,tree.getNumChildren()):
-						t_tree = SympyAdd(t_tree, SympyMul(SympyInteger(-1), self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop), evaluate=False), evaluate=False)
+					t_tree = SympyAdd(
+						self.ensureFloat(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop)),
+						SympyMul(
+							SympyInteger(-1),
+							self.ensureFloat(self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop)),
+							evaluate=False
+						),
+						evaluate=False
+					)
+					for i_arg in range(2, tree.getNumChildren()):
+						t_tree = SympyAdd(
+							t_tree,
+							SympyMul(
+								SympyInteger(-1),
+								self.ensureFloat(self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop)),
+								evaluate=False
+							),
+							evaluate=False
+						)
 
 					return t_tree
 
@@ -276,7 +310,7 @@ class SbmlMathReader(object):
 					t_children = []
 
 					for i_arg in range(tree.getNumChildren()):
-						t_children.append(self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop))
+						t_children.append(self.ensureFloat(self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop)))
 
 					return SympyMul(*t_children, evaluate=False)
 
@@ -290,8 +324,8 @@ class SbmlMathReader(object):
 					return t_tree
 
 				else:
-					return SympyMul(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop),
-								SympyPow(self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop), SympyInteger(-1)))
+					return SympyMul(self.ensureFloat(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop)),
+								SympyPow(self.ensureFloat(self.translateForInternal(tree.getChild(1), sbml_level, sbml_version, simplified, develop)), SympyInteger(-1)))
 
 			elif tree.getType() == libsbml.AST_POWER:
 				t_x = self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop)
@@ -412,7 +446,6 @@ class SbmlMathReader(object):
 				# AST_FUNCTION_PIECEWISE
 			elif tree.getType() == libsbml.AST_FUNCTION_PIECEWISE:
 
-				# print libsbml.formulaToL3String(tree)
 				i_arg = 0
 				i_cond = 0
 				t_pieces = []
@@ -421,16 +454,16 @@ class SbmlMathReader(object):
 
 					if (i_arg+1) < tree.getNumChildren():
 						# print "here we have a full condition"
-						t_value = self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop)
-						t_condition = self.translateForInternal(tree.getChild(i_arg+1), sbml_level, sbml_version, simplified, develop)
+						t_value = self.ensureFloat(self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop))
+						t_condition = self.ensureBool(self.translateForInternal(tree.getChild(i_arg+1), sbml_level, sbml_version, simplified, develop))
 
-						if isinstance(t_value, bool) or (not isinstance(t_condition, bool) and isinstance(t_condition.func, SympyUndefinedFunction)):
+						if isinstance(t_value, bool) or (not isinstance(t_condition, bool) and (isinstance(t_condition.func, SympyUndefinedFunction) or t_condition.func == SympyPiecewise)):
 							value_piecewise = True
 
 						t_pieces.append((t_value, t_condition))
 						i_arg += 2
 					else:
-						t_value = self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop)
+						t_value = self.ensureFloat(self.translateForInternal(tree.getChild(i_arg), sbml_level, sbml_version, simplified, develop))
 						if isinstance(t_value, bool):
 							value_piecewise = True
 						t_pieces.append((t_value, True))
@@ -476,6 +509,41 @@ class SbmlMathReader(object):
 			elif tree.getType() == libsbml.AST_FUNCTION_TANH:
 				return SympyTanh(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop), evaluate=False)
 
+			elif tree.getType() == libsbml.AST_FUNCTION_RATE_OF:
+				return SympyRateOf(self.translateForInternal(tree.getChild(0), simplified, develop))
+
+			elif tree.getType() == libsbml.AST_FUNCTION_QUOTIENT:
+				return SympyQuotient(
+						self.translateForInternal(tree.getChild(0), simplified, develop),
+						self.translateForInternal(tree.getChild(1), simplified, develop)
+					)
+
+			elif tree.getType() == libsbml.AST_FUNCTION_REM:
+				return SympyRem(
+					self.translateForInternal(tree.getChild(0), simplified, develop),
+					self.translateForInternal(tree.getChild(1), simplified, develop)
+				)
+
+			elif tree.getType() == libsbml.AST_FUNCTION_MIN:
+				t_args = []
+
+				for param in range(0, tree.getNumChildren()):
+					t_arg = self.translateForInternal(tree.getChild(param), sbml_level, sbml_version, simplified, develop)
+					t_args.append(
+						t_arg
+					)
+
+				return SympyUnevaluatedMin(*t_args)
+
+			elif tree.getType() == libsbml.AST_FUNCTION_MAX:
+				t_args = []
+
+				for param in range(0, tree.getNumChildren()):
+					t_args.append(
+						self.translateForInternal(tree.getChild(param), sbml_level, sbml_version, simplified, develop)
+					)
+
+				return SympyUnevaluatedMax(*t_args)
 
 			else:
 				t_args = []
@@ -641,6 +709,14 @@ class SbmlMathReader(object):
 			elif tree.getType() == libsbml.AST_LOGICAL_NOT:
 				return SympyNot(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop), evaluate=False)
 
+			elif str(tree.getName()) == "implies":
+				return SympyImplies(
+					self.translateForInternal(tree.getChild(0), simplified, develop),
+					self.translateForInternal(tree.getChild(1), simplified, develop),
+					evaluate=False
+				)
+
+
 			else:
 				raise SbmlException("SbmlMathReader : Unknown logical operator")
 				return "unknown logical operator"
@@ -664,3 +740,37 @@ class SbmlMathReader(object):
 			raise MathException("SbmlMathReader : Unknown mathematical term : %s" % t_string)
 
 			return SympySymbol("ERR_UNKNOWN_TYPE")
+
+	def ensureBool(self, tree):
+
+		if tree is not None:
+
+			if tree.func == SympyInteger:
+				tree = SympyFalse if tree == SympyInteger(0) else SympyTrue
+
+			elif tree.func == SympyFloat:
+				tree = SympyFalse if tree == SympyFloat(0.0) else SympyTrue
+
+			return tree
+
+	def ensureInteger(self, tree):
+
+		if tree is not None:
+			if tree == SympyTrue:
+				return SympyInteger(1)
+
+			elif tree == SympyFalse:
+				return SympyInteger(0)
+
+			return tree
+
+	def ensureFloat(self, tree):
+
+		if tree is not None:
+			if tree == SympyTrue:
+				return SympyFloat(1)
+
+			elif tree == SympyFalse:
+				return SympyFloat(0)
+
+			return tree

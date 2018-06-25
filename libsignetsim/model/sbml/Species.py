@@ -23,6 +23,7 @@
 	This file ...
 
 """
+from __future__ import division
 
 from libsignetsim.model.sbml.EventAssignedVariable import EventAssignedVariable
 from libsignetsim.model.sbml.InitiallyAssignedVariable import InitiallyAssignedVariable
@@ -72,7 +73,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			if len(self.__model.listOfCompartments) == 0:
 				self.__model.listOfCompartments.new("cell")
 
-			self.__compartment = self.__model.listOfCompartments.values()[0].getSbmlId()
+			self.__compartment = self.__model.listOfCompartments[0].getSbmlId()
 
 		SbmlObject.new(self)
 		Variable.new(self, name, Variable.SPECIES)
@@ -169,7 +170,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 				sbml_sp.setInitialAmount(t_value.getValue())
 			else:
 				t_formula = MathFormula(self.__model)
-				t_formula.setInternalMathFormula(self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula())
+				t_formula.setInternalMathFormula(
+					self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula()
+				)
 				sbml_sp.setInitialConcentration(t_formula.getValueMathFormula())
 
 		if self.boundaryCondition is not None and (sbml_level >= 3 or self.boundaryCondition is not False):
@@ -192,12 +195,12 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			makes sense.
 		"""
 
-		for i_reaction, reaction in enumerate(self.__model.listOfReactions.values()):
+		for i_reaction, reaction in enumerate(self.__model.listOfReactions):
 			# print "\n> reaction #%d" % i_reaction
 			if not reaction.fast or including_fast_reactions:
 				# print "well, first, it's not fast"
 				if reaction.listOfReactants:
-					for i, reactant in enumerate(reaction.listOfReactants.values()):
+					for i, reactant in enumerate(reaction.listOfReactants):
 						# print ">>> reactant #%d : %s" % (i, reactant.getSpecies().getSbmlId())
 						if reactant.getSpecies() == self:
 							return True
@@ -210,12 +213,12 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 				#             return True
 
 				if reaction.listOfProducts:
-					for i, product in enumerate(reaction.listOfProducts.values()):
+					for i, product in enumerate(reaction.listOfProducts):
 						# print ">>> product #%d : %s" % (i, product.getSpecies().getSbmlId())
 						if product.getSpecies() == self:
 							return True
 				if including_modifiers and reaction.listOfModifiers:
-					for i, modifier in enumerate(reaction.listOfModifiers.values()):
+					for i, modifier in enumerate(reaction.listOfModifiers):
 						# print ">>> product #%d : %s" % (i, product.getSpecies().getSbmlId())
 						if modifier.getSpecies() == self:
 							return True
@@ -227,9 +230,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			makes sense.
 		"""
 
-		for reaction in self.__model.listOfReactions.values():
+		for reaction in self.__model.listOfReactions:
 				if reaction.listOfReactants:
-					for reactant in reaction.listOfReactants.values():
+					for reactant in reaction.listOfReactants:
 						if reactant.getSpecies() == self:
 							if reaction.fast:
 								return True
@@ -237,7 +240,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 								return False
 
 				if reaction.listOfProducts:
-					for product in reaction.listOfProducts.values():
+					for product in reaction.listOfProducts:
 						if product.getSpecies() == self:
 							if reaction.fast:
 								return True
@@ -246,6 +249,26 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 		return False
 
+	def isOnlyInFastReactions(self):
+		""" The purpose of this function is to test is the species's amount
+			is actually modified by a reaction. Thus not checking the Modifiers
+			makes sense.
+		"""
+
+		for reaction in self.__model.listOfReactions:
+				if reaction.listOfReactants:
+					for reactant in reaction.listOfReactants:
+						if reactant.getSpecies() == self:
+							if not reaction.fast:
+								return False
+
+				if reaction.listOfProducts:
+					for product in reaction.listOfProducts:
+						if product.getSpecies() == self:
+							if not reaction.fast:
+								return False
+
+		return True
 
 	def getODE(self, including_fast_reactions=True, rawFormula=False, symbols=False):
 
@@ -257,6 +280,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 		elif self.isRateRuled():
 			t_rule = self.isRuledBy().getDefinition(rawFormula=rawFormula).getInternalMathFormula()
+
+			if t_rule is None:
+				t_rule = MathFormula.ZERO
 
 			if self.hasOnlySubstanceUnits:
 				t_formula.setInternalMathFormula(t_rule)
@@ -279,9 +305,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 			ode = MathFormula.ZERO
 
 			if not self.boundaryCondition:
-					for reaction in self.__model.listOfReactions.values():
-						if not reaction.fast or including_fast_reactions:
-							ode += reaction.getODE(self, symbols=symbols, rawFormula=rawFormula).getInternalMathFormula()
+				for reaction in self.__model.listOfReactions:
+					if not reaction.fast or including_fast_reactions:
+						ode += reaction.getODE(self, symbols=symbols, rawFormula=rawFormula).getInternalMathFormula()
 
 			if self.isSetConversionFactor():
 				ode *= self.getSymbolConversionFactor()
@@ -298,7 +324,9 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 		if rawFormula and (self.isDeclaredConcentration or not self.hasOnlySubstanceUnits):
 			t_formula = MathFormula(self.__model)
-			t_formula.setInternalMathFormula(self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula())
+			t_formula.setInternalMathFormula(
+				self.value.getInternalMathFormula()/self.getCompartment().symbol.getInternalMathFormula()
+			)
 			return t_formula
 		else:
 			return self.value
@@ -367,7 +395,7 @@ class Species(SbmlObject, Variable, InitiallyAssignedVariable,
 
 	def setCompartment(self, compartment, sids_subs={}):
 
-		if compartment.getSbmlId() in sids_subs.keys():
+		if compartment.getSbmlId() in list(sids_subs.keys()):
 			self.__compartment = sids_subs[compartment.getSbmlId()]
 		else:
 			self.__compartment = compartment.getSbmlId()

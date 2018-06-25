@@ -23,30 +23,32 @@
 	Initialization of the module SigNetSim
 
 """
+from __future__ import absolute_import, unicode_literals, print_function
 
 import matplotlib
 matplotlib.use("agg", warn=False)
 
-from combine import (
+from .combine import (
 	CombineArchive, CombineException, FileNotFoundException, NotAZipFileException, NoManifestFoundException,
 	NoMasterSedmlFoundException, NoMasterSbmlFoundException, NoMasterNumlFoundException, NoSedmlFoundException
 )
-from settings import Settings
-from data import Experiment
-from numl import NuMLDocument, NuMLException, NuMLFileNotFound
-from sedml import (
+from .settings import Settings
+from .continuation import EquilibriumPointCurve
+from .data import Experiment
+from .numl import NuMLDocument, NuMLException, NuMLFileNotFound
+from .sedml import (
 	SedmlDocument, SedmlException, SedmlMathException, SedmlFileNotFound, SedmlMixedSubtasks,
 	SedmlModelLanguageNotSupported, SedmlModelNotFound, SedmlModelObjectNotFound, SedmlMultipleModels,
 	SedmlNotImplemented, SedmlOneStepTaskException, SedmlUnknownURI, SedmlUnknownXPATH
 )
-from simulation import (
+from .simulation import (
 	TimeseriesSimulation, SteadyStatesSimulation, SimulationCompilationException, SimulationExecutionException,
 	SimulationNoDataException, SimulationException
 )
 
-from optimization import ModelVsTimeseriesOptimization, OptimizationException
+from .optimization import ModelVsTimeseriesOptimization, OptimizationException
 
-from model import (
+from .model import (
 	Model, SbmlDocument, MathFormula, KineticLaw,
 	ModelException, SbmlException, FileException,
 	MissingModelException, MissingSubmodelException,
@@ -56,4 +58,6 @@ from model import (
 
 )
 
-from LibSigNetSimException import LibSigNetSimException
+from .figure import SigNetSimFigure
+
+from .LibSigNetSimException import LibSigNetSimException

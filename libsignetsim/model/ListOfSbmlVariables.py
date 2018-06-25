@@ -24,6 +24,7 @@
 
 """
 
+
 from re import sub
 
 class ListOfSbmlVariables(object):
@@ -33,6 +34,10 @@ class ListOfSbmlVariables(object):
 
 		self.__model = model
 
+
+	def names(self):
+		""" Return a set of names of the sbml objects """
+		return [obj.getName() for obj in self]
 
 	def containsName(self, name):
 		""" Test if a name is in the list """

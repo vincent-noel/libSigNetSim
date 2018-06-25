@@ -24,8 +24,10 @@
 
 """
 
+
+
 from libsignetsim.model.math.sympy_shortcuts import (
-	SympySymbol, SympyInteger, SympyFloat, SympyPi, SympyMul, SympyPow, SympyUndefinedFunction,
+	SympySymbol, SympyInteger, SympyFloat, SympyPi, SympyMul, SympyPow, SympyRateOf, SympyUndefinedFunction,
 	SympyTrue, SympyFalse, SympyExprCondPair, SympyITE, SympyLambda, SympyTuple, SympyAvogadro)
 from re import match
 from sympy import srepr
@@ -97,6 +99,38 @@ class MathDevelopper(object):
 
 		if tree in [SympyTrue, SympyFalse, SympyPi] or tree.func in [SympyInteger, SympyFloat]:
 			return tree
+
+
+		if tree.func == SympyRateOf:
+
+			if str(tree.args[0]).startswith("_speciesForcedConcentration_"):
+				res_match = match(r"_speciesForcedConcentration_(.*)_", str(tree.args[0]))
+
+				t_sbml_id = str(res_match.groups()[0])
+				t_variable = self.__model.listOfVariables.getBySymbol(SympySymbol(t_sbml_id))
+
+				if t_variable.isSpecies() and not t_variable.hasOnlySubstanceUnits:# and not t_variable.isRateRuled():
+					t_ode = t_variable.getODE().getDeveloppedInternalMathFormula()
+					if t_ode is not None:
+						if not t_variable.isRateRuled():
+							t_ode /= t_variable.getCompartment().symbol.getDeveloppedInternalMathFormula()
+						elif t_variable.getCompartment().isRateRuled():
+							t_amount_species = t_variable.symbol.getInternalMathFormula()
+							t_comp_rate = t_variable.getCompartment().isRuledBy().getDefinition().getInternalMathFormula()
+							t_comp = t_variable.getCompartment().symbol.getInternalMathFormula()
+							t_ode = t_ode - t_amount_species * t_comp_rate / t_comp
+
+				else:
+					t_ode = t_variable.getODE().getDeveloppedInternalMathFormula()
+
+			else:
+				t_variable = self.__model.listOfVariables.getBySymbol(tree.args[0])
+				t_ode = t_variable.getODE().getDeveloppedInternalMathFormula()
+
+			if t_ode is None:
+				return SympyInteger(0)
+
+			return t_ode
 
 		if isinstance(tree.func, SympyUndefinedFunction) and "_functionDefinition_" in str(tree.func):
 			res_match = match(r"_functionDefinition_(\d+)_", str(tree.func))

@@ -23,6 +23,7 @@
 	This file ...
 
 """
+from __future__ import division
 
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
@@ -70,7 +71,7 @@ class MathSymbol(MathFormula):
 		else:
 
 			if not developped:
-				return SympySymbol("_speciesForcedConcentration_%s_" % str(MathFormula.getInternalMathFormula(self)))
+				return SympySymbol("_speciesForcedConcentration_%s_" % MathFormula.getInternalMathFormula(self).name)
 			else:
 				return MathFormula.getInternalMathFormula(self)/self.__variable.getCompartment().symbol.getInternalMathFormula(rawFormula=rawFormula)
 

@@ -23,5 +23,6 @@
 	Initialization of the module SigNetSim/SbmlModel/SbmlMath
 
 """
+from __future__ import absolute_import
 
-from MathFormula import MathFormula
+from .MathFormula import MathFormula

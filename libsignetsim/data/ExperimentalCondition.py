@@ -26,6 +26,10 @@
 
 from libsignetsim.data.ListOfExperimentalData import ListOfExperimentalData
 from libsignetsim.data.ExperimentalData import ExperimentalData
+from libsignetsim.figure.SigNetSimFigure import SigNetSimFigure
+from matplotlib.pyplot import show
+
+
 class ExperimentalCondition(object):
 
 	def __init__(self, name=""):
@@ -88,3 +92,21 @@ class ExperimentalCondition(object):
 
 	def getVariables(self):
 		return self.listOfInitialConditions.getVariables() + self.listOfExperimentalData.getVariables()
+
+	def plot(self, figure=None, plot=None, suffix="", marker="-"):
+
+		if plot is None:
+
+			if figure is None:
+				figure = SigNetSimFigure()
+			plot = figure.add_subplot(1, 1, 1)
+
+		for i, (var, values) in enumerate(self.listOfExperimentalData.getValues().items()):
+			x = [x_i for x_i, _ in values]
+			y = [y_i for _, y_i in values]
+			figure.plot(plot, i, x, y, y_name=var+suffix, marker=marker)
+
+		plot.legend(loc='upper right')
+		show()
+
+		return plot

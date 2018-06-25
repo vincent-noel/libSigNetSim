@@ -24,6 +24,7 @@
 
 """
 
+
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.MathVariable import MathVariable
 from libsignetsim.model.math.sympy_shortcuts import  (
@@ -84,7 +85,7 @@ class ListOfMathVariables(object):
 		variables_constant = []
 		variables_algebraic = []
 
-		for variable in self.values():
+		for variable in self:
 
 			if (variable.isReaction() or variable.isEvent()) or variable.isAssignmentRuled():
 				# print "Assignment variable detected : %s" % variable.getSbmlId()
@@ -96,7 +97,7 @@ class ListOfMathVariables(object):
 
 			elif (variable.constant
 					or (variable.isSpecies() and not variable.isRuled() and not variable.isInAlgebraicRules() and not variable.isInReactions(including_fast_reactions=True))
-					or ((variable.isParameter() or variable.isCompartment() or variable.isStoichiometry()) and not variable.isRuled() and not variable.isInAlgebraicRules())
+					or ((variable.isParameter() or variable.isCompartment() or variable.isStoichiometry() or variable.isConservedMoiety()) and not variable.isRuled() and not variable.isInAlgebraicRules())
 					or (self.__model.sbmlLevel == 1 and variable.isCompartment() and not variable.isRuled() and not variable.isInAlgebraicRules())
 					or (self.__model.sbmlLevel == 1 and variable.isParameter() and not variable.isRuled() and not variable.isInAlgebraicRules())
 				):
@@ -107,7 +108,7 @@ class ListOfMathVariables(object):
 				i_variables_constant += 1
 
 
-			elif not (variable.isRuled() or (variable.isSpecies() and variable.isInReactions())) and variable.isInAlgebraicRules():
+			elif not (variable.isRuled() or (variable.isSpecies() and variable.isInReactions() or variable.hasEventAssignment())) and variable.isInAlgebraicRules():
 				# print "Algebraic variable detected : %s" % variable.getSbmlId()
 				variable.type = MathVariable.VAR_DAE
 				variable.ind = i_variables_algebraics
@@ -137,20 +138,24 @@ class ListOfMathVariables(object):
 	def changeVariableType(self, variable, new_type):
 
 		if variable.isDerivative():
-			self.__model.variablesOdes.remove(variable)
-			self.__model.nbOdes -= 1
+			if variable in self.__model.variablesOdes:
+				self.__model.variablesOdes.remove(variable)
+				self.__model.nbOdes -= 1
 
 		elif variable.isAssignment():
-			self.__model.variablesAssignment.remove(variable)
-			self.__model.nbAssignments -= 1
+			if variable in self.__model.variablesAssignment:
+				self.__model.variablesAssignment.remove(variable)
+				self.__model.nbAssignments -= 1
 
 		elif variable.isConstant():
-			self.__model.variablesConstant.remove(variable)
-			self.__model.nbConstants -= 1
+			if variable in self.__model.variablesConstant:
+				self.__model.variablesConstant.remove(variable)
+				self.__model.nbConstants -= 1
 
 		elif variable.isAlgebraic():
-			self.__model.variablesAlgebraic.remove(variable)
-			self.__model.nbAlgebraics -= 1
+			if variable in self.__model.variablesAlgebraic:
+				self.__model.variablesAlgebraic.remove(variable)
+				self.__model.nbAlgebraics -= 1
 
 		if new_type == MathVariable.VAR_ODE:
 			self.__model.variablesOdes.append(variable)
@@ -179,14 +184,19 @@ class ListOfMathVariables(object):
 		for i, var in enumerate(self.__model.variablesAlgebraic):
 			var.ind = i
 
-	def copySubmodel(self, model):
+	def copyVariables(self, model):
 		# First we copy the variables list
 		self.clear()
 
-		for variable in model.listOfVariables.values():
+		for variable in model.listOfVariables:
 			new_var = MathVariable(self.__model)
-			new_var.copy(variable)
+			new_var.copy(variable, pure_math_variable=True)
 			self.append(new_var)
+
+
+	def copySubmodel(self, model):
+		# # First we copy the variables list
+		self.copyVariables(model)
 
 		self.__model.nbOdes = model.nbOdes
 		self.__model.nbAssignments = model.nbAssignments

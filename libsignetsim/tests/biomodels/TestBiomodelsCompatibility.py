@@ -23,6 +23,7 @@
 	This file is made for 'high level' tests, using various components
 
 """
+from __future__ import print_function
 
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.ModelException import TagNotImplementedModelException, PackageNotImplementedModelException
@@ -102,7 +103,7 @@ class TestBiomodelsCompatibility(TestCase):
 			elif modelId not in self.INCOMPATIBLE_CASES:
 
 				if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
-					print ""
+					print("")
 
 				try:
 					t0 = time()
@@ -115,43 +116,43 @@ class TestBiomodelsCompatibility(TestCase):
 					res = case.run()
 
 					if res >= 0:
-						print "> %s : [OK] (%.2gs)" % (modelId, time()-t0)
+						print("> %s : [OK] (%.2gs)" % (modelId, time()-t0))
 
 					elif res == -2:
-						print "> %s : [ERR, Incorrect values] (%.2gs)" % (modelId, time()-t0)
+						print("> %s : [ERR, Incorrect values] (%.2gs)" % (modelId, time()-t0))
 						result = False
 
 					elif res == -3:
-						print "> %s : [ERR, Incorrect times] (%.2gs)" % (modelId, time()-t0)
+						print("> %s : [ERR, Incorrect times] (%.2gs)" % (modelId, time()-t0))
 						result = False
 
 					else:
-						print "> %s : [ERR, Unknown error] (%.2gs)" % (modelId, time()-t0)
+						print("> %s : [ERR, Unknown error] (%.2gs)" % (modelId, time()-t0))
 						result = False
 
 				except TagNotImplementedModelException as e:
-					print "> %s : [ERR, TAG INCOMPATIBLE] (%s)" % (modelId, e)
+					print("> %s : [ERR, TAG INCOMPATIBLE] (%s)" % (modelId, e))
 
 				except PackageNotImplementedModelException as e:
-					print "> %s : [ERR, PACKAGE INCOMPATIBLE] (%s)" % (modelId, e)
+					print("> %s : [ERR, PACKAGE INCOMPATIBLE] (%s)" % (modelId, e))
 
 				except SimulationException as e:
-					print "> %s : [ERR, Simulation failed] (%s) (%.2gs)" % (modelId, e, time()-t0)
+					print("> %s : [ERR, Simulation failed] (%s) (%.2gs)" % (modelId, e, time()-t0))
 					result = False
 
 				except MathException as e:
-					print "> %s : [ERR, Math] (%s) (%.2gs)" % (modelId, e, time()-t0)
+					print("> %s : [ERR, Math] (%s) (%.2gs)" % (modelId, e, time()-t0))
 					result = False
 
 				except SbmlException as e:
-					print "> %s : [ERR, SBML] (%s) (%.2gs)" % (modelId, e, time()-t0)
+					print("> %s : [ERR, SBML] (%s) (%.2gs)" % (modelId, e, time()-t0))
 					result = False
 
 				except Exception as e:
-					print "> %s : [ERR] (%s) (%.2gs)" % (modelId, e, time()-t0)
+					print("> %s : [ERR] (%s) (%.2gs)" % (modelId, e, time()-t0))
 					result = False
 
 			else:
-				print "> %s : [Not Compatible]" % modelId
+				print("> %s : [Not Compatible]" % modelId)
 
 		self.assertEqual(result, True)

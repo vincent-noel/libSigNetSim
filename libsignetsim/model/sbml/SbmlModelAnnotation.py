@@ -24,6 +24,7 @@
 
 """
 
+
 from libsignetsim.model.sbml.SbmlModelHistory import SbmlModelHistory
 
 from libsignetsim.settings.Settings import Settings
@@ -46,7 +47,7 @@ class SbmlModelAnnotation(object):
 	def getListOfSBOTermsDescriptions(self):
 
 		res = []
-		for object in self.listOfSbmlObjects.values():
+		for object in self.listOfSbmlObjects:
 			t_description = object.getAnnotation().getSBOTermDescription()
 			if t_description is not None:
 				res.append(t_description)

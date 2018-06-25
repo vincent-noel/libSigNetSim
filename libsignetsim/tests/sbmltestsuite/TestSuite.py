@@ -24,12 +24,15 @@
 	in the SBmL Test Suite
 
 """
+from __future__ import print_function
 
+from builtins import str
+from builtins import object
 from libsignetsim.tests.sbmltestsuite.TestSuiteCase import TestSuiteCase
 from libsignetsim import Settings
 
-from os.path import join, expanduser, exists
-from os import getcwd, mkdir, system
+from os.path import join, exists
+from os import mkdir
 
 
 class TestSuite(object):
@@ -39,28 +42,36 @@ class TestSuite(object):
 	TODO_VERSIONS = []
 	TODO_TAGS = []
 
-	INCOMPATIBLE_CASES = [1504, 1505, 1506, 1507, 1508, 1511, 1512, 1575, 1589, 1590]
-
-	# Cases incompatible with model reduction
-	# INCOMPATIBLE_CASES += [
-	# 	1500, 1501, 1517, 1634, 1642, 1643, 1645, 1646, 1648, 1649, 1651, 1652,
-	# 	1724, 1725, 1730, 1731, 1733, 1734, 1739, 1740, 1775, 1776
-	# ]
-
-	# Cases incompatible with fast reactions
-	INCOMPATIBLE_CASES += [
-		874, 986, 987, 988, 1396, 1397, 1398, 1399, 1544, 1545, 1546, 1547, 1548, 1549, 1550, 1551,
-		1558, 1559, 1560, 1565, 1567, 1568, 1569, 1570, 1571, 1572
-	]
-
-	# Cases incompatible with the reintroduction of initial assignments into C code
-	INCOMPATIBLE_CASES += [1698, 1699]
+	INCOMPATIBLE_CASES = []
 
 	INCOMPATIBLE_TAGS = [
-		'CSymbolDelay',
+		'CSymbolDelay'
 	]
 
+	# FastReations cases
+	INCOMPATIBLE_CASES += [
+		986, 987, 988,
+		1398,# Variable stoichiometry, assigned by an event. Not today
+		1399,# Two possible choices for initial values, not sure how to choose
+		1565,# Problem evaluating sec(0.5) ??!! Also, takes ages
+		1568,# Piecewise logic in a conservation law
+		1569,# Four possible choices for initial values, not sure again
+		1570,# Piecewise login, again
+		1571,# Different output type for solve, should be easy
+		1572, #Two possible initial conditions
+	]
+
+	# RandomEventExecution : This case count twice as much events as it should...
+	INCOMPATIBLE_CASES += [1590]
+
+	# VolumeConcentrationRates cases, something to do with event delay...
+	INCOMPATIBLE_CASES += [1507, 1508, 1511]
+
+	VERSION_INCOMPATIBLE_TAGS = {}
+
 	COMPATIBLE_PACKAGES = ['comp']
+
+	FAIL_ON_EXCEPTION = False
 
 	def __init__(self, version):
 
@@ -124,7 +135,7 @@ class TestSuite(object):
 
 		nb_success = 0
 		nb_cases = 0
-		for case_id, case_tags in self.testCasesTags.items():
+		for case_id, case_tags in list(self.testCasesTags.items()):
 
 			compatible = True
 			if self.TODO_TAGS != []:
@@ -143,6 +154,11 @@ class TestSuite(object):
 					  and tag.strip().split(':')[0] not in self.COMPATIBLE_PACKAGES):
 					compatible = False
 
+				for todo_version in self.TODO_VERSIONS:
+					if todo_version in list(self.VERSION_INCOMPATIBLE_TAGS.keys()) and tag.strip() in self.VERSION_INCOMPATIBLE_TAGS[todo_version]:
+						compatible = False
+
+
 			if (compatible
 				and case_id not in self.INCOMPATIBLE_CASES
 				and todo_tag
@@ -154,7 +170,7 @@ class TestSuite(object):
 
 
 		if nb_cases > 0:
-			print "\n> %d success out of %d tests (%.0f%%)" % (nb_success, nb_cases, nb_success*100/nb_cases)
+			print("\n> %d success out of %d tests (%.0f%%)" % (nb_success, nb_cases, nb_success*100/nb_cases))
 		return nb_cases == nb_success
 
 	def runCase(self, case):
@@ -165,23 +181,30 @@ class TestSuite(object):
 		for versions in self.testCasesVersions[case]:
 			if self.TODO_VERSIONS == [] or versions in self.TODO_VERSIONS:
 
-				print "> Running case %05d (%s)" % (case, str(self.TODO_VERSIONS))
+				print("> Running case %05d (%s)" % (case, str(self.TODO_VERSIONS)))
 
 				level_version = versions.split('.')
 				level = int(level_version[0])
 				version = int(level_version[1])
 
 				nb_cases += 1
+				if self.FAIL_ON_EXCEPTION:
+					if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
+						print("")
 
-				# try:
-				if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
-					print ""
+					test = TestSuiteCase(case, str(level), str(version), test_export=self.testExport)
+					if test.run():
+						nb_success += 1
 
-				test = TestSuiteCase(case, str(level), str(version), test_export=self.testExport)
-				if test.run():
-					nb_success += 1
+				else:
+					try:
+						if Settings.verbose >= 1 or Settings.verboseTiming >= 1:
+							print("")
 
-				# except Exception as e:
-				# 	print ">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e)
+						test = TestSuiteCase(case, str(level), str(version), test_export=self.testExport)
+						if test.run():
+							nb_success += 1
+					except Exception as e:
+						print(">> case %d, %dv%d : ERROR (%s)" % (int(case), level, version, e))
 
 		return nb_success, nb_cases

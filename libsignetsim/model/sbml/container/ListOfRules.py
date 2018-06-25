@@ -78,10 +78,10 @@ class ListOfRules(ListOf, SbmlObject):
 
 		""" Writes rules' list to a sbml file """
 
-		for rule in ListOf.values(self):
+		for rule in self:
 			rule.writeSbml(sbml_model, sbml_level, sbml_version)
 
-		if len(ListOf.values(self)):
+		if len(self):
 			SbmlObject.writeSbml(self, sbml_model.getListOfRules(), sbml_level, sbml_version)
 
 	def copy(self, obj, deletions=[], sids_subs={}, symbols_subs={}, conversion_factors={}, time_conversion=None):
@@ -89,7 +89,7 @@ class ListOfRules(ListOf, SbmlObject):
 		if obj not in deletions:
 			SbmlObject.copy(self, obj)
 
-			for sbml_rule in obj.values():
+			for sbml_rule in obj:
 
 				if sbml_rule not in deletions:
 
@@ -107,18 +107,18 @@ class ListOfRules(ListOf, SbmlObject):
 
 	def getByVariable(self, variable, pos=0):
 		""" Finds rules by variable """
-		return [r for _, r in ListOf.items(self) if r.variable.getSbmlMathFormula() == variable][pos]
+		return [r for r in self if r.variable.getSbmlMathFormula() == variable][pos]
 
 	def hasAssignmentRule(self):
 		""" Checks if there is at least one algebraic rule """
-		for rule in ListOf.values(self):
+		for rule in self:
 			if rule.isAssignment():
 				return True
 		return False
 
 	def hasAlgebraicRule(self):
 		""" Checks if there is at least one algebraic rule """
-		for rule in ListOf.values(self):
+		for rule in self:
 			if rule.isAlgebraic():
 				return True
 
@@ -128,14 +128,14 @@ class ListOfRules(ListOf, SbmlObject):
 
 	def countAlgebraicRules(self):
 		nb = 0
-		for rule in ListOf.values(self):
+		for rule in self:
 			if rule.isAlgebraic():
 				nb += 1
 
 		return nb
 
 	def algebraicContainsVariable(self, variable):
-		for rule in ListOf.values(self):
+		for rule in self:
 			if rule.isAlgebraic():
 				if rule.containsVariable(variable):
 					return True
@@ -176,12 +176,12 @@ class ListOfRules(ListOf, SbmlObject):
 		return t_rule
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
-		for rule in ListOf.values(self):
+		for rule in self:
 			rule.renameSbmlId(old_sbml_id, new_sbml_id)
 
 	def containsVariable(self, variable):
 
-		for rule in ListOf.values(self):
+		for rule in self:
 			if rule.containsVariable(variable):
 				return True
 		return False

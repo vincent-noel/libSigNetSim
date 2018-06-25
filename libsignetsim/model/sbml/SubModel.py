@@ -28,6 +28,8 @@ from libsignetsim.model.sbml.SbmlObject import SbmlObject
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.sbml.container.ListOfDeletions import ListOfDeletions
+from libsignetsim.model.ModelException import UnknownSubmodelRefException
+
 
 class SubModel(HasId):
 
@@ -131,6 +133,8 @@ class SubModel(HasId):
 				return t_doc.listOfModelDefinitions.getBySbmlId(self.__modelRef)
 			elif self.__modelRef in t_doc.listOfExternalModelDefinitions.sbmlIds():
 				return t_doc.listOfExternalModelDefinitions.getBySbmlId(self.__modelRef).modelDefinition
+			else:
+				raise UnknownSubmodelRefException("Model reference %s not found !" % self.__modelRef)
 
 	def getModelInstance(self):
 		from libsignetsim.model.ModelInstance import ModelInstance

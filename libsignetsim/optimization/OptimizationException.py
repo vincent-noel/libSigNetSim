@@ -36,4 +36,15 @@ class OptimizationException(Exception):
 		self.message = message
 
 	def __str__(self):
-		return "%d : %s" % (self.value, self.message)
+		return self.message
+
+class OptimizationCompilationException(OptimizationException):
+	def __init__(self, message):
+		OptimizationException.__init__(self, OptimizationException.COMP_ERROR, message)
+
+
+
+class OptimizationExecutionException(OptimizationException):
+	def __init__(self, message):
+		OptimizationException.__init__(self, OptimizationException.EXEC_ERROR, message)
+

@@ -24,6 +24,7 @@
 
 """
 
+
 from libsignetsim.settings.Settings import Settings
 
 class HasId(object):
@@ -49,7 +50,7 @@ class HasId(object):
 			has_id_object.setId(self.__id)
 
 		if self.__name is not None:
-			has_id_object.setName(self.__name)
+			has_id_object.setName(str(self.__name))
 
 	def getId(self):
 		return self.__id

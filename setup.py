@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-from setuptools import setup, find_packages, Extension
+from setuptools import find_packages
+from distutils.core import setup, Extension
 from os.path import dirname, join
 
 setup(name='libsignetsim',
@@ -18,14 +19,13 @@ setup(name='libsignetsim',
 		'python-libsedml',
 		'sympy',
 		'numpy',
-		'scipy<1.0.0',
+		'scipy',
 		'pydstool',
-		'mpld3',
 		'jinja2',
 		'bioservices',
-		'pandas',
 		'lxml',
-		'coveralls<1.2.0'
+		'coveralls',
+		'future'
 	],
 	ext_modules=[
 		Extension(
@@ -37,7 +37,18 @@ setup(name='libsignetsim',
 				'libsignetsim/lib/integrate/src/dae.c',
 				'libsignetsim/lib/integrate/src/integrate.c',
 				'libsignetsim/lib/integrate/src/realtype_math.c',
-			]
+			],
+			include_dirs=[
+				"/usr/include/cvode/",
+				"/usr/include/ida/",
+				"/usr/include/nvector"
+				"/usr/include/sundials",
+			],
+			libraries=['sundials_cvode', 'sundials_nvecserial', 'sundials_ida', 'm', 'lapack', 'atlas', 'blas'],
+			library_dirs=['/usr/lib64/atlas-basic/'],
+			define_macros=(
+				[("SUNDIALS3", None)] if "SUNDIALS_VERSION_MAJOR 3" in open("/usr/include/sundials/sundials_config.h").read() else None
+			),
 		),
 		Extension(
 			'libsignetsim.lib.plsa.libplsa-serial',
@@ -77,6 +88,8 @@ setup(name='libsignetsim',
 				"/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2021/libevent/include",
 				"/usr/lib/x86_64-linux-gnu/openmpi/include",
 				"/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi",
+				"/usr/lib64/mpi/gcc/openmpi/include/", # Opensuse
+				"/usr/include/openmpi-x86_64/", # Fedora
 			],
 			define_macros=[("MPI", None)],
 			extra_compile_args=["-pthread"]

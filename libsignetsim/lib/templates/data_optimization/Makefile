@@ -15,6 +15,8 @@
 
 log_dir = logs
 
+MPICC = mpicc
+
 SRCDIR = src
 LIBDIR = lib
 
@@ -22,58 +24,58 @@ IDIR = $(SRCDIR)/integrate
 GDIR = $(SRCDIR)
 
 FLAGS = -Wall -Werror -pedantic -std=gnu99
-LIBS = -lsundials_cvode -lsundials_nvecserial -lsundials_ida -lm -llapack -latlas -lblas
 OBJ = scoreFunctions.o model.o data.o $(IOBJ)
 SOBJ = optim.o $(LIBDIR)/libplsa-serial.so main.o
 POBJ = optim_p.o $(LIBDIR)/libplsa-parallel.so main_p.o
 IOBJ = $(LIBDIR)/integrate.so
+LIBS = -lsundials_cvode -lsundials_nvecserial -lsundials_ida -lm
 
 
 lsa: $(OBJ) $(SOBJ)
-	gcc $(OBJ) $(SOBJ) $(LIBS) -o lsa
-	rm *.o
+	$(CC) $(OBJ) $(SOBJ) S(LIBS) -o lsa
+	$(RM) *.o
 
 lsa.mpi: $(OBJ) $(POBJ)
-	mpicc $(OBJ) $(POBJ) $(LIBS) -DMPI -o lsa.mpi
-	rm *.o
+	$(MPICC) $(OBJ) $(POBJ) $(LIBS) -DMPI -o lsa.mpi
+	$(RM) *.o
 
 
 # Generated
 model.o: $(GDIR)/model.c $(GDIR)/model.h
-	gcc -pedantic -std=gnu99 -c $(GDIR)/model.c
+	$(CC) -pedantic -std=gnu99 -c $(GDIR)/model.c
 
 data.o: $(GDIR)/data.c $(GDIR)/data.h
-	gcc $(FLAGS) -c $(GDIR)/data.c
+	$(CC) $(FLAGS) -c $(GDIR)/data.c
 
 optim.o: $(GDIR)/optim.c $(GDIR)/optim.h
-	gcc $(FLAGS) -c $(GDIR)/optim.c
+	$(CC) $(FLAGS) -c $(GDIR)/optim.c
 
 
 optim_p.o: $(GDIR)/optim.c $(GDIR)/optim.h
-	mpicc $(FLAGS) -c -DMPI $(GDIR)/optim.c -o optim_p.o
+	$(MPICC) $(FLAGS) -c -DMPI $(GDIR)/optim.c -o optim_p.o
 
 
 #Other ones
 main.o:	$(SRCDIR)/main.c
-	gcc $(FLAGS) -c $(SRCDIR)/main.c
+	$(CC) $(FLAGS) -c $(SRCDIR)/main.c
 
 main_p.o:	$(SRCDIR)/main.c
-	mpicc $(FLAGS) -c -DMPI $(SRCDIR)/main.c -o main_p.o
+	$(MPICC) $(FLAGS) -c -DMPI $(SRCDIR)/main.c -o main_p.o
 
 scoreFunctions.o: $(SRCDIR)/scoreFunctions.c $(SRCDIR)/scoreFunctions.h
-	gcc $(FLAGS) -c $(SRCDIR)/scoreFunctions.c
+	$(CC) $(FLAGS) -c $(SRCDIR)/scoreFunctions.c
 
 
 # clean
 clean:
-	rm -f lsa lsa.mpi *.o *.state *.log \
+	$(RM) lsa lsa.mpi *.o *.state *.log \
 	$(log_dir)/res_* \
 	$(log_dir)/ref_res_* \
 	$(log_dir)/res/res* \
 	$(log_dir)/score/score*
 
 clean_logs:
-	rm $(log_dir)/res_* \
+	$(RM) $(log_dir)/res_* \
 	$(log_dir)/ref_res_* \
 	$(log_dir)/res/res* \
 	$(log_dir)/score/score*

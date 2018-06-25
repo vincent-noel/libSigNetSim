@@ -33,7 +33,8 @@ from libsignetsim.settings.Settings import Settings
 
 import libsbml
 from libsedml import SEDML_CHANGE_ATTRIBUTE, SEDML_CHANGE_COMPUTECHANGE, SEDML_CHANGE_ADDXML
-reload(libsbml)
+from six.moves import reload_module
+reload_module(libsbml)
 
 class ListOfChanges(ListOf):
 

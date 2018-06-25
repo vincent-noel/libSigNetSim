@@ -61,8 +61,8 @@ class ListOfConstraints(ListOf, HasIds, SbmlObject):
 					sbml_version=Settings.defaultSbmlVersion):
 		""" Writes a constraints' list to a sbml file """
 
-		for constraint in ListOf.values(self):
+		for constraint in self:
 			constraint.writeSbml(sbml_model,sbml_level, sbml_version)
 
-		if len(ListOf.values(self)):
+		if len(self) > 0:
 			SbmlObject.writeSbml(self, sbml_model.getListOfConstraints(), sbml_level, sbml_version)

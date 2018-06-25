@@ -79,7 +79,7 @@ class Variable(SedBase, HasId):
 			variable.setSymbol(self.__symbol.writeSedml(level, version))
 
 		if self.__target.writeSedml(level, version) is not None:
-			variable.setTarget(self.__target.writeSedml(level, version))
+			variable.setTarget(str(self.__target.writeSedml(level, version)))
 
 	def getTaskReference(self):
 		return self.__taskReference

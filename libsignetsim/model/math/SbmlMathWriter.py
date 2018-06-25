@@ -23,6 +23,10 @@
 	This file ...
 
 """
+from __future__ import print_function
+from six import string_types
+
+
 
 from libsignetsim.model.math.sympy_shortcuts import *
 from libsignetsim.settings.Settings import Settings
@@ -47,15 +51,15 @@ class SbmlMathWriter(object):
 
 		formula = self.translateForSbml(self.getInternalMathFormula(), sbml_level, sbml_version)
 		if Settings.verbose >= 2:
-			print "\n> writeSbml"
-			print ">> input : %s" % srepr(self.getInternalMathFormula())
-			print ">> output : %s" % self.printSbml(formula, sbml_level, sbml_version)
+			print("\n> writeSbml")
+			print(">> input : %s" % srepr(self.getInternalMathFormula()))
+			print(">> output : %s" % self.printSbml(formula, sbml_level, sbml_version))
 
 		return formula
 
 	def printSbml(self, formula, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
-		if isinstance(formula, str):
+		if isinstance(formula, string_types):
 			return formula
 		elif isinstance(formula, libsbml.ASTNode):
 			if sbml_level <= 2:
@@ -145,7 +149,20 @@ class SbmlMathWriter(object):
 		# elif isinstance(tree, str):
 		# 	return self.translateVariableForSbml(tree, sbml_level, sbml_version)
 
-		if tree.func == SympySymbol or tree.func == SympyDummy:
+		if tree is None:
+			return None
+
+		elif tree.func == SympyTrue:
+			t_ast = libsbml.ASTNode()
+			t_ast.setType(libsbml.AST_CONSTANT_TRUE)
+			return t_ast
+
+		elif tree.func == SympyFalse:
+			t_ast = libsbml.ASTNode()
+			t_ast.setType(libsbml.AST_CONSTANT_FALSE)
+			return t_ast
+
+		elif tree.func == SympySymbol or tree.func == SympyDummy:
 			return self.translateVariableForSbml(str(tree), sbml_level, sbml_version)
 
 		# elif isinstance(tree.func, SympyUndefinedFunction) and tree.args == (SympySymbol("t"),) and str(tree.func) in self.model.listOfVariables.keys():
@@ -168,7 +185,7 @@ class SbmlMathWriter(object):
 			# One of the values is a float...
 			# The python libsbml doesn't seems to be implemented in that case.
 			# Not sure if it's standard or not, but the test case exists... so
-			if float(long(tree.p)) != float(tree.p) or float(long(tree.p)) != float(tree.p):
+			if float(int(tree.p)) != float(tree.p) or float(int(tree.p)) != float(tree.p):
 				t_ast = libsbml.ASTNode()
 				t_ast.setType(libsbml.AST_DIVIDE)
 				t_ast.addChild(self.translateForSbml(tree.p, sbml_level, sbml_version))
@@ -178,7 +195,7 @@ class SbmlMathWriter(object):
 
 			t_ast = libsbml.ASTNode()
 			t_ast.setType(libsbml.AST_RATIONAL)
-			t_ast.setValue(long(tree.p), long(tree.q))
+			t_ast.setValue(int(tree.p), int(tree.q))
 			return t_ast
 
 		elif tree.func == SympyNegOne:
@@ -300,6 +317,58 @@ class SbmlMathWriter(object):
 					t_ast_2.addChild(t_ast)
 				t_ast_2.addChild(t_tree_denominator)
 				return t_ast_2
+
+			return t_ast
+
+		# rateOf
+		elif tree.func == SympyRateOf:
+			t_ast = libsbml.ASTNode()
+			t_ast.setType(libsbml.AST_FUNCTION_RATE_OF)
+			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			return t_ast
+
+		# quotient
+		elif tree.func == SympyQuotient:
+			t_ast = libsbml.ASTNode()
+			t_ast.setType(libsbml.AST_FUNCTION_QUOTIENT)
+			# t_ast.setName("quotient")
+			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast.addChild(self.translateForSbml(tree.args[1], sbml_level, sbml_version))
+			return t_ast
+
+		# quotient
+		elif tree.func == SympyRem:
+			t_ast = libsbml.ASTNode()
+			t_ast.setType(libsbml.AST_FUNCTION_REM)
+			# t_ast.setName("rem")
+			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast.addChild(self.translateForSbml(tree.args[1], sbml_level, sbml_version))
+			return t_ast
+
+		# implies
+		elif tree.func == SympyImplies:
+			t_ast = libsbml.ASTNode()
+			t_ast.setType(libsbml.AST_LOGICAL_IMPLIES)
+			# t_ast.setName("implies")
+			t_ast.addChild(self.translateForSbml(tree.args[0], sbml_level, sbml_version))
+			t_ast.addChild(self.translateForSbml(tree.args[1], sbml_level, sbml_version))
+			return t_ast
+
+		# min
+		elif tree.func == SympyUnevaluatedMin:
+			t_ast = libsbml.ASTNode()
+			t_ast.setType(libsbml.AST_FUNCTION_MIN)
+			for i_arg, arg in enumerate(tree.args):
+				t_ast.addChild(self.translateForSbml(arg, sbml_level, sbml_version))
+
+			return t_ast
+
+		# max
+		elif tree.func == SympyUnevaluatedMax:
+			t_ast = libsbml.ASTNode()
+			t_ast.setType(libsbml.AST_FUNCTION_MAX)
+			for i_arg, arg in enumerate(tree.args):
+				t_ast.addChild(self.translateForSbml(arg, sbml_level, sbml_version))
 
 			return t_ast
 

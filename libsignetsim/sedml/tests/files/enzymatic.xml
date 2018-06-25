@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" version="1">
+  <model metaid="_meta_id_0_" name="Enzymatic Reaction">
+    <listOfCompartments metaid="_meta_id_4_">
+      <compartment metaid="_meta_id_12_" id="cell" name="cell" size="1" constant="true">
+        <notes>
+          <body xmlns="http://www.w3.org/1999/xhtml">cell</body>
+        </notes>
+      </compartment>
+    </listOfCompartments>
+    <listOfSpecies metaid="_meta_id_1_">
+      <species metaid="_meta_id_11_" id="E" name="E" compartment="cell" initialConcentration="10" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="_meta_id_13_" id="S" name="S" compartment="cell" initialConcentration="12" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="_meta_id_14_" id="P" name="P" compartment="cell" initialConcentration="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+    </listOfSpecies>
+    <listOfParameters metaid="_meta_id_2_">
+      <parameter metaid="_meta_id_15_" id="vmax" name="vmax" value="0.211" constant="true"/>
+      <parameter metaid="_meta_id_16_" id="km" name="km" value="1.233" constant="true"/>
+    </listOfParameters>
+    <listOfReactions metaid="_meta_id_3_">
+      <reaction metaid="_meta_id_17_" id="Enzymatic_reaction" name="Enzymatic reaction" reversible="true" fast="false">
+        <listOfReactants>
+          <speciesReference metaid="_meta_id_22_" species="S" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference metaid="_meta_id_24_" species="P" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference metaid="_meta_id_23_" species="E"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> E </ci>
+                <ci> S </ci>
+                <ci> vmax </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> km </ci>
+                <ci> S </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+    </listOfReactions>
+  </model>
+</sbml>

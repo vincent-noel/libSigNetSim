@@ -4,27 +4,31 @@ services: docker
 
 language: python
 
-python: 2.7
-
 env:
-  - JOB=sbml-test-suite ARG=3.1
-  - JOB=sbml-test-suite ARG=2.5
-  - JOB=sbml-test-suite ARG=2.4
-  - JOB=sbml-test-suite ARG=2.3
-  - JOB=sbml-test-suite ARG=2.2
-  - JOB=sbml-test-suite ARG=2.1
-  - JOB=sbml-test-suite ARG=1.2
-  - JOB=others
-  - secure: "FPYoBFdmbc5kPuE16lqGRnlm/qwZ6eONcm33auAWIkp7JiSiLD4bZKYx+mBBiOy8bFI58pnXijQ0ruUDtHagFU9t7ozMXgaQAJjvxKqyJSwJpojTnveOKwUIaakbymAQa6+2cBC+IJ/yTlpqnxhWUolDc+9iTi0ZP91dVttxATJIguYtngVkcJsnMYWadThhjvfERkdHswDyGzB8Io725peA1xJwY5fDqmPTULsVMJs/XYBhGQEowURR3guxCsp5ghqXmxeqzlpMTGbgMZTQ++FGzfIC5ZVNqLFEXD/RrU5qxb9NHzff8WjGQo7mU1vALKkbFCHrCIJX/TTbLYIZg8r5hzbetFUh9YHtRCJIBfs+je1QdYO2GEHxgx2aHpnRwqH6EjefWglDWo9dBkdkkHg4R0p5CY2037vTmkWFcgtdZ7SR+AzV3dA37ETGFZSwIq/9OUqbKJ+5jofvGPQo+9Ol0fhQhNNueHKl+yfQ2rHbLwTUOZUjHiLTGdNO0WL7dSewh2KwACMKX+AiTQzCM/xgDZjdzVdquXb/H7lQcFWRJ0+4OqmjqIuQR9MKArxnoe5rHFzo+Yz8gYPSulI+qOQeSC7uboypNiFOzLcI89h7astges6cKe71yaxfIWoQ3cwvPHM4Q5Ej2zYWo9Sa7AsVTG6eAEGalRIV49A0UWY="
+  global:
+    secure: "o+HS2ED1PhS54P1f7GuumhHRF1dSa/AKQYVFPK6WNY+xTXL7WQJcZ3U7gVO0nd9h15VnAtYoQdj3uIkBxbJdk3Fxa/sXVV54waEug5ElLQrEAVOfLJbpqbjb2IsZsoy9fmnQHPvwrMr91KW6GAeXwfyDO0vOSjzaAYgY20fSIvbaljcghrqojctPXzxCQxRVa8eCThQ9Q+WfFHckxD0zdINB5PL6CxGBWOOQ+WL+Ru5tYOGA6tnub2mcaQJLKMV32S5fqwOhx6XYW8aCOYR8W13a+TyfKwOsqqnfnArrYt57+O9/9nmIcUOg+dwO8d0bsNbN1YryI9d8ueRyGe72BVaPV/tQQ4McoSOd4HJ+Ci2WyH+HSaJcCT3ThVrKoIx8HaGtFuATsYCkDjbE5PHHkmBnaTF7sRfKZEX5AnSz8CARo/JZO53jWnqIPNvFMud4zQogRyWd0HF/n5Qvus0vkcqKDqtag2iR4xJR74ymDy+wVQ34CTqT4atIAk27jVcOG8ngfIwF1JybGccyP+QSlCla7ORQ8L5zyC/5ob48w5Kwua81TkK5evty/VwnEklCKxVfbuUrXQwMSqnd5KsDbUfgo3e9tMBNRAAGKw+bQQ1fLZ8YwzU+xFyAfWJt/TEC0uShlrPehOhusR+Xxp3HZMOsoNzqIKOxIUNvJOQYiJs="
+  matrix:
+    - JOB=sbml-test-suite ARG=3.2 PY=python3
+    - JOB=sbml-test-suite ARG=3.1 PY=python3
+    - JOB=sbml-test-suite ARG=2.5 PY=python3
+    - JOB=sbml-test-suite ARG=2.4 PY=python3
+    - JOB=sbml-test-suite ARG=2.3 PY=python3
+    - JOB=sbml-test-suite ARG=2.2 PY=python3
+    - JOB=sbml-test-suite ARG=2.1 PY=python3
+    - JOB=sbml-test-suite ARG=1.2 PY=python3
+    - JOB=others ARG=NULL PY=python3
+    - JOB=others ARG=NULL PY=python2
+    - JOB=docker ARG=NULL PY=python3
+    - JOB=docker ARG=NULL PY=python2
 
 before_install:
-- /bin/bash travis_run.sh before_install $JOB $ARG
+- /bin/bash travis_run.sh before_install $JOB $ARG $PY $PASSWORD
 
 install:
-- /bin/bash travis_run.sh install $JOB $ARG
+- /bin/bash travis_run.sh install $JOB $ARG $PY
 
 script:
-- /bin/bash travis_run.sh script $JOB $ARG
+- /bin/bash travis_run.sh script $JOB $ARG $PY
 
 after_script:
-- /bin/bash travis_run.sh after_script $JOB $ARG
+- /bin/bash travis_run.sh after_script $JOB $ARG $PY

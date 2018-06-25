@@ -60,7 +60,7 @@ class ListOfDeletions(ListOf, HasIds):#, SbmlObject):
 					sbml_version=Settings.defaultSbmlVersion):
 		""" Writes compartments' list to a sbml file """
 
-		for t_deletion in ListOf.values(self):
+		for t_deletion in self:
 			sbml_deletion = sbml_model.createDeletion()
 			t_deletion.writeSbml(sbml_deletion, sbml_level, sbml_version)
 
@@ -87,7 +87,7 @@ class ListOfDeletions(ListOf, HasIds):#, SbmlObject):
 	def getDeletedMetaIds(self):
 
 		objs = []
-		for deletion in ListOf.values(self):
+		for deletion in self:
 			objs.append(deletion.getRefObject().getMetaId())
 
 		return objs

@@ -38,11 +38,6 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, list):
 		ListOfSbmlVariables.__init__(self, model)
 		list.__init__(self)
 
-	def values(self):
-		""" Override values() to sort by id """
-		return self
-
-	# Add/Remove variables
 	def addVariable(self, variable, string=None):
 
 		t_sbmlId = ListOfSbmlVariables.newSbmlId(self, variable, string)
@@ -70,6 +65,12 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, list):
 			if var.symbol.getSymbol() == symbol:
 				return var
 
+	def getBySymbolStr(self, symbol_str):
+		""" Get a sbml variable by his symbol string"""
+		for var in self:
+			if var.getSymbolStr() == symbol_str:
+				return var
+
 	# Renaming variable
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		old_symbol = SympySymbol(old_sbml_id)
@@ -83,3 +84,12 @@ class ListOfVariables(ListOfMathVariables, ListOfSbmlVariables, list):
 
 	def clear(self):
 		list.__init__(self)
+
+	def getFastVariables(self):
+		return [species for species in self.__model.listOfSpecies if species.isOnlyInFastReactions()]
+
+	def getMixedVariables(self):
+		return [species for species in self.__model.listOfSpecies if species.isInFastReactions()]
+
+	def getSlowVariables(self):
+		return [species for species in self.__model.listOfSpecies if not species.isInFastReactions()]

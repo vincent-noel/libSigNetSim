@@ -24,6 +24,8 @@
 
 """
 
+
+from six import string_types
 from libsignetsim.model.math.MathSymbol import MathSymbol
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.settings.Settings import Settings
@@ -58,7 +60,7 @@ class MathVariable(object):
 		self.is_in_dae = None
 		self.isFromReaction = is_from_reaction
 
-		# self.mathVariable = False
+		self.mathVariable = False
 		# self.mathIsConcentration = None
 		# self.mathCompartment = None
 
@@ -74,7 +76,7 @@ class MathVariable(object):
 
 	def copy(self, obj, symbols_subs={}, conversion_factor=None, pure_math_variable=False):
 
-		if obj.symbol.getSymbol() in symbols_subs.keys():
+		if obj.symbol.getSymbol() in list(symbols_subs.keys()):
 			self.symbol.setInternalMathFormula(symbols_subs[obj.symbol.getSymbol()])
 		else:
 			self.symbol.setInternalMathFormula(obj.symbol.getSymbol())
@@ -106,8 +108,8 @@ class MathVariable(object):
 		self.ind = obj.ind
 		self.type = obj.type
 
-		# if pure_math_variable:
-		# 	self.mathVariable = True
+		if pure_math_variable:
+			self.mathVariable = True
 		# 	if not obj.mathVariable:
 		# 		if obj.isSpecies() and obj.isConcentration():
 		# 			self.mathIsConcentration = True
@@ -136,7 +138,7 @@ class MathVariable(object):
 			self.isInitialized = True
 			self.value.setValueMathFormula(value)
 
-		elif isinstance(value, str):
+		elif isinstance(value, string_types):
 			self.isInitialized = True
 			self.value.setPrettyPrintMathFormula(value)
 
@@ -226,7 +228,7 @@ class MathVariable(object):
 
 	def getODE(self, including_fast_reactions=True, rawFormula=False):
 
-		if self.isRateRuled():
+		if self.isRateRuled() and self.isRuledBy().isValid():
 			return self.isRuledBy().getDefinition(rawFormula=rawFormula)
 
 		else:
@@ -258,6 +260,14 @@ class MathVariable(object):
 			so we actually need to check before looking at the spatialDimensions
 		"""
 
-		return (self.isSpecies()
+		return (not self.mathVariable and self.isSpecies()
 				and (self.getCompartment() is not None and not self.getCompartment().spatialDimensions == 0)
 				and not self.hasOnlySubstanceUnits)
+
+	def getSymbol(self):
+
+		return self.symbol
+
+	def getSymbolStr(self):
+
+		return self.symbol.getSymbol().name

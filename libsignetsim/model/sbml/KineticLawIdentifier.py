@@ -24,6 +24,7 @@
 
 """
 
+
 from sympy import simplify, expand, srepr
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 from libsignetsim.model.math.sympy_shortcuts import (
@@ -145,7 +146,7 @@ class KineticLawIdentifier(object):
 
 		t_replaces = {}
 
-		for compartment in self.model.listOfCompartments.values():
+		for compartment in self.model.listOfCompartments:
 			t_replaces.update({compartment.symbol.getInternalMathFormula(): SympyInteger(1)})
 
 		return unevaluatedSubs(t_rate, t_replaces)
@@ -160,13 +161,13 @@ class KineticLawIdentifier(object):
 
 		t_replaces = {}
 
-		for compartment in self.model.listOfCompartments.values():
+		for compartment in self.model.listOfCompartments:
 			t_replaces.update({compartment.symbol.getInternalMathFormula(): SympyInteger(1)})
 
-		for species in self.model.listOfSpecies.values():
+		for species in self.model.listOfSpecies:
 			t_replaces.update({species.symbol.getInternalMathFormula(): SympyInteger(1)})
 
-		return unevaluatedSubs(t_rate, t_replaces)
+		return expand(simplify(unevaluatedSubs(t_rate, t_replaces)))
 
 
 	def simplifyRate(self, formula=None):
@@ -178,82 +179,38 @@ class KineticLawIdentifier(object):
 
 		t_replaces = {}
 
-		for var in self.model.listOfVariables.values():
+		for var in self.model.listOfVariables:
 			if var.isParameter():
 				t_replaces.update({var.symbol.getInternalMathFormula(): self.T_PARAM})
 			elif var.isCompartment():
 				t_replaces.update({var.symbol.getInternalMathFormula(): SympyInteger(1)})
 
-		for i, reactant in enumerate(self.reaction.listOfReactants.values()):
+		for i, reactant in enumerate(self.reaction.listOfReactants):
 			if i == 0:
 				t_replaces.update({reactant.getSpecies().symbol.getInternalMathFormula(): self.T_REACTANT})
 			else:
 				t_replaces.update({reactant.getSpecies().symbol.getInternalMathFormula(): SympyInteger(1)})
 
-		for i, modifier in enumerate(self.reaction.listOfModifiers.values()):
+		for i, modifier in enumerate(self.reaction.listOfModifiers):
 			if i == 0:
 				t_replaces.update({modifier.getSpecies().symbol.getInternalMathFormula(): self.T_MODIFIER})
 			else:
 				t_replaces.update({modifier.getSpecies().symbol.getInternalMathFormula(): SympyInteger(1)})
 
-		for i, product in enumerate(self.reaction.listOfProducts.values()):
+		for i, product in enumerate(self.reaction.listOfProducts):
 			if i == 0:
 				t_replaces.update({product.getSpecies().symbol.getInternalMathFormula(): self.T_PRODUCT})
 			else:
 				t_replaces.update({product.getSpecies().symbol.getInternalMathFormula(): SympyInteger(1)})
 
-
 		return simplify(unevaluatedSubs(t_rate, t_replaces))
 
-	def isFactor(self, formula, term):
+	def isReversible(self, formula=None):
 
+		if formula is None:
+			formula = self.simplifyRate()
 
-
-		if formula == term:
-			return True
-
-		elif formula.func == SympyPow and formula.args[0] == term and formula.args[1].func == SympyInteger and int(formula.args[1]) > 0:
-			return True
-
-		elif formula.func == SympyMul:
-			for arg in formula.args:
-				if self.isFactor(arg, term):
-					return True
-
-		return False
-
-
-
-	def isMassAction(self, formula):
-
-		# print formula
-		# We look for parameter*(species^n)
-		t_formula = SympyZero
-
-
-
-		if formula.func == SympyMul:
-			if self.isFactor(formula, self.T_PARAM):
-				t_formula = formula/self.T_PARAM
-
-				if t_formula == self.T_SPECIES:
-					return True
-				elif t_formula.func == SympyPow and t_formula.args[0] == self.T_SPECIES and t_formula.args[1].func == SympyInteger:
-					return True
-		elif formula == self.T_PARAM:
-			return True
-		return False
-
-	def isMichaelisMentenWithoutEnzyme(self, formula):
-		return formula == self.T_MM_1
-
-	def isMichaelisMentenWithEnzyme(self, formula):
-		return formula == self.T_MM_2
-
-
-	def isReversible(self, formula):
-
-		formula = expand(formula)
+		formula = expand(simplify(formula))
 		# If we had an addition
 		if formula.func == SympyAdd:
 
@@ -269,19 +226,14 @@ class KineticLawIdentifier(object):
 
 		return False
 
-
 	def getReversibleRates(self, formula):
 
-		t_forward = None
 		t_backward = None
-		formula = simplify(formula)
-		# print formula
+		formula = expand(simplify(formula))
 		# If we had an addition
 		if formula.func == SympyAdd:
-			# print srepr(formula)
 			# And one of the terms
 			for arg in formula.args:
-
 				# is *(-1)
 				if arg.func == SympyMul:
 					if (arg.args[0] == SympyInteger(-1)
@@ -303,15 +255,9 @@ class KineticLawIdentifier(object):
 
 		self.mathRate = self.removeCompartmentsFromRate()
 		self.typeRate = self.simplifyRate()
-
-		# print ">>"
-		# print self.typeRate
-		# print simplify(self.typeRate - self.T_MA_IR)
-		# print simplify(self.typeRate - self.T_MA_R)
-
 		self.reversible = False
 
-		t_formula = self.typeRate
+		t_formula = expand(simplify(self.typeRate))
 
 		if simplify(self.typeRate - self.T_MA_IR) == 0 or simplify(self.typeRate - self.T_MA_R) == 0:
 			self.reactionType = self.MASS_ACTION
@@ -326,29 +272,16 @@ class KineticLawIdentifier(object):
 		):
 			self.reactionType = self.MICHAELIS
 
-		elif self.isReversible(t_formula):
-			self.reversible = True
-			self.reaction.reversible = True
-			(forward, backward) = self.getReversibleRates(self.mathRate)
-
-			if (self.isMassAction(self.simplifyRate(forward))
-				and self.isMassAction(self.simplifyRate(backward))):
-
-				self.reactionType = self.MASS_ACTION
-
 		else:
 			self.reactionType = self.UNDEFINED
-
-		# print self.reactionTypes[self.reactionType]
-
 
 	def getReversibleFormulas(self):
 
 		t_formula = self.getDefinition().getDeveloppedInternalMathFormula()
-		for compartment in self.model.listOfCompartments.values():
+		for compartment in self.model.listOfCompartments:
 			t_formula = t_formula.subs(compartment.symbol.getInternalMathFormula(), SympyInteger(1))
 
-		t_formula = simplify(t_formula)
+		t_formula = expand(simplify(t_formula))
 		found = False
 
 		if t_formula.func == SympyAdd:
@@ -361,8 +294,6 @@ class KineticLawIdentifier(object):
 					self.backwardMathFormula = t_formula.args[0]*SympyInteger(-1)
 					found = True
 
-
-
 			if t_formula.args[1].func == SympyMul and not found:
 				if (t_formula.args[1].args[0] == SympyInteger(-1)
 					or t_formula.args[1].args[1] == SympyInteger(-1)):
@@ -370,12 +301,7 @@ class KineticLawIdentifier(object):
 					self.forwardMathFormula = t_formula.args[0]
 					self.backwardMathFormula = t_formula.args[1]*SympyInteger(-1)
 
-
-
 	def getParameters(self):
-
-		# print self.removeSpeciesAndCompartmentsFromRate()
-		# print srepr(self.removeSpeciesAndCompartmentsFromRate())
 
 		if self.reactionType == self.MASS_ACTION and not self.reversible:
 			return self.findMassActionParameters()
@@ -385,9 +311,6 @@ class KineticLawIdentifier(object):
 
 		elif self.reactionType == self.MICHAELIS:
 			return self.findMichaelisMentenParameters()
-
-
-
 
 	def findMichaelisMentenParameters(self):
 
@@ -429,21 +352,15 @@ class KineticLawIdentifier(object):
 					elif t_formula.args[1].args[1].args[1] == SympyInteger(1):
 						param_michaelis = t_formula.args[1].args[1].args[0]
 
-
 		param_catalytic = self.model.listOfVariables.getBySymbol(param_catalytic)
 		param_michaelis = self.model.listOfVariables.getBySymbol(param_michaelis)
+
 		return [param_catalytic, param_michaelis]
-
-
-
-
 
 	def findMassActionParameters(self):
 
 		param = self.removeSpeciesAndCompartmentsFromRate()
-		param = self.model.listOfVariables.getBySymbol(param)
-		return [param]
-
+		return [self.model.listOfVariables.getBySymbol(param)]
 
 	def findReversibleMassActionParameters(self):
 

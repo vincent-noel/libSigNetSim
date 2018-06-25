@@ -151,5 +151,11 @@ class ReplacedBy(HasRef):
 			elif self.hasMetaId():
 				return tt_model.listOfSbmlObjects.getByMetaId(self.getMetaIdRef())
 
+
+	def renameSbmlId(self, old_sbml_id, new_sbml_id, submodel_ref=None):
+
+		if self.hasIdRef() and self.getIdRef() == old_sbml_id:
+			self.setIdRef(new_sbml_id)
+
 	def getParentObject(self):
 		return self.__parentObj

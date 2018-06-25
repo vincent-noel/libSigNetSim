@@ -47,13 +47,13 @@ class ListOfExperimentalData(dict):
 
 	def writeNuML(self, composite_value):
 
-		for data in self.values():
+		for data in list(self.values()):
 			data.writeNuML(composite_value)
 
 	def getMaxTime(self):
 
 		max_time = 0
-		for data in self.values():
+		for data in list(self.values()):
 			if data.t > max_time:
 				max_time = data.t
 		return max_time
@@ -61,14 +61,14 @@ class ListOfExperimentalData(dict):
 	def getSpecies(self):
 		""" Returns an array of sbml ids"""
 		species = []
-		for data in self.values():
+		for data in list(self.values()):
 			species.append(data.name)
 		return list(set(species))
 
 	def getTimes(self):
 
 		times = []
-		for data in self.values():
+		for data in list(self.values()):
 			times.append(data.t)
 
 		return times
@@ -78,7 +78,7 @@ class ListOfExperimentalData(dict):
 		result = {}
 		for species in self.getSpecies():
 			result.update({species: []})
-		for data in self.values():
+		for data in list(self.values()):
 			result[data.name].append(data)
 
 		return result
@@ -87,8 +87,8 @@ class ListOfExperimentalData(dict):
 	def getValuesOfSpecies(self):
 
 		values = {}
-		for data in self.values():
-			if data.name not in values.keys():
+		for data in list(self.values()):
+			if data.name not in list(values.keys()):
 				values.update({data.name: []})
 
 			values[data.name].append(data.value)
@@ -97,8 +97,8 @@ class ListOfExperimentalData(dict):
 	def getTimesOfSpecies(self):
 
 		times = {}
-		for data in self.values():
-			if data.name not in times.keys():
+		for data in list(self.values()):
+			if data.name not in list(times.keys()):
 				times.update({data.name: []})
 
 			times[data.name].append(data.t)
@@ -108,8 +108,8 @@ class ListOfExperimentalData(dict):
 	def getValues(self):
 
 		values = {}
-		for data in self.values():
-			if data.name not in values.keys():
+		for data in list(self.values()):
+			if data.name not in list(values.keys()):
 				values.update({data.name: []})
 
 			values[data.name].append((data.t, data.value))
@@ -121,12 +121,12 @@ class ListOfExperimentalData(dict):
 		new_experimental_data = {}
 		new_currentId = 0
 
-		list_species = list(set([data.name for data in self.values()]))
+		list_species = list(set([data.name for data in list(self.values())]))
 
 		for species in list_species:
 			times = []
 			values = []
-			for data in self.values():
+			for data in list(self.values()):
 				if data.name == species:
 					times.append(data.t)
 					values.append(data.value)
@@ -153,7 +153,7 @@ class ListOfExperimentalData(dict):
 	def getVariables(self):
 
 		variables = []
-		for data in self.values():
+		for data in list(self.values()):
 			variables.append(data.name)
 
 		return list(set(variables))

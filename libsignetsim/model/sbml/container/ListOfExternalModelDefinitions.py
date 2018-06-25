@@ -62,7 +62,7 @@ class ListOfExternalModelDefinitions(ListOf, HasIds, HasParentObj):
 					sbml_version=Settings.defaultSbmlVersion):
 		""" Writes external model definitions' list to a sbml file """
 
-		for model in ListOf.values(self):
+		for model in self:
 			sbml_emd = sbml_document.createExternalModelDefinition()
 			model.writeSbml(sbml_emd, sbml_level, sbml_version)
 
@@ -77,7 +77,7 @@ class ListOfExternalModelDefinitions(ListOf, HasIds, HasParentObj):
 
 	def getListOfModelDefinitions(self):
 		res = []
-		for external_model in ListOf.values(self):
+		for external_model in self:
 			res.append(external_model)
 		return res
 

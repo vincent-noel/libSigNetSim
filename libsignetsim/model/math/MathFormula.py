@@ -23,6 +23,7 @@
 	This file ...
 
 """
+from __future__ import absolute_import
 
 from libsignetsim.model.math.sympy_shortcuts import  (
 	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
@@ -48,7 +49,7 @@ from libsignetsim.model.ModelException import SbmlException
 from libsbml import parseL3Formula, formulaToL3String
 from sympy import simplify, srepr
 
-from MathDevelopper import unevaluatedSubs
+from .MathDevelopper import unevaluatedSubs
 
 class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 	""" Class for handling math formulaes """
@@ -74,6 +75,8 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 	MATH_VALUE          =  29
 	MATH_RATIONAL       =  30
 	MATH_ZERO           =  31
+	MATH_DELAY			=  32
+	MATH_PRIORITY		=  33
 
 	ZERO                = SympyInteger(0)
 	ONE                 = SympyInteger(1)
@@ -107,6 +110,8 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 		self.isEventAssignment = (typeOfFormula == self.MATH_EVENTASSIGNMENT)
 		self.isAssignmentRule = (typeOfFormula == self.MATH_ASSIGNMENTRULE)
 		self.isAlgebraicRule = (typeOfFormula == self.MATH_ALGEBRAICRULE)
+		self.isDelay = (typeOfFormula == self.MATH_DELAY)
+		self.isPriority = (typeOfFormula == self.MATH_PRIORITY)
 
 		if isFromReaction is not None:
 			self.isFromReaction = isFromReaction.objId
@@ -127,7 +132,7 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 
 		if not rawFormula:
 			t_subs_mask = {}
-			for t_var in self.__model.listOfSpecies.values():
+			for t_var in self.__model.listOfSpecies:
 				if t_var.isConcentration():
 					t_subs_mask.update({SympySymbol(
 						"_speciesForcedConcentration_%s_" % str(t_var.symbol.getInternalMathFormula())):t_var.symbol.getInternalMathFormula()})
@@ -140,7 +145,7 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 
 		if not rawFormula:
 			t_subs_mask = {}
-			for t_var in self.__model.listOfSpecies.values():
+			for t_var in self.__model.listOfSpecies:
 				if t_var.isConcentration():
 					t_subs_mask.update({SympySymbol(
 						"_speciesForcedConcentration_%s_" % str(
@@ -219,7 +224,7 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 		self.readSbml(sbml_formula, self.sbmlLevel, self.sbmlVersion)
 		if not rawFormula:
 			t_subs_mask = {}
-			for t_var in self.__model.listOfSpecies.values():
+			for t_var in self.__model.listOfSpecies:
 				if t_var.isConcentration():
 					t_subs_mask.update({t_var.symbol.getInternalMathFormula():SympySymbol("_speciesForcedConcentration_%s_" % str(t_var.symbol.getInternalMathFormula()))})
 

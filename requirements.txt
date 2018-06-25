@@ -3,11 +3,11 @@ python-libsbml
 python-libsedml
 python-libnuml
 numpy
-scipy<1.0.0
-PyDSTool
+scipy
+git+https://github.com/vincent-noel/pydstool.git@tkf
 sympy
 bioservices
-pandas
 lxml
 jinja2
-coveralls<1.2.0
+coveralls
+future

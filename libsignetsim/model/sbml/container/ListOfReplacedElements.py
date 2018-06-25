@@ -57,7 +57,7 @@ class ListOfReplacedElements(ListOf):#, SimpleSbmlObject):
 					sbml_version=Settings.defaultSbmlVersion):
 		""" Writes compartments' list to a sbml file """
 
-		for t_replaced_element in ListOf.values(self):
+		for t_replaced_element in self:
 			t_replaced_element.writeSbml(sbml_object, sbml_level, sbml_version)
 
 	def new(self):
@@ -69,7 +69,7 @@ class ListOfReplacedElements(ListOf):#, SimpleSbmlObject):
 
 	def copy(self, obj, prefix="", shift=0):
 
-		for replaced_element in obj.values():
+		for replaced_element in obj:
 			t_re = ReplacedElement(self.__model, self.__parentObj, (replaced_element.objId + shift))
 			t_re.copy(replaced_element, prefix, shift)
 			ListOf.add(self, t_re)
@@ -83,13 +83,13 @@ class ListOfReplacedElements(ListOf):#, SimpleSbmlObject):
 
 	def getByReplacedElementObject(self, re_object):
 
-		for replacement_element in ListOf.values(self):
+		for replacement_element in self:
 			if replacement_element.getReplacedElementObject() == re_object:
 				return replacement_element
 
 	def containsSubmodel(self, submodel_ref):
 
-		for replaced_element in ListOf.values(self):
+		for replaced_element in self:
 			if replaced_element.getSubmodelRef() == submodel_ref:
 				return True
 

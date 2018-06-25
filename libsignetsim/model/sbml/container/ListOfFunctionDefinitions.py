@@ -61,10 +61,10 @@ class ListOfFunctionDefinitions(ListOf, HasIds, SbmlObject):
 						sbml_version=Settings.defaultSbmlVersion):
 		""" Writes the list of events to a sbml model """
 
-		for function_definition in ListOf.values(self):
+		for function_definition in self:
 			function_definition.writeSbml(sbml_model, sbml_level, sbml_version)
 
-		if len(ListOf.values(self)):
+		if len(self) > 0:
 			SbmlObject.writeSbml(self, sbml_model.getListOfFunctionDefinitions(), sbml_level, sbml_version)
 
 
@@ -72,7 +72,7 @@ class ListOfFunctionDefinitions(ListOf, HasIds, SbmlObject):
 
 		if obj not in deletions:
 			SbmlObject.copy(self, obj)
-			for function_definition in obj.values():
+			for function_definition in obj:
 				if function_definition not in deletions:
 					t_function = FunctionDefinition(self.__model, self.nextId())
 					t_function.copy(function_definition, sids_subs=sids_subs)

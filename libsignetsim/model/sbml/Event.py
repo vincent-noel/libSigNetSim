@@ -74,8 +74,6 @@ class Event(Variable, SbmlObject, HasParentObj):
 
 		if sbml_event.getTrigger() is not None:
 			self.trigger.readSbml(sbml_event.getTrigger(), sbml_level, sbml_version)
-		else:
-			self.trigger = None
 
 		Variable.readSbml(self, sbml_event, sbml_level, sbml_version)
 
@@ -308,8 +306,10 @@ class Event(Variable, SbmlObject, HasParentObj):
 		return size
 
 	def isValid(self):
-
-		return self.trigger is not None and len([ass for ass in self.listOfEventAssignments if ass.getDefinition() is None]) == 0
+		return (
+			self.trigger is not None and self.trigger.isValid()
+			and len([ass for ass in self.listOfEventAssignments if ass.isValid()]) > 0
+		)
 
 	def getByXPath(self, xpath):
 

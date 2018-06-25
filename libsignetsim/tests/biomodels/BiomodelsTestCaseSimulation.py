@@ -23,7 +23,12 @@
 	This file ...
 
 """
+from __future__ import print_function
+from __future__ import division
 
+from builtins import str
+from builtins import range
+from past.utils import old_div
 from libsignetsim.simulation.TimeseriesSimulation import TimeseriesSimulation
 from libsignetsim.model.SbmlDocument import SbmlDocument
 
@@ -142,7 +147,7 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 
 								# Here we ask for the concentration but it's declared an amount
 								if t_var.symbol.getPrettyPrintMathFormula() in self.sbmlIdToPlotConcentrations and t_var.hasOnlySubstanceUnits:
-									t_value = trajs[t_var.symbol.getPrettyPrintMathFormula()][traj_pos]/trajs[t_compartment.symbol.getPrettyPrintMathFormula()][traj_pos]
+									t_value = old_div(trajs[t_var.symbol.getPrettyPrintMathFormula()][traj_pos],trajs[t_compartment.symbol.getPrettyPrintMathFormula()][traj_pos])
 
 								else:
 									t_value = trajs[t_var.symbol.getPrettyPrintMathFormula()][traj_pos]
@@ -151,11 +156,11 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 
 							if abs(t_value-t_expected_value) > (self.testAbsTol + self.testRelTol*abs(t_expected_value)):
 								if DEBUG:
-									print "%s : %.10g, %.10g (%.0f%%, %.2g)" % (var, t_value, t_expected_value, abs(t_value-t_expected_value)/t_expected_value*100, etraj_times[t])
+									print("%s : %.10g, %.10g (%.0f%%, %.2g)" % (var, t_value, t_expected_value, abs(t_value-t_expected_value)/t_expected_value*100, etraj_times[t]))
 
 								precisionError = True
 						else:
-							print "cannot find variable %s" % var
+							print("cannot find variable %s" % var)
 			if precisionError:
 				return -2
 			return 0
@@ -191,7 +196,7 @@ class BiomodelsTestCaseSimulation(TimeseriesSimulation):
 							t_compartment = t_var.getCompartment()
 							# Here we ask for the concentration but it's declared an amount
 							if t_var.getSbmlId() in self.sbmlIdToPlotConcentrations and t_var.hasOnlySubstanceUnits:
-								line += " %.16g" % (trajs[t_var.getSbmlId()][i_t]/trajs[t_compartment.getSbmlId()][i_t])
+								line += " %.16g" % (old_div(trajs[t_var.getSbmlId()][i_t],trajs[t_compartment.getSbmlId()][i_t]))
 
 							else:
 								line += " %.16g" % trajs[t_var.getSbmlId()][i_t]

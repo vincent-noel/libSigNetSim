@@ -79,7 +79,7 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 		t_stoichiometry = unevaluatedSubs(obj.stoichiometry.getInternalMathFormula(), symbols_subs)
 		self.stoichiometry.setInternalMathFormula(t_stoichiometry)
 
-		if obj.getSpecies().getSbmlId() in sids_subs.keys():
+		if obj.getSpecies().getSbmlId() in list(sids_subs.keys()):
 			self.__species = sids_subs[obj.getSpecies().getSbmlId()]
 		else:
 			self.__species = obj.getSpecies().getSbmlId()
@@ -244,8 +244,15 @@ class SpeciesReference(SbmlObject, Variable, InitiallyAssignedVariable,
 		return self.stoichiometry
 
 	def isVariableStoichiometry(self):
-		return self.__hasId and not self.constant
 
+		if self.__hasId and not self.constant:
+			return True
+		elif self.stoichiometry.getInternalMathFormula().func == SympySymbol:
+			t_var = self.__model.listOfVariables.getBySymbol(self.stoichiometry.getInternalMathFormula())
+			return t_var is not None and not t_var.isConstant()
+		else:
+			return False
+		
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 		if self.__species == old_sbml_id:
 			self.__species = new_sbml_id

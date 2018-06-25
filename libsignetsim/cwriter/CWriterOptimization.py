@@ -25,12 +25,15 @@
 
 """
 
-from libsignetsim.settings.Settings import Settings
 
+from libsignetsim.settings.Settings import Settings
+from libsignetsim.optimization.OptimizationException import OptimizationCompilationException
 from shutil import copytree, copyfile
-from os.path import join
+from os.path import join, isfile
 from os import mkdir
+from glob import glob
 from random import randrange
+
 
 class CWriterOptimization(object):
 
@@ -81,10 +84,38 @@ class CWriterOptimization(object):
 		copyfile(join(Settings.basePath, "lib/scoreFunctions.h"), join(self.getTempDirectory(), "src/scoreFunctions.h"))
 		copyfile(join(Settings.basePath, "lib/scoreFunctions.c"), join(self.getTempDirectory(), "src/scoreFunctions.c"))
 
-		# Then the shared libraries
-		copyfile(join(Settings.basePath, "lib/plsa/libplsa-serial.so"), join(self.getTempDirectory(), "lib/libplsa-serial.so"))
-		copyfile(join(Settings.basePath, "lib/plsa/libplsa-parallel.so"), join(self.getTempDirectory(), "lib/libplsa-parallel.so"))
-		copyfile(join(Settings.basePath, "lib/integrate/integrate.so"), join(self.getTempDirectory(), "lib/integrate.so"))
+		# Then the shared
+		if not isfile(join(Settings.basePath, "lib/integrate/integrate.so")):
+			integrate_filename = glob(join(Settings.basePath, "lib", "integrate", "integrate*.so"))
+			if len(integrate_filename) > 0:
+				copyfile(integrate_filename[0],
+						 join(self.getTempDirectory(), "lib/integrate.so"))
+			else:
+				raise OptimizationCompilationException("Could not find the numerical integration library. Please reinstall libSigNetSim")
+		else:
+			copyfile(join(Settings.basePath, "lib/integrate/integrate.so"), join(self.getTempDirectory(), "lib/integrate.so"))
+
+		if not isfile(join(Settings.basePath, "lib/plsa/libplsa-serial.so")):
+			plsa_serial_filename = glob(join(Settings.basePath, "lib", "plsa", "libplsa-serial*.so"))
+			if len(plsa_serial_filename) > 0:
+				copyfile(plsa_serial_filename[0],
+						 join(self.getTempDirectory(), "lib/libplsa-serial.so"))
+			else:
+				raise OptimizationCompilationException(
+					"Could not find the numerical integration library. Please reinstall libSigNetSim")
+		else:
+			copyfile(join(Settings.basePath, "lib/plsa/libplsa-serial.so"), join(self.getTempDirectory(), "lib/libplsa-serial.so"))
+
+		if not isfile(join(Settings.basePath, "lib/plsa/libplsa-parallel.so")):
+			plsa_parallel_filename = glob(join(Settings.basePath, "lib", "plsa", "libplsa-parallel*.so"))
+			if len(plsa_parallel_filename) > 0:
+				copyfile(plsa_parallel_filename[0],
+						 join(self.getTempDirectory(), "lib/libplsa-parallel.so"))
+			else:
+				raise OptimizationCompilationException(
+					"Could not find the numerical integration library. Please reinstall libSigNetSim")
+		else:
+			copyfile(join(Settings.basePath, "lib/plsa/libplsa-parallel.so"), join(self.getTempDirectory(), "lib/libplsa-parallel.so"))
 
 		copyfile(join(Settings.basePath, "lib/templates/data_optimization/Makefile"), join(self.getTempDirectory(), "Makefile") )
 		copyfile(join(Settings.basePath, "lib/templates/data_optimization/main.c"), join(self.getTempDirectory(), "src/main.c") )
@@ -92,6 +123,7 @@ class CWriterOptimization(object):
 	def writeOptimizationFilesHeaders(self, f_c, f_h):
 
 		f_c.write("#include <stdlib.h>\n")
+		f_c.write("#include <stdio.h>\n")
 		f_c.write("#include \"optim.h\"\n")
 
 		f_h.write("#include \"plsa/sa.h\"\n")

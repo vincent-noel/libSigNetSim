@@ -23,12 +23,13 @@
 	This file ...
 
 """
+from __future__ import division
 
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.sbml.SimpleSbmlObject import SimpleSbmlObject
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
-from libsignetsim.model.math.sympy_shortcuts import SympySymbol
+
 
 class EventPriority(SimpleSbmlObject, MathFormula):
 	""" Events priority's definition """
@@ -36,7 +37,7 @@ class EventPriority(SimpleSbmlObject, MathFormula):
 	def __init__(self, model, math_only=False):
 
 		self.__model = model
-		MathFormula.__init__(self, model)
+		MathFormula.__init__(self, model, MathFormula.MATH_PRIORITY)
 
 		self.mathOnly = math_only
 		if not self.mathOnly:
@@ -67,7 +68,7 @@ class EventPriority(SimpleSbmlObject, MathFormula):
 			SimpleSbmlObject.copy(self, obj)
 
 		t_convs = {}
-		for var, conversion in conversion_factors.items():
+		for var, conversion in list(conversion_factors.items()):
 			t_convs.update({var: var/conversion})
 
 		t_formula = unevaluatedSubs(obj.getInternalMathFormula(rawFormula=False), symbols_subs)

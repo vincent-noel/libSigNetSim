@@ -89,7 +89,6 @@ from sympy.functions import asec as SympyAsec
 # from sympy.mpmath import acsch as SympyAcsch
 # from sympy.mpmath import asech as SympyAsech
 
-
 #comparaison
 from sympy.core import Equality as SympyEqual
 from sympy.core import Unequality as SympyUnequal
@@ -103,9 +102,16 @@ from sympy.logic.boolalg import And as SympyAnd
 from sympy.logic.boolalg import Or as SympyOr
 from sympy.logic.boolalg import Xor as SympyXor
 from sympy.logic.boolalg import Not as SympyNot
-from sympy.logic.boolalg import BooleanTrue as SympyTrue
-from sympy.logic.boolalg import BooleanFalse as SympyFalse
+from sympy.logic.boolalg import Implies as SympyImplies
+from sympy.logic.boolalg import true as SympyTrue
+from sympy.logic.boolalg import false as SympyFalse
 from sympy.logic.boolalg import ITE as SympyITE
 
 from sympy.functions.elementary.miscellaneous import Max as SympyMax
 from sympy.functions.elementary.miscellaneous import Min as SympyMin
+
+SympyRateOf = SympyFunction("rateOf")
+SympyQuotient = SympyFunction("quotient")
+SympyRem = SympyFunction("rem")
+SympyUnevaluatedMin = SympyFunction("min")
+SympyUnevaluatedMax = SympyFunction("max")

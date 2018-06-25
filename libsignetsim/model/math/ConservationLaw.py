@@ -23,27 +23,14 @@
 	This file ...
 
 """
+from __future__ import print_function
+
 
 from libsignetsim.model.math.sympy_shortcuts import SympyEqual, SympyInteger
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
-# from libsignetsim.model.math.sympy_shortcuts import  (
-# 	SympySymbol, SympyInteger, SympyFloat, SympyRational, SympyAtom,
-# 	SympyOne, SympyNegOne, SympyZero, SympyPi, SympyE, SympyExp1, SympyHalf,
-# 	SympyInf, SympyNan, SympyAdd, SympyMul, SympyPow,
-# 	SympyFunction, SympyUndefinedFunction, SympyLambda, SympyDerivative,
-# 	SympyCeiling, SympyFloor, SympyAbs, SympyLog, SympyExp, SympyPiecewise,
-# 	SympyFactorial, SympyRoot, SympyAcos, SympyAsin, SympyAtan, SympyAcosh,
-# 	SympyAsinh, SympyAtanh, SympyCos, SympySin, SympyTan, SympyAcot,
-# 	SympyAcoth, SympyCosh, SympySinh, SympyTanh, SympySec, SympyCsc,
-# 	SympyCot, SympyCoth, SympyAcsc, SympyAsec,
-# 	SympyEqual, SympyUnequal, SympyGreaterThan, SympyLessThan,
-# 	SympyStrictGreaterThan, SympyStrictLessThan,
-# 	SympyAnd, SympyOr, SympyXor, SympyNot, SympyTrue, SympyFalse,
-# 	SympyMax, SympyMin)
-# from libsignetsim.settings.Settings import Settings
-# from sympy import simplify, diff, solve, srepr, linsolve
-# from time import time
-# from sympy.solvers.solveset import nonlinsolve
+from sympy import pretty
+
+
 class ConservationLaw(object):
 	""" Sbml model class """
 
@@ -61,12 +48,14 @@ class ConservationLaw(object):
 		self.RHS = rhs
 		self.vars = vars
 
-	def prettyPrint(self):
+	def pprint(self):
 
-		print ">> %s" % str(SympyEqual(
-								self.LHS.getDeveloppedInternalMathFormula(),
-								self.RHS.getDeveloppedInternalMathFormula())
-		)
+		print("%s" % pretty(
+			SympyEqual(
+				self.LHS.getDeveloppedInternalMathFormula(),
+				self.RHS.getDeveloppedInternalMathFormula()
+			)
+		))
 
 
 	def __str__(self):
@@ -81,8 +70,8 @@ class ConservationLaw(object):
 		if not rawFormula:
 
 			comp_symbols = {}
-			for comp in self.__model.listOfCompartments.values():
-				comp_symbols.update({comp.symbol.getInternalMathFormula():SympyInteger(1)})
+			for comp in self.__model.listOfCompartments:
+				comp_symbols.update({comp.symbol.getInternalMathFormula(): SympyInteger(1)})
 
 			return SympyEqual(
 				unevaluatedSubs(self.LHS.getInternalMathFormula(), comp_symbols),

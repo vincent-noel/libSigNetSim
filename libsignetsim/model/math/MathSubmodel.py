@@ -23,12 +23,16 @@
 	This file ...
 
 """
+from __future__ import print_function
+
 
 from libsignetsim.model.math.container.ListOfODEs import ListOfODEs
 from libsignetsim.model.math.container.ListOfCFEs import ListOfCFEs
 from libsignetsim.model.math.container.ListOfDAEs import ListOfDAEs
+from libsignetsim.model.math.container.ListOfInitialConditions import ListOfInitialConditions
 from libsignetsim.model.ListOfVariables import ListOfVariables
 from libsignetsim.model.sbml.container.ListOfEvents import ListOfEvents
+from libsignetsim.model.sbml.container.ListOfInitialAssignments import ListOfInitialAssignments
 from libsignetsim.model.math.MathFormula import MathFormula
 
 
@@ -42,13 +46,19 @@ class MathSubmodel(object):
 		self.sbmlLevel = self.parentModel.sbmlLevel
 		self.sbmlVersion = self.parentModel.sbmlVersion
 
+		self.clear()
+
+	def clear(self):
+
 		self.listOfODEs = ListOfODEs(self)
 		self.listOfCFEs = ListOfCFEs(self)
 		self.listOfDAEs = ListOfDAEs(self)
 		self.listOfVariables = ListOfVariables(self)
 		self.listOfEvents = ListOfEvents(self, self, math_only=True)
-		self.solvedInitialConditions = {}
+		self.listOfInitialAssignments = ListOfInitialAssignments(self, self, math_only=True)
 
+		self.listOfInitialConditions = ListOfInitialConditions(self)
+		self.listOfFunctionDefinitions = self.parentModel.listOfFunctionDefinitions
 		self.nbOdes = None
 		self.nbAssignments = None
 		self.nbConstants = None
@@ -61,7 +71,6 @@ class MathSubmodel(object):
 
 		self.__upToDate = False
 
-
 	def isUpToDate(self):
 		return self.__upToDate
 
@@ -69,19 +78,32 @@ class MathSubmodel(object):
 		self.__upToDate = value
 
 	def copyVariables(self):
-		""" Copies the listOfVariables and the solvedInitialConditions """
+		""" Copies the listOfVariables and the listOfInitialConditions """
 
 		self.listOfVariables.copySubmodel(self.parentModel)
 
-		for variable, value in self.parentModel.solvedInitialConditions.items():
+		for variable, value in list(self.parentModel.listOfInitialConditions.items()):
 			t_value = MathFormula(self)
 			t_value.setInternalMathFormula(value.getInternalMathFormula())
-			self.solvedInitialConditions.update({variable: t_value})
+			self.listOfInitialConditions.update({variable: t_value})
+
+	def copyEvents(self):
+		self.listOfEvents.copySubmodel(self.parentModel.listOfEvents)
+
+	def copyInitialAssignments(self):
+		self.listOfInitialAssignments.copySubmodel(self.parentModel.listOfInitialAssignments)
 
 	def prettyPrint(self):
 
-		print "\n> Full system : "
-		print self.listOfCFEs
-		print self.listOfDAEs
-		print self.listOfODEs
-		print "-----------------------------"
+		print("\n> Full system : ")
+		print(self.listOfCFEs)
+		print(self.listOfDAEs)
+		print(self.listOfODEs)
+		print(self.listOfInitialConditions)
+		print("-----------------------------")
+
+	def pprint(self):
+		self.listOfCFEs.pprint()
+		self.listOfDAEs.pprint()
+		self.listOfODEs.pprint()
+		self.listOfInitialConditions.pprint()

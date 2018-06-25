@@ -23,10 +23,13 @@
 	This file ...
 
 """
+from __future__ import print_function
+
 
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.sympy_shortcuts import SympyEqual
-from sympy import simplify, srepr
+from sympy import simplify, pretty
+
 
 class CFE(object):
 	""" CFE class """
@@ -35,7 +38,7 @@ class CFE(object):
 	REACTION            = 1
 	SOLVED              = 2
 
-	def __init__ (self, model, cfe_type=SOLVED):
+	def __init__(self, model, cfe_type=SOLVED):
 		""" Constructor of ode class """
 
 		self.__model = model
@@ -75,6 +78,16 @@ class CFE(object):
 		return "%s = %s" % (
 			str(self.getVariable().symbol.getDeveloppedInternalMathFormula()),
 			str(self.getDefinition().getDeveloppedInternalMathFormula())
+		)
+
+	def pprint(self):
+		print(
+			pretty(
+				SympyEqual(
+					self.getVariable().symbol.getDeveloppedInternalMathFormula(),
+					self.getDefinition().getDeveloppedInternalMathFormula()
+				)
+			)
 		)
 
 	def getFormula(self, rawFormula=True, developped=False):

@@ -70,9 +70,9 @@ class AlgebraicRule(Rule):
 	def getRawDefinition(self, rawFormula=False):
 
 		formula = self.__definition.getInternalMathFormula()
-		if not rawFormula:
+		if formula is not None and not rawFormula:
 			subs = {}
-			for species in self.__model.listOfSpecies.values():
+			for species in self.__model.listOfSpecies:
 				if species.isConcentration():
 					subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
 			formula = unevaluatedSubs(formula, subs)
@@ -95,17 +95,22 @@ class AlgebraicRule(Rule):
 		self.__definition.setPrettyPrintMathFormula(definition, rawFormula=rawFormula)
 
 	def getPrettyPrintDefinition(self):
-		return self.__definition.getPrettyPrintMathFormula()
+		if self.__definition.getInternalMathFormula() is not None:
+			return self.__definition.getPrettyPrintMathFormula()
 
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
-		# old_symbol = SympySymbol(old_sbml_id)
-		#
-		# if old_symbol in self.__definition.getInternalMathFormula().atoms():
-		# 	# t_definition = MathFormula(self.__model, MathFormula.MATH_ALGEBRAICRULE)
-		# 	# t_definition.setInternalMathFormula(self.__definition.getInternalMathFormula.subs(old_symbol, SympySymbol(new_sbml_id)))
 		self.__definition.renameSbmlId(old_sbml_id, new_sbml_id)
 
 	def containsVariable(self, variable):
-		return (variable.symbol.getInternalMathFormula() in self.__definition.getInternalMathFormula().atoms()
-				or (variable.isSpecies() and SympySymbol("_speciesForcedConcentration_%s_" % str(variable.symbol.getInternalMathFormula())) in self.__definition.getInternalMathFormula().atoms()))
+		if self.__definition .getInternalMathFormula() is not None:
+			return (variable.symbol.getInternalMathFormula() in self.__definition.getInternalMathFormula().atoms()
+					or (variable.isSpecies() and SympySymbol("_speciesForcedConcentration_%s_" % str(variable.symbol.getInternalMathFormula())) in self.__definition.getInternalMathFormula().atoms()))
+		else:
+			return False
+
+	def isValid(self):
+		return (
+			self.__definition.getInternalMathFormula() is not None
+			and self.__definition.getDeveloppedInternalMathFormula() is not None
+		)

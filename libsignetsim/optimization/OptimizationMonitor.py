@@ -23,7 +23,11 @@
 	This file ... 
 
 """
+from __future__ import print_function
+from __future__ import division
 
+
+from past.utils import old_div
 from libsignetsim.settings.Settings import Settings
 from threading import Thread
 
@@ -66,7 +70,7 @@ class OptimizationMonitor(Thread):
 				f_temps = []
 				f_times = []
 				stabilized=False
-				steps_ignored = Settings.defaultPlsaInitialMoves/Settings.defaultPlsaTau-1
+				steps_ignored = old_div(Settings.defaultPlsaInitialMoves,Settings.defaultPlsaTau)-1
 				for i, step in enumerate(temps):
 
 					if i == 0:
@@ -91,7 +95,7 @@ class OptimizationMonitor(Thread):
 				if steps_done > 100:
 
 					if isnan(f_temps[steps_done-1]) or  f_temps[steps_done-1] < 0:
-						print "> Optimization %d : finishing..." % self.parentOptimization.optimizationId
+						print("> Optimization %d : finishing..." % self.parentOptimization.optimizationId)
 					else:
 						#We compute the smoothed average
 						window = steps_done - 75
@@ -105,19 +109,19 @@ class OptimizationMonitor(Thread):
 						avg_der /= float(window-1)
 
 						#And the remaining steps and fime
-						steps_remaining = -f_temps[steps_done-1]/avg_der
+						steps_remaining = old_div(-f_temps[steps_done-1],avg_der)
 						time_remaining = steps_remaining*avg_dur
 
 						steps_done = steps_done + steps_ignored
-						ratio_done = steps_done/(steps_done + steps_remaining)
+						ratio_done = old_div(steps_done,(steps_done + steps_remaining))
 
 						if (not isfile(self.parentOptimization.getTempDirectory() + "final_score") and
 							time_remaining > 0 and ratio_done > 0.1):
-							print "> Optimization %d : %.0f minutes remaining (%d%% done, running for %.0f minutes, remaining %.0f minutes)" % (
-									self.parentOptimization.optimizationId, time_remaining/60,
+							print("> Optimization %d : %.0f minutes remaining (%d%% done, running for %.0f minutes, remaining %.0f minutes)" % (
+									self.parentOptimization.optimizationId, old_div(time_remaining,60),
 									int(ratio_done*100),
-									(times[len(times)-1]-self.parentOptimization.startTime)/60,
-									(((times[len(times)-1]-self.parentOptimization.startTime)*(steps_remaining))/(steps_done)/60))
+									old_div((times[len(times)-1]-self.parentOptimization.startTime),60),
+									(((times[len(times)-1]-self.parentOptimization.startTime)*(steps_remaining))/(steps_done)/60)))
 
 
 			elapsed_time = int(time()) - start_time

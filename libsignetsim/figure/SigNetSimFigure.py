@@ -23,34 +23,46 @@
     This file ...
 
 """
+from __future__ import division
 
+
+from libsignetsim.settings.Settings import Settings
 import matplotlib.pyplot as plt
+
 
 class SigNetSimFigure(object):
 
-    # color_scheme = ['#009ece', '#ff9e00', '#9ccf31', '#f7d708', '#ce0000']
-    color_scheme = (["#FFB300", "#803E75", "#FF6800", "#A6BDD7"]
-                    + ["#C10020", "#CEA262", "#817066", "#007D34"]
-                    + ["#F6768E", "#00538A", "#FF7A5C", "#53377A"]
-                    + ["#FF8E00", "#B32851", "#F4C800", "#7F180D"]
-                    + ["#93AA00", "#593315", "#F13A13", "#232C16"])
-    color_scheme_light = ['#67b6ce']
+
     default_width = 1000
     default_dpi = 600
 
-    def __init__(self):
+    def __init__(self, width=default_width, dpi=default_dpi):
 
-        self.__figure = plt.figure(figsize=(10, 5))
+        self.__figure = plt.figure(figsize=(10, 6))
+
+        self.curveIds = {}
+        self.plots = []
+        if dpi is None:
+            self.__dpi = self.default_dpi
+        else:
+            self.__dpi = dpi
+        if width is None:
+            self.w = self.default_width/float(self.__dpi)
+            self.h = (self.default_width * 0.667)/float(self.__dpi)
+        else:
+            self.w = width/float(self.__dpi)
+            self.h = (width * 0.667)/float(self.__dpi)
 
 
-    def add_subplot(self, nb_cols=1, nb_rows=None, id_cell=None):
+    def add_subplot(self, nb_cols=1, nb_rows=None, id_cell=None, x_label=None, y_label=None):
 
-        t_subplot = None
         if nb_rows == None and id_cell == None:
             t_subplot = self.__figure.add_subplot(nb_cols,1,1)
         else:
             t_subplot = self.__figure.add_subplot(nb_cols, nb_rows, id_cell)
 
+
+        self.curveIds.update({t_subplot: 0})
         # t_subplot.spines["top"].set_visible(False)
         # t_subplot.spines["right"].set_visible(False)
         # t_subplot.spines["bottom"].set_linewidth(0.3 * self.w)
@@ -59,34 +71,45 @@ class SigNetSimFigure(object):
         t_subplot.tick_params(
             axis='x',          # changes apply to the x-axis
             which='both',      # both major and minor ticks are affected
-            bottom='off',      # ticks along the bottom edge are off
-            top='off',         # ticks along the top edge are off
-            labelbottom='on',  # labels along the bottom edge are off
+            bottom=False,      # ticks along the bottom edge are off
+            top=False,         # ticks along the top edge are off
+            labelbottom=True,  # labels along the bottom edge are off
         )
 
         t_subplot.tick_params(
             axis='y',          # changes apply to the x-axis
             which='both',      # both major and minor ticks are affected
-            left='off',        # ticks along the bottom edge are off
-            right='off',       # ticks along the top edge are off
-            labelbottom='on',  # labels along the bottom edge are off
+            left=False,        # ticks along the bottom edge are off
+            right=False,       # ticks along the top edge are off
+            labelbottom=True,  # labels along the bottom edge are off
         )
 
+        if x_label is not None:
+            t_subplot.set_xlabel(x_label, fontsize=int(15 * self.w))
+
+        if y_label is not None:
+            t_subplot.set_ylabel(y_label, fontsize=int(15 * self.w))
+
+        self.plots.append(t_subplot)
         return t_subplot
 
 
 
-    def plot(self, subplot, curve_id, x, y, x_name="", y_name=None):
+    def plot(self, subplot, curve_id, x, y, x_name="", y_name=None, marker="-"):
+
+        curve_id = self.curveIds[subplot]
 
         if y_name is None:
-            subplot.plot(x, y, '-',
-                color=self.color_scheme[curve_id % len(self.color_scheme)],
+            subplot.plot(x, y, marker,
+                color=Settings.color_scheme[curve_id % len(Settings.color_scheme)],
                 # linewidth=int(5 * self.w),
                 # label=y_name
             )
         else:
-            subplot.plot(x, y, '-',
-                 color=self.color_scheme[curve_id % len(self.color_scheme)],
+            subplot.plot(x, y, marker,
+                 color=Settings.color_scheme[curve_id % len(Settings.color_scheme)],
                  # linewidth=int(5 * self.w),
                  label=y_name
             )
+
+        self.curveIds.update({subplot: curve_id+1})

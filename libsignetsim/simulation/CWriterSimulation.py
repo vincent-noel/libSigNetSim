@@ -23,15 +23,18 @@
 	This file ...
 
 """
+from __future__ import print_function
 
 from libsignetsim.settings.Settings import Settings
 from libsignetsim.cwriter.CWriterModels import CWriterModels
 from libsignetsim.cwriter.CWriterData import CWriterData
 from libsignetsim.simulation.SimulationException import SimulationException
-from os.path import join
+from os.path import join, isfile
 from os import mkdir
 from shutil import copyfile
 from time import time
+from glob import glob
+
 
 class CWriterSimulation(CWriterModels, CWriterData):
 
@@ -70,7 +73,14 @@ class CWriterSimulation(CWriterModels, CWriterData):
 		copyfile(join(Settings.basePath, "lib/integrate/src/types.h"), join(self.getTempDirectory(), "src/integrate/types.h"))
 
 		# Then the shared libraries
-		copyfile(join(Settings.basePath, "lib/integrate/integrate.so"), join(self.getTempDirectory(), "lib/integrate.so"))
+		if not isfile(join(Settings.basePath, "lib/integrate/integrate.so")):
+			integrate_filename = glob(join(Settings.basePath, "lib", "integrate", "integrate*.so"))
+			if len(integrate_filename) > 0:
+				copyfile(integrate_filename[0], join(self.getTempDirectory(), "lib/integrate.so"))
+			else:
+				raise SimulationException("Could not find the numerical integration library. Please reinstall libSigNetSim")
+		else:
+			copyfile(join(Settings.basePath, "lib/integrate/integrate.so"), join(self.getTempDirectory(), "lib/integrate.so"))
 
 		copyfile(join(Settings.basePath, "lib/templates/simulation/Makefile"), join(self.getTempDirectory(), "Makefile") )
 		copyfile(join(Settings.basePath, "lib/templates/simulation/main.c"), join(self.getTempDirectory(), "src/main.c") )
@@ -79,28 +89,24 @@ class CWriterSimulation(CWriterModels, CWriterData):
 		if self.experiment is not None:
 			treated_variables_names = self.experiment.getTreatedVariables()
 
-
-
-
 		for modelInd, model in enumerate(self.listOfModels):
 			treated_variables = []
 			for name in treated_variables_names:
-				if self.workingModel.listOfSpecies.containsName(name):
-					treated_variables.append(self.workingModel.listOfSpecies.getByName(name).getSbmlId())
-				elif self.workingModel.listOfParameters.containsName(name):
-					treated_variables.append(self.workingModel.listOfParameters.getByName(name).getSbmlId())
-				elif self.workingModel.listOfCompartments.containsName(name):
-					treated_variables.append(self.workingModel.listOfCompartments.getByName(name).getSbmlId())
+				if model.listOfVariables.containsName(name):
+					treated_variables.append(model.listOfVariables.getByName(name).getSbmlId())
+				elif model.listOfVariables.containsSbmlId(name):
+					treated_variables.append(model.listOfVariables.getBySbmlId(name).getSbmlId())
 
-			dont_reduce = not Settings.reduceByDefault
+			reduce = Settings.reduceByDefault
+
 			if len(treated_variables) > 0:
-				dont_reduce = True
+				reduce = False
 
-			model.build(vars_to_keep=treated_variables, dont_reduce=dont_reduce, tmin=self.timeMin[modelInd])
+			model.build(vars_to_keep=treated_variables, reduce=reduce, tmin=self.timeMin[modelInd])
 
 		start = time()
 		self.writeModelFiles()
 		self.writeDataFiles()
 
 		if Settings.verboseTiming >= 1:
-				print ">> Files written in %.2fs" % (time()-start)
+				print(">> Files written in %.2fs" % (time()-start))

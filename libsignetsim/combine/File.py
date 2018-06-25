@@ -24,7 +24,6 @@
 
 """
 
-from libsignetsim.settings.Settings import Settings
 from os.path import dirname, basename, join
 from mimetypes import guess_type
 from lxml import etree
@@ -32,8 +31,8 @@ from libsbml import SBMLReader
 import libsbml
 from libnuml import readNUMLFromString
 from libsedml import readSedMLFromString
-reload(libsbml)
-from shutil import copy
+from six.moves import reload_module
+reload_module(libsbml)
 
 
 class File(object):
@@ -108,7 +107,8 @@ class File(object):
 		if self.__extension in self.KNOWN_FORMATS:
 			self.__format = self.KNOWN_FORMATS[self.__extension]
 			if self.__format == self.XML:
-				self.__format = self.guessXML(open(filename, 'r').read())
+				with open(filename, 'rb') as new_file:
+					self.__format = self.guessXML(new_file.read())
 
 		else:
 			self.__format = "http://purl.org/NET/mediatypes/%s" % guess_type(filename)[0]
@@ -152,8 +152,12 @@ class File(object):
 		return self.__format
 
 	def guessXML(self, xml_content):
+
 		root = etree.fromstring(xml_content)
 		tag = root.tag.split("}")[1]
+
+		if isinstance(xml_content, bytes):
+			xml_content = str("%s" % xml_content.decode('ascii', 'ignore'))
 
 		if tag == "sbml":
 			sbmlReader = SBMLReader()

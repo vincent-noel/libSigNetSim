@@ -57,7 +57,7 @@ class ListOfModelDefinitions(ListOf, HasIds):
 					sbml_version=Settings.defaultSbmlVersion):
 		""" Writes compartments' list to a sbml file """
 
-		for model in ListOf.values(self):
+		for model in self:
 			sbml_md = sbml_model.createModelDefinition()
 			model.writeSbml(sbml_md, sbml_level, sbml_version)
 
@@ -79,7 +79,7 @@ class ListOfModelDefinitions(ListOf, HasIds):
 
 	def getListOfModelDefinitions(self):
 		res = []
-		for internal_model in ListOf.values(self):
+		for internal_model in self:
 			res.append(internal_model)
 		return res
 

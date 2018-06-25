@@ -23,6 +23,7 @@
 	This file ...
 
 """
+from __future__ import division
 
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.sympy_shortcuts import  (
@@ -42,7 +43,7 @@ from libsignetsim.model.math.sympy_shortcuts import  (
 from libsignetsim.model.sbml.KineticLawIdentifier import KineticLawIdentifier
 from libsignetsim.settings.Settings import Settings
 
-from sympy import simplify, srepr, diff, zeros
+from sympy import simplify, srepr, diff, zeros, pretty
 from libsignetsim.model.math.MathDevelopper import unevaluatedSubs
 
 class KineticLaw(KineticLawIdentifier):
@@ -56,7 +57,7 @@ class KineticLaw(KineticLawIdentifier):
 	def copy(self, obj, symbols_subs={}, conversion_factors={}, extent_conversion=None, time_conversion=None):
 
 		t_convs = {}
-		for var, conversion in conversion_factors.items():
+		for var, conversion in list(conversion_factors.items()):
 			t_convs.update({var: var/conversion})
 
 		t_formula = unevaluatedSubs(obj.kineticLaw.getDefinition().getInternalMathFormula(), symbols_subs)
@@ -75,6 +76,7 @@ class KineticLaw(KineticLawIdentifier):
 					sbml_version=Settings.defaultSbmlVersion):
 
 		self.__definition.readSbml(sbml_math, sbml_level, sbml_version)
+		self.__definition.setInternalMathFormula(self.__definition.ensureFloat(self.__definition.getInternalMathFormula()))
 		# And the we should look for the Kinetic law Here
 		# But since it may take time, we will do it on demand
 		# KineticLawIdentifier.findKineticLaw(self)
@@ -83,19 +85,28 @@ class KineticLaw(KineticLawIdentifier):
 
 		formula = self.__definition.getInternalMathFormula()
 
-		if (not rawFormula and len(self.reaction.listOfReactants) > 0
-			and self.reaction.listOfReactants[0].getSpecies().isConcentration()):
-			comp = self.reaction.listOfReactants[0].getSpecies().getCompartment()
+		if formula is not None:
+			if (not rawFormula and len(self.reaction.listOfReactants) > 0
+				and self.reaction.listOfReactants[0].getSpecies().isConcentration()):
+				comp = self.reaction.listOfReactants[0].getSpecies().getCompartment()
 
-			formula /= comp.symbol.getInternalMathFormula()
+				formula = SympyMul(
+					formula,
+					SympyPow(
+						comp.symbol.getInternalMathFormula(),
+						SympyInteger(-1),
+						evaluate=False
+					),
+					evaluate=False
+				)
 
-		if not rawFormula:
-			subs = {}
-			for species in self.__model.listOfSpecies.values():
-				if species.isConcentration():
-					subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
-			formula = unevaluatedSubs(formula, subs)
-		return formula
+			if not rawFormula:
+				subs = {}
+				for species in self.__model.listOfSpecies:
+					if species.isConcentration():
+						subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
+				formula = unevaluatedSubs(formula, subs)
+		return simplify(formula)
 
 
 	def getDefinition(self, rawFormula=False):
@@ -133,17 +144,19 @@ class KineticLaw(KineticLawIdentifier):
 			if first_reactant.isConcentration():
 				t_comp = first_reactant.getCompartment()
 				t_math_formula = MathFormula(self.__model, MathFormula.MATH_KINETICLAW)
-				t_math_formula.setInternalMathFormula(self.__definition.getInternalMathFormula()/t_comp.symbol.getInternalMathFormula())
+				t_math_formula.setInternalMathFormula(
+					self.__definition.getInternalMathFormula() / t_comp.symbol.getInternalMathFormula()
+				)
 				t_math_formula = t_math_formula.getPrettyPrintMathFormula()
 			else:
 				t_math_formula = self.__definition.getPrettyPrintMathFormula()
 		else:
 			t_math_formula = self.__definition.getPrettyPrintMathFormula()
 
-		if self.reaction.listOfLocalParameters > 0:
+		if len(self.reaction.listOfLocalParameters) > 0:
 			t_math_formula = t_math_formula.replace("_local_%d_" % (self.reaction.objId), "")
 
-		for species in self.__model.listOfSpecies.values():
+		for species in self.__model.listOfSpecies:
 			if species.isConcentration():
 				t_math_formula = t_math_formula.replace(("_speciesForcedConcentration_%s_" % (species.symbol.getInternalMathFormula())), species.getSbmlId())
 
@@ -153,7 +166,7 @@ class KineticLaw(KineticLawIdentifier):
 	def getReactantsFormula(self):
 
 		t_reactants = 1
-		for reactant in self.reaction.listOfReactants.values():
+		for reactant in self.reaction.listOfReactants:
 
 			t_reactants *= reactant.getSpecies().symbol.getInternalMathFormula(rawFormula=True)
 
@@ -166,7 +179,7 @@ class KineticLaw(KineticLawIdentifier):
 	def getModifiersFormula(self):
 
 		t_modifiers = 1
-		for modifier in self.reaction.listOfModifiers.values():
+		for modifier in self.reaction.listOfModifiers:
 			t_modifiers *= modifier.getSpecies().symbol.getInternalMathFormula(rawFormula=True)
 
 			if not modifier.stoichiometry.isOne():
@@ -178,7 +191,7 @@ class KineticLaw(KineticLawIdentifier):
 	def getProductsFormula(self):
 
 		t_products = 1
-		for product in self.reaction.listOfProducts.values():
+		for product in self.reaction.listOfProducts:
 			t_products *= product.getSpecies().symbol.getInternalMathFormula(rawFormula=True)
 
 			if not product.stoichiometry.isOne():
@@ -269,7 +282,7 @@ class KineticLaw(KineticLawIdentifier):
 		if not KineticLawIdentifier.isReversible(self, definition):
 			res = zeros(1)
 			if (self.reaction.fast and include_fast_reaction) or (not self.reaction.fast and include_slow_reaction):
-				res[0] += definition.subs(subs)
+				res[0] += unevaluatedSubs(definition, subs)
 			return res
 
 		else:
@@ -277,8 +290,8 @@ class KineticLaw(KineticLawIdentifier):
 			res_backward = zeros(1)
 			if (self.reaction.fast and include_fast_reaction) or (not self.reaction.fast and include_slow_reaction):
 				(definition_front, definition_back) = KineticLawIdentifier.getReversibleRates(self, definition)
-				res_front[0] += definition_front.subs(subs)
-				res_backward[0] += definition_back.subs(subs)
+				res_front[0] += unevaluatedSubs(definition_front, subs)
+				res_backward[0] += unevaluatedSubs(definition_back, subs)
 
 			return res_front.col_join(res_backward)
 

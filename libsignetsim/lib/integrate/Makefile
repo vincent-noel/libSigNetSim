@@ -15,35 +15,49 @@
 
 SRCDIR = src
 LIBDIR = lib
-
+LIBSDIR = /usr/lib64/atlas-basic/
 FLAGS = -Wall -Werror -fPIC -pedantic -std=gnu99
-LIBS = -lsundials_cvode -lsundials_nvecserial -lsundials_ida -lm
+LIBS = -lsundials_cvode -lsundials_nvecserial -lsundials_ida -lm -llapack -latlas -lblas
+
 
 IOBJ = shared.o events.o ode.o dae.o integrate.o realtype_math.o
 
-integrate.so: $(IOBJ)
-	gcc -shared -o integrate.so $(IOBJ)
-	rm -f *.o
+SUNDIALS_INCLUDE = /usr/include
+SUNDIALS_MAIN_VERSION := $(shell cat $(SUNDIALS_INCLUDE)/sundials/sundials_config.h | grep SUNDIALS_PACKAGE_VERSION | cut -d' ' -f3 | tr -d '"' | cut -d'.' -f1)
 
+
+
+integrate.so: $(IOBJ)
+	$(CC) -shared -o integrate.so $(IOBJ) $(LIBS) -L$(LIBSDIR)
+	$(RM) *.o
 
 #Integrate
 realtype_math.o: $(SRCDIR)/realtype_math.c $(SRCDIR)/realtype_math.h
-	gcc $(FLAGS) -c $(SRCDIR)/realtype_math.c
+	$(CC) $(FLAGS) -c $(SRCDIR)/realtype_math.c
 
 shared.o: $(SRCDIR)/shared.c $(SRCDIR)/shared.h
-	gcc $(FLAGS) -c $(SRCDIR)/shared.c
+	$(CC) $(FLAGS) -c $(SRCDIR)/shared.c
 
 events.o: $(SRCDIR)/events.c $(SRCDIR)/events.h
-	gcc $(FLAGS) -c $(SRCDIR)/events.c
+	$(CC) $(FLAGS) -c $(SRCDIR)/events.c
 
 ode.o: $(SRCDIR)/ode.c $(SRCDIR)/ode.h
-	gcc $(FLAGS) -c $(SRCDIR)/ode.c
+ifeq ($(SUNDIALS_MAIN_VERSION), 2)
+	$(CC) $(FLAGS) -c $(SRCDIR)/ode.c
+else
+	$(CC) $(FLAGS) -c $(SRCDIR)/ode.c -DSUNDIALS3
+endif
 
 dae.o: $(SRCDIR)/dae.c $(SRCDIR)/dae.h
-	gcc $(FLAGS) -c $(SRCDIR)/dae.c
+ifeq ($(SUNDIALS_MAIN_VERSION), 2)
+	$(CC) $(FLAGS) -c $(SRCDIR)/dae.c
+else
+	$(CC) $(FLAGS) -c $(SRCDIR)/dae.c -DSUNDIALS3
+
+endif
 
 integrate.o: $(SRCDIR)/integrate.c $(SRCDIR)/integrate.h
-	gcc $(FLAGS) -c $(SRCDIR)/integrate.c
+	$(CC) $(FLAGS) -c $(SRCDIR)/integrate.c
 
 clean:
-	rm -f *.o *.so
+	$(RM) *.o *.so

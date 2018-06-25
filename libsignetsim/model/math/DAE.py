@@ -23,10 +23,13 @@
 	This file ...
 
 """
+from __future__ import print_function
+
 
 from libsignetsim.model.math.MathFormula import MathFormula
 from libsignetsim.model.math.sympy_shortcuts import SympySymbol, SympyEqual, SympyInteger
-from sympy import solve, srepr
+from sympy import solve, srepr, pretty
+
 
 class DAE(object):
 	""" DAE class """
@@ -57,6 +60,17 @@ class DAE(object):
 	def __str__(self):
 		return "%s = 0" % str(self.__definition.getDeveloppedInternalMathFormula())
 
+	def pprint(self):
+		print(
+			pretty(
+				SympyEqual(
+					self.__definition.getDeveloppedInternalMathFormula(),
+					SympyInteger(0)
+				)
+			)
+
+		)
+
 	def solve(self):
 
 		to_solve = []
@@ -68,4 +82,6 @@ class DAE(object):
 
 		return (to_solve[0], solve(self.__definition.getDeveloppedInternalMathFormula(), to_solve))
 
+	def isValid(self):
 
+		return self.__definition.getInternalMathFormula() != MathFormula.ZERO

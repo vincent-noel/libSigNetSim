@@ -63,10 +63,10 @@ class ListOfSpeciesReference(ListOf, HasIds, SbmlObject):
 
 		""" Write the list of species references to a sbml model """
 
-		for speciesReference in ListOf.values(self):
+		for speciesReference in self:
 			speciesReference.writeSbml(sbmlReaction, sbmlLevel, sbmlVersion)
 
-		if len(ListOf.values(self)):
+		if len(self) > 0:
 			SbmlObject.writeSbml(self, sbmlReaction, sbmlLevel, sbmlVersion)
 
 
@@ -88,7 +88,7 @@ class ListOfSpeciesReference(ListOf, HasIds, SbmlObject):
 
 		if obj not in deletions:
 			SbmlObject.copy(self, obj)
-			for speciesReference in obj.values():
+			for speciesReference in obj:
 				if speciesReference not in deletions:
 					t_sr = SpeciesReference(self.__model, self.nextId())
 					t_sr.copy(speciesReference, sids_subs=sids_subs, symbols_subs=symbols_subs)
@@ -96,7 +96,7 @@ class ListOfSpeciesReference(ListOf, HasIds, SbmlObject):
 
 	def hasVariableStoichiometry(self):
 
-		for sr in self.values():
+		for sr in self:
 			if sr.isVariableStoichiometry():
 				return True
 		return False

@@ -66,10 +66,10 @@ class ListOfEvents(ListOf, HasIds, SbmlObject, HasParentObj):
 					sbmlVersion=Settings.defaultSbmlVersion):
 		""" Writes the list of events to a sbml model """
 
-		for event in ListOf.values(self):
+		for event in self:
 			event.writeSbml(sbmlModel, sbmlLevel, sbmlVersion)
 
-		if len(ListOf.values(self)):
+		if len(self) > 0:
 			SbmlObject.writeSbml(self, sbmlModel.getListOfEvents(), sbmlLevel, sbmlVersion)
 
 
@@ -87,7 +87,7 @@ class ListOfEvents(ListOf, HasIds, SbmlObject, HasParentObj):
 
 			SbmlObject.copy(self, obj)
 
-			for event in obj.values():
+			for event in obj:
 				if event not in deletions:
 
 					t_event = Event(self.__model, self, self.nextId())
@@ -103,7 +103,7 @@ class ListOfEvents(ListOf, HasIds, SbmlObject, HasParentObj):
 
 	def copySubmodel(self, obj):
 
-		for event in obj.values():
+		for event in obj:
 			t_event = Event(self.__model, self, event.objId, math_only=self.mathOnly)
 			t_event.copySubmodel(event)
 			ListOf.add(self, t_event)
@@ -126,19 +126,19 @@ class ListOfEvents(ListOf, HasIds, SbmlObject, HasParentObj):
 
 	def renameSbmlId(self, old_sbml_id, new_sbml_id):
 
-		for obj in ListOf.values(self):
+		for obj in self:
 			obj.renameSbmlId(old_sbml_id, new_sbml_id)
 
 	# Events can have ids, but they are optionals !
 	def sbmlIds(self):
 		""" Return a set of import ids of the sbml objects """
-		return [obj.getSbmlId() for obj in self.values() if obj.getSbmlId() is not None]
+		return [obj.getSbmlId() for obj in self if obj.getSbmlId() is not None]
 
 	def getBySbmlId(self, sbml_id, pos=0):
 		""" Find sbml objects by their import Id """
 
 		res = []
-		for obj in self.values():
+		for obj in self:
 			if obj.getSbmlId() is not None and obj.getSbmlId() == sbml_id:
 				res.append(obj)
 
@@ -151,7 +151,7 @@ class ListOfEvents(ListOf, HasIds, SbmlObject, HasParentObj):
 		""" Test if an sbml id is in the list """
 
 		res = False
-		for obj in self.values():
+		for obj in self:
 			if obj.getSbmlId() is not None and sbml_id == obj.getSbmlId():
 				res = True
 
@@ -161,14 +161,14 @@ class ListOfEvents(ListOf, HasIds, SbmlObject, HasParentObj):
 
 		return [
 			event
-			for event in self.values()
+			for event in self
 			if event.isValid()
 		]
 
 	def nbValidEvents(self):
 
 		res = 0
-		for event in self.values():
+		for event in self:
 			if event.isValid():
 				res += 1
 		return res

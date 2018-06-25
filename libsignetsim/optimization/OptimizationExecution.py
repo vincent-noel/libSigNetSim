@@ -23,19 +23,27 @@
 	This file ...
 
 """
+# from __future__ import print_function
 
 from libsignetsim.settings.Settings import Settings
-
+from libsignetsim.optimization.OptimizationException import OptimizationCompilationException, OptimizationExecutionException
 from time import time, sleep
 from os.path import join, getsize, isfile
 from os import getcwd, setpgrp, mkdir
 from subprocess import call
 from math import log10
+from threading import Thread
+
 
 class OptimizationExecution(object):
 
-	OPTIM_FAILURE       =   -1
-	OPTIM_SUCCESS       =   0
+
+	OPTIM_FAILURE       =	-1
+	OPTIM_SUCCESS       =	0
+	OPTIM_RUNNING		=	1
+	OPTIM_INTERRUPTED	= 	2
+	OPTIM_INITIALIZED 	= 	3
+
 
 	def __init__ (self):
 
@@ -46,18 +54,17 @@ class OptimizationExecution(object):
 		self.optimizationId = int(time()*1000)
 		self.directory = None
 		self.finalScore = None
+		self.status = self.OPTIM_INITIALIZED
 		# mkdir(self.getTempDirectory())
 
 
 	def getTempDirectory(self):
 
 		if self.directory is None:
-			return join(Settings.tempDirectory,
-								"optimization_%s/" % str(self.optimizationId))
+			return join(Settings.tempDirectory,	"optimization_%s/" % str(self.optimizationId))
 
 		else:
-			return join(self.directory,
-								"optimization_%s/" % str(self.optimizationId))
+			return join(self.directory, "optimization_%s/" % str(self.optimizationId))
 
 	def setTempDirectory(self, directory):
 
@@ -66,6 +73,10 @@ class OptimizationExecution(object):
 
 
 	def compile(self, nb_procs):
+
+		mkdir(join(self.getTempDirectory(), "logs"))
+		mkdir(join(self.getTempDirectory(), "logs", "score"))
+		mkdir(join(self.getTempDirectory(), "logs", "res"))
 
 		if nb_procs > 1:
 			target = "lsa.mpi"
@@ -78,10 +89,8 @@ class OptimizationExecution(object):
 								self.getTempDirectory(),
 								target)
 
-		res_comp = call(cmd_comp,
-								stdout=open(join(self.getTempDirectory(), "sout_optim_comp"), "w"),
-								stderr=open(join(self.getTempDirectory(), "err_optim_comp"), "w"),
-								shell=True, preexec_fn=setpgrp, close_fds=True)
+		with open(join(self.getTempDirectory(), "out_optim_comp"), "w") as stdout,  open(join(self.getTempDirectory(), "err_optim_comp"), "w") as stderr:
+			res_comp = call(cmd_comp, stdout=stdout, stderr=stderr, shell=True, preexec_fn=setpgrp, close_fds=True)
 
 		timeout = 3
 		i = 0
@@ -90,8 +99,18 @@ class OptimizationExecution(object):
 			i += 1
 
 		if res_comp != 0 or getsize(join(self.getTempDirectory(), "err_optim_comp")) > 0:
-			return self.OPTIM_FAILURE
+			self.status = self.OPTIM_FAILURE
+			if Settings.verbose >= 1:
+				print("-"*40 + "\n")
+				print("> Error during optimization compilation :")
+				with open(join(self.getTempDirectory(), "err_optim_comp"), 'r') as f_err_comp:
+					for line in f_err_comp:
+						print(line)
+
+				print("-"*40 + "\n")
+			raise OptimizationCompilationException("Error during optimization compilation")
 		else:
+			self.status = self.OPTIM_SUCCESS
 			return self.OPTIM_SUCCESS
 
 
@@ -105,10 +124,6 @@ class OptimizationExecution(object):
 		if maxiter is not None and maxiter > 0:
 			s_maxiter = "-m %d " % maxiter
 
-		mkdir(join(self.getTempDirectory(), "logs"))
-		mkdir(join(self.getTempDirectory(), "logs", "score"))
-		mkdir(join(self.getTempDirectory(), "logs", "res"))
-
 		present_dir = getcwd()
 
 		if nb_procs > 1:
@@ -119,15 +134,18 @@ class OptimizationExecution(object):
 
 		t_command_line = "%s" % target
 
-		res_optim = call(t_command_line,
-				stdout=open(join(self.getTempDirectory(), "out_optim"), "w"),
-				stderr=open(join(self.getTempDirectory(), "err_optim"), "w"),
-				shell=True, preexec_fn=setpgrp, close_fds=True)
+		self.status = self.OPTIM_RUNNING
+		with open(join(self.getTempDirectory(), "out_optim"), "w") as stdout, open(join(self.getTempDirectory(), "err_optim"), "w") as stderr:
+			res_optim = call(t_command_line,
+					stdout=stdout, stderr=stderr,
+					shell=True, preexec_fn=setpgrp, close_fds=True)
 
 		if res_optim != 0 and res_optim != 124:
+
 			self.stopTime = int(time())
 			self.elapsedTime = self.stopTime - self.startTime
-			return self.OPTIM_FAILURE
+			self.status = self.OPTIM_FAILURE
+			raise OptimizationExecutionException("Optim execution returned %s" % res_optim)
 
 		timeout = 3
 		i = 0
@@ -135,21 +153,93 @@ class OptimizationExecution(object):
 			sleep(1)
 			i += 1
 
-		if (getsize(join(self.getTempDirectory(), "err_optim")) > 0 or
-			not isfile(join(self.getTempDirectory(), "logs", "score", "score"))):
+		if getsize(join(self.getTempDirectory(), "err_optim")) > 0:
 
-			err = open(join(self.getTempDirectory(), "err_optim"))
+			# There is some weird error here, apparently caused by docker filesystem.
+			# ** apparently ** we can ignore it
+			non_docker_err = False
+			with open(self.getTempDirectory() + "err_optim", 'r') as f_err_optim:
+				for line in f_err_optim:
+					if not line.startswith("Unexpected end of /proc/mounts"):
+						non_docker_err = True
 
-			if err.readline() != "mpirun: killing job...\n":
+
+			if non_docker_err:
+				if Settings.verbose >= 1:
+					print("-" * 40 + "\n")
+					print("> Error during optimization execution :")
+					with open(join(self.getTempDirectory(), "err_optim"), 'r') as f_err:
+						for line in f_err:
+							print(line)
+
+					print("-" * 40 + "\n")
+
+				err = open(join(self.getTempDirectory(), "err_optim"))
+
+				if err.readline() != "mpirun: killing job...\n":
+					err.close()
+					self.stopTime = int(time())
+					self.elapsedTime = self.stopTime - self.startTime
+					self.status = self.OPTIM_FAILURE
+					raise OptimizationExecutionException("Error during optimization execution")
+
 				err.close()
-				self.stopTime = int(time())
-				self.elapsedTime = self.stopTime - self.startTime
-				return self.OPTIM_FAILURE
 
-			err.close()
+		if isfile(join(self.getTempDirectory(), "pid")):
+			self.status = self.OPTIM_INTERRUPTED
+		else:
+			self.status = self.OPTIM_SUCCESS
 
 		return self.OPTIM_SUCCESS
 
+
+	def run_inside_thread(self, success, failure, nb_procs=2, timeout=None, maxiter=None):
+
+		try:
+			res = self.runOptimization(nb_procs=nb_procs, timeout=timeout, maxiter=maxiter)
+			print(res)
+			if res != self.OPTIM_FAILURE:
+				if success is not None:
+					success(self)
+			else:
+				if failure is not None:
+					failure(self)
+
+		except Exception as e:
+			if failure is not None:
+				failure(self, e)
+
+
+	def run_async(self, success, failure, nb_procs=2, timeout=None, maxiter=None):
+
+		t = Thread(group=None, target=self.run_inside_thread, args=(success, failure, nb_procs, timeout, maxiter))
+		t.setDaemon(True)
+		t.start()
+		return t
+
+	def restart_inside_thread(self, success, failure, nb_procs=2, timeout=None, maxiter=None):
+
+		try:
+			res = self.restartOptimization(nb_procs=nb_procs, timeout=timeout, maxiter=maxiter)
+
+			if res != self.OPTIM_FAILURE:
+				if success is not None:
+					success(self)
+			else:
+				if failure is not None:
+					failure(self)
+
+		except Exception as e:
+			if failure is not None:
+				failure(self, e)
+
+
+	def restart_async(self, success, failure, nb_procs=2, timeout=None, maxiter=None):
+
+		t = Thread(group=None, target=self.restart_inside_thread, args=(success, failure, nb_procs, timeout, maxiter))
+		t.setDaemon(True)
+		t.start()
+		return t
 
 	def readFinalScore(self):
 
@@ -163,15 +253,35 @@ class OptimizationExecution(object):
 
 
 		if Settings.verbose >= 1:
-			print "> Optimization executed. Final score : %.5g" % final_score
+			print("> Optimization executed. Final score : %.5g" % final_score)
 		return final_score
+
+	def restartOptimization(self, nb_procs=2, timeout=None, maxiter=None):
+
+		self.startTime = int(time())
+
+		res_2 = self.run(nb_procs, timeout, maxiter)
+		if res_2 == self.OPTIM_SUCCESS:
+
+			self.stopTime = int(time())
+			self.elapsedTime = self.stopTime - self.startTime
+			self.finalScore = self.readFinalScore()
+			return self.finalScore
+		elif Settings.verbose >= 1:
+			print("> Execution failed !")
+
+		self.stopTime = int(time())
+		self.elapsedTime = self.stopTime - self.startTime
+
+		return self.OPTIM_FAILURE
 
 
 	def runOptimization(self, nb_procs, timeout=None, maxiter=None):
 
 		# if self.monitor:
-		#     t = OptimizationMonitor(self)  #threading.Thread(target=self.monitorOptimization)
-		#     t.start()
+		# t = OptimizationMonitor(self)  #threading.Thread(target=self.monitorOptimization)
+		# t.start()
+
 		self.startTime = int(time())
 
 		res = self.compile(nb_procs)
@@ -179,7 +289,6 @@ class OptimizationExecution(object):
 		if res == self.OPTIM_SUCCESS:
 
 			res_2 = self.run(nb_procs, timeout, maxiter)
-
 			if res_2 == self.OPTIM_SUCCESS:
 
 				self.stopTime = int(time())
@@ -187,11 +296,20 @@ class OptimizationExecution(object):
 				self.finalScore = self.readFinalScore()
 				return self.finalScore
 			elif Settings.verbose >= 1:
-				print "> Execution failed !"
+				print("> Execution failed !")
 		elif Settings.verbose >= 1:
-			print "> Compilation failed !"
+			print("> Compilation failed !")
 
 		self.stopTime = int(time())
 		self.elapsedTime = self.stopTime - self.startTime
 
 		return self.OPTIM_FAILURE
+
+	def isInterrupted(self):
+		return self.status == self.OPTIM_INTERRUPTED
+	def hasSucceeded(self):
+		return self.status == self.OPTIM_SUCCESS
+	def hasFailed(self):
+		return self.status == self.OPTIM_FAILURE
+	def hasStarted(self):
+		return self.status != self.OPTIM_INITIALIZED

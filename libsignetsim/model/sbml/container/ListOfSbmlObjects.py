@@ -60,14 +60,24 @@ class ListOfSbmlObjects(ListOf, HasMetaIds):
 
 		return sbml_object
 
-	def getListOfSubstitutions(self):
+
+	def getListOfReplacedElements(self):
 
 		res = []
-		for obj in ListOf.values(self):
+		for obj in self:
 			if obj.hasReplacedElements():
 				res += obj.getReplacedElements()
 
+		return res
+
+	def getListOfReplacedBy(self):
+
+		res = []
+		for obj in self:
 			if obj.isReplaced():
 				res.append(obj.getReplacedBy())
 
 		return res
+
+	def getListOfSubstitutions(self):
+		return self.getListOfReplacedElements() + self.getListOfReplacedBy()

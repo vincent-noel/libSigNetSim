@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" version="1">
+  <model metaid="_meta_id_53_" id="model_0" name="Reduced Ras" substanceUnits="nmol" timeUnits="s" extentUnits="nmol">
+    <annotation>
+      <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+        <rdf:Description rdf:about="#_meta_id_53_">
+          <dcterms:creator>
+            <rdf:Bag>
+              <rdf:li rdf:parseType="Resource">
+                <vCard:N rdf:parseType="Resource">
+                  <vCard:Family>Noël</vCard:Family>
+                  <vCard:Given>Vincent</vCard:Given>
+                </vCard:N>
+                <vCard:EMAIL>vincent.noel@butantan.gov.br</vCard:EMAIL>
+                <vCard:ORG rdf:parseType="Resource">
+                  <vCard:Orgname>Instituto Butantan</vCard:Orgname>
+                </vCard:ORG>
+              </rdf:li>
+            </rdf:Bag>
+          </dcterms:creator>
+          <dcterms:created rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:15:31Z</dcterms:W3CDTF>
+          </dcterms:created>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:15:31Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:15:50Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:15:58Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:16:17Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:16:30Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:16:52Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:17:00Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:17:48Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:18:17Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:18:26Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:19:50Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:20:10Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:20:38Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:21:21Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:21:37Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:21:55Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:21:56Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:22:35Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:30:10Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-02T23:38:29Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-03T00:07:40Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-03T00:22:41Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-03T00:22:48Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-03T00:23:02Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-03T00:23:10Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-03T00:23:30Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-03T00:23:40Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-03T00:23:53Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-03T00:23:59Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-03T00:24:13Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-03T00:24:22Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-03T00:24:31Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-03T00:24:40Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-03T00:24:58Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-03T00:25:10Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-03T22:16:20Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2017-08-03T22:37:12Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2018-03-27T20:51:54Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2018-03-27T22:10:57Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2018-04-02T15:50:37Z</dcterms:W3CDTF>
+          </dcterms:modified>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>2018-04-02T16:08:06Z</dcterms:W3CDTF>
+          </dcterms:modified>
+        </rdf:Description>
+      </rdf:RDF>
+    </annotation>
+    <listOfUnitDefinitions metaid="_meta_id_12_">
+      <unitDefinition metaid="_meta_id_1_" id="L" name="Litre">
+        <listOfUnits>
+          <unit kind="litre" exponent="1" scale="1" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition metaid="_meta_id_2_" id="nmol" name="Nanomoles">
+        <listOfUnits>
+          <unit kind="mole" exponent="1" scale="-9" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition metaid="_meta_id_3_" id="nmol_per_liter" name="Nanomoles per litre">
+        <listOfUnits>
+          <unit kind="mole" exponent="1" scale="-9" multiplier="1"/>
+          <unit kind="litre" exponent="-1" scale="1" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition metaid="_meta_id_4_" id="s" name="Seconds">
+        <listOfUnits>
+          <unit kind="second" exponent="1" scale="1" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition metaid="_meta_id_5_" id="s_1" name="per Seconds">
+        <listOfUnits>
+          <unit kind="second" exponent="-1" scale="1" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition metaid="_meta_id_6_" id="nmol_1" name="per Nanomoles ">
+        <listOfUnits>
+          <unit kind="mole" exponent="-1" scale="-9" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition metaid="_meta_id_7_" id="dim_less" name="Dimensionless">
+        <listOfUnits>
+          <unit kind="dimensionless" exponent="1" scale="1" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition metaid="_meta_id_8_" id="per_nmol_per_seconds" name="per Nanomoles per Seconds">
+        <listOfUnits>
+          <unit kind="mole" exponent="-1" scale="-9" multiplier="1"/>
+          <unit kind="second" exponent="-1" scale="1" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition metaid="_meta_id_9_" id="mnol_per_seconds" name="Nanomoles per seconds">
+        <listOfUnits>
+          <unit kind="mole" exponent="1" scale="-9" multiplier="1"/>
+          <unit kind="second" exponent="-1" scale="1" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition metaid="_meta_id_10_" id="nmol_per_liter_per_seconds" name="Nanomoles per litre per seconds">
+        <listOfUnits>
+          <unit kind="mole" exponent="1" scale="-9" multiplier="1"/>
+          <unit kind="litre" exponent="-1" scale="1" multiplier="1"/>
+          <unit kind="second" exponent="-1" scale="1" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition metaid="_meta_id_11_" id="per_nmol_per_liter_per_seconds" name="per Nanomoles per liter per Seconds">
+        <listOfUnits>
+          <unit kind="mole" exponent="-1" scale="-9" multiplier="1"/>
+          <unit kind="second" exponent="-1" scale="1" multiplier="1"/>
+          <unit kind="litre" exponent="1" scale="1" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+    </listOfUnitDefinitions>
+    <listOfCompartments metaid="_meta_id_14_">
+      <compartment metaid="_meta_id_13_" id="cell" name="cell" spatialDimensions="3" size="1" units="L" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies metaid="_meta_id_30_">
+      <species metaid="_meta_id_41_" id="sos" name="SOS" compartment="cell" initialConcentration="200" substanceUnits="nmol" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="_meta_id_42_" id="ras_gdp" name="Ras-GDP" compartment="cell" initialConcentration="988" substanceUnits="nmol" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="_meta_id_43_" id="ras_gtp" name="Ras-GTP" compartment="cell" initialConcentration="12" substanceUnits="nmol" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="_meta_id_44_" id="sos_ras_gdp" name="SOS-Ras-GDP" compartment="cell" initialConcentration="0" substanceUnits="nmol" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="_meta_id_45_" id="sos_ras_gtp" name="SOS-Ras-GTP" compartment="cell" initialConcentration="0" substanceUnits="nmol" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="_meta_id_46_" id="gap" name="GAP" compartment="cell" initialConcentration="100" substanceUnits="nmol" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="_meta_id_50_" id="gef" name="GEF" compartment="cell" initialConcentration="100" substanceUnits="nmol" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="_meta_id_66_" id="sos_i" name="SOS inactive form" compartment="cell" initialConcentration="200" substanceUnits="nmol" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="_meta_id_141_" id="total_ras" name="Total Ras" compartment="cell" initialConcentration="1000" substanceUnits="nmol" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="true"/>
+      <species metaid="_meta_id_142_" id="total_sos" name="Total SOS" compartment="cell" initialConcentration="200" substanceUnits="nmol" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="true"/>
+    </listOfSpecies>
+    <listOfParameters metaid="_meta_id_29_">
+      <parameter metaid="_meta_id_15_" id="k1" name="SOS-Ras-GDP complexification constant" value="0.00018" units="per_nmol_per_liter_per_seconds" constant="true"/>
+      <parameter metaid="_meta_id_16_" id="d1" name="SOS-Ras-GDP decomplexification constant" value="3" units="s_1" constant="true"/>
+      <parameter metaid="_meta_id_17_" id="k4cat" name="Ras activation by SOS-Ras-GDP catalytic constant" value="0.003" units="s_1" constant="false"/>
+      <parameter metaid="_meta_id_18_" id="k4m" name="Ras activation by SOS-Ras-GDP michaelis constant" value="9120" units="nmol_per_liter" constant="false"/>
+      <parameter metaid="_meta_id_19_" id="kcat3" name="Ras activation by SOS-Ras-GTP catalytic constant" value="2" units="s_1" constant="false"/>
+      <parameter metaid="_meta_id_20_" id="k3m" name="Ras activation by SOS-Ras-GTP michaelis constant" value="1640" units="nmol_per_liter" constant="false"/>
+      <parameter metaid="_meta_id_21_" id="k5cat" name="Ras inactivation by GAP catalytic constant" value="0.1" units="s_1" constant="true"/>
+      <parameter metaid="_meta_id_22_" id="k5m" name="Ras inactivation by GAP michaelis constant" value="107" units="nmol_per_liter" constant="true"/>
+      <parameter metaid="_meta_id_23_" id="k2" name="SOS-Ras-GTP complexification constant" value="0.00017" units="per_nmol_per_liter_per_seconds" constant="true"/>
+      <parameter metaid="_meta_id_24_" id="d2" name="SOS-Ras-GTP decomplexification constant" value="0.4" units="s_1" constant="true"/>
+      <parameter metaid="_meta_id_25_" id="k6cat" name="Ras activation by GEF catalytic constant" value="0.01" units="s_1" constant="true"/>
+      <parameter metaid="_meta_id_26_" id="k6m" name="Ras activation by GEF michaelis constant" value="0.0051" units="nmol_per_liter" constant="true"/>
+      <parameter metaid="_meta_id_67_" id="k7" name="SOS activation constant" value="1" constant="true"/>
+      <parameter metaid="_meta_id_68_" id="d7" name="SOS inactivation constant" value="1" constant="true"/>
+    </listOfParameters>
+    <listOfInitialAssignments metaid="_meta_id_64_">
+      <initialAssignment metaid="_meta_id_148_" symbol="sos">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <ci> total_sos </ci>
+        </math>
+      </initialAssignment>
+      <initialAssignment metaid="_meta_id_77_" symbol="ras_gdp">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <plus/>
+            <ci> total_ras </ci>
+            <apply>
+              <minus/>
+              <ci> ras_gtp </ci>
+            </apply>
+          </apply>
+        </math>
+      </initialAssignment>
+    </listOfInitialAssignments>
+    <listOfRules metaid="_meta_id_47_">
+      <assignmentRule metaid="_meta_id_143_" variable="sos_ras_gdp">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <plus/>
+            <ci> total_sos </ci>
+            <apply>
+              <minus/>
+              <ci> sos </ci>
+            </apply>
+            <apply>
+              <minus/>
+              <ci> sos_ras_gtp </ci>
+            </apply>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule metaid="_meta_id_144_" variable="ras_gdp">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <plus/>
+            <ci> total_ras </ci>
+            <apply>
+              <minus/>
+              <ci> ras_gtp </ci>
+            </apply>
+            <apply>
+              <minus/>
+              <ci> sos_ras_gdp </ci>
+            </apply>
+            <apply>
+              <minus/>
+              <ci> sos_ras_gtp </ci>
+            </apply>
+          </apply>
+        </math>
+      </assignmentRule>
+      <rateRule metaid="_meta_id_145_" variable="sos">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <plus/>
+            <apply>
+              <times/>
+              <ci> sos_ras_gdp </ci>
+              <ci> d1 </ci>
+            </apply>
+            <apply>
+              <times/>
+              <ci> sos_ras_gtp </ci>
+              <ci> d2 </ci>
+            </apply>
+            <apply>
+              <times/>
+              <cn type="integer"> -1 </cn>
+              <ci> ras_gdp </ci>
+              <ci> sos </ci>
+              <ci> k1 </ci>
+            </apply>
+            <apply>
+              <times/>
+              <cn type="integer"> -1 </cn>
+              <ci> ras_gtp </ci>
+              <ci> sos </ci>
+              <ci> k2 </ci>
+            </apply>
+          </apply>
+        </math>
+      </rateRule>
+      <rateRule metaid="_meta_id_146_" variable="sos_ras_gtp">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <plus/>
+            <apply>
+              <times/>
+              <cn type="integer"> -1 </cn>
+              <ci> sos_ras_gtp </ci>
+              <ci> d2 </ci>
+            </apply>
+            <apply>
+              <times/>
+              <ci> ras_gtp </ci>
+              <ci> sos </ci>
+              <ci> k2 </ci>
+            </apply>
+          </apply>
+        </math>
+      </rateRule>
+      <rateRule metaid="_meta_id_147_" variable="ras_gtp">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <plus/>
+            <apply>
+              <times/>
+              <ci> sos_ras_gtp </ci>
+              <ci> d2 </ci>
+            </apply>
+            <apply>
+              <times/>
+              <cn type="integer"> -1 </cn>
+              <ci> ras_gtp </ci>
+              <ci> sos </ci>
+              <ci> k2 </ci>
+            </apply>
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> ras_gdp </ci>
+                <ci> sos_ras_gdp </ci>
+                <ci> k4cat </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> ras_gdp </ci>
+                <ci> k4m </ci>
+              </apply>
+            </apply>
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> ras_gdp </ci>
+                <ci> sos_ras_gtp </ci>
+                <ci> kcat3 </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> ras_gdp </ci>
+                <ci> k3m </ci>
+              </apply>
+            </apply>
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <cn type="integer"> -1 </cn>
+                <ci> gap </ci>
+                <ci> ras_gtp </ci>
+                <ci> k5cat </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> ras_gtp </ci>
+                <ci> k5m </ci>
+              </apply>
+            </apply>
+          </apply>
+        </math>
+      </rateRule>
+    </listOfRules>
+  </model>
+</sbml>

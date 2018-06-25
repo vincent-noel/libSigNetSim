@@ -41,10 +41,6 @@ class ListOf(list):
 	def add(self, sbml_object):
 		list.append(self, sbml_object)
 
-	def values(self):
-		""" Override values() to sort by id """
-		return self
-
 	def index(self, object):
 		return list.index(self, object)
 
