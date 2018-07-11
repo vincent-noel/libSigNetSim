@@ -17,4 +17,4 @@ services:
     image: signetsim/notebook:master
     container_name: libsignetsim-notebook
     ports:
-  - "8888:8888"
+      - "8888:8888"
