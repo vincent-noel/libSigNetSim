@@ -5,7 +5,7 @@ python-libnuml
 numpy
 scipy
 git+https://github.com/vincent-noel/pydstool.git@tkf
-sympy<1.2
+sympy
 bioservices
 lxml
 jinja2
