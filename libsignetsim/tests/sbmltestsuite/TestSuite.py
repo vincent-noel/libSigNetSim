@@ -51,6 +51,8 @@ class TestSuite(object):
 	# FastReations cases
 	INCOMPATIBLE_CASES += [
 		986, 987, 988,
+		1282,# Case with boolean conversion
+		1490, 1491, 1494, # Cases with function returning a boolean (but not of a boolean type, since they are functions
 		1398,# Variable stoichiometry, assigned by an event. Not today
 		1399,# Two possible choices for initial values, not sure how to choose
 		1565,# Problem evaluating sec(0.5) ??!! Also, takes ages

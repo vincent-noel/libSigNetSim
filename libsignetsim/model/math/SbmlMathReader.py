@@ -469,10 +469,13 @@ class SbmlMathReader(object):
 						t_pieces.append((t_value, True))
 						i_arg += 1
 
-				if not value_piecewise:
-					return SympyPiecewise(*t_pieces, evaluate=False)
-				else:
-					return SympyITE(t_pieces[0][1], t_pieces[0][0], t_pieces[1][0])
+				# print(t_pieces)
+
+				# if not value_piecewise:
+					# return SympyITE(t_pieces[0][1], t_pieces[0][0], t_pieces[1][0], evaluate=False)
+				return SympyPiecewise(*t_pieces, evaluate=False)
+				# else:
+				# 	return SympyITE(t_pieces[0][1], t_pieces[0][0], t_pieces[1][0], evaluate=False)
 
 				# AST_FUNCTION_POWER
 			elif tree.getType() == libsbml.AST_FUNCTION_POWER:
@@ -688,26 +691,26 @@ class SbmlMathReader(object):
 			if tree.getType() == libsbml.AST_LOGICAL_AND:
 				t_children = []
 				for child in range(0, tree.getNumChildren()):
-					t_children.append(self.translateForInternal(tree.getChild(child), sbml_level, sbml_version, simplified, develop))
+					t_children.append(self.ensureBool(self.translateForInternal(tree.getChild(child), sbml_level, sbml_version, simplified, develop)))
 
 				return SympyAnd(*t_children, evaluate=False)
 
 			elif tree.getType() == libsbml.AST_LOGICAL_OR:
 				t_children = []
 				for child in range(0, tree.getNumChildren()):
-					t_children.append(self.translateForInternal(tree.getChild(child), sbml_level, sbml_version, simplified, develop))
+					t_children.append(self.ensureBool(self.translateForInternal(tree.getChild(child), sbml_level, sbml_version, simplified, develop)))
 
 				return SympyOr(*t_children, evaluate=False)
 
 			elif tree.getType() == libsbml.AST_LOGICAL_XOR:
 				t_children = []
 				for child in range(0, tree.getNumChildren()):
-					t_children.append(self.translateForInternal(tree.getChild(child), sbml_level, sbml_version, simplified, develop))
+					t_children.append(self.ensureBool(self.translateForInternal(tree.getChild(child), sbml_level, sbml_version, simplified, develop)))
 
 				return SympyXor(*t_children, evaluate=False)
 
 			elif tree.getType() == libsbml.AST_LOGICAL_NOT:
-				return SympyNot(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop), evaluate=False)
+				return SympyNot(self.ensureBool(self.translateForInternal(tree.getChild(0), sbml_level, sbml_version, simplified, develop)), evaluate=False)
 
 			elif str(tree.getName()) == "implies":
 				return SympyImplies(
@@ -744,13 +747,22 @@ class SbmlMathReader(object):
 	def ensureBool(self, tree):
 
 		if tree is not None:
-
+			# print(tree)
 			if tree.func == SympyInteger:
 				tree = SympyFalse if tree == SympyInteger(0) else SympyTrue
 
 			elif tree.func == SympyFloat:
 				tree = SympyFalse if tree == SympyFloat(0.0) else SympyTrue
 
+			elif tree.func == SympyPiecewise:
+				# print("ahah canaillou")
+				# print(list(tree.args))
+				new_list = []
+				for value, cond in list(tree.args):
+					new_list.append((self.ensureBool(value), cond))
+				# tree.args[1] = self.ensureBool(tree.args[1])
+				# tree.args[2] = self.ensureBool(tree.args[2])
+				return SympyPiecewise(*new_list, evaluate=False)
 			return tree
 
 	def ensureInteger(self, tree):

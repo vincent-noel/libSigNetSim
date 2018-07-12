@@ -147,10 +147,10 @@ class SedmlMathReader(object):
 				return SympyE
 
 			elif tree.getType() == AST_CONSTANT_FALSE:
-				return SympyFalse
+				return False
 
 			elif tree.getType() == AST_CONSTANT_TRUE:
-				return SympyTrue
+				return True
 
 			elif tree.getType() == AST_CONSTANT_PI:
 				return SympyPi

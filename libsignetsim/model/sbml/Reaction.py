@@ -176,7 +176,6 @@ class Reaction(Variable, SbmlObject, HasUnits, HasParentObj):
 
 		Variable.readSbml(self, reaction, sbml_level, sbml_version)
 
-
 	def readSbmlVariable(self, variable, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
 
 		# variable id

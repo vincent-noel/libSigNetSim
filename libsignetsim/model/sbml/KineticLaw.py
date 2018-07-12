@@ -106,7 +106,7 @@ class KineticLaw(KineticLawIdentifier):
 					if species.isConcentration():
 						subs.update({species.symbol.getInternalMathFormula(rawFormula=True): species.symbol.getInternalMathFormula()})
 				formula = unevaluatedSubs(formula, subs)
-		return simplify(formula)
+		return formula
 
 
 	def getDefinition(self, rawFormula=False):
@@ -118,6 +118,7 @@ class KineticLaw(KineticLawIdentifier):
 
 		math_formula = MathFormula(self.__model, MathFormula.MATH_KINETICLAW)
 		math_formula.setInternalMathFormula(self.getRawDefinition(rawFormula=rawFormula))
+
 		return math_formula
 
 	def setPrettyPrintMathFormula(self, definition, forcedConcentration=False):

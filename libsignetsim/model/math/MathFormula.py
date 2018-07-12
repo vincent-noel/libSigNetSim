@@ -281,9 +281,10 @@ class MathFormula(SbmlMathReader, CMathWriter, SbmlMathWriter, MathDevelopper):
 
 	def isOne(self):
 
-		return (self.getMathFormula(self.MATH_DEVINTERNAL) == SympyOne
-				or self.getMathFormula(self.MATH_DEVINTERNAL) == SympyInteger(1)
-				or self.getMathFormula(self.MATH_DEVINTERNAL) == SympyFloat(1.0))
+		return (
+				self.getMathFormula(self.MATH_DEVINTERNAL) == SympyInteger(1)
+				or self.getMathFormula(self.MATH_DEVINTERNAL) == SympyFloat(1.0)
+		)
 
 	def isEqual(self, string):
 
