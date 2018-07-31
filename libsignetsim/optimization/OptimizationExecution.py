@@ -197,7 +197,7 @@ class OptimizationExecution(object):
 
 		try:
 			res = self.runOptimization(nb_procs=nb_procs, timeout=timeout, maxiter=maxiter)
-			print(res)
+
 			if res != self.OPTIM_FAILURE:
 				if success is not None:
 					success(self)

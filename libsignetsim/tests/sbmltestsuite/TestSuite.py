@@ -38,7 +38,7 @@ from os import mkdir
 class TestSuite(object):
 	""" Tests SED-ML semantic test cases """
 
-	TODO_CASES = []
+	TODO_CASES = [1490]
 	TODO_VERSIONS = []
 	TODO_TAGS = []
 
@@ -51,6 +51,11 @@ class TestSuite(object):
 	# FastReations cases
 	INCOMPATIBLE_CASES += [
 		986, 987, 988,
+		# <<<<<<< Updated upstream
+		# =======
+		# 		1282,# Case with boolean conversion
+		# 		# 1490, 1491, 1494, # Cases with function returning a boolean (but not of a boolean type, since they are functions
+		# >>>>>>> Stashed changes
 		1398,# Variable stoichiometry, assigned by an event. Not today
 		1399,# Two possible choices for initial values, not sure how to choose
 		1565,# Problem evaluating sec(0.5) ??!! Also, takes ages
@@ -71,7 +76,7 @@ class TestSuite(object):
 
 	COMPATIBLE_PACKAGES = ['comp']
 
-	FAIL_ON_EXCEPTION = False
+	FAIL_ON_EXCEPTION = True
 
 	def __init__(self, version):
 
