@@ -52,7 +52,11 @@ class MathSymbol(MathFormula):
 		MathFormula.__init__(self, model, MathFormula.MATH_VARIABLE, isFromReaction=is_from_reaction)
 
 	def readSbml(self, symbol, sbml_level=Settings.defaultSbmlLevel, sbml_version=Settings.defaultSbmlVersion):
-		self.setInternalMathFormula(SympySymbol(symbol))
+
+		if symbol is not None and symbol != "":
+			self.setInternalMathFormula(SympySymbol(symbol))
+		else:
+			self.setInternalMathFormula(SympySymbol("variable_%d" % self.__model.listOfVariables.index(self.__variable)))
 
 	# def setInternalVariable(self, internal_variable):
 	# 	MathFormula.setInternalMathFormula(self, internal_variable)
