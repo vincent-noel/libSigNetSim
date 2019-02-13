@@ -3,6 +3,23 @@
 from setuptools import find_packages
 from distutils.core import setup, Extension
 from os.path import dirname, join
+from subprocess import Popen, PIPE
+
+
+def get_openmpi_include_dirs():
+	process = Popen("mpicc --showme:compile".split(), stdout=PIPE)
+	output, error = process.communicate()
+
+	print("Output: %s" % output)
+
+	dirs = []
+	for include_dir in output.decode().split():
+		if include_dir.startswith("-I"):
+			dirs.append(include_dir[2:])
+
+	print("> Found openmpi include dirs : %s" % str(dirs))
+	return dirs
+
 
 setup(name='libsignetsim',
 	version=open(join(dirname(__file__), 'VERSION')).read(),
@@ -79,18 +96,7 @@ setup(name='libsignetsim',
 				'libsignetsim/lib/plsa/src/mixing.c',
 				'libsignetsim/lib/plsa/src/tuning.c',
 			],
-			include_dirs=[
-				"/usr/lib/openmpi/include/openmpi/opal/mca/event/libevent2021/libevent",
-				"/usr/lib/openmpi/include/openmpi/opal/mca/event/libevent2021/libevent/include",
-				"/usr/lib/openmpi/include",
-				"/usr/lib/openmpi/include/openmpi",
-				"/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2021/libevent",
-				"/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2021/libevent/include",
-				"/usr/lib/x86_64-linux-gnu/openmpi/include",
-				"/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi",
-				"/usr/lib64/mpi/gcc/openmpi/include/", # Opensuse
-				"/usr/include/openmpi-x86_64/", # Fedora
-			],
+			include_dirs=get_openmpi_include_dirs(),
 			define_macros=[("MPI", None)],
 			extra_compile_args=["-pthread"]
 		)
