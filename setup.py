@@ -2,6 +2,7 @@
 
 from setuptools import find_packages
 from distutils.core import setup, Extension
+from os import walk
 from os.path import dirname, join
 from subprocess import Popen, PIPE
 
@@ -19,6 +20,31 @@ def get_openmpi_include_dirs():
 
 	print("> Found openmpi include dirs : %s" % str(dirs))
 	return dirs
+
+
+def get_sundials_version():
+	result = []
+	for root, dirs, files in walk("/"):
+		if "sundials_config.h" in files:
+			result.append(join(root, "sundials_config.h"))
+
+	depths = [len(path.split('/')) for path in result]
+	path = result[depths.index(min(depths))]
+	sundials_config = open(path).readlines()
+
+	major_version = None
+	minor_version = None
+	for line in sundials_config:
+		if line.startswith('#define SUNDIALS_PACKAGE_VERSION'):
+			full_version = line.split()[2][1:-1].split(".")
+			return (int(full_version[0]), int(full_version[1]))
+		if line.startswith("#define SUNDIALS_VERSION_MAJOR"):
+			major_version = int(line.split()[2])
+		if line.startswith("#define SUNDIALS_VERSION_MINOR"):
+			minor_version = int(line.split()[2])
+
+		if major_version is not None and minor_version is not None:
+			return (major_version, minor_version)
 
 
 setup(name='libsignetsim',
@@ -64,7 +90,7 @@ setup(name='libsignetsim',
 			libraries=['sundials_cvode', 'sundials_nvecserial', 'sundials_ida', 'm', 'lapack', 'atlas', 'blas'],
 			library_dirs=['/usr/lib64/atlas-basic/'],
 			define_macros=(
-				[("SUNDIALS3", None)] if "SUNDIALS_VERSION_MAJOR 3" in open("/usr/include/sundials/sundials_config.h").read() else None
+				[("SUNDIALS3", None)] if get_sundials_version()[0] == 3 else None
 			),
 		),
 		Extension(
